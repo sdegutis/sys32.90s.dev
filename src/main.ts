@@ -7,13 +7,6 @@ type Tile = {
   age: number,
 };
 
-const drawings = {
-  tree: '[gfx]0808000000000b000000bbb000000500000000000000000000000000000000000000[/gfx]',
-  rock: '[gfx]08080000000000660000066500000655000000000000000000000000000000000000[/gfx]',
-  lawn: '[gfx]08083333000033330000333300003333000000000000000000000000000000000000[/gfx]',
-  gold: '[gfx]08080000000000600000061500000615000000000000000000000000000000000000[/gfx]',
-};
-
 // 80 x 45
 
 const tiles: Tile[][] = [];
@@ -28,44 +21,44 @@ for (let y = 0; y < 45; y++) {
 let left = false;
 let hand = false;
 
-function drawSprite(x: number, y: number, spr: string) {
-  for (let yy = 0; yy < 4; yy++) {
-    for (let xx = 0; xx < 4; xx++) {
-      const i = 9 + (yy * 8) + xx;
-      const c = parseInt(spr[i], 16);
-      if (c > 0) {
-        ctx.fillStyle = COLORS[c];
-        ctx.fillRect(x + xx, y + yy, 1, 1);
-      }
-    }
-  }
+function pset(c: number, x: number, y: number) {
+  ctx.fillStyle = COLORS[c];
+  ctx.fillRect(x, y, 1, 1);
 }
 
 const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
   grass: (x, y) => {
-    // ctx.fillStyle = COLORS[3];
-    // ctx.fillRect(x, y, 4, 4);
-    drawSprite(x, y, drawings.lawn);
+    ctx.fillStyle = COLORS[3];
+    ctx.fillRect(x, y, 4, 4);
   },
   gold: (x, y) => {
     draw.grass(x, y);
-    drawSprite(x, y, drawings.gold);
+    pset(6, x + 2, y + 1);
+    pset(6, x + 1, y + 2);
+    pset(6, x + 1, y + 3);
+    pset(5, x + 3, y + 2);
+    pset(5, x + 3, y + 3);
+    pset(hp > 2 ? 10 : 1, x + 2, y + 2);
+    pset(hp > 2 ? 10 : 1, x + 2, y + 3);
   },
   rock: (x, y) => {
     draw.grass(x, y);
-    drawSprite(x, y, drawings.rock);
+    pset(6, x + 2, y + 1);
+    pset(6, x + 3, y + 1);
+    pset(6, x + 1, y + 2);
+    pset(6, x + 2, y + 2);
+    pset(6, x + 1, y + 3);
+    pset(5, x + 2, y + 3);
+    pset(5, x + 3, y + 3);
+    pset(5, x + 3, y + 2);
   },
   tree: (x, y) => {
     draw.grass(x, y);
-    drawSprite(x, y, drawings.tree);
-
-    // ctx.fillStyle = COLORS[11];
-    // ctx.fillRect(x + 1, y + 1, 1, 1);
-    // ctx.fillRect(x, y + 2, 1, 1);
-    // ctx.fillRect(x + 1, y + 2, 1, 1);
-    // ctx.fillRect(x + 2, y + 2, 1, 1);
-    // ctx.fillStyle = COLORS[5];
-    // ctx.fillRect(x + 1, y + 3, 1, 1);
+    pset(11, x + 1, y + 1);
+    pset(11, x, y + 2);
+    pset(11, x + 1, y + 2);
+    pset(11, x + 2, y + 2);
+    pset(5, x + 1, y + 3);
   },
   farmer: (x, y) => {
     draw.grass(x, y);
@@ -73,12 +66,9 @@ const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
     let xx = 0;
     if (left) xx = 1;
 
-    ctx.fillStyle = COLORS[15];
-    ctx.fillRect(xx + x + 1, y, 1, 1);
-    ctx.fillStyle = COLORS[2];
-    ctx.fillRect(xx + x + 1, y + 1, 1, 1);
-    ctx.fillStyle = COLORS[1];
-    ctx.fillRect(xx + x + 1, y + 2, 1, 1);
+    pset(15, xx + x + 1, y);
+    pset(2, xx + x + 1, y + 1);
+    pset(1, xx + x + 1, y + 2);
 
     if (hand) {
       ctx.fillStyle = COLORS[2];
