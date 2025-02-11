@@ -1,56 +1,96 @@
-import { COLORS, ctx, openCRT } from "./crt";
-import { createNoise2D } from 'simplex-noise';
-import alea from 'alea';
+import { canvas, COLORS, ctx, openCRT } from "./crt";
 
 const crt = openCRT();
 
-const noise1 = createNoise2D(alea(7 + 0));
-const noise2 = createNoise2D(alea(7 + 1));
-const noise3 = createNoise2D(alea(7 + 2));
+type Tile = {
+  type: 'grass' | 'tree' | 'farmer',
+  x: number,
+  y: number,
+  age: number,
+};
 
-const tiles: number[][] = [];
+const tiles: Tile[][] = [];
 for (let y = 0; y < 180; y++) {
-  const row: number[] = [];
+  const row: Tile[] = [];
   tiles.push(row);
   for (let x = 0; x < 320; x++) {
-    const n1 = noise1(x / 30, y / 30) + 1;
-    const n2 = noise2(x / 50, y / 50) + 1;
-    const n3 = noise3(x / 90, y / 90) + 1;
-    const n = (n1 + n2 + n3) / 3;
-
-    let c = 0;
-    if (n > 0.50) c = 1;
-
-    if (n > 0.70) c = 12;
-    if (n > 0.90) c = 5;
-
-    if (n > 1.25) c = 3;
-    if (n > 1.50) c = 11;
-
-    row.push(c);
+    row.push({ type: 'grass', x, y, age: 0 });
   }
 }
 
-crt.update = (t: number) => {
+const colors: { [K in Tile['type']]: string } = {
+  grass: COLORS[3],
+  tree: COLORS[11],
+  farmer: COLORS[7],
+};
+
+for (let y = 20; y < 50; y++) {
+  for (let x = 30; x < 40; x++) {
+    tiles[y][x].type = 'tree';
+  }
+}
+
+tiles[100][100].type = 'farmer';
+
+let drag: { x: number, y: number } | null = null;
+
+function maybeGrow(x: number, y: number) {
+  if (x < 0 || y < 0 || x >= 320 || y >= 180) return;
+  if (tiles[y][x].type === 'grass') {
+    if (Math.random() > 0.25) {
+      tiles[y][x].type = 'tree';
+      tiles[y][x].age = 0;
+    }
+  }
+}
+
+crt.update = (t: number, delta: number) => {
+  // maybe grow trees
   for (let y = 0; y < 180; y++) {
     for (let x = 0; x < 320; x++) {
-      ctx.fillStyle = COLORS[tiles[y][x]];
+      const tile = tiles[y][x];
+      if (tile.type === 'tree') {
+        if (tile.age > 1000) {
+
+          for (let xx = -1; xx <= 1; xx += 2) {
+            for (let yy = -1; yy <= 1; yy += 2) {
+              maybeGrow(x + xx, y + yy);
+            }
+          }
+
+        }
+        tile.age += delta;
+      }
+    }
+  }
+
+  for (let y = 0; y < 180; y++) {
+    for (let x = 0; x < 320; x++) {
+      ctx.fillStyle = colors[tiles[y][x].type];
       ctx.fillRect(x, y, 1, 1);
     }
   }
 
+  if (drag) {
+    ctx.strokeStyle = '#00f3';
+    ctx.strokeRect(
+      drag.x + .5,
+      drag.y + .5,
+      crt.mouse.x - drag.x,
+      crt.mouse.y - drag.y
+    );
+  }
+
   // draw mouse
-
   ctx.fillStyle = '#0007';
-  ctx.fillRect(crt.mouse.x - 3, crt.mouse.y - 3, 7, 7);
-  ctx.fill();
-
-  ctx.fillStyle = COLORS[7];
-  // ctx.strokeStyle = COLORS[12];
+  ctx.fillRect(crt.mouse.x - 2, crt.mouse.y - 2, 5, 5);
+  ctx.fillStyle = '#fff';
   ctx.fillRect(crt.mouse.x, crt.mouse.y, 1, 1);
-  // ctx.strokeRect(crt.mouse.x - .5, crt.mouse.y - .5, 2, 2);
-  // ctx.beginPath();
-  // ctx.arc(crt.mouse.x + 0.5, crt.mouse.y + 0.5, 3, 0, Math.PI * 2);
-  // ctx.stroke();
+};
 
+canvas.onmousedown = () => {
+  drag = { x: crt.mouse.x, y: crt.mouse.y };
+  canvas.onmouseup = () => {
+    drag = null;
+  };
 };

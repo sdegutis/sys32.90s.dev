@@ -1,4 +1,4 @@
-const canvas = document.querySelector('canvas')!;
+export const canvas = document.querySelector('canvas')!;
 export const ctx = canvas.getContext('2d')!;
 
 export function openCRT() {
@@ -24,7 +24,7 @@ export function openCRT() {
   };
 
   const crt = {
-    update: (t: number) => { },
+    update: (time: number, delta: number) => { },
     mouse,
   };
 
@@ -32,7 +32,7 @@ export function openCRT() {
   const step = () => {
     requestAnimationFrame(t => {
       if (t - from >= 30) {
-        crt.update(t);
+        crt.update(t, t - from);
         from = t;
       }
       step();
