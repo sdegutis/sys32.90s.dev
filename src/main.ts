@@ -39,7 +39,7 @@ crt.update = (t: number, delta: number) => {
     for (let x = 0; x < 320; x++) {
       const tile = tiles[y][x];
       if (tile.type === 'tree') {
-        if (tile.age > 10) {
+        if (tile.age > 1000) {
           tile.age = 0;
 
           for (let yy = 0; yy < 3; yy += 2) {
@@ -51,7 +51,7 @@ crt.update = (t: number, delta: number) => {
                 const nei = tiles[y2][x2];
 
                 if (nei.type === 'grass') {
-                  if (Math.random() > 0.01) {
+                  if (Math.random() > 0.99) {
                     nei.type = 'tree';
                     nei.age = 0;
                   }
