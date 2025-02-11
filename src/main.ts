@@ -1,4 +1,5 @@
-import { canvas, COLORS, ctx, openCRT } from "./crt";
+import { canvas, COLORS, ctx, openCRT, pset } from "./crt";
+import { print } from "./font";
 
 type Tile = {
   type: 'grass' | 'tree' | 'farmer' | 'gold' | 'rock',
@@ -20,11 +21,6 @@ for (let y = 0; y < 45; y++) {
 
 let left = false;
 let hand = false;
-
-function pset(c: number, x: number, y: number) {
-  ctx.fillStyle = COLORS[c];
-  ctx.fillRect(x, y, 1, 1);
-}
 
 const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
   grass: (x, y) => {
@@ -208,6 +204,7 @@ crt.update = (t: number, delta: number) => {
   ctx.strokeStyle = `#${hp___red}${hp_green}0`;
   ctx.strokeRect(x, y - 1.5, hp, 0);
 
+  print(crt.mouse.x, crt.mouse.y + 4, "hello world. well, this is actually *cool*!");
 };
 
 canvas.onmousedown = () => {

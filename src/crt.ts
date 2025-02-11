@@ -49,3 +49,8 @@ export const COLORS = [
   '#FF004D', '#FFA300', '#FFEC27', '#00E436',
   '#29ADFF', '#83769C', '#FF77A8', '#FFCCAA',
 ];
+
+export function pset(c: number, x: number, y: number) {
+  ctx.fillStyle = COLORS[c];
+  ctx.fillRect(x, y, 1, 1);
+}
