@@ -102,7 +102,7 @@ crt.update = (t: number, delta: number) => {
     }
   }
 
-  // draw selection
+  // draw mouse selection
   if (drag) {
     const x1 = drag.x;
     const y1 = drag.y;
@@ -127,9 +127,12 @@ crt.update = (t: number, delta: number) => {
   ctx.fillStyle = '#fff';
   ctx.fillRect(crt.mouse.x, crt.mouse.y, 1, 1);
 
+  // draw char selection
   let x = 40 * 4, y = 25 * 4;
-  ctx.strokeStyle = '#f007';
-  ctx.strokeRect(x - 1.5, y - 1.5, 6, 6);
+  // ctx.fillStyle = '#ff07';
+  // ctx.fillRect(x - 1, y - 2, 6, 6);
+  ctx.strokeStyle = '#ff03';
+  ctx.strokeRect(x - .5, y - 1.5, 5, 5);
 
 };
 
