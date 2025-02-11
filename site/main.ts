@@ -1,4 +1,4 @@
-import { canvas, COLORS, ctx, mouse, ontick } from "./crt.js";
+import { callbacks, canvas, COLORS, ctx, mouse } from "./crt.js";
 import { print } from "./font.js";
 
 type Tile = {
@@ -109,7 +109,7 @@ let changer2 = 0;
 let hp = 1;
 let changerhp = 0;
 
-ontick((delta: number) => {
+callbacks.ontick = (delta: number) => {
 
   changerhp += delta;
   if (changerhp > 500) {
@@ -215,7 +215,7 @@ ontick((delta: number) => {
 
   draw.tree(mouse.x, mouse.y + 4);
   draw.gold(mouse.x + 5 * 4 - 1, mouse.y + 4);
-});
+};
 
 canvas.onmousedown = (e) => {
   drag = { x: mouse.x, y: mouse.y, b: e.button };

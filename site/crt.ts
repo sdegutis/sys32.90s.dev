@@ -3,6 +3,10 @@ export const ctx = canvas.getContext('2d')!;
 
 canvas.oncontextmenu = (e) => { e.preventDefault(); };
 
+export const callbacks = {
+  ontick: (delta: number) => { },
+};
+
 let SCALE = 1;
 new ResizeObserver(() => {
   const box = document.body.getBoundingClientRect();
@@ -24,17 +28,15 @@ canvas.onmousemove = (e) => {
   mouse.y = Math.round((e.offsetY - SCALE / 2) / SCALE);
 };
 
-export function ontick(fn: (delta: number) => void) {
-  let last = +document.timeline.currentTime!;
-  function update(t: number) {
-    if (t - last >= 30) {
-      fn(t - last);
-      last = t;
-    }
-    requestAnimationFrame(update);
+let last = +document.timeline.currentTime!;
+function update(t: number) {
+  if (t - last >= 30) {
+    callbacks.ontick(t - last);
+    last = t;
   }
   requestAnimationFrame(update);
 }
+requestAnimationFrame(update);
 
 export const COLORS = [
   '#000000', '#1D2B53', '#7E2553', '#008751',
