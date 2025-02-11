@@ -1,7 +1,7 @@
 import { canvas, COLORS, ctx, openCRT } from "./crt";
 
 type Tile = {
-  type: 'grass' | 'tree' | 'farmer',
+  type: 'grass' | 'tree' | 'farmer' | 'gold' | 'rock',
   x: number,
   y: number,
   age: number,
@@ -47,6 +47,14 @@ const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
     // ctx.fillRect(x, y, 4, 4);
     drawSprite(x, y, drawings.lawn);
   },
+  gold: (x, y) => {
+    draw.grass(x, y);
+    drawSprite(x, y, drawings.gold);
+  },
+  rock: (x, y) => {
+    draw.grass(x, y);
+    drawSprite(x, y, drawings.rock);
+  },
   tree: (x, y) => {
     draw.grass(x, y);
     drawSprite(x, y, drawings.tree);
@@ -86,6 +94,10 @@ for (let y = 10; y < 20; y++) {
 }
 
 tiles[25][40].type = 'farmer';
+tiles[31][40].type = 'gold';
+tiles[30][42].type = 'rock';
+tiles[31][42].type = 'rock';
+tiles[31][43].type = 'rock';
 
 let drag: { x: number, y: number } | null = null;
 
