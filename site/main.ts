@@ -159,7 +159,7 @@ crt.update = (t: number, delta: number) => {
         ctx.fillStyle = '#000';
         ctx.fillRect(x * 4, y * 4, 4, 4);
       }
-      else if (x + y < 34) {
+      else if (x + y < 35) {
         ctx.fillStyle = '#000b';
         ctx.fillRect(x * 4, y * 4, 4, 4);
       }
