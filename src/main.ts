@@ -115,8 +115,18 @@ function maybeNewTree(x: number, y: number) {
 let changer1 = 0;
 let changer2 = 0;
 
+let hp = 1;
+let changerhp = 0;
+
 const crt = openCRT();
 crt.update = (t: number, delta: number) => {
+
+  changerhp += delta;
+  if (changerhp > 500) {
+    changerhp = 0;
+    hp++;
+    if (hp > 4) hp = 0;
+  }
 
   changer1 += delta;
   if (changer1 > 1000) {
@@ -192,12 +202,21 @@ crt.update = (t: number, delta: number) => {
   ctx.fillStyle = '#fff';
   ctx.fillRect(crt.mouse.x, crt.mouse.y, 1, 1);
 
-  // draw char selection
   let x = 40 * 4, y = 25 * 4;
-  // ctx.fillStyle = '#ff07';
-  // ctx.fillRect(x - 1, y - 2, 6, 6);
-  ctx.strokeStyle = '#ff03';
-  ctx.strokeRect(x - .5, y - 1.5, 5, 5);
+
+  // draw char selection
+  if (drag) {
+    // ctx.fillStyle = '#ff07';
+    // ctx.fillRect(x - 1, y - 2, 6, 6);
+    ctx.strokeStyle = '#ff03';
+    ctx.strokeRect(x - .5, y - 1.5, 5, 5);
+  }
+
+  // draw hp bar
+  const hp___red = hp < 3 ? 'f' : '0';
+  const hp_green = hp > 1 ? 'f' : '0';
+  ctx.strokeStyle = `#${hp___red}${hp_green}0`;
+  ctx.strokeRect(x, y - 1.5, hp, 0);
 
 };
 
