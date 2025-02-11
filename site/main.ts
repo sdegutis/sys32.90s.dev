@@ -1,4 +1,4 @@
-import { callbacks, canvas, COLORS, ctx, mouse } from "./crt.js";
+import { callbacks, COLORS, ctx, mouse } from "./crt.js";
 import { print } from "./font.js";
 
 type Tile = {
@@ -90,8 +90,6 @@ tiles[30][42].type = 'rock';
 tiles[31][42].type = 'rock';
 tiles[31][43].type = 'rock';
 
-let drag: { x: number, y: number, b: number } | null = null;
-
 function maybeNewTree(x: number, y: number) {
   if (x < 0 || y < 0 || x >= 80 || y >= 45) return;
   if (Math.random() < 0.999) return;
@@ -166,9 +164,9 @@ callbacks.ontick = (delta: number) => {
   }
 
   // draw mouse selection
-  if (drag) {
-    const x1 = drag.x;
-    const y1 = drag.y;
+  if (mouse.drag) {
+    const x1 = mouse.drag.x;
+    const y1 = mouse.drag.y;
     const x2 = mouse.x;
     const y2 = mouse.y;
 
@@ -195,7 +193,7 @@ callbacks.ontick = (delta: number) => {
   let x = 40 * 4, y = 25 * 4;
 
   // draw char selection
-  if (drag) {
+  if (mouse.drag) {
     // ctx.fillStyle = '#ff07';
     // ctx.fillRect(x - 1, y - 2, 6, 6);
     ctx.strokeStyle = '#ff03';
@@ -217,21 +215,10 @@ callbacks.ontick = (delta: number) => {
   draw.gold(mouse.x + 5 * 4 - 1, mouse.y + 4);
 };
 
-canvas.onmousedown = (e) => {
-  drag = { x: mouse.x, y: mouse.y, b: e.button };
+callbacks.onclick = () => {
+  console.log('click', mouse.button);
 };
 
-canvas.onmouseup = (e) => {
-  const dx = Math.abs(mouse.x - drag!.x);
-  const dy = Math.abs(mouse.y - drag!.y);
-  const isClick = dx < 2 && dy < 2;
-
-  if (isClick) {
-    console.log('click', e.button);
-  }
-  else {
-    console.log('dragend', drag!.b)
-  }
-
-  drag = null;
+callbacks.ondragend = () => {
+  console.log('drag end', mouse.button);
 };
