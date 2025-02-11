@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "alea": "^1.0.1",
-    "monaco-editor": "^0.52.2",
     "simplex-noise": "^4.0.3"
   }
 }
