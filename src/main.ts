@@ -28,24 +28,28 @@ for (let y = 0; y < 45; y++) {
 let left = false;
 let hand = false;
 
+function drawSprite(x: number, y: number, spr: string) {
+  for (let yy = 0; yy < 4; yy++) {
+    for (let xx = 0; xx < 4; xx++) {
+      const i = 9 + (yy * 8) + xx;
+      const c = parseInt(spr[i], 16);
+      if (c > 0) {
+        ctx.fillStyle = COLORS[c];
+        ctx.fillRect(x + xx, y + yy, 1, 1);
+      }
+    }
+  }
+}
+
 const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
   grass: (x, y) => {
-    ctx.fillStyle = COLORS[3];
-    ctx.fillRect(x, y, 4, 4);
+    // ctx.fillStyle = COLORS[3];
+    // ctx.fillRect(x, y, 4, 4);
+    drawSprite(x, y, drawings.lawn);
   },
   tree: (x, y) => {
     draw.grass(x, y);
-
-    for (let yy = 0; yy < 4; yy++) {
-      for (let xx = 0; xx < 4; xx++) {
-        const i = 9 + (yy * 8) + xx;
-        const c = parseInt(drawings.tree[i], 16);
-        if (c > 0) {
-          ctx.fillStyle = COLORS[c];
-          ctx.fillRect(x + xx, y + yy, 1, 1);
-        }
-      }
-    }
+    drawSprite(x, y, drawings.tree);
 
     // ctx.fillStyle = COLORS[11];
     // ctx.fillRect(x + 1, y + 1, 1, 1);
@@ -136,6 +140,9 @@ crt.update = (t: number, delta: number) => {
     for (let x = 0; x < 80; x++) {
       const fn = draw[tiles[y][x].type];
       fn(x * 4, y * 4);
+
+
+      // if ()
     }
   }
 
