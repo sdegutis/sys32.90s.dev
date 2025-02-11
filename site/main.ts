@@ -94,13 +94,13 @@ let drag: { x: number, y: number, b: number } | null = null;
 
 function maybeNewTree(x: number, y: number) {
   if (x < 0 || y < 0 || x >= 80 || y >= 45) return;
+  if (Math.random() < 0.999) return;
+
   const nei = tiles[y][x];
-  if (nei.type === 'grass') {
-    if (Math.random() > 0.999) {
-      nei.type = 'tree';
-      nei.age = 0;
-    }
-  }
+  if (nei.type !== 'grass') return;
+
+  nei.type = 'tree';
+  nei.age = 0;
 }
 
 let changer1 = 0;
