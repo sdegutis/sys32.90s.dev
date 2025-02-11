@@ -155,11 +155,11 @@ crt.update = (t: number, delta: number) => {
       fn(x * 4, y * 4);
 
       // experiment with fog
-      if (y <= 11) {
+      if (x + y < 33) {
         ctx.fillStyle = '#000';
         ctx.fillRect(x * 4, y * 4, 4, 4);
       }
-      else if (y <= 15) {
+      else if (x + y < 34) {
         ctx.fillStyle = '#000b';
         ctx.fillRect(x * 4, y * 4, 4, 4);
       }
