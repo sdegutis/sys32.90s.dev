@@ -220,5 +220,20 @@ canvas.onmousedown = () => {
 };
 
 canvas.onmouseup = () => {
+  const x1 = crt.mouse.x;
+  const x2 = drag!.x;
+  const y1 = crt.mouse.y;
+  const y2 = drag!.y;
+
   drag = null;
+
+  const dx = Math.abs(x1 - x2);
+  const dy = Math.abs(y1 - y2);
+
+  if (dx < 2 && dy < 2) {
+    console.log('click');
+  }
+  else {
+    console.log('dragend')
+  }
 };
