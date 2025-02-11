@@ -7,6 +7,13 @@ type Tile = {
   age: number,
 };
 
+const drawings = {
+  tree: '[gfx]0808000000000b000000bbb000000500000000000000000000000000000000000000[/gfx]',
+  rock: '[gfx]08080000000000660000066500000655000000000000000000000000000000000000[/gfx]',
+  lawn: '[gfx]08083333000033330000333300003333000000000000000000000000000000000000[/gfx]',
+  gold: '[gfx]08080000000000a000000aaa00000a1a000000000000000000000000000000000000[/gfx]',
+};
+
 // 80 x 45
 
 const tiles: Tile[][] = [];
@@ -29,13 +36,24 @@ const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
   tree: (x, y) => {
     draw.grass(x, y);
 
-    ctx.fillStyle = COLORS[11];
-    ctx.fillRect(x + 1, y + 1, 1, 1);
-    ctx.fillRect(x, y + 2, 1, 1);
-    ctx.fillRect(x + 1, y + 2, 1, 1);
-    ctx.fillRect(x + 2, y + 2, 1, 1);
-    ctx.fillStyle = COLORS[5];
-    ctx.fillRect(x + 1, y + 3, 1, 1);
+    for (let yy = 0; yy < 4; yy++) {
+      for (let xx = 0; xx < 4; xx++) {
+        const i = 9 + (yy * 8) + xx;
+        const c = parseInt(drawings.tree[i], 16);
+        if (c > 0) {
+          ctx.fillStyle = COLORS[c];
+          ctx.fillRect(x + xx, y + yy, 1, 1);
+        }
+      }
+    }
+
+    // ctx.fillStyle = COLORS[11];
+    // ctx.fillRect(x + 1, y + 1, 1, 1);
+    // ctx.fillRect(x, y + 2, 1, 1);
+    // ctx.fillRect(x + 1, y + 2, 1, 1);
+    // ctx.fillRect(x + 2, y + 2, 1, 1);
+    // ctx.fillStyle = COLORS[5];
+    // ctx.fillRect(x + 1, y + 3, 1, 1);
   },
   farmer: (x, y) => {
     draw.grass(x, y);
