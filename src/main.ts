@@ -119,7 +119,9 @@ crt.update = (t: number, delta: number) => {
 
   // draw mouse
   ctx.fillStyle = '#0007';
-  ctx.fillRect(crt.mouse.x - 2, crt.mouse.y - 2, 5, 5);
+  // ctx.fillRect(crt.mouse.x - 2, crt.mouse.y - 2, 5, 5);
+  ctx.fillRect(crt.mouse.x - 2, crt.mouse.y, 5, 1);
+  ctx.fillRect(crt.mouse.x, crt.mouse.y - 2, 1, 5);
   ctx.fillStyle = '#fff';
   ctx.fillRect(crt.mouse.x, crt.mouse.y, 1, 1);
 
