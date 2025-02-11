@@ -1,4 +1,4 @@
-import { canvas, COLORS, ctx, openCRT, pset } from "./crt";
+import { canvas, COLORS, ctx, openCRT } from "./crt";
 import { print } from "./font";
 
 type Tile = {
@@ -21,6 +21,11 @@ for (let y = 0; y < 45; y++) {
 
 let left = false;
 let hand = false;
+
+function pset(c: number, x: number, y: number) {
+  ctx.fillStyle = COLORS[c];
+  ctx.fillRect(x, y, 1, 1);
+}
 
 const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
   grass: (x, y) => {
