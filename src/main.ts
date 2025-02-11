@@ -18,6 +18,9 @@ for (let y = 0; y < 45; y++) {
   }
 }
 
+let left = false;
+let hand = false;
+
 const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
   grass: (x, y) => {
     ctx.fillStyle = COLORS[3];
@@ -37,16 +40,20 @@ const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
   farmer: (x, y) => {
     draw.grass(x, y);
 
-    ctx.fillStyle = COLORS[15];
-    ctx.fillRect(x + 1, y, 1, 1);
-    ctx.fillStyle = COLORS[2];
-    ctx.fillRect(x + 1, y + 1, 1, 1);
-    ctx.fillStyle = COLORS[1];
-    ctx.fillRect(x + 1, y + 2, 1, 1);
+    let xx = 0;
+    if (left) xx = 1;
 
-    // hand
+    ctx.fillStyle = COLORS[15];
+    ctx.fillRect(xx + x + 1, y, 1, 1);
     ctx.fillStyle = COLORS[2];
-    ctx.fillRect(x + 2, y + 1, 1, 1);
+    ctx.fillRect(xx + x + 1, y + 1, 1, 1);
+    ctx.fillStyle = COLORS[1];
+    ctx.fillRect(xx + x + 1, y + 2, 1, 1);
+
+    if (hand) {
+      ctx.fillStyle = COLORS[2];
+      ctx.fillRect(x + 2 - xx, y + 1, 1, 1);
+    }
   },
 };
 
@@ -71,8 +78,24 @@ function maybeNewTree(x: number, y: number) {
   }
 }
 
+let changer1 = 0;
+let changer2 = 0;
+
 const crt = openCRT();
 crt.update = (t: number, delta: number) => {
+
+  changer1 += delta;
+  if (changer1 > 1000) {
+    changer1 = 0;
+    left = !left;
+  }
+
+  changer2 += delta;
+  if (changer2 > 800) {
+    changer2 = 0;
+    hand = !hand;
+  }
+
   // maybe grow trees
   for (let y = 0; y < 45; y++) {
     for (let x = 0; x < 80; x++) {
