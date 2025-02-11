@@ -1,5 +1,5 @@
-import { canvas, COLORS, ctx, openCRT } from "./crt";
-import { print } from "./font";
+import { canvas, COLORS, ctx, openCRT } from "./crt.js";
+import { print } from "./font.js";
 
 type Tile = {
   type: 'grass' | 'tree' | 'farmer' | 'gold' | 'rock',

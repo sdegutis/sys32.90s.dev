@@ -15,9 +15,6 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
-    "types": [
-      "@webgpu/types"
-    ],
     /* Linting */
     "strict": true,
     // "noUnusedLocals": true,
@@ -26,6 +23,6 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "src"
+    "site"
   ]
 }
