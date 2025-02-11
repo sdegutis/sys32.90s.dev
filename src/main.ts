@@ -9,25 +9,14 @@ const noise2D = createNoise2D(prng);
 
 crt.update = (t: number) => {
 
-  ctx.fillStyle = COLORS[2];
-  ctx.fillRect(0, 0, 320, 180);
-
   for (let y = 0; y < 180; y++) {
     for (let x = 0; x < 320; x++) {
-      const n = noise2D(x, y);
+      const n = noise2D(x / 40, y / 40);
 
-      ctx.fillStyle = COLORS[n > 0.5 ? 3 : 2];
+      ctx.fillStyle = COLORS[n > 0.5 ? 3 : 4];
       ctx.fillRect(x, y, 1, 1);
     }
   }
-
-
-
-
-  // ctx.fillStyle = COLORS[3];
-  // ctx.fillRect(1, 1, 3, 3);
-
-
 
   // draw mouse
 
