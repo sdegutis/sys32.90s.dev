@@ -141,8 +141,15 @@ crt.update = (t: number, delta: number) => {
       const fn = draw[tiles[y][x].type];
       fn(x * 4, y * 4);
 
-
-      // if ()
+      // experiment with fog
+      if (y <= 11) {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(x * 4, y * 4, 4, 4);
+      }
+      else if (y <= 15) {
+        ctx.fillStyle = '#000b';
+        ctx.fillRect(x * 4, y * 4, 4, 4);
+      }
     }
   }
 
