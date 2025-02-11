@@ -2,25 +2,25 @@ import { COLORS, ctx } from "./crt.js";
 
 const mapping = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_`;
 const src = `
- xxx     xx      xxx     xx      xxx     xxx     xxx     x x     xxx     xxx     x x     x       xxx     xxx     xxx     xxx    
- x x     xxx     x       x x     xx      xx      x       xxx      x       x      xx      x       xxx     x x     x x     x x    
- xxx     x x     x       x x     x       x       x x     x x      x       x      xx      x       x x     x x     x x     xx     
- x x     xxx     xxx     xx      xxx     x       xxx     x x     xxx     xx      x x     xxx     x x     x x     xxx     x      
-                                                                                                                                
- xxx     xxx     xxx     xxx     x x     x x     x x     x x     x x     xxx                             xx       x      xxx    
- x x     x x     x        x      x x     x x     x x      x      x x      xx                              x       x      x x    
- xxx     xx       xx      x      x x     x x     xxx      x       x      x                        x                             
-   x     x x     xxx      x      xxx      x      xxx     x x      x      xxx              x      xx               x        x    
-                                                                                                                                
- xx      xx      xxx     x x     xxx     xxx     xxx     xxx     xxx      x               x        x       x      x      x x    
-  x        x      xx     x x     xx      x         x     x x     x x     x x     xxx     xxx      x       x        x     x x    
-  x       x        x     xxx       x     xxx       x     xxx      xx     x x              x       x       x        x            
- xxx     xxx     xxx       x     xx      xxx       x     xxx     xx       x                      x         x      x             
-                                                                                                                                
- x        x       x      x x     xx      xx      xx       x      x                                                              
-                          x              x        x      x        x                                                             
- x        x      xxx     x x     xx      x        x       x      x                                                              
-         x        x                      xx      xx                      xxx                                                    
+ xxx     xx      xxx     xx      xxx     xxx     xxx     x x     xxx     xxx     x x     x       xxx     xxx     xxx     xxx   |
+ x x     xxx     x       x x     xx      xx      x       xxx      x       x      xx      x       xxx     x x     x x     x x   |
+ xxx     x x     x       x x     x       x       x x     x x      x       x      xx      x       x x     x x     x x     xx    |
+ x x     xxx     xxx     xx      xxx     x       xxx     x x     xxx     xx      x x     xxx     x x     x x     xxx     x     |
+                                                                                                                               |
+ xxx     xxx     xxx     xxx     x x     x x     x x     x x     x x     xxx                             xx       x      xxx   |
+ x x     x x     x        x      x x     x x     x x      x      x x      xx                              x       x      x x   |
+ xxx     xx       xx      x      x x     x x     xxx      x       x      x                        x                            |
+   x     x x     xxx      x      xxx      x      xxx     x x      x      xxx              x      xx               x        x   |
+                                                                                                                               |
+ xx      xx      xxx     x x     xxx     xxx     xxx     xxx     xxx      x               x        x       x      x      x x   |
+  x        x      xx     x x     xx      x         x     x x     x x     x x     xxx     xxx      x       x        x     x x   |
+  x       x        x     xxx       x     xxx       x     xxx      xx     x x              x       x       x        x           |
+ xxx     xxx     xxx       x     xx      xxx       x     xxx     xx       x                      x         x      x            |
+                                                                                                                               |
+ x        x       x      x x     xx      xx      xx       x      x                                                             |
+                          x              x        x      x        x                                                            |
+ x        x      xxx     x x     xx      x        x       x      x                                                             |
+         x        x                      xx      xx                      xxx                                                   |
 `.replaceAll(/\r?\n/g, '');
 const chars: Record<string, boolean[][]> = {};
 
