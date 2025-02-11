@@ -209,7 +209,7 @@ crt.update = (t: number, delta: number) => {
   ctx.strokeStyle = `#${hp___red}${hp_green}0`;
   ctx.strokeRect(x, y - 1.5, hp, 0);
 
-  const text = "hello world. well, this is actually *cool*";
+  const text = "gold:350  lumber:400";
   ctx.fillStyle = '#0007';
   ctx.fillRect(crt.mouse.x - 2, crt.mouse.y + 2, text.length * 4 + 3, 8);
   print(crt.mouse.x, crt.mouse.y + 4, text, 10);
