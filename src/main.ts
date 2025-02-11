@@ -4,16 +4,35 @@ import alea from 'alea';
 
 const crt = openCRT();
 
-const prng = alea('seed');
-const noise2D = createNoise2D(prng);
+const noise1 = createNoise2D(alea(7 + 0));
+const noise2 = createNoise2D(alea(7 + 1));
+const noise3 = createNoise2D(alea(7 + 2));
+
+const tiles: number[][] = [];
+for (let y = 0; y < 180; y++) {
+  const row: number[] = [];
+  tiles.push(row);
+  for (let x = 0; x < 320; x++) {
+    const n1 = noise1(x / 30, y / 30) + 1;
+    const n2 = noise2(x / 50, y / 50) + 1;
+    const n3 = noise3(x / 90, y / 90) + 1;
+    const n = (n1 + n2 + n3) / 3;
+
+    let c = 1;
+    if (n > 0.50) c = 12;
+    if (n > 0.70) c = 5;
+    if (n > 0.90) c = 3;
+    if (n > 1.25) c = 5;
+    if (n > 1.50) c = 6;
+
+    row.push(c);
+  }
+}
 
 crt.update = (t: number) => {
-
   for (let y = 0; y < 180; y++) {
     for (let x = 0; x < 320; x++) {
-      const n = noise2D(x / 40, y / 40);
-
-      ctx.fillStyle = COLORS[n > 0.5 ? 3 : 4];
+      ctx.fillStyle = COLORS[tiles[y][x]];
       ctx.fillRect(x, y, 1, 1);
     }
   }
