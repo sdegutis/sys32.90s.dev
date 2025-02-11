@@ -1,6 +1,10 @@
 export const canvas = document.querySelector('canvas')!;
 export const ctx = canvas.getContext('2d')!;
 
+canvas.oncontextmenu = (e) => {
+  e.preventDefault();
+};
+
 export function openCRT() {
   let SCALE = 1;
   new ResizeObserver(() => {

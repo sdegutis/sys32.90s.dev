@@ -90,7 +90,7 @@ tiles[30][42].type = 'rock';
 tiles[31][42].type = 'rock';
 tiles[31][43].type = 'rock';
 
-let drag: { x: number, y: number } | null = null;
+let drag: { x: number, y: number, b: number } | null = null;
 
 function maybeNewTree(x: number, y: number) {
   if (x < 0 || y < 0 || x >= 80 || y >= 45) return;
@@ -215,25 +215,21 @@ crt.update = (t: number, delta: number) => {
   print(crt.mouse.x, crt.mouse.y + 4, text, 10);
 };
 
-canvas.onmousedown = () => {
-  drag = { x: crt.mouse.x, y: crt.mouse.y };
+canvas.onmousedown = (e) => {
+  drag = { x: crt.mouse.x, y: crt.mouse.y, b: e.button };
 };
 
-canvas.onmouseup = () => {
-  const x1 = crt.mouse.x;
-  const x2 = drag!.x;
-  const y1 = crt.mouse.y;
-  const y2 = drag!.y;
+canvas.onmouseup = (e) => {
+  const dx = Math.abs(crt.mouse.x - drag!.x);
+  const dy = Math.abs(crt.mouse.y - drag!.y);
+  const isClick = dx < 2 && dy < 2;
 
-  drag = null;
-
-  const dx = Math.abs(x1 - x2);
-  const dy = Math.abs(y1 - y2);
-
-  if (dx < 2 && dy < 2) {
-    console.log('click');
+  if (isClick) {
+    console.log('click', e.button);
   }
   else {
-    console.log('dragend')
+    console.log('dragend', drag!.b)
   }
+
+  drag = null;
 };
