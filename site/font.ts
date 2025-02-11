@@ -13,8 +13,8 @@ const src = `
    x     x x     xxx      x      xxx      x      xxx     x x      x      xxx              x      xx               x        x   |
                                                                                                                                |
  xx      xx      xxx     x x     xxx     xxx     xxx     xxx     xxx      x               x        x       x      x      x x   |
-  x        x      xx     x x     xx      x         x     x x     x x     x x     xxx     xxx      x       x        x     x x   |
-  x       x        x     xxx       x     xxx       x     xxx      xx     x x              x       x       x        x           |
+  x        x      xx     x x     xx      x         x     xxx     x x     x x     xxx     xxx      x       x        x     x x   |
+  x       x        x     xxx       x     xxx       x     x x      xx     x x              x       x       x        x           |
  xxx     xxx     xxx       x     xx      xxx       x     xxx     xx       x                      x         x      x            |
                                                                                                                                |
  x        x       x      x x     xx      xx      xx       x      x                                                             |

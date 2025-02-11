@@ -208,7 +208,7 @@ ontick((delta: number) => {
   ctx.strokeStyle = `#${hp___red}${hp_green}0`;
   ctx.strokeRect(x, y - 1.5, hp, 0);
 
-  const text = " 350  400";
+  const text = " 350  840";
   ctx.fillStyle = '#0007';
   ctx.fillRect(mouse.x - 2, mouse.y + 2, text.length * 4 + 3, 8);
   print(mouse.x, mouse.y + 4, text, 10);
