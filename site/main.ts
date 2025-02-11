@@ -1,4 +1,4 @@
-import { canvas, COLORS, ctx, openCRT } from "./crt.js";
+import { canvas, COLORS, ctx, mouse, ontick } from "./crt.js";
 import { print } from "./font.js";
 
 type Tile = {
@@ -109,8 +109,7 @@ let changer2 = 0;
 let hp = 1;
 let changerhp = 0;
 
-const crt = openCRT();
-crt.update = (t: number, delta: number) => {
+ontick((delta: number) => {
 
   changerhp += delta;
   if (changerhp > 500) {
@@ -170,8 +169,8 @@ crt.update = (t: number, delta: number) => {
   if (drag) {
     const x1 = drag.x;
     const y1 = drag.y;
-    const x2 = crt.mouse.x;
-    const y2 = crt.mouse.y;
+    const x2 = mouse.x;
+    const y2 = mouse.y;
 
     const x = x1 < x2 ? x1 : x2;
     const y = y1 < y2 ? y1 : y2;
@@ -187,11 +186,11 @@ crt.update = (t: number, delta: number) => {
 
   // draw mouse
   ctx.fillStyle = '#0007';
-  // ctx.fillRect(crt.mouse.x - 2, crt.mouse.y - 2, 5, 5);
-  ctx.fillRect(crt.mouse.x - 2, crt.mouse.y, 5, 1);
-  ctx.fillRect(crt.mouse.x, crt.mouse.y - 2, 1, 5);
+  // ctx.fillRect(mouse.x - 2, mouse.y - 2, 5, 5);
+  ctx.fillRect(mouse.x - 2, mouse.y, 5, 1);
+  ctx.fillRect(mouse.x, mouse.y - 2, 1, 5);
   ctx.fillStyle = '#fff';
-  ctx.fillRect(crt.mouse.x, crt.mouse.y, 1, 1);
+  ctx.fillRect(mouse.x, mouse.y, 1, 1);
 
   let x = 40 * 4, y = 25 * 4;
 
@@ -211,20 +210,20 @@ crt.update = (t: number, delta: number) => {
 
   const text = " 350  400";
   ctx.fillStyle = '#0007';
-  ctx.fillRect(crt.mouse.x - 2, crt.mouse.y + 2, text.length * 4 + 3, 8);
-  print(crt.mouse.x, crt.mouse.y + 4, text, 10);
+  ctx.fillRect(mouse.x - 2, mouse.y + 2, text.length * 4 + 3, 8);
+  print(mouse.x, mouse.y + 4, text, 10);
 
-  draw.tree(crt.mouse.x, crt.mouse.y + 4);
-  draw.gold(crt.mouse.x + 5 * 4 - 1, crt.mouse.y + 4);
-};
+  draw.tree(mouse.x, mouse.y + 4);
+  draw.gold(mouse.x + 5 * 4 - 1, mouse.y + 4);
+});
 
 canvas.onmousedown = (e) => {
-  drag = { x: crt.mouse.x, y: crt.mouse.y, b: e.button };
+  drag = { x: mouse.x, y: mouse.y, b: e.button };
 };
 
 canvas.onmouseup = (e) => {
-  const dx = Math.abs(crt.mouse.x - drag!.x);
-  const dy = Math.abs(crt.mouse.y - drag!.y);
+  const dx = Math.abs(mouse.x - drag!.x);
+  const dy = Math.abs(mouse.y - drag!.y);
   const isClick = dx < 2 && dy < 2;
 
   if (isClick) {

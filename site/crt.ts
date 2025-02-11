@@ -1,50 +1,39 @@
 export const canvas = document.querySelector('canvas')!;
 export const ctx = canvas.getContext('2d')!;
 
-canvas.oncontextmenu = (e) => {
-  e.preventDefault();
+canvas.oncontextmenu = (e) => { e.preventDefault(); };
+
+let SCALE = 1;
+new ResizeObserver(() => {
+  const box = document.body.getBoundingClientRect();
+  let width = 320;
+  let height = 180;
+  SCALE = 1;
+  while (width + 320 <= box.width && height + 180 <= box.height) {
+    width += 320;
+    height += 180;
+    SCALE++;
+  }
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
+}).observe(document.body);
+
+export const mouse = { x: 0, y: 0 };
+canvas.onmousemove = (e) => {
+  mouse.x = Math.round((e.offsetX - SCALE / 2) / SCALE);
+  mouse.y = Math.round((e.offsetY - SCALE / 2) / SCALE);
 };
 
-export function openCRT() {
-  let SCALE = 1;
-  new ResizeObserver(() => {
-    const box = document.body.getBoundingClientRect();
-    let width = 320;
-    let height = 180;
-    SCALE = 1;
-    while (width + 320 <= box.width && height + 180 <= box.height) {
-      width += 320;
-      height += 180;
-      SCALE++;
+export function ontick(fn: (delta: number) => void) {
+  let last = +document.timeline.currentTime!;
+  function update(t: number) {
+    if (t - last >= 30) {
+      fn(t - last);
+      last = t;
     }
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
-  }).observe(document.body);
-
-  const mouse = { x: 0, y: 0 };
-  canvas.onmousemove = (e) => {
-    mouse.x = Math.round((e.offsetX - SCALE / 2) / SCALE);
-    mouse.y = Math.round((e.offsetY - SCALE / 2) / SCALE);
-  };
-
-  const crt = {
-    update: (time: number, delta: number) => { },
-    mouse,
-  };
-
-  let from = +document.timeline.currentTime!;
-  const step = () => {
-    requestAnimationFrame(t => {
-      if (t - from >= 30) {
-        crt.update(t, t - from);
-        from = t;
-      }
-      step();
-    });
-  };
-  step();
-
-  return crt;
+    requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
 }
 
 export const COLORS = [
