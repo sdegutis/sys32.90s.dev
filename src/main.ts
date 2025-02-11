@@ -60,39 +60,35 @@ tiles[25][40].type = 'farmer';
 
 let drag: { x: number, y: number } | null = null;
 
+function maybeNewTree(x: number, y: number) {
+  if (x < 0 || y < 0 || x >= 80 || y >= 45) return;
+  const nei = tiles[y][x];
+  if (nei.type === 'grass') {
+    if (Math.random() > 0.999) {
+      nei.type = 'tree';
+      nei.age = 0;
+    }
+  }
+}
+
 const crt = openCRT();
 crt.update = (t: number, delta: number) => {
-  // // maybe grow trees
-  // for (let y = 0; y < 180; y++) {
-  //   for (let x = 0; x < 320; x++) {
-  //     const tile = tiles[y][x];
-  //     if (tile.type === 'tree') {
-  //       if (tile.age > 1000) {
-  //         tile.age = 0;
-
-  //         for (let yy = 0; yy < 3; yy += 2) {
-  //           for (let xx = 0; xx < 3; xx += 2) {
-  //             const x2 = x + xx - 1;
-  //             const y2 = y + yy - 1;
-
-  //             if (x2 >= 0 && y2 >= 0 && x2 < 320 && y2 < 180) {
-  //               const nei = tiles[y2][x2];
-
-  //               if (nei.type === 'grass') {
-  //                 if (Math.random() > 0.99) {
-  //                   nei.type = 'tree';
-  //                   nei.age = 0;
-  //                 }
-  //               }
-  //             }
-
-  //           }
-  //         }
-  //       }
-  //       tile.age += delta;
-  //     }
-  //   }
-  // }
+  // maybe grow trees
+  for (let y = 0; y < 45; y++) {
+    for (let x = 0; x < 80; x++) {
+      const tile = tiles[y][x];
+      if (tile.type === 'tree') {
+        if (tile.age > 1000) {
+          tile.age = 0;
+          maybeNewTree(x + 1, y);
+          maybeNewTree(x - 1, y);
+          maybeNewTree(x, y + 1);
+          maybeNewTree(x, y - 1);
+        }
+        tile.age += delta;
+      }
+    }
+  }
 
   // draw each tile
   for (let y = 0; y < 45; y++) {
