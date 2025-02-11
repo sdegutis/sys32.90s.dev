@@ -204,7 +204,7 @@ crt.update = (t: number, delta: number) => {
   ctx.strokeStyle = `#${hp___red}${hp_green}0`;
   ctx.strokeRect(x, y - 1.5, hp, 0);
 
-  print(crt.mouse.x, crt.mouse.y + 4, "hello world. well, this is actually *cool*!");
+  print(crt.mouse.x, crt.mouse.y + 4, "hello world. well, this is actually *cool*!", 10);
 };
 
 canvas.onmousedown = () => {

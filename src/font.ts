@@ -24,7 +24,7 @@ for (let i = 0; i < mapping.length; i++) {
   }
 }
 
-export function print(x: number, y: number, text: string) {
+export function print(x: number, y: number, text: string, col = 7) {
   text = text.toLowerCase();
 
   for (let i = 0; i < text.length; i++) {
@@ -36,8 +36,7 @@ export function print(x: number, y: number, text: string) {
         const px = x + (i * 4) + xx;
         const py = y + yy;
 
-        const col = map[yy][xx];
-        if (col > 0) {
+        if (map[yy][xx] > 0) {
           pset(col, px, py);
         }
       }
