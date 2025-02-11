@@ -33,7 +33,7 @@ const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
     ctx.fillRect(x, y, 4, 4);
   },
   gold: (x, y) => {
-    draw.grass(x, y);
+    // draw.grass(x, y);
     pset(6, x + 2, y + 1);
     pset(6, x + 1, y + 2);
     pset(6, x + 1, y + 3);
@@ -54,7 +54,7 @@ const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
     pset(5, x + 3, y + 2);
   },
   tree: (x, y) => {
-    draw.grass(x, y);
+    // draw.grass(x, y);
     pset(11, x + 1, y + 1);
     pset(11, x, y + 2);
     pset(11, x + 1, y + 2);
@@ -209,10 +209,13 @@ crt.update = (t: number, delta: number) => {
   ctx.strokeStyle = `#${hp___red}${hp_green}0`;
   ctx.strokeRect(x, y - 1.5, hp, 0);
 
-  const text = "gold:350  lumber:400";
+  const text = " 350  400";
   ctx.fillStyle = '#0007';
   ctx.fillRect(crt.mouse.x - 2, crt.mouse.y + 2, text.length * 4 + 3, 8);
   print(crt.mouse.x, crt.mouse.y + 4, text, 10);
+
+  draw.tree(crt.mouse.x, crt.mouse.y + 4);
+  draw.gold(crt.mouse.x + 5 * 4 - 1, crt.mouse.y + 4);
 };
 
 canvas.onmousedown = (e) => {
