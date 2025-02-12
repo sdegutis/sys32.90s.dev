@@ -86,18 +86,17 @@ interface Point {
   y: number;
 }
 
-function fillPoint(p: Point, c: string) {
-  context.fillStyle = c;
-  context.fillRect(p.x, p.y, 1, 1);
-}
-
-
-
 interface Rect {
   x: number;
   y: number;
   w: number;
   h: number;
+}
+
+
+function fillPoint(p: Point, c: string) {
+  context.fillStyle = c;
+  context.fillRect(p.x, p.y, 1, 1);
 }
 
 function strokeRect(r: Rect, c: string) {
@@ -109,6 +108,7 @@ function fillRect(r: Rect, c: string) {
   context.fillStyle = c;
   context.fillRect(r.x, r.y, r.w, r.h);
 }
+
 
 function rectContainsPoint(r: Rect, p: Point) {
   return (
