@@ -1,1 +1,1 @@
-import './mapmaker.js';
+import './uitest.js';
