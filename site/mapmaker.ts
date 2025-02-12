@@ -73,36 +73,53 @@ for (let y = 10; y < 20; y++) {
   }
 }
 
+let cx = 0;
+let cy = 0;
+
+let dragx = 0;
+let dragy = 0;
+
 callbacks.ontick = (delta: number) => {
+  context.clearRect(0, 0, 320, 180);
+
   // draw each tile
-  for (let y = 0; y < 45; y++) {
-    for (let x = 0; x < 80; x++) {
+  for (let y = 0; y < mapData.width; y++) {
+    for (let x = 0; x < mapData.height; x++) {
       const i = y * mapData.width + x;
-      drawTerrain[mapData.terrain[i]](x * 4, y * 4);
+      const px = dragx + cx + x * 4;
+      const py = dragy + cy + y * 4;
+
+      drawTerrain[mapData.terrain[i]](px, py);
       const unit = mapData.units[i];
       if (unit > 0) {
-        drawUnit[unit - 1](x * 4, y * 4);
+        drawUnit[unit - 1](px, py);
       }
     }
   }
 
   // draw mouse selection
   if (mouse.drag) {
-    const x1 = mouse.drag.x;
-    const y1 = mouse.drag.y;
-    const x2 = mouse.x;
-    const y2 = mouse.y;
+    if (mouse.button > 0) {
+      dragx = mouse.x - mouse.drag.x;
+      dragy = mouse.y - mouse.drag.y;
+    }
+    else {
+      const x1 = mouse.drag.x;
+      const y1 = mouse.drag.y;
+      const x2 = mouse.x;
+      const y2 = mouse.y;
 
-    const x = x1 < x2 ? x1 : x2;
-    const y = y1 < y2 ? y1 : y2;
-    const w = x1 < x2 ? x2 - x1 : x1 - x2;
-    const h = y1 < y2 ? y2 - y1 : y1 - y2;
+      const x = x1 < x2 ? x1 : x2;
+      const y = y1 < y2 ? y1 : y2;
+      const w = x1 < x2 ? x2 - x1 : x1 - x2;
+      const h = y1 < y2 ? y2 - y1 : y1 - y2;
 
-    context.fillStyle = mouse.drag.b === 0 ? '#00f3' : '#f003';
-    context.fillRect(x, y, w + 1, h + 1);
+      context.fillStyle = mouse.button === 0 ? '#00f3' : '#f003';
+      context.fillRect(x, y, w + 1, h + 1);
 
-    context.strokeStyle = mouse.drag.b === 0 ? '#00f3' : '#f003';
-    context.strokeRect(x + .5, y + .5, w, h);
+      context.strokeStyle = mouse.button === 0 ? '#00f3' : '#f003';
+      context.strokeRect(x + .5, y + .5, w, h);
+    }
   }
 
   // draw mouse
@@ -111,6 +128,14 @@ callbacks.ontick = (delta: number) => {
   context.fillRect(mouse.x, mouse.y - 2, 1, 5);
   context.fillStyle = '#fff';
   context.fillRect(mouse.x, mouse.y, 1, 1);
+};
+
+callbacks.ondragend = () => {
+  cx += dragx;
+  cy += dragy;
+
+  dragx = 0;
+  dragy = 0;
 };
 
 function pset(c: number, x: number, y: number) {

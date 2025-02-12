@@ -175,10 +175,10 @@ callbacks.ontick = (delta: number) => {
     const w = x1 < x2 ? x2 - x1 : x1 - x2;
     const h = y1 < y2 ? y2 - y1 : y1 - y2;
 
-    context.fillStyle = mouse.drag.b === 0 ? '#00f3' : '#f003';
+    context.fillStyle = mouse.button === 0 ? '#00f3' : '#f003';
     context.fillRect(x, y, w + 1, h + 1);
 
-    context.strokeStyle = mouse.drag.b === 0 ? '#00f3' : '#f003';
+    context.strokeStyle = mouse.button === 0 ? '#00f3' : '#f003';
     context.strokeRect(x + .5, y + .5, w, h);
   }
 

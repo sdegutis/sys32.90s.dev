@@ -28,7 +28,7 @@ export const mouse = {
   x: 0,
   y: 0,
   button: 0,
-  drag: null as { x: number, y: number, b: number } | null,
+  drag: null as { x: number, y: number } | null,
 };
 
 canvas.onmousemove = (e) => {
@@ -37,20 +37,18 @@ canvas.onmousemove = (e) => {
 };
 
 canvas.onmousedown = (e) => {
-  mouse.drag = { x: mouse.x, y: mouse.y, b: e.button };
+  mouse.drag = { x: mouse.x, y: mouse.y };
+  mouse.button = e.button;
 };
 
 canvas.onmouseup = (e) => {
   const dx = Math.abs(mouse.x - mouse.drag!.x);
   const dy = Math.abs(mouse.y - mouse.drag!.y);
-  const isClick = dx < 2 && dy < 2;
 
-  if (isClick) {
-    mouse.button = e.button;
+  if (dx < 2 && dy < 2) {
     callbacks.onclick();
   }
   else {
-    mouse.button = mouse.drag!.b;
     callbacks.ondragend();
   }
 
