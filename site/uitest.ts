@@ -188,6 +188,24 @@ class Dragger {
 
 }
 
+class Box extends UIElement {
+
+  dragger: Dragger | null = null;
+
+  tick(delta: number): void {
+    fillRect(this.rect, '#ff0');
+    super.tick(delta);
+  }
+
+  onMouseDown(): void {
+    this.dragger = new Dragger(this)
+  }
+
+  onMouseUp(): void {
+    this.dragger = null;
+  }
+
+}
 
 class Button extends UIElement {
 
@@ -226,11 +244,14 @@ class Button extends UIElement {
 
 }
 
-const b = new Button({ x: 10, y: 10, w: 20, h: 20 });
-root.children.push(b);
+const box = new Box({ x: 10, y: 10, w: 20, h: 20 });
+root.children.push(box);
+
+const b = new Button({ x: 10, y: 10, w: 5, h: 5 });
+box.children.push(b);
 
 b.draw = () => {
-  let col = '#00f';
+  let col = '#00f3';
   if (b.inside) col = '#0f0';
   if (b.dragger) col = '#f00';
   if (b.clicking) col = '#fff';
@@ -238,7 +259,7 @@ b.draw = () => {
   camera.x = b.rect.x;
   camera.y = b.rect.y;
 
-  strokeRect(0, 0, b.rect.w - 1, b.rect.h - 1, col);
+  strokeRect(0, 0, b.rect.w, b.rect.h, col);
 
   camera.x = 0;
   camera.y = 0;
