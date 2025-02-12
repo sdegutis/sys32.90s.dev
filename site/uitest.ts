@@ -150,8 +150,8 @@ requestAnimationFrame(update);
 let lastElement: UIElement | null = null;
 
 canvas.onmousedown = (e) => {
-  mouse.x = Math.round(e.offsetX / SCALE);
-  mouse.y = Math.round(e.offsetY / SCALE);
+  mouse.x = Math.floor(e.offsetX / SCALE);
+  mouse.y = Math.floor(e.offsetY / SCALE);
   root.findElementAt(mouse)?.onMouseDown();
 };
 
@@ -160,8 +160,8 @@ canvas.onmouseup = (e) => {
 };
 
 canvas.onmousemove = (e) => {
-  mouse.x = Math.round(e.offsetX / SCALE);
-  mouse.y = Math.round(e.offsetY / SCALE);
+  mouse.x = Math.floor(e.offsetX / SCALE);
+  mouse.y = Math.floor(e.offsetY / SCALE);
   const current = root.findElementAt(mouse);
 
   if (lastElement !== current) {
