@@ -138,7 +138,7 @@ function update(t: number) {
 }
 requestAnimationFrame(update);
 
-let lastElement: UIElement | null = null;
+let lastHovered: UIElement | null = null;
 
 canvas.onmousedown = (e) => {
   mouse.point.x = Math.floor(e.offsetX / SCALE);
@@ -153,15 +153,15 @@ canvas.onmouseup = (e) => {
 canvas.onmousemove = (e) => {
   mouse.point.x = Math.floor(e.offsetX / SCALE);
   mouse.point.y = Math.floor(e.offsetY / SCALE);
-  const current = root.findElementAt(mouse.point);
+  const hoveredOver = root.findElementAt(mouse.point);
 
-  if (lastElement !== current) {
-    lastElement?.onMouseExit();
-    current?.onMouseEnter();
-    lastElement = current;
+  if (lastHovered !== hoveredOver) {
+    lastHovered?.onMouseExit();
+    hoveredOver?.onMouseEnter();
+    lastHovered = hoveredOver;
   }
 
-  current?.onMouseMove();
+  hoveredOver?.onMouseMove();
 };
 
 
