@@ -3,19 +3,13 @@ const context = canvas.getContext('2d')!;
 
 canvas.oncontextmenu = (e) => { e.preventDefault(); };
 
-let SCALE = 1;
 new ResizeObserver(() => {
   const box = document.body.getBoundingClientRect();
   let width = 320;
   let height = 180;
-  SCALE = 1;
-  while (width + 320 <= box.width && height + 180 <= box.height) {
-    width += 320;
-    height += 180;
-    SCALE++;
-  }
-  canvas.style.width = width + 'px';
-  canvas.style.height = height + 'px';
+  let scale = 1;
+  while ((width += 320) <= box.width && (height += 180) <= box.height) scale++;
+  canvas.style.transform = `scale(${scale})`;
 }).observe(document.body);
 
 
@@ -146,8 +140,8 @@ let lastHovered: UIElement | null = null;
 
 canvas.onmousedown = (e) => {
   mouse.button = e.button;
-  mouse.point.x = Math.floor(e.offsetX / SCALE);
-  mouse.point.y = Math.floor(e.offsetY / SCALE);
+  mouse.point.x = Math.floor(e.offsetX);
+  mouse.point.y = Math.floor(e.offsetY);
   root.findElementAt(mouse.point)?.onMouseDown();
 };
 
@@ -156,8 +150,8 @@ canvas.onmouseup = (e) => {
 };
 
 canvas.onmousemove = (e) => {
-  mouse.point.x = Math.floor(e.offsetX / SCALE);
-  mouse.point.y = Math.floor(e.offsetY / SCALE);
+  mouse.point.x = Math.floor(e.offsetX);
+  mouse.point.y = Math.floor(e.offsetY);
   const hoveredOver = root.findElementAt(mouse.point);
 
   if (lastHovered !== hoveredOver) {
