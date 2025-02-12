@@ -1,0 +1,177 @@
+const canvas = document.querySelector('canvas')!;
+const context = canvas.getContext('2d')!;
+
+
+
+
+
+export class Box {
+
+  children: Box[] = [];
+
+  constructor(
+    public rect: Rect,
+  ) { }
+
+  tick(delta: number) {
+    for (let i = 0; i < this.children.length; i++) {
+      this.children[i].tick(delta);
+    }
+  }
+
+  draw() {
+    for (let i = 0; i < this.children.length; i++) {
+      const child = this.children[i];
+      camera.x += child.rect.x;
+      camera.y += child.rect.y;
+      child.draw();
+      camera.x -= child.rect.x;
+      camera.y -= child.rect.y;
+    }
+  }
+
+  onMouseDown() { }
+  onMouseUp() { }
+  onMouseExit() { }
+  onMouseEnter() { }
+
+  findElementAt(p: Point): Box | null {
+    p.x -= this.rect.x;
+    p.y -= this.rect.y;
+    for (let i = 0; i < this.children.length; i++) {
+      const found = this.children[i].findElementAt(p);
+      if (found) return found;
+    }
+    p.x += this.rect.x;
+    p.y += this.rect.y;
+    if (rectContainsPoint(this.rect, p)) return this;
+    return null;
+  }
+
+}
+
+
+
+
+
+export const camera: Point = { x: 0, y: 0 };
+
+export const root = new Box({ x: 0, y: 0, w: 320, h: 180 });
+
+export const keys: Record<string, boolean> = {};
+
+export const mouse = {
+  point: { x: 0, y: 0 },
+  button: 0,
+};
+
+
+
+
+new ResizeObserver(() => {
+  const box = document.body.getBoundingClientRect();
+  let width = 320;
+  let height = 180;
+  let scale = 1;
+  while ((width += 320) <= box.width && (height += 180) <= box.height) scale++;
+  canvas.style.transform = `scale(${scale})`;
+}).observe(document.body);
+
+canvas.onkeydown = (e) => {
+  keys[e.key] = true;
+};
+
+canvas.onkeyup = (e) => {
+  keys[e.key] = false;
+};
+
+let _onMouseMove: (() => void) | null = null;
+export function onMouseMove(fn: () => void) {
+  _onMouseMove = fn;
+}
+
+canvas.onmousedown = (e) => {
+  mouse.button = e.button;
+  mouse.point.x = Math.floor(e.offsetX);
+  mouse.point.y = Math.floor(e.offsetY);
+  root.findElementAt({ ...mouse.point })?.onMouseDown();
+};
+
+canvas.onmouseup = (e) => {
+  _onMouseMove = null;
+  root.findElementAt({ ...mouse.point })?.onMouseUp();
+};
+
+let lastHovered: Box | null = null;
+
+canvas.onmousemove = (e) => {
+  mouse.point.x = Math.floor(e.offsetX);
+  mouse.point.y = Math.floor(e.offsetY);
+  const hoveredOver = root.findElementAt({ ...mouse.point });
+
+  if (lastHovered !== hoveredOver) {
+    lastHovered?.onMouseExit();
+    hoveredOver?.onMouseEnter();
+    lastHovered = hoveredOver;
+  }
+
+  _onMouseMove?.();
+};
+
+canvas.oncontextmenu = (e) => { e.preventDefault(); };
+
+let last = +document.timeline.currentTime!;
+function update(t: number) {
+  if (t - last >= 30) {
+    context.clearRect(0, 0, 320, 180);
+    const delta = t - last;
+    last = t;
+    root.tick(delta);
+    root.draw();
+  }
+  requestAnimationFrame(update);
+}
+requestAnimationFrame(update);
+
+
+
+
+
+
+export function pset(p: Point, c: string) {
+  rectfill(p.x, p.y, 1, 1, c);
+}
+
+export function drawrect(x: number, y: number, w: number, h: number, c: string) {
+  context.strokeStyle = c;
+  context.strokeRect(x + 0.5 + camera.x, y + 0.5 + camera.y, w - 1, h - 1);
+}
+
+export function rectfill(x: number, y: number, w: number, h: number, c: string) {
+  context.fillStyle = c;
+  context.fillRect(x + camera.x, y + camera.y, w, h);
+}
+
+
+export function rectContainsPoint(r: Rect, p: Point) {
+  return (
+    p.x >= r.x &&
+    p.y >= r.y &&
+    p.x < r.x + r.w &&
+    p.y < r.y + r.h);
+}
+
+
+
+
+export interface Point {
+  x: number;
+  y: number;
+}
+
+export interface Rect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
