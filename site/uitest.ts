@@ -46,6 +46,8 @@ class UIElement {
     }
   }
 
+  draw() { }
+
   onMouseDown() { }
   onMouseMove() { }
   onMouseUp() { }
@@ -133,6 +135,7 @@ function update(t: number) {
     const delta = t - last;
     last = t;
     root.tick(delta);
+    root.draw();
   }
   requestAnimationFrame(update);
 }
@@ -190,27 +193,69 @@ class Dragger {
 }
 
 
+// class Button extends UIElement {
+
+//   dragger: Dragger | null = null;
+
+//   tick(delta: number): void {
+//     strokeRect(this.rect, '#f00');
+//   }
+
+//   onMouseDown(): void {
+//     if (keys[' ']) this.dragger = new Dragger(this);
+//   }
+
+//   onMouseMove(): void {
+//     this.dragger?.update();
+//   }
+
+//   onMouseUp(): void {
+//     this.dragger = null;
+//   }
+
+// }
+
 class Button extends UIElement {
 
-  dragger: Dragger | null = null;
+  inside = false;
+  clicking = false;
 
   tick(delta: number): void {
-    strokeRect(this.rect, '#f00');
+    this.draw();
+  }
+
+  onMouseEnter(): void {
+    this.inside = true;
+  }
+
+  onMouseExit(): void {
+    this.inside = false;
+    this.clicking = false;
   }
 
   onMouseDown(): void {
-    if (keys[' ']) this.dragger = new Dragger(this);
-  }
-
-  onMouseMove(): void {
-    this.dragger?.update();
+    this.clicking = true;
   }
 
   onMouseUp(): void {
-    this.dragger = null;
+    if (this.inside && this.clicking) {
+      this.onClick();
+    }
+    this.clicking = false;
   }
+
+  onClick() { }
+  draw() { }
 
 }
 
 const b = new Button({ x: 10, y: 10, w: 20, h: 20 });
 root.children.push(b);
+
+b.draw = () => {
+  strokeRect(b.rect, b.inside ? b.clicking ? '#f00' : '#0f0' : '#00f');
+}
+
+b.onClick = () => {
+  console.log('clicked');
+};
