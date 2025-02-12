@@ -244,13 +244,7 @@ class Button extends UIElement {
     if (b.dragger) col = '#f00';
     if (b.clicking) col = '#fff';
 
-    camera.x = b.rect.x;
-    camera.y = b.rect.y;
-
     rectline(0, 0, b.rect.w, b.rect.h, col);
-
-    camera.x = 0;
-    camera.y = 0;
 
     this.drawEnd();
   }
