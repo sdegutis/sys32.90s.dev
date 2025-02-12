@@ -20,6 +20,16 @@ new ResizeObserver(() => {
 
 
 
+export const keys: Record<string, boolean> = {};
+
+canvas.onkeydown = (e) => {
+  keys[e.key] = true;
+};
+
+canvas.onkeyup = (e) => {
+  keys[e.key] = false;
+};
+
 
 
 class UIElement {
@@ -188,7 +198,7 @@ class Button extends UIElement {
   }
 
   onMouseDown(): void {
-    this.dragger = new Dragger(this);
+    if (keys[' ']) this.dragger = new Dragger(this);
   }
 
   onMouseMove(): void {
