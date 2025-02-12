@@ -48,7 +48,7 @@ class UIElement {
       const found = child.findElementAt(p);
       if (found) return found;
     }
-    if (this.rect.containsPoint(p)) return this;
+    if (rectContainsPoint(this.rect, p)) return this;
     return null;
   }
 
@@ -59,80 +59,63 @@ class Root extends UIElement {
   showMouse = true;
 
   constructor() {
-    super(Rect.from(0, 0, 320, 180));
+    super({ x: 0, y: 0, w: 320, h: 180 });
   }
 
   override tick(delta: number): void {
     super.tick(delta);
-    if (this.showMouse) mouse.fill('#00f');
+    if (this.showMouse) fillPoint(mouse, '#00f');
   }
 
 }
 
-class Point {
 
-  constructor(
-    public x: number,
-    public y: number,
-  ) { }
 
-  fill(c: string) {
-    context.fillStyle = c;
-    context.fillRect(this.x, this.y, 1, 1);
-  }
 
-  diff(other: Point) {
-    return new Point(this.x - other.x, this.y - other.y);
-  }
-
-  copy() {
-    return new Point(this.x, this.y);
-  }
-
-  add(other: Point) {
-    this.x += other.x;
-    this.y += other.y;
-  }
-
+interface Point {
+  x: number;
+  y: number;
 }
 
-class Rect {
-
-  static from(x: number, y: number, w: number, h: number) {
-    return new Rect(new Point(x, y), w, h);
-  }
-
-  constructor(
-    public p: Point,
-    public w: number,
-    public h: number,
-  ) { }
-
-  stroke(c: string) {
-    context.strokeStyle = c;
-    context.strokeRect(this.p.x + 0.5, this.p.y + 0.5, this.w - 1, this.h - 1);
-  }
-
-  fill(c: string) {
-    context.fillStyle = c;
-    context.fillRect(this.p.x, this.p.y, this.w, this.h);
-  }
-
-  containsPoint(p: Point) {
-    return (
-      p.x >= this.p.x &&
-      p.y >= this.p.y &&
-      p.x < this.p.x + this.w &&
-      p.y < this.p.y + this.h);
-  }
-
-  moveBy(p: Point) {
-    this.p.add(p);
-  }
-
+function fillPoint(p: Point, c: string) {
+  context.fillStyle = c;
+  context.fillRect(p.x, p.y, 1, 1);
 }
 
-const mouse = new Point(0, 0);
+function diffPoint(p: Point, other: Point) {
+  return { x: p.x - other.x, y: p.y - other.y };
+}
+
+
+
+interface Rect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+function strokeRect(r: Rect, c: string) {
+  context.strokeStyle = c;
+  context.strokeRect(r.x + 0.5, r.y + 0.5, r.w - 1, r.h - 1);
+}
+
+function fillRect(r: Rect, c: string) {
+  context.fillStyle = c;
+  context.fillRect(r.x, r.y, r.w, r.h);
+}
+
+function rectContainsPoint(r: Rect, p: Point) {
+  return (
+    p.x >= r.x &&
+    p.y >= r.y &&
+    p.x < r.x + r.w &&
+    p.y < r.y + r.h);
+}
+
+
+
+const mouse = { x: 0, y: 0 };
 const root = new Root();
 
 let last = +document.timeline.currentTime!;
@@ -185,11 +168,11 @@ class Button extends UIElement {
   over = false;
 
   tick(delta: number): void {
-    this.rect.stroke(this.over ? '#f00' : '#0f0');
+    strokeRect(this.rect, this.over ? '#f00' : '#0f0');
   }
 
   onMouseDown(): void {
-    this.dragStart = mouse.copy();
+    this.dragStart = { ...mouse };
   }
 
   onMouseEnter(): void {
@@ -209,13 +192,14 @@ class Button extends UIElement {
         // this.rect.moveBy()
       }
 
-      this.dragOffset = mouse.diff(this.dragStart);
+      this.dragOffset = diffPoint(mouse, this.dragStart);
     }
   }
 
   onMouseUp(): void {
     if (this.dragOffset) {
-      this.rect.moveBy(this.dragOffset);
+      this.rect.x += this.dragOffset.x;
+      this.rect.y += this.dragOffset.y;
     }
 
     this.dragStart = null;
@@ -224,5 +208,5 @@ class Button extends UIElement {
 
 }
 
-const b = new Button(Rect.from(10, 10, 20, 20));
+const b = new Button({ x: 10, y: 10, w: 20, h: 20 });
 root.children.push(b);
