@@ -1,31 +1,6 @@
 const canvas = document.querySelector('canvas')!;
 const context = canvas.getContext('2d')!;
 
-canvas.oncontextmenu = (e) => { e.preventDefault(); };
-
-new ResizeObserver(() => {
-  const box = document.body.getBoundingClientRect();
-  let width = 320;
-  let height = 180;
-  let scale = 1;
-  while ((width += 320) <= box.width && (height += 180) <= box.height) scale++;
-  canvas.style.transform = `scale(${scale})`;
-}).observe(document.body);
-
-
-
-export const keys: Record<string, boolean> = {};
-
-canvas.onkeydown = (e) => {
-  keys[e.key] = true;
-};
-
-canvas.onkeyup = (e) => {
-  keys[e.key] = false;
-};
-
-
-
 class Box {
 
   children: Box[] = [];
@@ -71,84 +46,47 @@ class Box {
 
 }
 
-class Root extends Box {
-
-  showMouse = true;
-
-  constructor() {
-    super({ x: 0, y: 0, w: 320, h: 180 });
-  }
-
-  draw(): void {
-    super.draw();
-    if (this.showMouse) pset(mouse.point, '#00f');
-  }
-
-}
-
-
-
-
-interface Point {
-  x: number;
-  y: number;
-}
-
-interface Rect {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
+const root = new Box({ x: 0, y: 0, w: 320, h: 180 });
 
 const camera: Point = { x: 0, y: 0 };
 
-function pset(p: Point, c: string) {
-  rectfill(p.x, p.y, 1, 1, c);
-}
-
-function drawrect(x: number, y: number, w: number, h: number, c: string) {
-  context.strokeStyle = c;
-  context.strokeRect(x + 0.5 + camera.x, y + 0.5 + camera.y, w - 1, h - 1);
-}
-
-function rectfill(x: number, y: number, w: number, h: number, c: string) {
-  context.fillStyle = c;
-  context.fillRect(x + camera.x, y + camera.y, w, h);
-}
-
-
-function rectContainsPoint(r: Rect, p: Point) {
-  return (
-    p.x >= r.x &&
-    p.y >= r.y &&
-    p.x < r.x + r.w &&
-    p.y < r.y + r.h);
-}
-
-
+const keys: Record<string, boolean> = {};
 
 const mouse = {
   point: { x: 0, y: 0 },
   button: 0,
 };
 
-const root = new Root();
 
-let last = +document.timeline.currentTime!;
-function update(t: number) {
-  if (t - last >= 30) {
-    context.clearRect(0, 0, 320, 180);
-    const delta = t - last;
-    last = t;
-    root.tick(delta);
-    root.draw();
-  }
-  requestAnimationFrame(update);
-}
-requestAnimationFrame(update);
 
-let lastHovered: Box | null = null;
+
+
+
+
+
+
+
+
+
+
+
+
+new ResizeObserver(() => {
+  const box = document.body.getBoundingClientRect();
+  let width = 320;
+  let height = 180;
+  let scale = 1;
+  while ((width += 320) <= box.width && (height += 180) <= box.height) scale++;
+  canvas.style.transform = `scale(${scale})`;
+}).observe(document.body);
+
+canvas.onkeydown = (e) => {
+  keys[e.key] = true;
+};
+
+canvas.onkeyup = (e) => {
+  keys[e.key] = false;
+};
 
 let onMouseMove: (() => void) | null = null;
 
@@ -164,6 +102,8 @@ canvas.onmouseup = (e) => {
   root.findElementAt({ ...mouse.point })?.onMouseUp();
 };
 
+let lastHovered: Box | null = null;
+
 canvas.onmousemove = (e) => {
   mouse.point.x = Math.floor(e.offsetX);
   mouse.point.y = Math.floor(e.offsetY);
@@ -177,6 +117,47 @@ canvas.onmousemove = (e) => {
 
   onMouseMove?.();
 };
+
+canvas.oncontextmenu = (e) => { e.preventDefault(); };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let last = +document.timeline.currentTime!;
+function update(t: number) {
+  if (t - last >= 30) {
+    context.clearRect(0, 0, 320, 180);
+    const delta = t - last;
+    last = t;
+    root.tick(delta);
+    root.draw();
+  }
+  requestAnimationFrame(update);
+}
+requestAnimationFrame(update);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -282,3 +263,54 @@ box2.children.push(button);
 button.onClick = () => {
   console.log('clicked');
 };
+
+
+const cursor = new Box({ x: 0, y: 0, w: 320, h: 180 });
+cursor.draw = () => pset(mouse.point, '#00f');
+root.children.push(cursor);
+
+
+
+
+
+function pset(p: Point, c: string) {
+  rectfill(p.x, p.y, 1, 1, c);
+}
+
+function drawrect(x: number, y: number, w: number, h: number, c: string) {
+  context.strokeStyle = c;
+  context.strokeRect(x + 0.5 + camera.x, y + 0.5 + camera.y, w - 1, h - 1);
+}
+
+function rectfill(x: number, y: number, w: number, h: number, c: string) {
+  context.fillStyle = c;
+  context.fillRect(x + camera.x, y + camera.y, w, h);
+}
+
+
+function rectContainsPoint(r: Rect, p: Point) {
+  return (
+    p.x >= r.x &&
+    p.y >= r.y &&
+    p.x < r.x + r.w &&
+    p.y < r.y + r.h);
+}
+
+
+
+
+
+
+
+
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface Rect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
