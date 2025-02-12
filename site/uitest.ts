@@ -41,7 +41,6 @@ class UIElement {
   }
 
   onMouseDown() { }
-  onMouseMove() { }
   onMouseUp() { }
   onMouseExit() { }
   onMouseEnter() { }
@@ -136,6 +135,8 @@ requestAnimationFrame(update);
 
 let lastHovered: UIElement | null = null;
 
+let onMouseMove: (() => void) | null = null;
+
 canvas.onmousedown = (e) => {
   mouse.button = e.button;
   mouse.point.x = Math.floor(e.offsetX);
@@ -144,6 +145,7 @@ canvas.onmousedown = (e) => {
 };
 
 canvas.onmouseup = (e) => {
+  onMouseMove = null;
   root.findElementAt(mouse.point)?.onMouseUp();
 };
 
@@ -158,7 +160,7 @@ canvas.onmousemove = (e) => {
     lastHovered = hoveredOver;
   }
 
-  hoveredOver?.onMouseMove();
+  onMouseMove?.();
 };
 
 
@@ -203,16 +205,15 @@ class Button extends UIElement {
   onMouseExit(): void {
     this.inside = false;
     this.clicking = false;
-    this.dragger = null;
+    // this.dragger = null;
   }
 
   onMouseDown(): void {
-    if (keys[' ']) this.dragger = new Dragger(this);
+    if (keys[' ']) {
+      this.dragger = new Dragger(this)
+      onMouseMove = () => this.dragger?.update();
+    }
     else this.clicking = true;
-  }
-
-  onMouseMove(): void {
-    this.dragger?.update();
   }
 
   onMouseUp(): void {
