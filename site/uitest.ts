@@ -122,6 +122,7 @@ function rectContainsPoint(r: Rect, p: Point) {
 
 const mouse = {
   point: { x: 0, y: 0 },
+  button: 0,
 };
 const root = new Root();
 
@@ -140,6 +141,7 @@ requestAnimationFrame(update);
 let lastHovered: UIElement | null = null;
 
 canvas.onmousedown = (e) => {
+  mouse.button = e.button;
   mouse.point.x = Math.floor(e.offsetX / SCALE);
   mouse.point.y = Math.floor(e.offsetY / SCALE);
   root.findElementAt(mouse.point)?.onMouseDown();
