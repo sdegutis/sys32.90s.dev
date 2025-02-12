@@ -64,7 +64,7 @@ class Root extends UIElement {
 
   override tick(delta: number): void {
     super.tick(delta);
-    if (this.showMouse) fillPoint(mouse, '#00f');
+    if (this.showMouse) fillPoint(mouse.point, '#00f');
   }
 
 }
@@ -80,10 +80,6 @@ interface Point {
 function fillPoint(p: Point, c: string) {
   context.fillStyle = c;
   context.fillRect(p.x, p.y, 1, 1);
-}
-
-function diffPoint(p: Point, other: Point) {
-  return { x: p.x - other.x, y: p.y - other.y };
 }
 
 
@@ -115,7 +111,9 @@ function rectContainsPoint(r: Rect, p: Point) {
 
 
 
-const mouse = { x: 0, y: 0 };
+const mouse = {
+  point: { x: 0, y: 0 },
+};
 const root = new Root();
 
 let last = +document.timeline.currentTime!;
@@ -133,19 +131,19 @@ requestAnimationFrame(update);
 let lastElement: UIElement | null = null;
 
 canvas.onmousedown = (e) => {
-  mouse.x = Math.floor(e.offsetX / SCALE);
-  mouse.y = Math.floor(e.offsetY / SCALE);
-  root.findElementAt(mouse)?.onMouseDown();
+  mouse.point.x = Math.floor(e.offsetX / SCALE);
+  mouse.point.y = Math.floor(e.offsetY / SCALE);
+  root.findElementAt(mouse.point)?.onMouseDown();
 };
 
 canvas.onmouseup = (e) => {
-  root.findElementAt(mouse)?.onMouseUp();
+  root.findElementAt(mouse.point)?.onMouseUp();
 };
 
 canvas.onmousemove = (e) => {
-  mouse.x = Math.floor(e.offsetX / SCALE);
-  mouse.y = Math.floor(e.offsetY / SCALE);
-  const current = root.findElementAt(mouse);
+  mouse.point.x = Math.floor(e.offsetX / SCALE);
+  mouse.point.y = Math.floor(e.offsetY / SCALE);
+  const current = root.findElementAt(mouse.point);
 
   if (lastElement !== current) {
     lastElement?.onMouseExit();
@@ -159,51 +157,46 @@ canvas.onmousemove = (e) => {
 
 
 
+class Dragger {
+
+  startMouse;
+  startElPos;
+
+  constructor(private el: UIElement) {
+    this.startMouse = { ...mouse.point };
+    this.startElPos = { ...el.rect };
+  }
+
+  update() {
+    const offx = this.startMouse.x - this.startElPos.x;
+    const offy = this.startMouse.y - this.startElPos.y;
+    const diffx = mouse.point.x - this.startElPos.x;
+    const diffy = mouse.point.y - this.startElPos.y;
+    this.el.rect.x = this.startElPos.x + diffx - offx;
+    this.el.rect.y = this.startElPos.y + diffy - offy;
+  }
+
+}
+
 
 class Button extends UIElement {
 
-  dragStart: Point | null = null;
-  dragOffset: Point | null = null;
-
-  over = false;
+  dragger: Dragger | null = null;
 
   tick(delta: number): void {
-    strokeRect(this.rect, this.over ? '#f00' : '#0f0');
+    strokeRect(this.rect, '#f00');
   }
 
   onMouseDown(): void {
-    this.dragStart = { ...mouse };
-  }
-
-  onMouseEnter(): void {
-    this.over = true;
-    root.showMouse = false;
-  }
-
-  onMouseExit(): void {
-    this.over = false;
-    root.showMouse = true;
+    this.dragger = new Dragger(this);
   }
 
   onMouseMove(): void {
-    if (this.dragStart) {
-
-      if (this.dragOffset) {
-        // this.rect.moveBy()
-      }
-
-      this.dragOffset = diffPoint(mouse, this.dragStart);
-    }
+    this.dragger?.update();
   }
 
   onMouseUp(): void {
-    if (this.dragOffset) {
-      this.rect.x += this.dragOffset.x;
-      this.rect.y += this.dragOffset.y;
-    }
-
-    this.dragStart = null;
-    this.dragOffset = null;
+    this.dragger = null;
   }
 
 }
