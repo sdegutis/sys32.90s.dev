@@ -73,8 +73,8 @@ for (let y = 10; y < 20; y++) {
   }
 }
 
-let cx = 0;
-let cy = 0;
+let camx = 0;
+let camy = 0;
 
 let dragx = 0;
 let dragy = 0;
@@ -86,15 +86,28 @@ callbacks.ontick = (delta: number) => {
   for (let y = 0; y < mapData.width; y++) {
     for (let x = 0; x < mapData.height; x++) {
       const i = y * mapData.width + x;
-      const px = dragx + cx + x * 4;
-      const py = dragy + cy + y * 4;
+      const px = dragx + camx + x * 4;
+      const py = dragy + camy + y * 4;
 
       drawTerrain[mapData.terrain[i]](px, py);
       const unit = mapData.units[i];
       if (unit > 0) {
         drawUnit[unit - 1](px, py);
       }
+
+      context.strokeStyle = '#0001';
+      context.strokeRect(px + 0.5, py + 0.5, 4, 4);
     }
+  }
+
+  // show hovered tile
+  if (!mouse.drag) {
+    context.fillStyle = '#00f';
+    const tilex = Math.floor((mouse.x - camx) / 4);
+    const tiley = Math.floor((mouse.y - camy) / 4);
+    const mousex = tilex * 4 + camx;
+    const mousey = tiley * 4 + camy;
+    context.fillRect(mousex, mousey, 4, 4);
   }
 
   // draw mouse selection
@@ -119,6 +132,16 @@ callbacks.ontick = (delta: number) => {
 
       context.strokeStyle = mouse.button === 0 ? '#00f3' : '#f003';
       context.strokeRect(x + .5, y + .5, w, h);
+
+      for (let tilestepy = 0; tilestepy < h / 4 + 1; tilestepy++) {
+        for (let tilestepx = 0; tilestepx < w / 4 + 1; tilestepx++) {
+          const tx = Math.floor((x - camx) / 4 + tilestepx);
+          const ty = Math.floor((y - camy) / 4 + tilestepy);
+          const i = ty * mapData.width + tx;
+
+          mapData.terrain[i] = 1;
+        }
+      }
     }
   }
 
@@ -131,8 +154,8 @@ callbacks.ontick = (delta: number) => {
 };
 
 callbacks.ondragend = () => {
-  cx += dragx;
-  cy += dragy;
+  camx += dragx;
+  camy += dragy;
 
   dragx = 0;
   dragy = 0;
