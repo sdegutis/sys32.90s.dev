@@ -62,10 +62,14 @@ class UIElement {
   onMouseEnter() { }
 
   findElementAt(p: Point): UIElement | null {
+    p.x -= this.rect.x;
+    p.y -= this.rect.y;
     for (let i = 0; i < this.children.length; i++) {
       const found = this.children[i].findElementAt(p);
       if (found) return found;
     }
+    p.x += this.rect.x;
+    p.y += this.rect.y;
     if (rectContainsPoint(this.rect, p)) return this;
     return null;
   }
@@ -158,18 +162,18 @@ canvas.onmousedown = (e) => {
   mouse.button = e.button;
   mouse.point.x = Math.floor(e.offsetX);
   mouse.point.y = Math.floor(e.offsetY);
-  root.findElementAt(mouse.point)?.onMouseDown();
+  root.findElementAt({ ...mouse.point })?.onMouseDown();
 };
 
 canvas.onmouseup = (e) => {
   onMouseMove = null;
-  root.findElementAt(mouse.point)?.onMouseUp();
+  root.findElementAt({ ...mouse.point })?.onMouseUp();
 };
 
 canvas.onmousemove = (e) => {
   mouse.point.x = Math.floor(e.offsetX);
   mouse.point.y = Math.floor(e.offsetY);
-  const hoveredOver = root.findElementAt(mouse.point);
+  const hoveredOver = root.findElementAt({ ...mouse.point });
 
   if (lastHovered !== hoveredOver) {
     lastHovered?.onMouseExit();
