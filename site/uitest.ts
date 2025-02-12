@@ -40,20 +40,15 @@ class Box {
     }
   }
 
-  drawChildren() {
+  draw() {
     for (let i = 0; i < this.children.length; i++) {
-      this.children[i].drawChildren();
+      const child = this.children[i];
+      camera.x += child.rect.x;
+      camera.y += child.rect.y;
+      child.draw();
+      camera.x -= child.rect.x;
+      camera.y -= child.rect.y;
     }
-  }
-
-  drawStart() {
-    camera.x += this.rect.x;
-    camera.y += this.rect.y;
-  }
-
-  drawEnd() {
-    camera.x -= this.rect.x;
-    camera.y -= this.rect.y;
   }
 
   onMouseDown() { }
@@ -84,8 +79,8 @@ class Root extends Box {
     super({ x: 0, y: 0, w: 320, h: 180 });
   }
 
-  drawChildren(): void {
-    super.drawChildren();
+  draw(): void {
+    super.draw();
     if (this.showMouse) pset(mouse.point, '#00f');
   }
 
@@ -147,7 +142,7 @@ function update(t: number) {
     const delta = t - last;
     last = t;
     root.tick(delta);
-    root.drawChildren();
+    root.draw();
   }
   requestAnimationFrame(update);
 }
@@ -214,13 +209,9 @@ class Box2 extends Box {
 
   col = '#ff0';
 
-  drawChildren(): void {
-    this.drawStart();
-
+  draw(): void {
     rectfill(0, 0, this.rect.w, this.rect.h, this.col);
-    super.drawChildren();
-
-    this.drawEnd();
+    super.draw();
   }
 
   onMouseDown(): void {
@@ -239,10 +230,8 @@ class Button extends Box {
   inside = false;
   clicking = false;
 
-  drawChildren(): void {
-    this.drawStart();
-
-    super.drawChildren();
+  draw(): void {
+    super.draw();
 
     let col = '#00f';
     if (button.inside) col = '#0f0';
@@ -251,8 +240,6 @@ class Button extends Box {
 
     rectline(0, 0, button.rect.w, button.rect.h, col);
     pset({ x: 0, y: 0 }, '#fff');
-
-    this.drawEnd();
   }
 
   onMouseEnter(): void {
