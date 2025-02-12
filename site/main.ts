@@ -1,4 +1,4 @@
-import { callbacks, COLORS, ctx, mouse } from "./crt.js";
+import { callbacks, COLORS, context, mouse } from "./crt.js";
 import { print } from "./font.js";
 
 type Tile = {
@@ -23,14 +23,14 @@ let left = false;
 let hand = false;
 
 function pset(c: number, x: number, y: number) {
-  ctx.fillStyle = COLORS[c];
-  ctx.fillRect(x, y, 1, 1);
+  context.fillStyle = COLORS[c];
+  context.fillRect(x, y, 1, 1);
 }
 
 const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
   grass: (x, y) => {
-    ctx.fillStyle = COLORS[3];
-    ctx.fillRect(x, y, 4, 4);
+    context.fillStyle = COLORS[3];
+    context.fillRect(x, y, 4, 4);
   },
   gold: (x, y) => {
     // draw.grass(x, y);
@@ -72,8 +72,8 @@ const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
     pset(1, xx + x + 1, y + 2);
 
     if (hand) {
-      ctx.fillStyle = COLORS[2];
-      ctx.fillRect(x + 2 - xx, y + 1, 1, 1);
+      context.fillStyle = COLORS[2];
+      context.fillRect(x + 2 - xx, y + 1, 1, 1);
     }
   },
 };
@@ -153,12 +153,12 @@ callbacks.ontick = (delta: number) => {
 
       // experiment with fog
       if (x + y < 33) {
-        ctx.fillStyle = '#000';
-        ctx.fillRect(x * 4, y * 4, 4, 4);
+        context.fillStyle = '#000';
+        context.fillRect(x * 4, y * 4, 4, 4);
       }
       else if (x + y < 35) {
-        ctx.fillStyle = '#000b';
-        ctx.fillRect(x * 4, y * 4, 4, 4);
+        context.fillStyle = '#000b';
+        context.fillRect(x * 4, y * 4, 4, 4);
       }
     }
   }
@@ -175,20 +175,20 @@ callbacks.ontick = (delta: number) => {
     const w = x1 < x2 ? x2 - x1 : x1 - x2;
     const h = y1 < y2 ? y2 - y1 : y1 - y2;
 
-    ctx.fillStyle = mouse.drag.b === 0 ? '#00f3' : '#f003';
-    ctx.fillRect(x, y, w + 1, h + 1);
+    context.fillStyle = mouse.drag.b === 0 ? '#00f3' : '#f003';
+    context.fillRect(x, y, w + 1, h + 1);
 
-    ctx.strokeStyle = mouse.drag.b === 0 ? '#00f3' : '#f003';
-    ctx.strokeRect(x + .5, y + .5, w, h);
+    context.strokeStyle = mouse.drag.b === 0 ? '#00f3' : '#f003';
+    context.strokeRect(x + .5, y + .5, w, h);
   }
 
   // draw mouse
-  ctx.fillStyle = '#0007';
+  context.fillStyle = '#0007';
   // ctx.fillRect(mouse.x - 2, mouse.y - 2, 5, 5);
-  ctx.fillRect(mouse.x - 2, mouse.y, 5, 1);
-  ctx.fillRect(mouse.x, mouse.y - 2, 1, 5);
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(mouse.x, mouse.y, 1, 1);
+  context.fillRect(mouse.x - 2, mouse.y, 5, 1);
+  context.fillRect(mouse.x, mouse.y - 2, 1, 5);
+  context.fillStyle = '#fff';
+  context.fillRect(mouse.x, mouse.y, 1, 1);
 
   let x = 40 * 4, y = 25 * 4;
 
@@ -196,15 +196,15 @@ callbacks.ontick = (delta: number) => {
   if (mouse.drag) {
     // ctx.fillStyle = '#ff07';
     // ctx.fillRect(x - 1, y - 2, 6, 6);
-    ctx.strokeStyle = '#ff03';
-    ctx.strokeRect(x - .5, y - 1.5, 5, 5);
+    context.strokeStyle = '#ff03';
+    context.strokeRect(x - .5, y - 1.5, 5, 5);
   }
 
   // draw hp bar
   const hp___red = hp < 3 ? 'f' : '0';
   const hp_green = hp > 1 ? 'f' : '0';
-  ctx.strokeStyle = `#${hp___red}${hp_green}0`;
-  ctx.strokeRect(x, y - 1.5, hp, 0);
+  context.strokeStyle = `#${hp___red}${hp_green}0`;
+  context.strokeRect(x, y - 1.5, hp, 0);
 
   const text = `hello\nworld!`;
   // ctx.fillStyle = '#0007';

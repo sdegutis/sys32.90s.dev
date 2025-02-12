@@ -1,4 +1,4 @@
-import { COLORS, ctx } from "./crt.js";
+import { COLORS, context } from "./crt.js";
 
 const mapping = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_`;
 const src = `
@@ -45,7 +45,7 @@ for (let i = 0; i < mapping.length; i++) {
 }
 
 export function print(x: number, y: number, text: string, col = 7) {
-  ctx.fillStyle = COLORS[col];
+  context.fillStyle = COLORS[col];
 
   text = text.toLowerCase();
 
@@ -69,7 +69,7 @@ export function print(x: number, y: number, text: string, col = 7) {
         const py = y + (posy * 6) + yy;
 
         if (map[yy][xx]) {
-          ctx.fillRect(px, py, 1, 1);
+          context.fillRect(px, py, 1, 1);
         }
       }
     }
