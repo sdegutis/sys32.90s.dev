@@ -110,7 +110,7 @@ const camera: Point = { x: 0, y: 0 };
 
 function pset(p: Point, c: string) {
   context.fillStyle = c;
-  context.fillRect(p.x, p.y, 1, 1);
+  context.fillRect(p.x + camera.x, p.y + camera.y, 1, 1);
 }
 
 function rectline(x: number, y: number, w: number, h: number, c: string) {
@@ -251,6 +251,7 @@ class Button extends UIElement {
     if (button.clicking) col = '#fff';
 
     rectline(0, 0, button.rect.w, button.rect.h, col);
+    pset({ x: 0, y: 0 }, '#fff');
 
     this.drawEnd();
   }
