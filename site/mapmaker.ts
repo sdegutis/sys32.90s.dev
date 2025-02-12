@@ -28,6 +28,7 @@ const drawTerrain: ((x: number, y: number) => void)[] = [
 ];
 
 const drawUnit: ((x: number, y: number) => void)[] = [
+  (x, y) => { },
   (x, y) => {
     // goldmine
     pset(6, x + 2, y + 1);
@@ -65,24 +66,34 @@ const drawUnit: ((x: number, y: number) => void)[] = [
   },
 ];
 
-for (let y = 10; y < 20; y++) {
-  for (let x = 20; x < 30; x++) {
-    const i = y * mapData.width + x;
-    // mapData.terrain[i] = 2;
-    mapData.units[i] = 4;
-  }
+const tools: {
+  map: number[],
+  draw: (x: number, y: number) => void,
+  offset: number,
+}[] = [];
+
+for (const draw of drawTerrain) {
+  tools.push({ map: mapData.terrain, draw, offset: 0 });
 }
 
-const sel = {
-  index: 1,
-};
+for (const draw of drawUnit) {
+  tools.push({ map: mapData.units, draw, offset: drawTerrain.length });
+}
+
+let tool = 1;
+
+function setMapTile(index: number) {
+  tools[tool].map[index] = tool - tools[tool].offset;
+}
 
 callbacks.onscroll = (up) => {
-  if (!up) {
-    // down
+  if (up) {
+    tool--;
+    if (tool < 0) tool = tools.length - 1;
   }
   else {
-    // up
+    tool++;
+    if (tool === tools.length) tool = 0;
   }
 };
 
@@ -103,10 +114,7 @@ callbacks.ontick = (delta: number) => {
       const py = dragy + camy + y * 4;
 
       drawTerrain[mapData.terrain[i]](px, py);
-      const unit = mapData.units[i];
-      if (unit > 0) {
-        drawUnit[unit - 1](px, py);
-      }
+      drawUnit[mapData.units[i]](px, py);
 
       context.strokeStyle = '#0001';
       context.strokeRect(px + 0.5, py + 0.5, 4, 4);
@@ -114,14 +122,14 @@ callbacks.ontick = (delta: number) => {
   }
 
   // show hovered tile
-  if (!mouse.drag) {
-    context.fillStyle = '#00f3';
-    const tilex = Math.floor((mouse.x - camx) / 4);
-    const tiley = Math.floor((mouse.y - camy) / 4);
-    const mousex = tilex * 4 + camx;
-    const mousey = tiley * 4 + camy;
-    context.fillRect(mousex, mousey, 4, 4);
-  }
+  const tilex = Math.floor((mouse.x - camx) / 4);
+  const tiley = Math.floor((mouse.y - camy) / 4);
+  const mousex = tilex * 4 + camx;
+  const mousey = tiley * 4 + camy;
+  tools[tool].draw(mousex, mousey);
+
+  context.strokeStyle = '#00f3';
+  context.strokeRect(mousex - .5, mousey - .5, 5, 5);
 
   // draw mouse selection
   if (mouse.drag) {
@@ -150,7 +158,7 @@ callbacks.ontick = (delta: number) => {
         for (let y = tiley1; y < tiley2; y++) {
           for (let x = tilex1; x < tilex2; x++) {
             const i = y * mapData.width + x;
-            mapData.terrain[i] = 1;
+            setMapTile(i);
           }
         }
       }
@@ -158,28 +166,28 @@ callbacks.ontick = (delta: number) => {
         const tilex1 = Math.floor((mouse.x - camx) / 4);
         const tiley1 = Math.floor((mouse.y - camy) / 4);
 
-        mapData.terrain[(tiley1 * mapData.width + tilex1)] = 1;
-        mapData.terrain[((tiley1 + 1) * mapData.width + tilex1)] = 1;
-        mapData.terrain[((tiley1 - 1) * mapData.width + tilex1)] = 1;
-        mapData.terrain[(tiley1 * mapData.width + tilex1 + 1)] = 1;
-        mapData.terrain[(tiley1 * mapData.width + tilex1 - 1)] = 1;
+        setMapTile((tiley1 * mapData.width + tilex1));
+        setMapTile(((tiley1 + 1) * mapData.width + tilex1));
+        setMapTile(((tiley1 - 1) * mapData.width + tilex1));
+        setMapTile((tiley1 * mapData.width + tilex1 + 1));
+        setMapTile((tiley1 * mapData.width + tilex1 - 1));
       }
       else {
         const tilex1 = Math.floor((mouse.x - camx) / 4);
         const tiley1 = Math.floor((mouse.y - camy) / 4);
 
         const i = tiley1 * mapData.width + tilex1;
-        mapData.terrain[i] = 1;
+        setMapTile(i);
       }
     }
   }
 
-  // draw mouse
-  context.fillStyle = '#0007';
-  context.fillRect(mouse.x - 2, mouse.y, 5, 1);
-  context.fillRect(mouse.x, mouse.y - 2, 1, 5);
-  context.fillStyle = '#fff';
-  context.fillRect(mouse.x, mouse.y, 1, 1);
+  // // draw mouse
+  // context.fillStyle = '#0007';
+  // context.fillRect(mouse.x - 2, mouse.y, 5, 1);
+  // context.fillRect(mouse.x, mouse.y - 2, 1, 5);
+  // context.fillStyle = '#fff';
+  // context.fillRect(mouse.x, mouse.y, 1, 1);
 };
 
 callbacks.ondragend = () => {
