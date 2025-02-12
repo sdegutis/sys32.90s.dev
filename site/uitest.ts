@@ -87,15 +87,16 @@ interface Rect {
   h: number;
 }
 
+const transform: Point = { x: 0, y: 0 };
 
 function pset(p: Point, c: string) {
   context.fillStyle = c;
   context.fillRect(p.x, p.y, 1, 1);
 }
 
-function strokeRect(r: Rect, c: string) {
+function strokeRect(x: number, y: number, w: number, h: number, c: string) {
   context.strokeStyle = c;
-  context.strokeRect(r.x + 0.5, r.y + 0.5, r.w - 1, r.h - 1);
+  context.strokeRect(x + 0.5 + transform.x, y + 0.5 + transform.y, w - 1, h - 1);
 }
 
 function fillRect(r: Rect, c: string) {
@@ -235,7 +236,14 @@ b.draw = () => {
   if (b.inside) col = '#0f0';
   if (b.dragger) col = '#f00';
   if (b.clicking) col = '#fff';
-  strokeRect(b.rect, col);
+
+  transform.x = b.rect.x;
+  transform.y = b.rect.y;
+
+  strokeRect(0, 0, b.rect.w - 1, b.rect.h - 1, col);
+
+  transform.x = 0;
+  transform.y = 0;
 }
 
 b.onClick = () => {
