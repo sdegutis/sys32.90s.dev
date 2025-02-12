@@ -49,19 +49,31 @@ export function print(x: number, y: number, text: string, col = 7) {
 
   text = text.toLowerCase();
 
+  let posx = 0;
+  let posy = 0;
+
   for (let i = 0; i < text.length; i++) {
     const ch = text[i];
+
+    if (ch === '\n') {
+      posy++;
+      posx = 0;
+      continue;
+    }
+
     const map = chars[ch];
 
     for (let yy = 0; yy < 4; yy++) {
       for (let xx = 0; xx < 4; xx++) {
-        const px = x + (i * 4) + xx;
-        const py = y + yy;
+        const px = x + (posx * 4) + xx;
+        const py = y + (posy * 6) + yy;
 
         if (map[yy][xx]) {
           ctx.fillRect(px, py, 1, 1);
         }
       }
     }
+
+    posx++;
   }
 }
