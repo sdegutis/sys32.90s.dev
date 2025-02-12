@@ -54,8 +54,7 @@ class UIElement {
 
   findElementAt(p: Point): UIElement | null {
     for (let i = 0; i < this.children.length; i++) {
-      const child = this.children[i];
-      const found = child.findElementAt(p);
+      const found = this.children[i].findElementAt(p);
       if (found) return found;
     }
     if (rectContainsPoint(this.rect, p)) return this;
