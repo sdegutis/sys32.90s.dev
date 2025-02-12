@@ -75,7 +75,7 @@ class Root extends UIElement {
 
   override tick(delta: number): void {
     super.tick(delta);
-    if (this.showMouse) fillPoint(mouse.point, '#00f');
+    if (this.showMouse) pset(mouse.point, '#00f');
   }
 
 }
@@ -96,7 +96,7 @@ interface Rect {
 }
 
 
-function fillPoint(p: Point, c: string) {
+function pset(p: Point, c: string) {
   context.fillStyle = c;
   context.fillRect(p.x, p.y, 1, 1);
 }
@@ -126,6 +126,7 @@ const mouse = {
   point: { x: 0, y: 0 },
   button: 0,
 };
+
 const root = new Root();
 
 let last = +document.timeline.currentTime!;
