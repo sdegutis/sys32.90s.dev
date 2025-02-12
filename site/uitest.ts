@@ -172,6 +172,7 @@ class Dragger {
   startElPos;
 
   constructor(private el: UIElement) {
+    onMouseMove = () => this.update();
     this.startMouse = { ...mouse.point };
     this.startElPos = { ...el.rect };
   }
@@ -205,13 +206,11 @@ class Button extends UIElement {
   onMouseExit(): void {
     this.inside = false;
     this.clicking = false;
-    // this.dragger = null;
   }
 
   onMouseDown(): void {
     if (keys[' ']) {
       this.dragger = new Dragger(this)
-      onMouseMove = () => this.dragger?.update();
     }
     else this.clicking = true;
   }
