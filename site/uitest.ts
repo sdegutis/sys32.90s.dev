@@ -131,46 +131,6 @@ class Rect {
 
 }
 
-class Button extends UIElement {
-
-  dragStart: Point | null = null;
-  dragOffset: Point | null = null;
-
-  over = false;
-
-  tick(delta: number): void {
-    this.rect.stroke(this.over ? '#f00' : '#0f0');
-  }
-
-  onMouseDown(): void {
-    this.dragStart = mouse.copy();
-  }
-
-  onMouseEnter(): void {
-    this.over = true;
-  }
-
-  onMouseExit(): void {
-    this.over = false;
-  }
-
-  onMouseMove(): void {
-    if (this.dragStart) {
-      this.dragOffset = mouse.diff(this.dragStart);
-    }
-  }
-
-  onMouseUp(): void {
-    if (this.dragOffset) {
-      this.rect.moveBy(this.dragOffset);
-    }
-
-    this.dragStart = null;
-    this.dragOffset = null;
-  }
-
-}
-
 const mouse = new Point(0, 0);
 const root = new Root();
 
@@ -215,6 +175,51 @@ canvas.onmousemove = (e) => {
 
 
 
+
+class Button extends UIElement {
+
+  dragStart: Point | null = null;
+  dragOffset: Point | null = null;
+
+  over = false;
+
+  tick(delta: number): void {
+    this.rect.stroke(this.over ? '#f00' : '#0f0');
+  }
+
+  onMouseDown(): void {
+    this.dragStart = mouse.copy();
+  }
+
+  onMouseEnter(): void {
+    this.over = true;
+  }
+
+  onMouseExit(): void {
+    this.over = false;
+  }
+
+  onMouseMove(): void {
+    if (this.dragStart) {
+
+      if (this.dragOffset) {
+        // this.rect.moveBy()
+      }
+
+      this.dragOffset = mouse.diff(this.dragStart);
+    }
+  }
+
+  onMouseUp(): void {
+    if (this.dragOffset) {
+      this.rect.moveBy(this.dragOffset);
+    }
+
+    this.dragStart = null;
+    this.dragOffset = null;
+  }
+
+}
 
 const b = new Button(Rect.from(10, 10, 20, 20));
 root.children.push(b);
