@@ -109,8 +109,7 @@ interface Rect {
 const camera: Point = { x: 0, y: 0 };
 
 function pset(p: Point, c: string) {
-  context.fillStyle = c;
-  context.fillRect(p.x + camera.x, p.y + camera.y, 1, 1);
+  rectfill(p.x, p.y, 1, 1, c);
 }
 
 function rectline(x: number, y: number, w: number, h: number, c: string) {
