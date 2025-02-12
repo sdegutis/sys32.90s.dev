@@ -40,8 +40,6 @@ class UIElement {
     }
   }
 
-  draw() { }
-
   onMouseDown() { }
   onMouseMove() { }
   onMouseUp() { }
@@ -130,7 +128,6 @@ function update(t: number) {
     const delta = t - last;
     last = t;
     root.tick(delta);
-    root.draw();
   }
   requestAnimationFrame(update);
 }
