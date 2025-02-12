@@ -64,7 +64,7 @@ class Root extends UIElement {
     super({ x: 0, y: 0, w: 320, h: 180 });
   }
 
-  override tick(delta: number): void {
+  tick(delta: number): void {
     super.tick(delta);
     if (this.showMouse) pset(mouse.point, '#00f');
   }
@@ -93,12 +93,12 @@ function pset(p: Point, c: string) {
   context.fillRect(p.x, p.y, 1, 1);
 }
 
-function strokeRect(x: number, y: number, w: number, h: number, c: string) {
+function rectline(x: number, y: number, w: number, h: number, c: string) {
   context.strokeStyle = c;
   context.strokeRect(x + 0.5 + camera.x, y + 0.5 + camera.y, w - 1, h - 1);
 }
 
-function fillRect(r: Rect, c: string) {
+function rectfill(r: Rect, c: string) {
   context.fillStyle = c;
   context.fillRect(r.x, r.y, r.w, r.h);
 }
@@ -193,7 +193,7 @@ class Box extends UIElement {
   dragger: Dragger | null = null;
 
   tick(delta: number): void {
-    fillRect(this.rect, '#ff0');
+    rectfill(this.rect, '#ff0');
     super.tick(delta);
   }
 
@@ -247,7 +247,7 @@ class Button extends UIElement {
 const box = new Box({ x: 10, y: 10, w: 20, h: 20 });
 root.children.push(box);
 
-const b = new Button({ x: 10, y: 10, w: 5, h: 5 });
+const b = new Button({ x: 0, y: 0, w: 5, h: 5 });
 box.children.push(b);
 
 b.draw = () => {
@@ -259,7 +259,7 @@ b.draw = () => {
   camera.x = b.rect.x;
   camera.y = b.rect.y;
 
-  strokeRect(0, 0, b.rect.w, b.rect.h, col);
+  rectline(0, 0, b.rect.w, b.rect.h, col);
 
   camera.x = 0;
   camera.y = 0;
