@@ -7,6 +7,7 @@ export const callbacks = {
   ontick: (delta: number) => { },
   onclick: () => { },
   ondragend: () => { },
+  onscroll: (up: boolean) => { },
 };
 
 let SCALE = 1;
@@ -29,6 +30,14 @@ export const mouse = {
   y: 0,
   button: 0,
   drag: null as { x: number, y: number } | null,
+};
+
+export const keys: Record<string, boolean> = {};
+canvas.onkeydown = (e) => { keys[e.key] = true; };
+canvas.onkeyup = (e) => { keys[e.key] = false; };
+
+canvas.onwheel = (e) => {
+  callbacks.onscroll(e.deltaY < 0);
 };
 
 canvas.onmousemove = (e) => {

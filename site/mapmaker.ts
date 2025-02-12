@@ -1,4 +1,4 @@
-import { callbacks, COLORS, context, mouse } from "./crt.js";
+import { callbacks, COLORS, context, keys, mouse } from "./crt.js";
 
 const mapData = {
   width: 0,
@@ -73,6 +73,19 @@ for (let y = 10; y < 20; y++) {
   }
 }
 
+const sel = {
+  index: 1,
+};
+
+callbacks.onscroll = (up) => {
+  if (!up) {
+    // down
+  }
+  else {
+    // up
+  }
+};
+
 let camx = 0;
 let camy = 0;
 
@@ -127,23 +140,36 @@ callbacks.ontick = (delta: number) => {
       const w = x1 < x2 ? x2 - x1 : x1 - x2;
       const h = y1 < y2 ? y2 - y1 : y1 - y2;
 
-      context.fillStyle = mouse.button === 0 ? '#00f3' : '#f003';
-      context.fillRect(x, y, w + 1, h + 1);
+      if (keys['Control']) {
+        const tilex1 = Math.floor((x - camx) / 4);
+        const tiley1 = Math.floor((y - camy) / 4);
 
-      context.strokeStyle = mouse.button === 0 ? '#00f3' : '#f003';
-      context.strokeRect(x + .5, y + .5, w, h);
+        const tilex2 = Math.ceil((x + w - camx) / 4);
+        const tiley2 = Math.ceil((y + h - camy) / 4);
 
-      const tilex1 = Math.floor((x - camx) / 4);
-      const tiley1 = Math.floor((y - camy) / 4);
-
-      const tilex2 = Math.ceil((x + w - camx) / 4);
-      const tiley2 = Math.ceil((y + h - camy) / 4);
-
-      for (let y = tiley1; y < tiley2; y++) {
-        for (let x = tilex1; x < tilex2; x++) {
-          const i = y * mapData.width + x;
-          mapData.terrain[i] = 1;
+        for (let y = tiley1; y < tiley2; y++) {
+          for (let x = tilex1; x < tilex2; x++) {
+            const i = y * mapData.width + x;
+            mapData.terrain[i] = 1;
+          }
         }
+      }
+      else if (keys['Alt']) {
+        const tilex1 = Math.floor((mouse.x - camx) / 4);
+        const tiley1 = Math.floor((mouse.y - camy) / 4);
+
+        mapData.terrain[(tiley1 * mapData.width + tilex1)] = 1;
+        mapData.terrain[((tiley1 + 1) * mapData.width + tilex1)] = 1;
+        mapData.terrain[((tiley1 - 1) * mapData.width + tilex1)] = 1;
+        mapData.terrain[(tiley1 * mapData.width + tilex1 + 1)] = 1;
+        mapData.terrain[(tiley1 * mapData.width + tilex1 - 1)] = 1;
+      }
+      else {
+        const tilex1 = Math.floor((mouse.x - camx) / 4);
+        const tiley1 = Math.floor((mouse.y - camy) / 4);
+
+        const i = tiley1 * mapData.width + tilex1;
+        mapData.terrain[i] = 1;
       }
     }
   }
