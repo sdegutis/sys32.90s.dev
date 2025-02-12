@@ -102,7 +102,7 @@ callbacks.ontick = (delta: number) => {
 
   // show hovered tile
   if (!mouse.drag) {
-    context.fillStyle = '#00f';
+    context.fillStyle = '#00f3';
     const tilex = Math.floor((mouse.x - camx) / 4);
     const tiley = Math.floor((mouse.y - camy) / 4);
     const mousex = tilex * 4 + camx;
@@ -133,12 +133,15 @@ callbacks.ontick = (delta: number) => {
       context.strokeStyle = mouse.button === 0 ? '#00f3' : '#f003';
       context.strokeRect(x + .5, y + .5, w, h);
 
-      for (let tilestepy = 0; tilestepy < h / 4 + 1; tilestepy++) {
-        for (let tilestepx = 0; tilestepx < w / 4 + 1; tilestepx++) {
-          const tx = Math.floor((x - camx) / 4 + tilestepx);
-          const ty = Math.floor((y - camy) / 4 + tilestepy);
-          const i = ty * mapData.width + tx;
+      const tilex1 = Math.floor((x - camx) / 4);
+      const tiley1 = Math.floor((y - camy) / 4);
 
+      const tilex2 = Math.ceil((x + w - camx) / 4);
+      const tiley2 = Math.ceil((y + h - camy) / 4);
+
+      for (let y = tiley1; y < tiley2; y++) {
+        for (let x = tilex1; x < tilex2; x++) {
+          const i = y * mapData.width + x;
           mapData.terrain[i] = 1;
         }
       }
