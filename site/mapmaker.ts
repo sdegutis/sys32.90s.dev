@@ -9,24 +9,63 @@ const mapData = {
 
 mapData.width = 200;
 mapData.height = 200;
-mapData.terrain = Array(mapData.width * mapData.height).fill(0);
+mapData.terrain = Array(mapData.width * mapData.height).fill(3);
 mapData.units = Array(mapData.width * mapData.height).fill(0);
 
 const drawTerrain: ((x: number, y: number) => void)[] = [
-  (x, y) => {
-    // grass
-    context.fillStyle = COLORS[3];
-    context.fillRect(x, y, 4, 4);
-  },
-  (x, y) => {
-    context.fillStyle = COLORS[5];
-    context.fillRect(x, y, 4, 4);
-  },
-  (x, y) => {
-    context.fillStyle = COLORS[4];
-    context.fillRect(x, y, 4, 4);
-  },
+  // (x, y) => {
+  //   // grass
+  //   context.fillStyle = COLORS[3];
+  //   context.fillRect(x, y, 4, 4);
+  // },
+  // (x, y) => {
+  //   // sand
+  //   context.fillStyle = COLORS[15];
+  //   context.fillRect(x, y, 4, 4);
+  // },
+  // (x, y) => {
+  //   // ??? (yellow)
+  //   context.fillStyle = COLORS[10];
+  //   context.fillRect(x, y, 4, 4);
+  // },
+  // (x, y) => {
+  //   // ??? (orange)
+  //   context.fillStyle = COLORS[9];
+  //   context.fillRect(x, y, 4, 4);
+  // },
+  // (x, y) => {
+  //   // dirt
+  //   context.fillStyle = COLORS[5];
+  //   context.fillRect(x, y, 4, 4);
+  // },
+  // (x, y) => {
+  //   // ice
+  //   context.fillStyle = COLORS[6];
+  //   context.fillRect(x, y, 4, 4);
+  // },
+  // (x, y) => {
+  //   // snow
+  //   context.fillStyle = COLORS[7];
+  //   context.fillRect(x, y, 4, 4);
+  // },
+  // (x, y) => {
+  //   // deep water
+  //   context.fillStyle = COLORS[1];
+  //   context.fillRect(x, y, 4, 4);
+  // },
+  // (x, y) => {
+  //   // shallow water
+  //   context.fillStyle = COLORS[12];
+  //   context.fillRect(x, y, 4, 4);
+  // },
 ];
+
+for (let i = 0; i < 16; i++) {
+  drawTerrain.push((x, y) => {
+    context.fillStyle = COLORS[i];
+    context.fillRect(x, y, 4, 4);
+  });
+}
 
 const drawUnit: ((x: number, y: number) => void)[] = [
   (x, y) => { },
