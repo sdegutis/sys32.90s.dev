@@ -30,7 +30,17 @@ class UIElement {
     public rect: Rect,
   ) { }
 
-  tick(delta: number) { }
+  tick(delta: number) {
+    for (let i = 0; i < this.children.length; i++) {
+      this.children[i].tick(delta);
+    }
+  }
+
+  onMouseDown() { }
+  onMouseMove() { }
+  onMouseUp() { }
+  onMouseExit() { }
+  onMouseEnter() { }
 
   findElementAt(p: Point): UIElement | null {
     for (let i = 0; i < this.children.length; i++) {
@@ -44,20 +54,16 @@ class UIElement {
 
 }
 
-class Game extends UIElement {
-
-  mouse = new Point(0, 0);
+class Root extends UIElement {
 
   constructor() {
     super(Rect.from(0, 0, 320, 180));
   }
 
   override tick(delta: number): void {
-    for (let i = 0; i < this.children.length; i++) {
-      this.children[i].tick(delta);
-    }
+    super.tick(delta);
 
-    this.mouse.fill('#00f');
+    mouse.fill('#00f');
   }
 
 }
@@ -72,6 +78,19 @@ class Point {
   fill(c: string) {
     context.fillStyle = c;
     context.fillRect(this.x, this.y, 1, 1);
+  }
+
+  diff(other: Point) {
+    return new Point(this.x - other.x, this.y - other.y);
+  }
+
+  copy() {
+    return new Point(this.x, this.y);
+  }
+
+  add(other: Point) {
+    this.x += other.x;
+    this.y += other.y;
   }
 
 }
@@ -106,23 +125,54 @@ class Rect {
       p.y < this.p.y + this.h);
   }
 
-}
-
-class Button extends UIElement {
-
-  tick(delta: number): void {
-    this.rect.stroke('#f00');
+  moveBy(p: Point) {
+    this.p.add(p);
   }
 
 }
 
-const game = new Game();
+class Button extends UIElement {
 
+  dragStart: Point | null = null;
+  dragOffset: Point | null = null;
 
+  over = false;
 
-const b = new Button(Rect.from(10, 10, 20, 20));
-game.children.push(b);
+  tick(delta: number): void {
+    this.rect.stroke(this.over ? '#f00' : '#0f0');
+  }
 
+  onMouseDown(): void {
+    this.dragStart = mouse.copy();
+  }
+
+  onMouseEnter(): void {
+    this.over = true;
+  }
+
+  onMouseExit(): void {
+    this.over = false;
+  }
+
+  onMouseMove(): void {
+    if (this.dragStart) {
+      this.dragOffset = mouse.diff(this.dragStart);
+    }
+  }
+
+  onMouseUp(): void {
+    if (this.dragOffset) {
+      this.rect.moveBy(this.dragOffset);
+    }
+
+    this.dragStart = null;
+    this.dragOffset = null;
+  }
+
+}
+
+const mouse = new Point(0, 0);
+const root = new Root();
 
 let last = +document.timeline.currentTime!;
 function update(t: number) {
@@ -130,30 +180,41 @@ function update(t: number) {
     context.clearRect(0, 0, 320, 180);
     const delta = t - last;
     last = t;
-    game.tick(delta);
+    root.tick(delta);
   }
   requestAnimationFrame(update);
 }
 requestAnimationFrame(update);
 
-
-
-
+let lastElement: UIElement | null;
 
 canvas.onmousedown = (e) => {
-  game.mouse.x = Math.round(e.offsetX / SCALE);
-  game.mouse.y = Math.round(e.offsetY / SCALE);
-
-  console.log('onmousedown', game.mouse, game.findElementAt(game.mouse));
+  mouse.x = Math.round(e.offsetX / SCALE);
+  mouse.y = Math.round(e.offsetY / SCALE);
+  root.findElementAt(mouse)?.onMouseDown();
 };
 
 canvas.onmouseup = (e) => {
-  console.log('onmouseup');
+  root.findElementAt(mouse)?.onMouseUp();
 };
 
 canvas.onmousemove = (e) => {
-  game.mouse.x = Math.round(e.offsetX / SCALE);
-  game.mouse.y = Math.round(e.offsetY / SCALE);
+  mouse.x = Math.round(e.offsetX / SCALE);
+  mouse.y = Math.round(e.offsetY / SCALE);
+  const current = root.findElementAt(mouse);
 
-  console.log('onmousemove', game.mouse, game.findElementAt(game.mouse));
+  if (lastElement !== current) {
+    lastElement?.onMouseExit();
+    current?.onMouseEnter();
+    lastElement = current;
+  }
+
+  current?.onMouseMove();
 };
+
+
+
+
+
+const b = new Button(Rect.from(10, 10, 20, 20));
+root.children.push(b);
