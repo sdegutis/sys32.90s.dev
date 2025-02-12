@@ -118,9 +118,9 @@ function rectline(x: number, y: number, w: number, h: number, c: string) {
   context.strokeRect(x + 0.5 + camera.x, y + 0.5 + camera.y, w - 1, h - 1);
 }
 
-function rectfill(r: Rect, c: string) {
+function rectfill(x: number, y: number, w: number, h: number, c: string) {
   context.fillStyle = c;
-  context.fillRect(r.x, r.y, r.w, r.h);
+  context.fillRect(x + camera.x, y + camera.y, w, h);
 }
 
 
@@ -213,10 +213,12 @@ class Box extends UIElement {
 
   dragger: Dragger | null = null;
 
+  col = '#ff0';
+
   draw(): void {
     this.drawStart();
 
-    rectfill(this.rect, '#ff0');
+    rectfill(0, 0, this.rect.w, this.rect.h, this.col);
     super.draw();
 
     this.drawEnd();
@@ -244,11 +246,11 @@ class Button extends UIElement {
     super.draw();
 
     let col = '#00f';
-    if (b.inside) col = '#0f0';
-    if (b.dragger) col = '#f00';
-    if (b.clicking) col = '#fff';
+    if (button.inside) col = '#0f0';
+    if (button.dragger) col = '#f00';
+    if (button.clicking) col = '#fff';
 
-    rectline(0, 0, b.rect.w, b.rect.h, col);
+    rectline(0, 0, button.rect.w, button.rect.h, col);
 
     this.drawEnd();
   }
@@ -279,12 +281,17 @@ class Button extends UIElement {
 
 }
 
-const box = new Box({ x: 10, y: 10, w: 20, h: 20 });
-root.children.push(box);
+const box1 = new Box({ x: 10, y: 10, w: 20, h: 20 });
+box1.col = '#ff0';
+root.children.push(box1);
 
-const b = new Button({ x: 0, y: 0, w: 5, h: 5 });
-box.children.push(b);
+const box2 = new Box({ x: 1, y: 1, w: 10, h: 10 });
+box2.col = '#0ff';
+box1.children.push(box2);
 
-b.onClick = () => {
+const button = new Button({ x: 0, y: 0, w: 5, h: 5 });
+box2.children.push(button);
+
+button.onClick = () => {
   console.log('clicked');
 };
