@@ -1,35 +1,35 @@
 import { callbacks, COLORS, context, mouse } from "./crt.js";
 
-type Tile = {
-  type: 'grass' | 'tree' | 'farmer' | 'gold' | 'rock',
-  x: number,
-  y: number,
-  age: number,
+const mapData = {
+  width: 0,
+  height: 0,
+  terrain: [0],
+  units: [0],
 };
 
-// 80 x 45
+mapData.width = 200;
+mapData.height = 200;
+mapData.terrain = Array(mapData.width * mapData.height).fill(0);
+mapData.units = Array(mapData.width * mapData.height).fill(0);
 
-const tiles: Tile[][] = [];
-for (let y = 0; y < 45; y++) {
-  const row: Tile[] = [];
-  tiles.push(row);
-  for (let x = 0; x < 80; x++) {
-    row.push({ type: 'grass', x, y, age: 0 });
-  }
-}
-
-function pset(c: number, x: number, y: number) {
-  context.fillStyle = COLORS[c];
-  context.fillRect(x, y, 1, 1);
-}
-
-const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
-  grass: (x, y) => {
+const drawTerrain: ((x: number, y: number) => void)[] = [
+  (x, y) => {
     context.fillStyle = COLORS[3];
     context.fillRect(x, y, 4, 4);
   },
-  gold: (x, y) => {
-    // draw.grass(x, y);
+  (x, y) => {
+    context.fillStyle = COLORS[5];
+    context.fillRect(x, y, 4, 4);
+  },
+  (x, y) => {
+    context.fillStyle = COLORS[4];
+    context.fillRect(x, y, 4, 4);
+  },
+];
+
+const drawUnit: ((x: number, y: number) => void)[] = [
+  (x, y) => {
+    // goldmine
     pset(6, x + 2, y + 1);
     pset(6, x + 1, y + 2);
     pset(6, x + 1, y + 3);
@@ -38,8 +38,8 @@ const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
     pset(1, x + 2, y + 2);
     pset(1, x + 2, y + 3);
   },
-  rock: (x, y) => {
-    draw.grass(x, y);
+  (x, y) => {
+    // rock
     pset(6, x + 2, y + 1);
     pset(6, x + 3, y + 1);
     pset(6, x + 1, y + 2);
@@ -49,31 +49,40 @@ const draw: { [K in Tile['type']]: (x: number, y: number) => void } = {
     pset(5, x + 3, y + 3);
     pset(5, x + 3, y + 2);
   },
-  tree: (x, y) => {
-    // draw.grass(x, y);
+  (x, y) => {
+    // tree
     pset(11, x + 1, y + 1);
     pset(11, x, y + 2);
     pset(11, x + 1, y + 2);
     pset(11, x + 2, y + 2);
     pset(5, x + 1, y + 3);
   },
-  farmer: (x, y) => {
-    draw.grass(x, y);
-
-    let xx = 0;
-
-    pset(15, xx + x + 1, y);
-    pset(2, xx + x + 1, y + 1);
-    pset(1, xx + x + 1, y + 2);
+  (x, y) => {
+    // farmer
+    pset(15, x + 1, y);
+    pset(2, x + 1, y + 1);
+    pset(1, x + 1, y + 2);
   },
-};
+];
+
+for (let y = 10; y < 20; y++) {
+  for (let x = 20; x < 30; x++) {
+    const i = y * mapData.width + x;
+    // mapData.terrain[i] = 2;
+    mapData.units[i] = 4;
+  }
+}
 
 callbacks.ontick = (delta: number) => {
   // draw each tile
   for (let y = 0; y < 45; y++) {
     for (let x = 0; x < 80; x++) {
-      const fn = draw[tiles[y][x].type];
-      fn(x * 4, y * 4);
+      const i = y * mapData.width + x;
+      drawTerrain[mapData.terrain[i]](x * 4, y * 4);
+      const unit = mapData.units[i];
+      if (unit > 0) {
+        drawUnit[unit - 1](x * 4, y * 4);
+      }
     }
   }
 
@@ -103,3 +112,8 @@ callbacks.ontick = (delta: number) => {
   context.fillStyle = '#fff';
   context.fillRect(mouse.x, mouse.y, 1, 1);
 };
+
+function pset(c: number, x: number, y: number) {
+  context.fillStyle = COLORS[c];
+  context.fillRect(x, y, 1, 1);
+}
