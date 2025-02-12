@@ -14,6 +14,7 @@ mapData.units = Array(mapData.width * mapData.height).fill(0);
 
 const drawTerrain: ((x: number, y: number) => void)[] = [
   (x, y) => {
+    // grass
     context.fillStyle = COLORS[3];
     context.fillRect(x, y, 4, 4);
   },
@@ -87,7 +88,7 @@ function setMapTile(index: number) {
 }
 
 callbacks.onscroll = (up) => {
-  if (up) {
+  if (!up) {
     tool--;
     if (tool < 0) tool = tools.length - 1;
   }
