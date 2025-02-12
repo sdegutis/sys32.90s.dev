@@ -107,7 +107,7 @@ function pset(p: Point, c: string) {
   rectfill(p.x, p.y, 1, 1, c);
 }
 
-function rectline(x: number, y: number, w: number, h: number, c: string) {
+function drawrect(x: number, y: number, w: number, h: number, c: string) {
   context.strokeStyle = c;
   context.strokeRect(x + 0.5 + camera.x, y + 0.5 + camera.y, w - 1, h - 1);
 }
@@ -238,7 +238,7 @@ class Button extends Box {
     if (button.dragger) col = '#f00';
     if (button.clicking) col = '#fff';
 
-    rectline(0, 0, button.rect.w, button.rect.h, col);
+    drawrect(0, 0, button.rect.w, button.rect.h, col);
     pset({ x: 0, y: 0 }, '#fff');
   }
 
@@ -269,11 +269,11 @@ class Button extends Box {
 }
 
 const box1 = new Box2({ x: 10, y: 10, w: 20, h: 20 });
-box1.col = '#ff0';
+box1.col = '#ff03';
 root.children.push(box1);
 
 const box2 = new Box2({ x: 1, y: 1, w: 10, h: 10 });
-box2.col = '#0ff';
+box2.col = '#0ff3';
 box1.children.push(box2);
 
 const button = new Button({ x: 0, y: 0, w: 5, h: 5 });
