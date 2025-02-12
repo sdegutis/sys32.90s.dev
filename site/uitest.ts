@@ -40,6 +40,22 @@ class UIElement {
     }
   }
 
+  draw() {
+    for (let i = 0; i < this.children.length; i++) {
+      this.children[i].draw();
+    }
+  }
+
+  drawStart() {
+    camera.x += this.rect.x;
+    camera.y += this.rect.y;
+  }
+
+  drawEnd() {
+    camera.x -= this.rect.x;
+    camera.y -= this.rect.y;
+  }
+
   onMouseDown() { }
   onMouseUp() { }
   onMouseExit() { }
@@ -64,8 +80,8 @@ class Root extends UIElement {
     super({ x: 0, y: 0, w: 320, h: 180 });
   }
 
-  tick(delta: number): void {
-    super.tick(delta);
+  draw(): void {
+    super.draw();
     if (this.showMouse) pset(mouse.point, '#00f');
   }
 
@@ -128,6 +144,7 @@ function update(t: number) {
     const delta = t - last;
     last = t;
     root.tick(delta);
+    root.draw();
   }
   requestAnimationFrame(update);
 }
@@ -192,9 +209,13 @@ class Box extends UIElement {
 
   dragger: Dragger | null = null;
 
-  tick(delta: number): void {
+  draw(): void {
+    this.drawStart();
+
     rectfill(this.rect, '#ff0');
-    super.tick(delta);
+    super.draw();
+
+    this.drawEnd();
   }
 
   onMouseDown(): void {
@@ -213,8 +234,25 @@ class Button extends UIElement {
   inside = false;
   clicking = false;
 
-  tick(delta: number): void {
-    this.draw();
+  draw(): void {
+    this.drawStart();
+
+    super.draw();
+
+    let col = '#00f';
+    if (b.inside) col = '#0f0';
+    if (b.dragger) col = '#f00';
+    if (b.clicking) col = '#fff';
+
+    camera.x = b.rect.x;
+    camera.y = b.rect.y;
+
+    rectline(0, 0, b.rect.w, b.rect.h, col);
+
+    camera.x = 0;
+    camera.y = 0;
+
+    this.drawEnd();
   }
 
   onMouseEnter(): void {
@@ -240,7 +278,6 @@ class Button extends UIElement {
   }
 
   onClick() { }
-  draw() { }
 
 }
 
@@ -249,21 +286,6 @@ root.children.push(box);
 
 const b = new Button({ x: 0, y: 0, w: 5, h: 5 });
 box.children.push(b);
-
-b.draw = () => {
-  let col = '#00f3';
-  if (b.inside) col = '#0f0';
-  if (b.dragger) col = '#f00';
-  if (b.clicking) col = '#fff';
-
-  camera.x = b.rect.x;
-  camera.y = b.rect.y;
-
-  rectline(0, 0, b.rect.w, b.rect.h, col);
-
-  camera.x = 0;
-  camera.y = 0;
-}
 
 b.onClick = () => {
   console.log('clicked');
