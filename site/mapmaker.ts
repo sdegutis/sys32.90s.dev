@@ -21,6 +21,11 @@ for (let i = 0; i < 16; i++) {
   });
 }
 
+function pset(c: number, x: number, y: number) {
+  context.fillStyle = COLORS[c];
+  context.fillRect(x, y, 1, 1);
+}
+
 const drawUnit: ((x: number, y: number) => void)[] = [
   (x, y) => { },
   (x, y) => {
@@ -175,13 +180,6 @@ callbacks.ontick = (delta: number) => {
       }
     }
   }
-
-  // // draw mouse
-  // context.fillStyle = '#0007';
-  // context.fillRect(mouse.x - 2, mouse.y, 5, 1);
-  // context.fillRect(mouse.x, mouse.y - 2, 1, 5);
-  // context.fillStyle = '#fff';
-  // context.fillRect(mouse.x, mouse.y, 1, 1);
 };
 
 callbacks.ondragend = () => {
@@ -191,8 +189,3 @@ callbacks.ondragend = () => {
   dragx = 0;
   dragy = 0;
 };
-
-function pset(c: number, x: number, y: number) {
-  context.fillStyle = COLORS[c];
-  context.fillRect(x, y, 1, 1);
-}
