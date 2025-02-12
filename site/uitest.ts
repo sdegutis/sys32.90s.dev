@@ -26,9 +26,9 @@ canvas.onkeyup = (e) => {
 
 
 
-class UIElement {
+class Box {
 
-  children: UIElement[] = [];
+  children: Box[] = [];
 
   constructor(
     public rect: Rect,
@@ -40,9 +40,9 @@ class UIElement {
     }
   }
 
-  draw() {
+  drawChildren() {
     for (let i = 0; i < this.children.length; i++) {
-      this.children[i].draw();
+      this.children[i].drawChildren();
     }
   }
 
@@ -61,7 +61,7 @@ class UIElement {
   onMouseExit() { }
   onMouseEnter() { }
 
-  findElementAt(p: Point): UIElement | null {
+  findElementAt(p: Point): Box | null {
     p.x -= this.rect.x;
     p.y -= this.rect.y;
     for (let i = 0; i < this.children.length; i++) {
@@ -76,7 +76,7 @@ class UIElement {
 
 }
 
-class Root extends UIElement {
+class Root extends Box {
 
   showMouse = true;
 
@@ -84,8 +84,8 @@ class Root extends UIElement {
     super({ x: 0, y: 0, w: 320, h: 180 });
   }
 
-  draw(): void {
-    super.draw();
+  drawChildren(): void {
+    super.drawChildren();
     if (this.showMouse) pset(mouse.point, '#00f');
   }
 
@@ -147,13 +147,13 @@ function update(t: number) {
     const delta = t - last;
     last = t;
     root.tick(delta);
-    root.draw();
+    root.drawChildren();
   }
   requestAnimationFrame(update);
 }
 requestAnimationFrame(update);
 
-let lastHovered: UIElement | null = null;
+let lastHovered: Box | null = null;
 
 let onMouseMove: (() => void) | null = null;
 
@@ -191,7 +191,7 @@ class Dragger {
   startMouse;
   startElPos;
 
-  constructor(private el: UIElement) {
+  constructor(private el: Box) {
     onMouseMove = () => this.update();
     this.startMouse = { ...mouse.point };
     this.startElPos = { ...el.rect };
@@ -208,17 +208,17 @@ class Dragger {
 
 }
 
-class Box extends UIElement {
+class Box2 extends Box {
 
   dragger: Dragger | null = null;
 
   col = '#ff0';
 
-  draw(): void {
+  drawChildren(): void {
     this.drawStart();
 
     rectfill(0, 0, this.rect.w, this.rect.h, this.col);
-    super.draw();
+    super.drawChildren();
 
     this.drawEnd();
   }
@@ -233,16 +233,16 @@ class Box extends UIElement {
 
 }
 
-class Button extends UIElement {
+class Button extends Box {
 
   dragger: Dragger | null = null;
   inside = false;
   clicking = false;
 
-  draw(): void {
+  drawChildren(): void {
     this.drawStart();
 
-    super.draw();
+    super.drawChildren();
 
     let col = '#00f';
     if (button.inside) col = '#0f0';
@@ -281,11 +281,11 @@ class Button extends UIElement {
 
 }
 
-const box1 = new Box({ x: 10, y: 10, w: 20, h: 20 });
+const box1 = new Box2({ x: 10, y: 10, w: 20, h: 20 });
 box1.col = '#ff0';
 root.children.push(box1);
 
-const box2 = new Box({ x: 1, y: 1, w: 10, h: 10 });
+const box2 = new Box2({ x: 1, y: 1, w: 10, h: 10 });
 box2.col = '#0ff';
 box1.children.push(box2);
 
