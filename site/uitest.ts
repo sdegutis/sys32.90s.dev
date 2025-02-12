@@ -56,14 +56,15 @@ class UIElement {
 
 class Root extends UIElement {
 
+  showMouse = true;
+
   constructor() {
     super(Rect.from(0, 0, 320, 180));
   }
 
   override tick(delta: number): void {
     super.tick(delta);
-
-    mouse.fill('#00f');
+    if (this.showMouse) mouse.fill('#00f');
   }
 
 }
@@ -146,7 +147,7 @@ function update(t: number) {
 }
 requestAnimationFrame(update);
 
-let lastElement: UIElement | null;
+let lastElement: UIElement | null = null;
 
 canvas.onmousedown = (e) => {
   mouse.x = Math.round(e.offsetX / SCALE);
@@ -193,10 +194,12 @@ class Button extends UIElement {
 
   onMouseEnter(): void {
     this.over = true;
+    root.showMouse = false;
   }
 
   onMouseExit(): void {
     this.over = false;
+    root.showMouse = true;
   }
 
   onMouseMove(): void {
