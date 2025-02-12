@@ -1,4 +1,4 @@
-import { COLORS, context } from "./crt.js";
+import { context } from "./crt.js";
 
 const mapping = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_`;
 const src = `
@@ -44,9 +44,7 @@ for (let i = 0; i < mapping.length; i++) {
   }
 }
 
-export function print(x: number, y: number, text: string, col = 7) {
-  context.fillStyle = COLORS[col];
-
+export function print(x: number, y: number, text: string) {
   text = text.toLowerCase();
 
   let posx = 0;
