@@ -133,7 +133,7 @@ callbacks.ontick = (delta: number) => {
 
   // draw mouse selection
   if (mouse.drag) {
-    if (mouse.button > 0) {
+    if (keys[' ']) {
       dragx = mouse.x - mouse.drag.x;
       dragy = mouse.y - mouse.drag.y;
     }
