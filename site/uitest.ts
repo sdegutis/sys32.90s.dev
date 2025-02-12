@@ -209,9 +209,7 @@ class Button extends UIElement {
   }
 
   onMouseDown(): void {
-    if (keys[' ']) {
-      this.dragger = new Dragger(this)
-    }
+    if (keys[' ']) this.dragger = new Dragger(this)
     else this.clicking = true;
   }
 
