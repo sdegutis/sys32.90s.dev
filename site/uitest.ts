@@ -202,6 +202,7 @@ class Button extends UIElement {
   onMouseExit(): void {
     this.inside = false;
     this.clicking = false;
+    this.dragger = null;
   }
 
   onMouseDown(): void {
@@ -233,7 +234,7 @@ b.draw = () => {
   let col = '#00f';
   if (b.inside) col = '#0f0';
   if (b.dragger) col = '#f00';
-  if (b.clicking) col = '#ff0';
+  if (b.clicking) col = '#fff';
   strokeRect(b.rect, col);
 }
 
