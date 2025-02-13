@@ -10,7 +10,10 @@ export class Box {
   children: Box[] = [];
 
   constructor(
-    public rect: Rect,
+    public x: number,
+    public y: number,
+    public w: number,
+    public h: number,
   ) { }
 
   tick(delta: number) {
@@ -22,11 +25,11 @@ export class Box {
   draw() {
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
-      camera.x += child.rect.x;
-      camera.y += child.rect.y;
+      camera.x += child.x;
+      camera.y += child.y;
       child.draw();
-      camera.x -= child.rect.x;
-      camera.y -= child.rect.y;
+      camera.x -= child.x;
+      camera.y -= child.y;
     }
   }
 
@@ -36,15 +39,15 @@ export class Box {
   onMouseEnter() { }
 
   findElementAt(p: Point): Box | null {
-    p.x -= this.rect.x;
-    p.y -= this.rect.y;
+    p.x -= this.x;
+    p.y -= this.y;
     for (let i = 0; i < this.children.length; i++) {
       const found = this.children[i].findElementAt(p);
       if (found) return found;
     }
-    p.x += this.rect.x;
-    p.y += this.rect.y;
-    if (rectContainsPoint(this.rect, p)) return this;
+    p.x += this.x;
+    p.y += this.y;
+    if (rectContainsPoint(this, p)) return this;
     return null;
   }
 
@@ -56,7 +59,7 @@ export class Box {
 
 export const camera: Point = { x: 0, y: 0 };
 
-export const root = new Box({ x: 0, y: 0, w: 320, h: 180 });
+export const root = new Box(0, 0, 320, 180);
 
 export const keys: Record<string, boolean> = {};
 
