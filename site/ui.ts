@@ -5,7 +5,7 @@ const context = canvas.getContext('2d')!;
 
 
 
-export const camera = { x: 0, y: 0 };
+const camera = { x: 0, y: 0 };
 
 export class Box {
 
@@ -116,6 +116,16 @@ canvas.addEventListener('mousemove', (e) => {
 }, { passive: true });
 
 canvas.oncontextmenu = (e) => { e.preventDefault(); };
+
+
+
+
+
+
+
+
+
+
 
 let last = +document.timeline.currentTime!;
 function update(t: number) {
