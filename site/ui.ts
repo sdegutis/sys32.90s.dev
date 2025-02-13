@@ -9,36 +9,19 @@ export const camera = { x: 0, y: 0 };
 
 export class Box {
 
-  name: string;
-  x = 0;
-  y = 0;
-  w = 0;
-  h = 0;
-  background?: string;
   children: Box[] = [];
   passthrough = false;
   hovered = false;
-
   mouse = { x: 0, y: 0 };
 
-  constructor(name: string) {
-    this.name = name;
-  }
-
-  build(
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-    background?: string,
-  ) {
-    this.x = x;
-    this.y = y;
-    this.w = w;
-    this.h = h;
-    this.background = background;
-    return this;
-  }
+  constructor(
+    public name: string,
+    public x = 0,
+    public y = 0,
+    public w = 0,
+    public h = 0,
+    public background?: string,
+  ) { }
 
   draw() {
     if (this.background) {
@@ -60,10 +43,6 @@ export class Box {
   onMouseEnter() { }
 
 }
-
-
-
-
 
 
 
@@ -105,7 +84,7 @@ canvas.onkeyup = (e) => {
 
 
 
-export const root = new Box('root').build(0, 0, 320, 180);
+export const root = new Box('root', 0, 0, 320, 180);
 
 export const mouse = {
   x: 0,
@@ -243,8 +222,8 @@ export class DragHandle extends Box {
 
   #dragger: Dragger | null = null;
 
-  constructor(name: string, public moves: Box) {
-    super(name);
+  constructor(public moves: Box, ...args: ConstructorParameters<typeof Box>) {
+    super(...args);
   }
 
   onMouseDown(): void {
