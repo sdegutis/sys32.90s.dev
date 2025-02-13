@@ -1,4 +1,4 @@
-import { Box, drawrect, keys, mouse, pset, root } from "./ui/screen.js";
+import { Box, Dragger, drawrect, keys, mouse, pset, root } from "./ui/screen.js";
 
 
 
@@ -14,27 +14,6 @@ import { Box, drawrect, keys, mouse, pset, root } from "./ui/screen.js";
 
 
 
-
-class Dragger {
-
-  startMouse;
-  startElPos;
-
-  constructor(private el: Box) {
-    this.startMouse = { x: mouse.x, y: mouse.y };
-    this.startElPos = { x: el.x, y: el.y };
-  }
-
-  update() {
-    const offx = this.startMouse.x - this.startElPos.x;
-    const offy = this.startMouse.y - this.startElPos.y;
-    const diffx = mouse.x - this.startElPos.x;
-    const diffy = mouse.y - this.startElPos.y;
-    this.el.x = this.startElPos.x + diffx - offx;
-    this.el.y = this.startElPos.y + diffy - offy;
-  }
-
-}
 
 class Box2 extends Box {
 
@@ -76,7 +55,7 @@ class Button extends Box {
   }
 
   onMouseDown(): void {
-    if (keys[' ']) this.dragger = new Dragger(this)
+    if (keys[' ']) this.dragger = new Dragger(box2)
     else this.clicking = true;
   }
 
@@ -92,10 +71,10 @@ class Button extends Box {
 
 }
 
-const box1 = new Box2(10, 10, 20, 20, '#ff03');
+const box1 = new Box(10, 10, 20, 20, '#ff03');
 root.children.push(box1);
 
-const box2 = new Box2(1, 1, 10, 10, '#0ff3');
+const box2 = new Box(1, 1, 10, 10, '#0ff3');
 box1.children.push(box2);
 
 const button = new Button(0, 0, 5, 5);

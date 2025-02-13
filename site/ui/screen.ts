@@ -176,3 +176,33 @@ export interface Rect {
   w: number;
   h: number;
 }
+
+
+
+
+
+
+
+
+
+
+export class Dragger {
+
+  startMouse;
+  startElPos;
+
+  constructor(private el: Box) {
+    this.startMouse = { x: mouse.x, y: mouse.y };
+    this.startElPos = { x: el.x, y: el.y };
+  }
+
+  update() {
+    const offx = this.startMouse.x - this.startElPos.x;
+    const offy = this.startMouse.y - this.startElPos.y;
+    const diffx = mouse.x - this.startElPos.x;
+    const diffy = mouse.y - this.startElPos.y;
+    this.el.x = this.startElPos.x + diffx - offx;
+    this.el.y = this.startElPos.y + diffy - offy;
+  }
+
+}
