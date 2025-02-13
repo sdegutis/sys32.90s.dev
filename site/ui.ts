@@ -148,6 +148,14 @@ canvas.oncontextmenu = (e) => { e.preventDefault(); };
 
 
 
+export const cursor = new Box(0, 0, 320, 180);
+// cursor.passthrough = true;
+cursor.draw = () => mousingOver.drawCursor();
+
+
+
+
+
 let tick = (delta: number) => { };
 let last = +document.timeline.currentTime!;
 
@@ -155,6 +163,7 @@ function update(t: number) {
   if (t - last >= 30) {
     tick(t - last);
     root.draw();
+    cursor.draw();
     last = t;
   }
   requestAnimationFrame(update);
