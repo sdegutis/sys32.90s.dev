@@ -7,7 +7,8 @@ const context = canvas.getContext('2d')!;
 
 export class Box {
 
-  children: Box[] = [];
+  #children: Box[] = [];
+  parent?: Box;
 
   constructor(
     public x: number,
@@ -18,8 +19,8 @@ export class Box {
   ) { }
 
   tick(delta: number) {
-    for (let i = 0; i < this.children.length; i++) {
-      this.children[i].tick(delta);
+    for (let i = 0; i < this.#children.length; i++) {
+      this.#children[i].tick(delta);
     }
   }
 
@@ -28,8 +29,8 @@ export class Box {
       rectfill(0, 0, this.w, this.h, this.background);
     }
 
-    for (let i = 0; i < this.children.length; i++) {
-      const child = this.children[i];
+    for (let i = 0; i < this.#children.length; i++) {
+      const child = this.#children[i];
       camera.x += child.x;
       camera.y += child.y;
       child.draw();
@@ -46,14 +47,19 @@ export class Box {
   findElementAt(p: Point): Box | null {
     p.x -= this.x;
     p.y -= this.y;
-    for (let i = 0; i < this.children.length; i++) {
-      const found = this.children[i].findElementAt(p);
+    for (let i = 0; i < this.#children.length; i++) {
+      const found = this.#children[i].findElementAt(p);
       if (found) return found;
     }
     p.x += this.x;
     p.y += this.y;
     if (rectContainsPoint(this, p)) return this;
     return null;
+  }
+
+  addChild(child: Box) {
+    this.#children.push(child);
+    child.parent = this;
   }
 
 }
@@ -174,6 +180,18 @@ function rectContainsPoint(r: Rect, p: Point) {
     p.y >= r.y &&
     p.x < r.x + r.w &&
     p.y < r.y + r.h);
+}
+
+export function mousePosIn(box: Box) {
+  let x = mouse.x;
+  let y = mouse.y;
+  let parent = box.parent;
+  while (parent) {
+    x -= parent.x;
+    y -= parent.y;
+    parent = parent.parent;
+  }
+  return { x, y };
 }
 
 
