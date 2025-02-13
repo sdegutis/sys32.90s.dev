@@ -40,16 +40,11 @@ class Box2 extends Box {
 
   dragger: Dragger | null = null;
 
-  col = '#ff0';
+  color = '#ff0';
 
   tick(delta: number): void {
     super.tick(delta);
     this.dragger?.update();
-  }
-
-  draw(): void {
-    rectfill(0, 0, this.w, this.h, this.col);
-    super.draw();
   }
 
   onMouseDown(): void {
@@ -112,11 +107,11 @@ class Button extends Box {
 }
 
 const box1 = new Box2(10, 10, 20, 20);
-box1.col = '#ff03';
+box1.color = '#ff03';
 root.children.push(box1);
 
 const box2 = new Box2(1, 1, 10, 10);
-box2.col = '#0ff3';
+box2.color = '#0ff3';
 box1.children.push(box2);
 
 const button = new Button(0, 0, 5, 5);

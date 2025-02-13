@@ -9,6 +9,8 @@ export class Box {
 
   children: Box[] = [];
 
+  color: string | null = null;
+
   constructor(
     public x: number,
     public y: number,
@@ -23,6 +25,10 @@ export class Box {
   }
 
   draw() {
+    if (this.color) {
+      rectfill(0, 0, this.w, this.h, this.color);
+    }
+
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
       camera.x += child.x;
