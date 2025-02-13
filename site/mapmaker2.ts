@@ -8,7 +8,7 @@ root.children.push(toolArea);
 
 
 const saveButton = new Button(1, 1, 19, 8, '#0003');
-saveButton.color = '#fff7';
+saveButton.color = '#fff3';
 saveButton.text = 'save';
 toolArea.children.push(saveButton);
 
@@ -47,5 +47,5 @@ map.onMouseDown = () => {
 
 map.draw = () => {
   map.drawBackground();
-  print(1, 2, '#fff', 'testing');
+  // print(1, 2, '#fff', 'testing');
 }
