@@ -109,20 +109,17 @@ canvas.onmousedown = (e) => {
   mouse.button = e.button;
   mouse.x = Math.floor(e.offsetX);
   mouse.y = Math.floor(e.offsetY);
-  lastHovered?.onMouseDown();
+  lastHovered.onMouseDown();
 };
 
 canvas.onmouseup = (e) => {
-  lastHovered?.onMouseUp();
+  lastHovered.onMouseUp();
 };
 
 canvas.onmousemove = (e) => {
   mouse.x = Math.floor(e.offsetX);
   mouse.y = Math.floor(e.offsetY);
-  console.log('')
-  console.log('starting check')
   const hoveredOver = findElementAt(root, mouse.x, mouse.y)!;
-  console.log('found:', hoveredOver.name)
 
   if (lastHovered !== hoveredOver) {
     lastHovered.hovered = false;
@@ -154,28 +151,16 @@ requestAnimationFrame(update);
 
 
 function findElementAt(box: Box, x: number, y: number): Box | null {
-
-  console.log(x, y, box.name)
-
-  if (box.passthrough) return null;
-
-  const inThis = (
-    x >= box.x &&
-    y >= box.y &&
-    x < box.x + box.w &&
-    y < box.y + box.h);
-
+  const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
   if (!inThis) return null;
 
   let i = box.children.length;
   while (i--) {
-    // for (let i = 0; i < this.children.length; i++) {
     const child = box.children[i];
+    if (child.passthrough) continue;
+
     const found = findElementAt(child, x - child.x, y - child.y);
-    if (found) {
-      // console.log(x, y, this.#children[i])
-      return found;
-    }
+    if (found) return found;
   }
 
   return box;
