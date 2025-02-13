@@ -109,8 +109,6 @@ let lastHovered: Box = root;
 
 canvas.onmousedown = (e) => {
   mouse.button = e.button;
-  mouse.x = Math.floor(e.offsetX);
-  mouse.y = Math.floor(e.offsetY);
   lastHovered.onMouseDown();
 };
 
@@ -119,8 +117,15 @@ canvas.onmouseup = (e) => {
 };
 
 canvas.onmousemove = (e) => {
-  mouse.x = Math.floor(e.offsetX);
-  mouse.y = Math.floor(e.offsetY);
+  const x = Math.floor(e.offsetX);
+  const y = Math.floor(e.offsetY);
+
+  if (x === mouse.x && y === mouse.y) return;
+  if (x >= 320 || y >= 180) return;
+
+  mouse.x = x;
+  mouse.y = y;
+
   const hoveredOver = findElementAt(root, mouse.x, mouse.y)!;
 
   if (lastHovered !== hoveredOver) {
@@ -248,6 +253,10 @@ export class DragHandle extends Box {
   }
 
   onMouseUp(): void {
+    this.dragger = null;
+  }
+
+  onMouseExit(): void {
     this.dragger = null;
   }
 
