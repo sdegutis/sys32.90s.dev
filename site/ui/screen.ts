@@ -64,7 +64,8 @@ export const root = new Box(0, 0, 320, 180);
 export const keys: Record<string, boolean> = {};
 
 export const mouse = {
-  point: { x: 0, y: 0 },
+  x: 0,
+  y: 0,
   button: 0,
 };
 
@@ -95,22 +96,22 @@ export function onMouseMove(fn: () => void) {
 
 canvas.onmousedown = (e) => {
   mouse.button = e.button;
-  mouse.point.x = Math.floor(e.offsetX);
-  mouse.point.y = Math.floor(e.offsetY);
-  root.findElementAt({ ...mouse.point })?.onMouseDown();
+  mouse.x = Math.floor(e.offsetX);
+  mouse.y = Math.floor(e.offsetY);
+  root.findElementAt({ ...mouse })?.onMouseDown();
 };
 
 canvas.onmouseup = (e) => {
   _onMouseMove = null;
-  root.findElementAt({ ...mouse.point })?.onMouseUp();
+  root.findElementAt({ ...mouse })?.onMouseUp();
 };
 
 let lastHovered: Box | null = null;
 
 canvas.onmousemove = (e) => {
-  mouse.point.x = Math.floor(e.offsetX);
-  mouse.point.y = Math.floor(e.offsetY);
-  const hoveredOver = root.findElementAt({ ...mouse.point });
+  mouse.x = Math.floor(e.offsetX);
+  mouse.y = Math.floor(e.offsetY);
+  const hoveredOver = root.findElementAt({ ...mouse });
 
   if (lastHovered !== hoveredOver) {
     lastHovered?.onMouseExit();

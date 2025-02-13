@@ -22,15 +22,15 @@ class Dragger {
 
   constructor(private el: Box) {
     onMouseMove(() => this.update());
-    this.startMouse = { x: mouse.point.x, y: mouse.point.y };
+    this.startMouse = { x: mouse.x, y: mouse.y };
     this.startElPos = { x: el.x, y: el.y };
   }
 
   update() {
     const offx = this.startMouse.x - this.startElPos.x;
     const offy = this.startMouse.y - this.startElPos.y;
-    const diffx = mouse.point.x - this.startElPos.x;
-    const diffy = mouse.point.y - this.startElPos.y;
+    const diffx = mouse.x - this.startElPos.x;
+    const diffy = mouse.y - this.startElPos.y;
     this.el.x = this.startElPos.x + diffx - offx;
     this.el.y = this.startElPos.y + diffy - offy;
   }
@@ -119,5 +119,5 @@ button.onClick = () => {
 
 
 const cursor = new Box(0, 0, 320, 180);
-cursor.draw = () => pset(mouse.point, '#00f');
+cursor.draw = () => pset(mouse, '#00f');
 root.children.push(cursor);
