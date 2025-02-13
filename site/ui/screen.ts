@@ -148,12 +148,20 @@ export function pset(p: Point, c: string) {
 
 export function drawrect(x: number, y: number, w: number, h: number, c: string) {
   context.strokeStyle = c;
-  context.strokeRect(x + 0.5 + camera.x, y + 0.5 + camera.y, w - 1, h - 1);
+  context.strokeRect(
+    x + 0.5 + camera.x,
+    y + 0.5 + camera.y,
+    w - 1,
+    h - 1);
 }
 
 export function rectfill(x: number, y: number, w: number, h: number, c: string) {
   context.fillStyle = c;
-  context.fillRect(x + camera.x, y + camera.y, w, h);
+  context.fillRect(
+    x + camera.x,
+    y + camera.y,
+    w,
+    h);
 }
 
 
