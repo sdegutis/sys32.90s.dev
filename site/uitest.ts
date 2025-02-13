@@ -15,7 +15,7 @@ const handle = new DragHandle('draghandle', box1).build(0, 0, 8, 8, '#0003');
 box1.children.push(handle);
 
 button.onClick = () => {
-  console.log('clicked', mouse);
+  console.log('clicked', button.mouse.x, button.mouse.y);
 };
 
 button.draw = () => {

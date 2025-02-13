@@ -17,6 +17,8 @@ export class Box {
   passthrough = false;
   hovered = false;
 
+  mouse = { x: 0, y: 0 };
+
   constructor(name: string) {
     this.name = name;
   }
@@ -154,6 +156,9 @@ function findElementAt(box: Box, x: number, y: number): Box | null {
   const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
   if (!inThis) return null;
 
+  box.mouse.x = x;
+  box.mouse.y = y;
+
   let i = box.children.length;
   while (i--) {
     const child = box.children[i];
@@ -249,12 +254,17 @@ export class DragHandle extends Box {
 }
 
 export class Button extends Box {
+
   clicking = false;
+
   onClick() { }
+
   onMouseDown(): void { this.clicking = true; }
   onMouseExit(): void { this.clicking = false; }
+
   onMouseUp(): void {
     if (this.clicking) this.onClick();
     this.clicking = false;
   }
+
 }
