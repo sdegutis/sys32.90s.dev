@@ -5,6 +5,8 @@ const context = canvas.getContext('2d')!;
 
 
 
+export const camera = { x: 0, y: 0 };
+
 export class Box {
 
   name: string;
@@ -38,12 +40,6 @@ export class Box {
     return this;
   }
 
-  tick(delta: number) {
-    for (let i = 0; i < this.children.length; i++) {
-      this.children[i].tick(delta);
-    }
-  }
-
   draw() {
     if (this.background) {
       rectfill(0, 0, this.w, this.h, this.background);
@@ -60,7 +56,6 @@ export class Box {
   }
 
   onMouseDown() { }
-  onMouseUp() { }
   onMouseExit() { }
   onMouseEnter() { }
 
@@ -69,18 +64,6 @@ export class Box {
 
 
 
-
-export const camera = { x: 0, y: 0 };
-
-export const root = new Box('root').build(0, 0, 320, 180);
-
-export const keys: Record<string, boolean> = {};
-
-export const mouse = {
-  x: 0,
-  y: 0,
-  button: 0,
-};
 
 
 
@@ -97,12 +80,37 @@ new ResizeObserver(() => {
   canvas.style.transform = `scale(${s})`;
 }).observe(document.body);
 
+
+
+
+
+
+
+export const keys: Record<string, boolean> = {};
+
 canvas.onkeydown = (e) => {
   keys[e.key] = true;
 };
 
 canvas.onkeyup = (e) => {
   keys[e.key] = false;
+};
+
+
+
+
+
+
+
+
+
+
+export const root = new Box('root').build(0, 0, 320, 180);
+
+export const mouse = {
+  x: 0,
+  y: 0,
+  button: 0,
 };
 
 let lastHovered: Box = root;
@@ -112,11 +120,7 @@ canvas.onmousedown = (e) => {
   lastHovered.onMouseDown();
 };
 
-canvas.onmouseup = (e) => {
-  lastHovered.onMouseUp();
-};
-
-canvas.onmousemove = (e) => {
+canvas.addEventListener('mousemove', (e) => {
   const x = Math.floor(e.offsetX);
   const y = Math.floor(e.offsetY);
 
@@ -135,7 +139,7 @@ canvas.onmousemove = (e) => {
     hoveredOver.onMouseEnter();
     lastHovered = hoveredOver;
   }
-};
+}, { passive: true });
 
 canvas.oncontextmenu = (e) => { e.preventDefault(); };
 
@@ -145,7 +149,7 @@ function update(t: number) {
     context.clearRect(0, 0, 320, 180);
     const delta = t - last;
     last = t;
-    root.tick(delta);
+    // allthings.tick(delta);
     root.draw();
   }
   requestAnimationFrame(update);
@@ -237,27 +241,25 @@ class Dragger {
 
 export class DragHandle extends Box {
 
-  dragger: Dragger | null = null;
+  #dragger: Dragger | null = null;
 
   constructor(name: string, public moves: Box) {
     super(name);
   }
 
-  tick(delta: number): void {
-    super.tick(delta);
-    this.dragger?.update();
-  }
-
   onMouseDown(): void {
-    this.dragger = new Dragger(this.moves)
-  }
+    this.#dragger = new Dragger(this.moves);
 
-  onMouseUp(): void {
-    this.dragger = null;
-  }
+    const cancel = new AbortController();
 
-  onMouseExit(): void {
-    this.dragger = null;
+    canvas.addEventListener('mousemove', () => {
+      this.#dragger?.update();
+    }, { signal: cancel.signal });
+
+    canvas.addEventListener('mouseup', () => {
+      cancel.abort();
+      this.#dragger = null;
+    }, { once: true });
   }
 
 }
@@ -265,14 +267,21 @@ export class DragHandle extends Box {
 export class Button extends Box {
 
   clicking = false;
-
   onClick() { }
 
-  onMouseDown(): void { this.clicking = true; }
-  onMouseExit(): void { this.clicking = false; }
+  #cancel: AbortController | undefined;
 
-  onMouseUp(): void {
-    if (this.clicking) this.onClick();
+  onMouseDown(): void {
+    this.#cancel = new AbortController();
+    this.clicking = true;
+    canvas.addEventListener('mouseup', () => {
+      this.onClick();
+      this.clicking = false;
+    }, { signal: this.#cancel.signal, once: true });
+  }
+
+  onMouseExit(): void {
+    this.#cancel?.abort();
     this.clicking = false;
   }
 
