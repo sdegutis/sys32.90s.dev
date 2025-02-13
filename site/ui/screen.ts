@@ -62,7 +62,7 @@ export class Box {
 
 
 
-export const camera: Point = { x: 0, y: 0 };
+export const camera = { x: 0, y: 0 };
 
 export const root = new Box(0, 0, 320, 180);
 
@@ -152,6 +152,9 @@ export function rectfill(x: number, y: number, w: number, h: number, c: string) 
   context.fillStyle = c;
   context.fillRect(x + camera.x, y + camera.y, w, h);
 }
+
+
+
 
 
 export function rectContainsPoint(r: Rect, p: Point) {
