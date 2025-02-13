@@ -38,8 +38,6 @@ export class Box {
   }
 
   onMouseDown() { }
-  onMouseExit() { }
-  onMouseEnter() { }
 
 }
 
@@ -66,13 +64,13 @@ new ResizeObserver(() => {
 
 export const keys: Record<string, boolean> = {};
 
-canvas.onkeydown = (e) => {
+canvas.addEventListener('keydown', (e) => {
   keys[e.key] = true;
-};
+}, { passive: true });
 
-canvas.onkeyup = (e) => {
+canvas.addEventListener('keyup', (e) => {
   keys[e.key] = false;
-};
+}, { passive: true });
 
 
 
@@ -93,10 +91,10 @@ export const mouse = {
 
 let lastHovered: Box = root;
 
-canvas.onmousedown = (e) => {
+canvas.addEventListener('mousedown', (e) => {
   mouse.button = e.button;
   lastHovered.onMouseDown();
-};
+}, { passive: true });
 
 canvas.addEventListener('mousemove', (e) => {
   const x = Math.floor(e.offsetX);
@@ -113,8 +111,6 @@ canvas.addEventListener('mousemove', (e) => {
   if (lastHovered !== hoveredOver) {
     lastHovered.hovered = false;
     hoveredOver.hovered = true;
-    lastHovered.onMouseExit();
-    hoveredOver.onMouseEnter();
     lastHovered = hoveredOver;
   }
 }, { passive: true });
@@ -247,20 +243,24 @@ export class Button extends Box {
   clicking = false;
   onClick() { }
 
-  #cancel: AbortController | undefined;
-
   onMouseDown(): void {
-    this.#cancel = new AbortController();
+    const cancel = new AbortController();
     this.clicking = true;
+
     canvas.addEventListener('mouseup', () => {
+      cancel.abort();
       this.onClick();
       this.clicking = false;
-    }, { signal: this.#cancel.signal, once: true });
-  }
+    }, { signal: cancel.signal, once: true });
 
-  onMouseExit(): void {
-    this.#cancel?.abort();
-    this.clicking = false;
+    canvas.addEventListener('mousemove', () => {
+      console.log('hey', this.hovered);
+      if (!this.hovered) {
+        cancel.abort();
+        this.clicking = false;
+      }
+    }, { signal: cancel.signal });
+
   }
 
 }
