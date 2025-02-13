@@ -1,22 +1,25 @@
-import { Box, Dragger, drawrect, keys, mouse, pset, rectContainsPoint, root } from "./ui/screen.js";
+import { Box, Dragger, drawrect, keys, mouse, pset, root } from "./ui/screen.js";
 
 
 
 class Button extends Box {
 
   dragger: Dragger | null = null;
-  clicking = false;
   inside = false;
+  clicking = false;
 
   tick(delta: number): void {
     super.tick(delta);
     this.dragger?.update();
+  }
 
-    this.inside = rectContainsPoint(this, this.relativePoint(mouse));
+  onMouseEnter(): void {
+    this.inside = true;
+  }
 
-    if (!this.inside) {
-      this.clicking = false;
-    }
+  onMouseExit(): void {
+    this.inside = false;
+    this.clicking = false;
   }
 
   onMouseDown(): void {
@@ -37,16 +40,15 @@ class Button extends Box {
 }
 
 const box1 = new Box(10, 10, 20, 20, '#ff03');
-root.addChild(box1);
+root.children.push(box1);
 
 const box2 = new Box(1, 1, 10, 10, '#0ff3');
-box1.addChild(box2);
+box1.children.push(box2);
 
 const button = new Button(0, 0, 5, 5);
-box2.addChild(button);
+box2.children.push(button);
 
 button.onClick = () => {
-  console.log(mouse, button.relativePoint(mouse));
   console.log('clicked');
 };
 
@@ -63,4 +65,4 @@ button.draw = () => {
 
 const cursor = new Box(0, 0, 320, 180);
 cursor.draw = () => pset(mouse, '#00f');
-root.addChild(cursor);
+root.children.push(cursor);

@@ -7,9 +7,7 @@ const context = canvas.getContext('2d')!;
 
 export class Box {
 
-  private children: Box[] = [];
-
-  parent?: Box;
+  children: Box[] = [];
 
   constructor(
     public x: number,
@@ -42,6 +40,8 @@ export class Box {
 
   onMouseDown() { }
   onMouseUp() { }
+  onMouseExit() { }
+  onMouseEnter() { }
 
   findElementAt(p: Point): Box | null {
     p.x -= this.x;
@@ -54,22 +54,6 @@ export class Box {
     p.y += this.y;
     if (rectContainsPoint(this, p)) return this;
     return null;
-  }
-
-  addChild(child: Box) {
-    this.children.push(child);
-    child.parent = this;
-  }
-
-  relativePoint(point: Point) {
-    const p = { x: point.x, y: point.y };
-    let parent = this.parent;
-    while (parent) {
-      p.x -= parent.x;
-      p.y -= parent.y;
-      parent = parent.parent;
-    }
-    return p;
   }
 
 }
@@ -124,9 +108,18 @@ canvas.onmouseup = (e) => {
   root.findElementAt({ ...mouse })?.onMouseUp();
 };
 
+let lastHovered: Box | null = null;
+
 canvas.onmousemove = (e) => {
   mouse.x = Math.floor(e.offsetX);
   mouse.y = Math.floor(e.offsetY);
+  const hoveredOver = root.findElementAt({ ...mouse });
+
+  if (lastHovered !== hoveredOver) {
+    lastHovered?.onMouseExit();
+    hoveredOver?.onMouseEnter();
+    lastHovered = hoveredOver;
+  }
 };
 
 canvas.oncontextmenu = (e) => { e.preventDefault(); };
@@ -175,7 +168,7 @@ export function rectfill(x: number, y: number, w: number, h: number, c: string) 
 
 
 
-export function rectContainsPoint(r: Rect, p: Point) {
+function rectContainsPoint(r: Rect, p: Point) {
   return (
     p.x >= r.x &&
     p.y >= r.y &&
