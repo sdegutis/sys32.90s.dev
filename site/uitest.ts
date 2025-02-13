@@ -1,4 +1,4 @@
-import { Box, Button, DragHandle, drawrect, mouse, pset, root } from "./ui/screen.js";
+import { Box, Button, DragHandle, drawrect, mouse, pset, root } from "./ui.js";
 
 
 
