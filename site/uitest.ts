@@ -2,38 +2,6 @@ import { Box, Dragger, drawrect, keys, mouse, pset, root } from "./ui/screen.js"
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-class Box2 extends Box {
-
-  dragger: Dragger | null = null;
-
-  tick(delta: number): void {
-    super.tick(delta);
-    this.dragger?.update();
-  }
-
-  onMouseDown(): void {
-    this.dragger = new Dragger(this);
-  }
-
-  onMouseUp(): void {
-    this.dragger = null;
-  }
-
-}
-
 class Button extends Box {
 
   dragger: Dragger | null = null;
