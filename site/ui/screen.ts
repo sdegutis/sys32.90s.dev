@@ -62,34 +62,6 @@ export class Box {
   onMouseExit() { }
   onMouseEnter() { }
 
-  findElementAt(x: number, y: number): Box | null {
-
-    console.log(x, y, this.name)
-
-    if (this.passthrough) return null;
-
-    const inThis = (
-      x >= this.x &&
-      y >= this.y &&
-      x < this.x + this.w &&
-      y < this.y + this.h);
-
-    if (!inThis) return null;
-
-    let i = this.children.length;
-    while (i--) {
-      // for (let i = 0; i < this.children.length; i++) {
-      const child = this.children[i];
-      const found = child.findElementAt(x - child.x, y - child.y);
-      if (found) {
-        // console.log(x, y, this.#children[i])
-        return found;
-      }
-    }
-
-    return this;
-  }
-
 }
 
 
@@ -149,7 +121,7 @@ canvas.onmousemove = (e) => {
   mouse.y = Math.floor(e.offsetY);
   console.log('')
   console.log('starting check')
-  const hoveredOver = root.findElementAt(mouse.x, mouse.y)!;
+  const hoveredOver = findElementAt(root, mouse.x, mouse.y)!;
   console.log('found:', hoveredOver.name)
 
   if (lastHovered !== hoveredOver) {
@@ -177,6 +149,37 @@ function update(t: number) {
 requestAnimationFrame(update);
 
 
+
+
+
+
+function findElementAt(box: Box, x: number, y: number): Box | null {
+
+  console.log(x, y, box.name)
+
+  if (box.passthrough) return null;
+
+  const inThis = (
+    x >= box.x &&
+    y >= box.y &&
+    x < box.x + box.w &&
+    y < box.y + box.h);
+
+  if (!inThis) return null;
+
+  let i = box.children.length;
+  while (i--) {
+    // for (let i = 0; i < this.children.length; i++) {
+    const child = box.children[i];
+    const found = findElementAt(child, x - child.x, y - child.y);
+    if (found) {
+      // console.log(x, y, this.#children[i])
+      return found;
+    }
+  }
+
+  return box;
+}
 
 
 
