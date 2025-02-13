@@ -15,7 +15,6 @@ export class Box {
   mouse = { x: 0, y: 0 };
 
   constructor(
-    public name: string,
     public x = 0,
     public y = 0,
     public w = 0,
@@ -84,7 +83,7 @@ canvas.onkeyup = (e) => {
 
 
 
-export const root = new Box('root', 0, 0, 320, 180);
+export const root = new Box(0, 0, 320, 180);
 
 export const mouse = {
   x: 0,
