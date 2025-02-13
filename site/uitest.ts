@@ -1,4 +1,4 @@
-import { Box, drawrect, keys, mouse, onMouseMove, pset, rectfill, root } from "./ui/screen.js";
+import { Box, drawrect, keys, mouse, pset, rectfill, root } from "./ui/screen.js";
 
 
 
@@ -21,7 +21,6 @@ class Dragger {
   startElPos;
 
   constructor(private el: Box) {
-    onMouseMove(() => this.update());
     this.startMouse = { x: mouse.x, y: mouse.y };
     this.startElPos = { x: el.x, y: el.y };
   }
@@ -43,6 +42,11 @@ class Box2 extends Box {
 
   col = '#ff0';
 
+  tick(delta: number): void {
+    super.tick(delta);
+    this.dragger?.update();
+  }
+
   draw(): void {
     rectfill(0, 0, this.w, this.h, this.col);
     super.draw();
@@ -63,6 +67,11 @@ class Button extends Box {
   dragger: Dragger | null = null;
   inside = false;
   clicking = false;
+
+  tick(delta: number): void {
+    super.tick(delta);
+    this.dragger?.update();
+  }
 
   draw(): void {
     super.draw();

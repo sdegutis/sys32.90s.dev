@@ -89,11 +89,6 @@ canvas.onkeyup = (e) => {
   keys[e.key] = false;
 };
 
-let _onMouseMove: (() => void) | null = null;
-export function onMouseMove(fn: () => void) {
-  _onMouseMove = fn;
-}
-
 canvas.onmousedown = (e) => {
   mouse.button = e.button;
   mouse.x = Math.floor(e.offsetX);
@@ -102,7 +97,6 @@ canvas.onmousedown = (e) => {
 };
 
 canvas.onmouseup = (e) => {
-  _onMouseMove = null;
   root.findElementAt({ ...mouse })?.onMouseUp();
 };
 
@@ -118,8 +112,6 @@ canvas.onmousemove = (e) => {
     hoveredOver?.onMouseEnter();
     lastHovered = hoveredOver;
   }
-
-  _onMouseMove?.();
 };
 
 canvas.oncontextmenu = (e) => { e.preventDefault(); };
