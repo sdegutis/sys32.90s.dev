@@ -13,6 +13,7 @@ export class Box {
   passthrough = false;
   hovered = false;
   mouse = { x: 0, y: 0 };
+  clips = false;
 
   constructor(
     public x = 0,
@@ -23,8 +24,21 @@ export class Box {
   ) { }
 
   draw() {
+    if (this.clips) this.clip();
     this.drawBackground();
     this.drawChildren();
+    if (this.clips) this.unclip();
+  }
+
+  clip() {
+    context.save();
+    context.beginPath();
+    context.rect(camera.x, camera.y, this.w, this.h);
+    context.clip();
+  }
+
+  unclip() {
+    context.restore();
   }
 
   drawBackground() {
@@ -208,7 +222,7 @@ export function rectfill(x: number, y: number, w: number, h: number, c: string) 
 
 
 
-class Dragger {
+export class Dragging {
 
   startMouse;
   startElPos;
@@ -231,14 +245,14 @@ class Dragger {
 
 export class DragHandle extends Box {
 
-  #dragger: Dragger | null = null;
+  #dragger: Dragging | null = null;
 
   constructor(public moves: Box, ...args: ConstructorParameters<typeof Box>) {
     super(...args);
   }
 
   onMouseDown(): void {
-    this.#dragger = new Dragger(this.moves);
+    this.#dragger = new Dragging(this.moves);
 
     const cancel = new AbortController();
 
