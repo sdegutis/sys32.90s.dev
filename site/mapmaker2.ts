@@ -1,10 +1,16 @@
-import { Box, canvas, Dragging, keys, mouse, print, pset, rectfill, root } from "./ui.js";
+import { Box, Button, canvas, Dragging, keys, mouse, print, pset, rectfill, root } from "./ui.js";
 
 root.background = '#000';
 
 
 const toolArea = new Box(0, 0, 40, 180, '#333');
 root.children.push(toolArea);
+
+
+const saveButton = new Button(1, 1, 19, 8, '#0003');
+saveButton.color = '#fff7';
+saveButton.text = 'save';
+toolArea.children.push(saveButton);
 
 
 const mapArea = new Box(40, 0, 320 - 40, 180, '#222');

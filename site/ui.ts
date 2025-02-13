@@ -277,6 +277,9 @@ export class DragHandle extends Box {
 
 export class Button extends Box {
 
+  text = '';
+  color = '#fff';
+
   clicking = false;
   onClick() { }
 
@@ -298,6 +301,19 @@ export class Button extends Box {
       }
     }, { signal: cancel.signal });
 
+  }
+
+  drawBackground() {
+    super.drawBackground();
+
+    if (this.clicking) {
+      drawrect(0, 0, this.w, this.h, '#fff7');
+    }
+    else if (this.hovered) {
+      drawrect(0, 0, this.w, this.h, '#fff4');
+    }
+
+    print(2, 2, this.color, this.text);
   }
 
 }
