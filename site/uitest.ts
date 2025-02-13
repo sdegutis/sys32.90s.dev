@@ -1,68 +1,34 @@
-import { Box, Dragger, drawrect, keys, mouse, mousePosIn, pset, root } from "./ui/screen.js";
+import { Box, Button, DragHandle, drawrect, mouse, pset, root } from "./ui/screen.js";
 
 
 
-class Button extends Box {
+const box1 = new Box('box1').build(10, 10, 20, 40, '#ff03');
+root.children.push(box1);
 
-  dragger: Dragger | null = null;
-  inside = false;
-  clicking = false;
+const box2 = new Box('box2').build(3, 3, 10, 10, '#0ff3');
+box1.children.push(box2);
 
-  tick(delta: number): void {
-    super.tick(delta);
-    this.dragger?.update();
-  }
+const button = new Button('button').build(0, 30, 5, 5, '#f007');
+box1.children.push(button);
 
-  onMouseEnter(): void {
-    this.inside = true;
-  }
-
-  onMouseExit(): void {
-    this.inside = false;
-    this.clicking = false;
-  }
-
-  onMouseDown(): void {
-    if (keys[' ']) this.dragger = new Dragger(box2)
-    else this.clicking = true;
-  }
-
-  onMouseUp(): void {
-    if (this.clicking) {
-      this.onClick();
-    }
-    this.clicking = false;
-    this.dragger = null;
-  }
-
-  onClick() { }
-
-}
-
-const box1 = new Box(10, 10, 20, 20, '#ff03');
-root.addChild(box1);
-
-const box2 = new Box(1, 1, 10, 10, '#0ff3');
-box1.addChild(box2);
-
-const button = new Button(0, 0, 5, 5);
-box2.addChild(button);
+const handle = new DragHandle('draghandle', box1).build(0, 0, 8, 8, '#0003');
+box1.children.push(handle);
 
 button.onClick = () => {
-  console.log('clicked', mousePosIn(button));
+  console.log('clicked', mouse);
 };
 
 button.draw = () => {
   let col = '#00f';
-  if (button.inside) col = '#0f0';
-  if (button.dragger) col = '#f00';
+  if (button.hovered) col = '#0f0';
   if (button.clicking) col = '#fff';
 
   drawrect(0, 0, button.w, button.h, col);
-  pset({ x: 0, y: 0 }, '#fff');
+  pset(0, 0, '#fff');
 };
 
 
-const cursor = new Box(0, 0, 320, 180);
-cursor.draw = () => pset(mouse, '#00f');
-root.addChild(cursor);
+const cursor = new Box('cursor').build(0, 0, 320, 180);
+cursor.passthrough = true;
+cursor.draw = () => pset(mouse.x, mouse.y, '#00f');
+root.children.push(cursor);

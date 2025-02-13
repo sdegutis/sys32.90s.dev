@@ -7,20 +7,38 @@ const context = canvas.getContext('2d')!;
 
 export class Box {
 
-  #children: Box[] = [];
-  parent?: Box;
+  name: string;
+  x = 0;
+  y = 0;
+  w = 0;
+  h = 0;
+  background?: string;
+  children: Box[] = [];
+  passthrough = false;
+  hovered = false;
 
-  constructor(
-    public x: number,
-    public y: number,
-    public w: number,
-    public h: number,
-    public background?: string,
-  ) { }
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  build(
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    background?: string,
+  ) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.background = background;
+    return this;
+  }
 
   tick(delta: number) {
-    for (let i = 0; i < this.#children.length; i++) {
-      this.#children[i].tick(delta);
+    for (let i = 0; i < this.children.length; i++) {
+      this.children[i].tick(delta);
     }
   }
 
@@ -29,8 +47,8 @@ export class Box {
       rectfill(0, 0, this.w, this.h, this.background);
     }
 
-    for (let i = 0; i < this.#children.length; i++) {
-      const child = this.#children[i];
+    for (let i = 0; i < this.children.length; i++) {
+      const child = this.children[i];
       camera.x += child.x;
       camera.y += child.y;
       child.draw();
@@ -44,22 +62,32 @@ export class Box {
   onMouseExit() { }
   onMouseEnter() { }
 
-  findElementAt(p: Point): Box | null {
-    p.x -= this.x;
-    p.y -= this.y;
-    for (let i = 0; i < this.#children.length; i++) {
-      const found = this.#children[i].findElementAt(p);
-      if (found) return found;
-    }
-    p.x += this.x;
-    p.y += this.y;
-    if (rectContainsPoint(this, p)) return this;
-    return null;
-  }
+  findElementAt(x: number, y: number): Box | null {
 
-  addChild(child: Box) {
-    this.#children.push(child);
-    child.parent = this;
+    console.log(x, y, this.name)
+
+    if (this.passthrough) return null;
+
+    const inThis = (
+      x >= this.x &&
+      y >= this.y &&
+      x < this.x + this.w &&
+      y < this.y + this.h);
+
+    if (!inThis) return null;
+
+    let i = this.children.length;
+    while (i--) {
+      // for (let i = 0; i < this.children.length; i++) {
+      const child = this.children[i];
+      const found = child.findElementAt(x - child.x, y - child.y);
+      if (found) {
+        // console.log(x, y, this.#children[i])
+        return found;
+      }
+    }
+
+    return this;
   }
 
 }
@@ -70,7 +98,7 @@ export class Box {
 
 export const camera = { x: 0, y: 0 };
 
-export const root = new Box(0, 0, 320, 180);
+export const root = new Box('root').build(0, 0, 320, 180);
 
 export const keys: Record<string, boolean> = {};
 
@@ -85,14 +113,14 @@ export const mouse = {
 
 new ResizeObserver(() => {
   const box = document.body.getBoundingClientRect();
-  let width = 320;
-  let height = 180;
-  let scale = 1;
+  let w = 320;
+  let h = 180;
+  let s = 1;
   while (
-    (width += 320) <= box.width &&
-    (height += 180) <= box.height
-  ) scale++;
-  canvas.style.transform = `scale(${scale})`;
+    (w += 320) <= box.width &&
+    (h += 180) <= box.height
+  ) s++;
+  canvas.style.transform = `scale(${s})`;
 }).observe(document.body);
 
 canvas.onkeydown = (e) => {
@@ -103,27 +131,32 @@ canvas.onkeyup = (e) => {
   keys[e.key] = false;
 };
 
+let lastHovered: Box = root;
+
 canvas.onmousedown = (e) => {
   mouse.button = e.button;
   mouse.x = Math.floor(e.offsetX);
   mouse.y = Math.floor(e.offsetY);
-  root.findElementAt({ ...mouse })?.onMouseDown();
+  lastHovered?.onMouseDown();
 };
 
 canvas.onmouseup = (e) => {
-  root.findElementAt({ ...mouse })?.onMouseUp();
+  lastHovered?.onMouseUp();
 };
-
-let lastHovered: Box | null = null;
 
 canvas.onmousemove = (e) => {
   mouse.x = Math.floor(e.offsetX);
   mouse.y = Math.floor(e.offsetY);
-  const hoveredOver = root.findElementAt({ ...mouse });
+  console.log('')
+  console.log('starting check')
+  const hoveredOver = root.findElementAt(mouse.x, mouse.y)!;
+  console.log('found:', hoveredOver.name)
 
   if (lastHovered !== hoveredOver) {
-    lastHovered?.onMouseExit();
-    hoveredOver?.onMouseEnter();
+    lastHovered.hovered = false;
+    hoveredOver.hovered = true;
+    lastHovered.onMouseExit();
+    hoveredOver.onMouseEnter();
     lastHovered = hoveredOver;
   }
 };
@@ -148,8 +181,8 @@ requestAnimationFrame(update);
 
 
 
-export function pset(p: Point, c: string) {
-  rectfill(p.x, p.y, 1, 1, c);
+export function pset(x: number, y: number, c: string) {
+  rectfill(x, y, 1, 1, c);
 }
 
 export function drawrect(x: number, y: number, w: number, h: number, c: string) {
@@ -174,40 +207,6 @@ export function rectfill(x: number, y: number, w: number, h: number, c: string) 
 
 
 
-function rectContainsPoint(r: Rect, p: Point) {
-  return (
-    p.x >= r.x &&
-    p.y >= r.y &&
-    p.x < r.x + r.w &&
-    p.y < r.y + r.h);
-}
-
-export function mousePosIn(box: Box) {
-  let x = mouse.x;
-  let y = mouse.y;
-  let parent = box.parent;
-  while (parent) {
-    x -= parent.x;
-    y -= parent.y;
-    parent = parent.parent;
-  }
-  return { x, y };
-}
-
-
-
-
-export interface Point {
-  x: number;
-  y: number;
-}
-
-export interface Rect {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
 
 
 
@@ -217,8 +216,7 @@ export interface Rect {
 
 
 
-
-export class Dragger {
+class Dragger {
 
   startMouse;
   startElPos;
@@ -237,4 +235,38 @@ export class Dragger {
     this.el.y = this.startElPos.y + diffy - offy;
   }
 
+}
+
+export class DragHandle extends Box {
+
+  dragger: Dragger | null = null;
+
+  constructor(name: string, public moves: Box) {
+    super(name);
+  }
+
+  tick(delta: number): void {
+    super.tick(delta);
+    this.dragger?.update();
+  }
+
+  onMouseDown(): void {
+    this.dragger = new Dragger(this.moves)
+  }
+
+  onMouseUp(): void {
+    this.dragger = null;
+  }
+
+}
+
+export class Button extends Box {
+  clicking = false;
+  onClick() { }
+  onMouseDown(): void { this.clicking = true; }
+  onMouseExit(): void { this.clicking = false; }
+  onMouseUp(): void {
+    if (this.clicking) this.onClick();
+    this.clicking = false;
+  }
 }
