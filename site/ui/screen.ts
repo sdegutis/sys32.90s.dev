@@ -9,13 +9,12 @@ export class Box {
 
   children: Box[] = [];
 
-  color: string | null = null;
-
   constructor(
     public x: number,
     public y: number,
     public w: number,
     public h: number,
+    public background?: string,
   ) { }
 
   tick(delta: number) {
@@ -25,8 +24,8 @@ export class Box {
   }
 
   draw() {
-    if (this.color) {
-      rectfill(0, 0, this.w, this.h, this.color);
+    if (this.background) {
+      rectfill(0, 0, this.w, this.h, this.background);
     }
 
     for (let i = 0; i < this.children.length; i++) {
