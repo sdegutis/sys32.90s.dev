@@ -59,6 +59,12 @@ export class Box {
 
   onMouseDown() { }
 
+  drawCursor() {
+    pset(mouse.x, mouse.y, '#fff');
+    pset(mouse.x + 1, mouse.y, '#fff');
+    pset(mouse.x, mouse.y + 1, '#fff');
+  }
+
 }
 
 
@@ -109,11 +115,11 @@ export const mouse = {
   button: 0,
 };
 
-let lastHovered: Box = root;
+export let mousingOver: Box = root;
 
 canvas.addEventListener('mousedown', (e) => {
   mouse.button = e.button;
-  lastHovered.onMouseDown();
+  mousingOver.onMouseDown();
 }, { passive: true });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -128,10 +134,10 @@ canvas.addEventListener('mousemove', (e) => {
 
   const hoveredOver = findElementAt(root, mouse.x, mouse.y)!;
 
-  if (lastHovered !== hoveredOver) {
-    lastHovered.hovered = false;
+  if (mousingOver !== hoveredOver) {
+    mousingOver.hovered = false;
     hoveredOver.hovered = true;
-    lastHovered = hoveredOver;
+    mousingOver = hoveredOver;
   }
 }, { passive: true });
 
