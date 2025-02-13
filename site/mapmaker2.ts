@@ -1,13 +1,15 @@
-import { Box, mouse, mousingOver, pset, rectfill, root } from "./ui.js";
+import { Box, canvas, Dragging, keys, mouse, print, pset, rectfill, root } from "./ui.js";
 
 root.background = '#000';
+
+
+const toolArea = new Box(0, 0, 40, 180, '#333');
+root.children.push(toolArea);
+
 
 const mapArea = new Box(40, 0, 320 - 40, 180, '#222');
 mapArea.clips = true;
 root.children.push(mapArea);
-
-const toolArea = new Box(0, 0, 40, 180, '#333');
-root.children.push(toolArea);
 
 mapArea.drawCursor = () => {
   rectfill(mouse.x, mouse.y - 2, 1, 5, '#0007');
@@ -15,6 +17,29 @@ mapArea.drawCursor = () => {
   pset(mouse.x, mouse.y, '#fff');
 }
 
-mapArea.draw = () => {
-  mapArea.drawBackground();
+
+
+
+
+const map = new Box(0, 0, 20 * 4, 20 * 4, '#000');
+mapArea.children.push(map);
+
+map.onMouseDown = () => {
+  if (!keys[' ']) return;
+
+  const dragger = new Dragging(map);
+  const cancel = new AbortController();
+
+  canvas.addEventListener('mousemove', () => {
+    dragger?.update();
+  }, { signal: cancel.signal });
+
+  canvas.addEventListener('mouseup', () => {
+    cancel.abort();
+  }, { once: true });
+};
+
+map.draw = () => {
+  map.drawBackground();
+  print(1, 2, '#fff', 'testing');
 }

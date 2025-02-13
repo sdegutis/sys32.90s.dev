@@ -1,4 +1,4 @@
-const canvas = document.querySelector('canvas')!;
+export const canvas = document.querySelector('canvas')!;
 const context = canvas.getContext('2d')!;
 
 
@@ -10,7 +10,6 @@ const camera = { x: 0, y: 0 };
 export class Box {
 
   children: Box[] = [];
-  passthrough = false;
   hovered = false;
   mouse = { x: 0, y: 0 };
   clips = false;
@@ -115,7 +114,7 @@ export const mouse = {
   button: 0,
 };
 
-export let mousingOver: Box = root;
+let mousingOver: Box = root;
 
 canvas.addEventListener('mousedown', (e) => {
   mouse.button = e.button;
@@ -149,7 +148,6 @@ canvas.oncontextmenu = (e) => { e.preventDefault(); };
 
 
 export const cursor = new Box(0, 0, 320, 180);
-// cursor.passthrough = true;
 cursor.draw = () => mousingOver.drawCursor();
 
 
@@ -190,8 +188,6 @@ function findElementAt(box: Box, x: number, y: number): Box | null {
   let i = box.children.length;
   while (i--) {
     const child = box.children[i];
-    if (child.passthrough) continue;
-
     const found = findElementAt(child, x - child.x, y - child.y);
     if (found) return found;
   }
@@ -260,24 +256,20 @@ export class Dragging {
 
 export class DragHandle extends Box {
 
-  #dragger: Dragging | null = null;
-
   constructor(public moves: Box, ...args: ConstructorParameters<typeof Box>) {
     super(...args);
   }
 
   onMouseDown(): void {
-    this.#dragger = new Dragging(this.moves);
-
+    const dragger = new Dragging(this.moves);
     const cancel = new AbortController();
 
     canvas.addEventListener('mousemove', () => {
-      this.#dragger?.update();
+      dragger?.update();
     }, { signal: cancel.signal });
 
     canvas.addEventListener('mouseup', () => {
       cancel.abort();
-      this.#dragger = null;
     }, { once: true });
   }
 
