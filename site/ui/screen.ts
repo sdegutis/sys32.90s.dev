@@ -82,7 +82,10 @@ new ResizeObserver(() => {
   let width = 320;
   let height = 180;
   let scale = 1;
-  while ((width += 320) <= box.width && (height += 180) <= box.height) scale++;
+  while (
+    (width += 320) <= box.width &&
+    (height += 180) <= box.height
+  ) scale++;
   canvas.style.transform = `scale(${scale})`;
 }).observe(document.body);
 
@@ -157,7 +160,7 @@ export function rectfill(x: number, y: number, w: number, h: number, c: string) 
 
 
 
-export function rectContainsPoint(r: Rect, p: Point) {
+function rectContainsPoint(r: Rect, p: Point) {
   return (
     p.x >= r.x &&
     p.y >= r.y &&
