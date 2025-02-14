@@ -1,4 +1,4 @@
-import { Box, Button, Dragging, keys, rectFill, rectLine, root, Selection } from "./ui.js";
+import { Box, Button, Mover, keys, rectFill, rectLine, root, Selection } from "./ui.js";
 
 root.background = '#000';
 
@@ -53,7 +53,7 @@ let dragger: Selection | null = null;
 
 map.onMouseDown = () => {
   if (keys[' ']) {
-    const dragger = new Dragging(map);
+    const dragger = new Mover(map);
     map.trackMouse({ move: () => dragger.update() });
   }
   else {
@@ -91,8 +91,13 @@ map.draw = () => {
 
   if (dragger) {
     const { x, y, w, h } = dragger;
-    rectLine(x, y, w, h, '#000');
-    rectFill(x, y, w, h, '#00f7');
 
+    const tx1 = Math.floor(x / 4);
+    const ty1 = Math.floor(y / 4);
+    const tx2 = Math.ceil(x + w / 4);
+    const ty2 = Math.ceil(y + h / 4);
+
+    rectLine(tx1, ty1, tx2 - tx1, ty2 - ty1, '#000');
+    rectFill(tx1, ty1, tx2 - tx1, ty2 - ty1, '#00f7');
   }
 }

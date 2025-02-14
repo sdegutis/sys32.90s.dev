@@ -272,7 +272,7 @@ export class Selection {
 
 }
 
-export class Dragging {
+export class Mover {
 
   startMouse;
   startElPos;
