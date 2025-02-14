@@ -263,19 +263,6 @@ export class Dragging {
 
 }
 
-export class DragHandle extends Box {
-
-  constructor(public moves: Box, ...args: ConstructorParameters<typeof Box>) {
-    super(...args);
-  }
-
-  onMouseDown(): void {
-    const dragger = new Dragging(this.moves);
-    this.trackMouse({ move: () => dragger.update() });
-  }
-
-}
-
 export class Button extends Box {
 
   text = '';
