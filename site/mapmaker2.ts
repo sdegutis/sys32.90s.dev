@@ -30,6 +30,14 @@ menu.children.push(loadButton);
 const toolArea = new Box(0, 8, 40, 180 - 8, '#333');
 root.children.push(toolArea);
 
+let showGrid = true;
+
+const gridButton = new Button(1, 1, 4 * 4 + 1, 6, '#000');
+gridButton.color = '#fff3';
+gridButton.text = 'grid';
+gridButton.onClick = () => showGrid = !showGrid;
+toolArea.children.push(gridButton);
+
 
 
 
@@ -159,12 +167,14 @@ map.draw = () => {
     }
   }
 
-  for (let x = 0; x < mapData.width; x++) {
-    rectFill(x * 4, 0, 1, mapData.height * 4, '#0001');
-  }
+  if (showGrid) {
+    for (let x = 0; x < mapData.width; x++) {
+      rectFill(x * 4, 0, 1, mapData.height * 4, '#0001');
+    }
 
-  for (let y = 0; y < mapData.height; y++) {
-    rectFill(0, y * 4, mapData.width * 4, 1, '#0001');
+    for (let y = 0; y < mapData.height; y++) {
+      rectFill(0, y * 4, mapData.width * 4, 1, '#0001');
+    }
   }
 
   if (map.hovered) {
