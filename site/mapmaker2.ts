@@ -3,12 +3,8 @@ import { Box, Button, Dragging, keys, rectfill, root } from "./ui.js";
 root.background = '#000';
 
 
-const toolArea = new Box(0, 8, 40, 180 - 8, '#333');
-root.children.push(toolArea);
-
 const menu = new Box(0, 0, 320, 6, '#000');
 root.children.push(menu);
-
 
 const saveButton = new Button(1, 1, 4 * 4 + 1, 6, '#000');
 saveButton.color = '#fff3';
@@ -27,15 +23,22 @@ loadButton.onClick = () => {
 menu.children.push(loadButton);
 
 
+
+
+
+
+const toolArea = new Box(0, 8, 40, 180 - 8, '#333');
+root.children.push(toolArea);
+
+
+
+
+
 const mapArea = new Box(40, 8, 320 - 40, 180 - 8, '#222');
 mapArea.clips = true;
 root.children.push(mapArea);
 
-
-
-
-
-const map = new Box(0, 0, 50 * 4, 50 * 4, '#070');
+const map = new Box(0, 0, 50 * 4, 50 * 4);
 mapArea.children.push(map);
 
 map.drawCursor = () => {
@@ -61,7 +64,7 @@ map.onMouseDown = () => {
 };
 
 map.draw = () => {
-  map.drawBackground();
+  rectfill(0, 0, map.w, map.h, '#070');
 
   for (let i = 0; i < 50; i++) {
     rectfill(0, i * 4, 50 * 4, 1, '#0001');
