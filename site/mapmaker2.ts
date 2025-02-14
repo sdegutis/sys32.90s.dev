@@ -70,6 +70,12 @@ class Map {
     this.units = Array(this.width * this.height).fill(0);
   }
 
+  useTool(tx: number, ty: number) {
+    if (tx < 0 || ty < 0 || tx >= mapData.width || ty >= mapData.height) return;
+    const ti = ty * mapData.width + tx;
+    mapData.terrain[ti] = currentTool;
+  }
+
 }
 
 const mapData = new Map(50, 40);
@@ -154,7 +160,7 @@ mapBox.onMouseDown = () => {
 
         for (let y = ty1; y < ty2; y++) {
           for (let x = tx1; x < tx2; x++) {
-            mapData.terrain[(y * mapData.width + x)] = currentTool;
+            mapData.useTool(x, y);
           }
         }
 
@@ -169,11 +175,11 @@ mapBox.onMouseDown = () => {
       move() {
         const x = Math.floor(mapBox.mouse.x / 4);
         const y = Math.floor(mapBox.mouse.y / 4);
-        mapData.terrain[((y + 0) * mapData.width + (x + 0))] = currentTool;
-        mapData.terrain[((y + 0) * mapData.width + (x + 1))] = currentTool;
-        mapData.terrain[((y + 0) * mapData.width + (x - 1))] = currentTool;
-        mapData.terrain[((y + 1) * mapData.width + (x + 0))] = currentTool;
-        mapData.terrain[((y - 1) * mapData.width + (x + 0))] = currentTool;
+        mapData.useTool(x + 0, y + 0);
+        mapData.useTool(x + 1, y + 0);
+        mapData.useTool(x - 1, y + 0);
+        mapData.useTool(x + 0, y + 1);
+        mapData.useTool(x + 0, y - 1);
       },
     });
   }
@@ -182,7 +188,7 @@ mapBox.onMouseDown = () => {
       move() {
         const x = Math.floor(mapBox.mouse.x / 4);
         const y = Math.floor(mapBox.mouse.y / 4);
-        mapData.terrain[(y * mapData.width + x)] = currentTool;
+        mapData.useTool(x, y);
       },
     });
   }
