@@ -209,7 +209,8 @@ callbacks.ontick = (delta: number) => {
   const text = `hello\nworld!`;
   // ctx.fillStyle = '#0007';
   // ctx.fillRect(mouse.x - 2, mouse.y + 2, text.length * 4 + 3, 8);
-  print(mouse.x, mouse.y + 4, text, 10);
+  context.fillStyle = COLORS[10];
+  print(mouse.x, mouse.y + 4, text);
 
   // draw.tree(mouse.x, mouse.y + 4);
   // draw.gold(mouse.x + 5 * 4 - 1, mouse.y + 4);
