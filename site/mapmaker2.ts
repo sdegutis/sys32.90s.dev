@@ -69,10 +69,20 @@ mapData.units = Array(mapData.width * mapData.height).fill(0);
 
 const drawTerrain: ((x: number, y: number) => void)[] = [];
 
+let currentTool = 5;
+
+
+
 for (let i = 0; i < 16; i++) {
   drawTerrain.push((x, y) => {
     rectFill(x, y, 4, 4, COLORS[i]);
   });
+
+
+  const b = new Button(2, 2 + (i * 7), 4, 4, COLORS[i]);
+  b.onClick = () => currentTool = i;
+  toolArea.children.push(b);
+
 }
 
 
@@ -120,7 +130,7 @@ map.onMouseDown = () => {
 
           for (let y = ty1; y < ty2; y++) {
             for (let x = tx1; x < tx2; x++) {
-              mapData.terrain[(y * mapData.width + x)] = 5;
+              mapData.terrain[(y * mapData.width + x)] = currentTool;
             }
           }
 
@@ -135,11 +145,11 @@ map.onMouseDown = () => {
         move() {
           const x = Math.floor(map.mouse.x / 4);
           const y = Math.floor(map.mouse.y / 4);
-          mapData.terrain[((y + 0) * mapData.width + (x + 0))] = 5;
-          mapData.terrain[((y + 0) * mapData.width + (x + 1))] = 5;
-          mapData.terrain[((y + 0) * mapData.width + (x - 1))] = 5;
-          mapData.terrain[((y + 1) * mapData.width + (x + 0))] = 5;
-          mapData.terrain[((y - 1) * mapData.width + (x + 0))] = 5;
+          mapData.terrain[((y + 0) * mapData.width + (x + 0))] = currentTool;
+          mapData.terrain[((y + 0) * mapData.width + (x + 1))] = currentTool;
+          mapData.terrain[((y + 0) * mapData.width + (x - 1))] = currentTool;
+          mapData.terrain[((y + 1) * mapData.width + (x + 0))] = currentTool;
+          mapData.terrain[((y - 1) * mapData.width + (x + 0))] = currentTool;
         },
       });
     }
@@ -148,7 +158,7 @@ map.onMouseDown = () => {
         move() {
           const x = Math.floor(map.mouse.x / 4);
           const y = Math.floor(map.mouse.y / 4);
-          mapData.terrain[(y * mapData.width + x)] = 5;
+          mapData.terrain[(y * mapData.width + x)] = currentTool;
         },
       });
     }
