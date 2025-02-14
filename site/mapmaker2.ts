@@ -68,8 +68,9 @@ map.draw = () => {
     rectfill(i * 4, 0, 1, 50 * 4, '#0001');
   }
 
-  const tx = Math.floor(map.mouse.x / 4);
-  const ty = Math.floor(map.mouse.y / 4);
-
-  rectfill(tx * 4, ty * 4, 4, 4, '#00f7');
+  if (map.hovered) {
+    const tx = Math.floor(map.mouse.x / 4);
+    const ty = Math.floor(map.mouse.y / 4);
+    rectfill(tx * 4, ty * 4, 4, 4, '#00f7');
+  }
 }
