@@ -14,6 +14,8 @@ export class Box {
   mouse = { x: 0, y: 0 };
   clips = false;
 
+  onMouseDown() { }
+
   constructor(
     public x = 0,
     public y = 0,
@@ -55,8 +57,6 @@ export class Box {
       camera.y -= child.y;
     }
   }
-
-  onMouseDown() { }
 
   drawCursor() {
     pset(mouse.x, mouse.y, '#fff');
