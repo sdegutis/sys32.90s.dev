@@ -112,8 +112,8 @@ const mapBox = new Box(0, 0, mapData.width * 4, mapData.height * 4);
 mapArea.children.push(mapBox);
 
 mapBox.drawCursor = () => {
-  // rectfill(mouse.x, mouse.y - 2, 1, 5, '#0007');
-  // rectfill(mouse.x - 2, mouse.y, 5, 1, '#0007');
+  // rectFill(mouse.x, mouse.y - 2, 1, 5, '#0007');
+  // rectFill(mouse.x - 2, mouse.y, 5, 1, '#0007');
   // pset(mouse.x, mouse.y, '#fff');
 }
 
