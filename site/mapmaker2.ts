@@ -55,7 +55,7 @@ map.onMouseDown = () => {
 
     canvas.addEventListener('mouseup', () => {
       cancel.abort();
-    }, { once: true });
+    }, { signal: cancel.signal });
   }
 };
 

@@ -270,7 +270,7 @@ export class DragHandle extends Box {
 
     canvas.addEventListener('mouseup', () => {
       cancel.abort();
-    }, { once: true });
+    }, { signal: cancel.signal });
   }
 
 }
@@ -298,7 +298,7 @@ export class Button extends Box {
       cancel.abort();
       this.onClick();
       this.clicking = false;
-    }, { signal: cancel.signal, once: true });
+    }, { signal: cancel.signal });
   }
 
   drawBackground() {
