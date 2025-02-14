@@ -10,13 +10,21 @@ const menu = new Box(0, 0, 320, 6, '#000');
 root.children.push(menu);
 
 
-const saveButton = new Button(1, 1, 4 * 4 + 1, 6, '#0003');
+const saveButton = new Button(1, 1, 4 * 4 + 1, 6, '#000');
 saveButton.color = '#fff3';
 saveButton.text = 'save';
 saveButton.onClick = () => {
   console.log('saving')
 };
 menu.children.push(saveButton);
+
+const loadButton = new Button(20, 1, 4 * 4 + 1, 6, '#000');
+loadButton.color = '#fff3';
+loadButton.text = 'load';
+loadButton.onClick = () => {
+  console.log('loading')
+};
+menu.children.push(loadButton);
 
 
 const mapArea = new Box(40, 8, 320 - 40, 180 - 8, '#222');
