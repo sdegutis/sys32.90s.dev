@@ -79,7 +79,7 @@ export class Box {
 
 
 new ResizeObserver(() => {
-  const box = document.body.getBoundingClientRect();
+  const box = canvas.parentElement!.getBoundingClientRect();
   let w = 320;
   let h = 180;
   let s = 1;
@@ -88,7 +88,7 @@ new ResizeObserver(() => {
     (h += 180) <= box.height
   ) s++;
   canvas.style.transform = `scale(${s})`;
-}).observe(document.body);
+}).observe(canvas.parentElement!);
 
 
 
