@@ -1,4 +1,4 @@
-import { Box, Button, Dragging, keys, rectfill, root } from "./ui.js";
+import { Box, Button, Dragging, drawrect, keys, rectfill, root } from "./ui.js";
 
 root.background = '#000';
 
@@ -34,6 +34,34 @@ root.children.push(toolArea);
 
 
 
+class DragBox {
+
+  x1: number;
+  y1: number;
+  x!: number;
+  y!: number;
+  w!: number;
+  h!: number;
+
+  constructor(public box: Box) {
+    this.x1 = this.box.mouse.x;
+    this.y1 = this.box.mouse.y;
+    this.update();
+  }
+
+  update() {
+    const x2 = this.box.mouse.x;
+    const y2 = this.box.mouse.y;
+    this.x = this.x1 < x2 ? this.x1 : x2;
+    this.y = this.y1 < y2 ? this.y1 : y2;
+    this.w = this.x1 < x2 ? x2 - this.x1 : this.x1 - x2;
+    this.h = this.y1 < y2 ? y2 - this.y1 : this.y1 - y2;
+  }
+
+}
+
+
+
 const mapArea = new Box(40, 8, 320 - 40, 180 - 8, '#222');
 mapArea.clips = true;
 root.children.push(mapArea);
@@ -47,17 +75,27 @@ map.drawCursor = () => {
   // pset(mouse.x, mouse.y, '#fff');
 }
 
+let dragger: DragBox | null = null;
+
 map.onMouseDown = () => {
   if (keys[' ']) {
     const dragger = new Dragging(map);
     map.trackMouse({ move: () => dragger.update() });
   }
   else {
+
+    dragger = new DragBox(map);
+
     map.trackMouse({
-      move: () => {
+      move() {
+        dragger!.update();
+
         const tx = Math.floor(map.mouse.x / 4);
         const ty = Math.floor(map.mouse.y / 4);
-      }
+      },
+      up() {
+        dragger = null;
+      },
     });
 
   }
@@ -75,5 +113,12 @@ map.draw = () => {
     const tx = Math.floor(map.mouse.x / 4);
     const ty = Math.floor(map.mouse.y / 4);
     rectfill(tx * 4, ty * 4, 4, 4, '#00f7');
+  }
+
+  if (dragger) {
+    const { x, y, w, h } = dragger;
+    drawrect(x, y, w, h, '#000');
+    rectfill(x, y, w, h, '#00f7');
+
   }
 }
