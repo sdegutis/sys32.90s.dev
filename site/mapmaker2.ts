@@ -10,6 +10,9 @@ root.children.push(toolArea);
 const saveButton = new Button(1, 1, 19, 8, '#0003');
 saveButton.color = '#fff3';
 saveButton.text = 'save';
+saveButton.onClick = () => {
+  console.log('saving')
+};
 toolArea.children.push(saveButton);
 
 

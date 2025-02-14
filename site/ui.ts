@@ -294,7 +294,6 @@ export class Button extends Box {
     }, { signal: cancel.signal, once: true });
 
     canvas.addEventListener('mousemove', () => {
-      console.log('hey', this.hovered);
       if (!this.hovered) {
         cancel.abort();
         this.clicking = false;
