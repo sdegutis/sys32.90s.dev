@@ -22,6 +22,14 @@ loadButton.onClick = () => {
 };
 menu.children.push(loadButton);
 
+let showGrid = true;
+
+const gridButton = new Button(39, 1, 4 * 4 + 1, 6, '#000');
+gridButton.color = '#fff3';
+gridButton.text = 'grid';
+gridButton.onClick = () => showGrid = !showGrid;
+menu.children.push(gridButton);
+
 
 
 
@@ -29,14 +37,6 @@ menu.children.push(loadButton);
 
 const toolArea = new Box(0, 8, 40, 180 - 8, '#333');
 root.children.push(toolArea);
-
-let showGrid = true;
-
-const gridButton = new Button(1, 1, 4 * 4 + 1, 6, '#000');
-gridButton.color = '#fff3';
-gridButton.text = 'grid';
-gridButton.onClick = () => showGrid = !showGrid;
-toolArea.children.push(gridButton);
 
 
 
@@ -181,6 +181,13 @@ map.draw = () => {
     const tx = Math.floor(map.mouse.x / 4);
     const ty = Math.floor(map.mouse.y / 4);
     rectFill(tx * 4, ty * 4, 4, 4, '#00f7');
+
+    if (keys['Alt']) {
+      rectFill((tx + 0) * 4, (ty + 1) * 4, 4, 4, '#00f7');
+      rectFill((tx + 0) * 4, (ty - 1) * 4, 4, 4, '#00f7');
+      rectFill((tx + 1) * 4, (ty + 0) * 4, 4, 4, '#00f7');
+      rectFill((tx - 1) * 4, (ty + 0) * 4, 4, 4, '#00f7');
+    }
   }
 
   if (tilesel) {
