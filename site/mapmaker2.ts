@@ -57,15 +57,22 @@ const COLORS = [
   '#29ADFF', '#83769C', '#FF77A8', '#FFCCAA',
 ];
 
-const mapData = {
-  width: 50,
-  height: 40,
-  terrain: [] as number[],
-  units: [] as number[],
-};
+class Map {
 
-mapData.terrain = Array(mapData.width * mapData.height).fill(3);
-mapData.units = Array(mapData.width * mapData.height).fill(0);
+  terrain: number[] = [];
+  units: number[] = [];
+
+  constructor(
+    public width: number,
+    public height: number,
+  ) {
+    this.terrain = Array(this.width * this.height).fill(3);
+    this.units = Array(this.width * this.height).fill(0);
+  }
+
+}
+
+const mapData = new Map(50, 40);
 
 const drawTerrain: ((x: number, y: number) => void)[] = [];
 
@@ -101,10 +108,10 @@ const mapArea = new Box(40, 8, 320 - 40, 180 - 8, '#222');
 mapArea.clips = true;
 root.children.push(mapArea);
 
-const map = new Box(0, 0, mapData.width * 4, mapData.height * 4);
-mapArea.children.push(map);
+const mapBox = new Box(0, 0, mapData.width * 4, mapData.height * 4);
+mapArea.children.push(mapBox);
 
-map.drawCursor = () => {
+mapBox.drawCursor = () => {
   // rectfill(mouse.x, mouse.y - 2, 1, 5, '#0007');
   // rectfill(mouse.x - 2, mouse.y, 5, 1, '#0007');
   // pset(mouse.x, mouse.y, '#fff');
@@ -112,17 +119,17 @@ map.drawCursor = () => {
 
 let tilesel: TileSelection | null = null;
 
-map.onMouseDown = () => {
+mapBox.onMouseDown = () => {
   if (keys[' ']) {
-    const dragger = new Mover(map);
-    map.trackMouse({ move: () => dragger.update() });
+    const dragger = new Mover(mapBox);
+    mapBox.trackMouse({ move: () => dragger.update() });
   }
   else {
 
     if (keys['Control']) {
-      tilesel = new TileSelection(map);
+      tilesel = new TileSelection(mapBox);
 
-      map.trackMouse({
+      mapBox.trackMouse({
         move() {
           tilesel!.update();
 
@@ -141,10 +148,10 @@ map.onMouseDown = () => {
       });
     }
     else if (keys['Alt']) {
-      map.trackMouse({
+      mapBox.trackMouse({
         move() {
-          const x = Math.floor(map.mouse.x / 4);
-          const y = Math.floor(map.mouse.y / 4);
+          const x = Math.floor(mapBox.mouse.x / 4);
+          const y = Math.floor(mapBox.mouse.y / 4);
           mapData.terrain[((y + 0) * mapData.width + (x + 0))] = currentTool;
           mapData.terrain[((y + 0) * mapData.width + (x + 1))] = currentTool;
           mapData.terrain[((y + 0) * mapData.width + (x - 1))] = currentTool;
@@ -154,10 +161,10 @@ map.onMouseDown = () => {
       });
     }
     else {
-      map.trackMouse({
+      mapBox.trackMouse({
         move() {
-          const x = Math.floor(map.mouse.x / 4);
-          const y = Math.floor(map.mouse.y / 4);
+          const x = Math.floor(mapBox.mouse.x / 4);
+          const y = Math.floor(mapBox.mouse.y / 4);
           mapData.terrain[(y * mapData.width + x)] = currentTool;
         },
       });
@@ -166,7 +173,7 @@ map.onMouseDown = () => {
   }
 };
 
-map.draw = () => {
+mapBox.draw = () => {
   // rectFill(0, 0, map.w, map.h, '#070');
 
   for (let y = 0; y < mapData.height; y++) {
@@ -187,9 +194,9 @@ map.draw = () => {
     }
   }
 
-  if (map.hovered) {
-    const tx = Math.floor(map.mouse.x / 4);
-    const ty = Math.floor(map.mouse.y / 4);
+  if (mapBox.hovered) {
+    const tx = Math.floor(mapBox.mouse.x / 4);
+    const ty = Math.floor(mapBox.mouse.y / 4);
     rectFill(tx * 4, ty * 4, 4, 4, '#00f7');
 
     if (keys['Alt']) {
