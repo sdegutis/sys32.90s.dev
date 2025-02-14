@@ -124,52 +124,48 @@ mapBox.onMouseDown = () => {
     const dragger = new Mover(mapBox);
     mapBox.trackMouse({ move: () => dragger.update() });
   }
-  else {
+  else if (keys['Control']) {
+    tilesel = new TileSelection(mapBox);
 
-    if (keys['Control']) {
-      tilesel = new TileSelection(mapBox);
+    mapBox.trackMouse({
+      move() {
+        tilesel!.update();
 
-      mapBox.trackMouse({
-        move() {
-          tilesel!.update();
+        const { tx1, tx2, ty1, ty2 } = tilesel!;
 
-          const { tx1, tx2, ty1, ty2 } = tilesel!;
-
-          for (let y = ty1; y < ty2; y++) {
-            for (let x = tx1; x < tx2; x++) {
-              mapData.terrain[(y * mapData.width + x)] = currentTool;
-            }
+        for (let y = ty1; y < ty2; y++) {
+          for (let x = tx1; x < tx2; x++) {
+            mapData.terrain[(y * mapData.width + x)] = currentTool;
           }
+        }
 
-        },
-        up() {
-          tilesel = null;
-        },
-      });
-    }
-    else if (keys['Alt']) {
-      mapBox.trackMouse({
-        move() {
-          const x = Math.floor(mapBox.mouse.x / 4);
-          const y = Math.floor(mapBox.mouse.y / 4);
-          mapData.terrain[((y + 0) * mapData.width + (x + 0))] = currentTool;
-          mapData.terrain[((y + 0) * mapData.width + (x + 1))] = currentTool;
-          mapData.terrain[((y + 0) * mapData.width + (x - 1))] = currentTool;
-          mapData.terrain[((y + 1) * mapData.width + (x + 0))] = currentTool;
-          mapData.terrain[((y - 1) * mapData.width + (x + 0))] = currentTool;
-        },
-      });
-    }
-    else {
-      mapBox.trackMouse({
-        move() {
-          const x = Math.floor(mapBox.mouse.x / 4);
-          const y = Math.floor(mapBox.mouse.y / 4);
-          mapData.terrain[(y * mapData.width + x)] = currentTool;
-        },
-      });
-    }
-
+      },
+      up() {
+        tilesel = null;
+      },
+    });
+  }
+  else if (keys['Alt']) {
+    mapBox.trackMouse({
+      move() {
+        const x = Math.floor(mapBox.mouse.x / 4);
+        const y = Math.floor(mapBox.mouse.y / 4);
+        mapData.terrain[((y + 0) * mapData.width + (x + 0))] = currentTool;
+        mapData.terrain[((y + 0) * mapData.width + (x + 1))] = currentTool;
+        mapData.terrain[((y + 0) * mapData.width + (x - 1))] = currentTool;
+        mapData.terrain[((y + 1) * mapData.width + (x + 0))] = currentTool;
+        mapData.terrain[((y - 1) * mapData.width + (x + 0))] = currentTool;
+      },
+    });
+  }
+  else {
+    mapBox.trackMouse({
+      move() {
+        const x = Math.floor(mapBox.mouse.x / 4);
+        const y = Math.floor(mapBox.mouse.y / 4);
+        mapData.terrain[(y * mapData.width + x)] = currentTool;
+      },
+    });
   }
 };
 
