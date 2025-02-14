@@ -14,7 +14,7 @@ saveButton.onClick = () => {
 };
 menu.children.push(saveButton);
 
-const loadButton = new Button(20, 1, 4 * 4 + 1, 6, '#000');
+const loadButton = new Button(21, 1, 4 * 4 + 1, 6, '#000');
 loadButton.color = '#fff3';
 loadButton.text = 'load';
 loadButton.onClick = () => {
@@ -24,7 +24,7 @@ menu.children.push(loadButton);
 
 let showGrid = true;
 
-const gridButton = new Button(39, 1, 4 * 4 + 1, 6, '#000');
+const gridButton = new Button(41, 1, 4 * 4 + 1, 6, '#000');
 gridButton.color = '#fff3';
 gridButton.text = 'grid';
 gridButton.onClick = () => showGrid = !showGrid;
