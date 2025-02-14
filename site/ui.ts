@@ -117,9 +117,6 @@ canvas.addEventListener('keyup', (e) => {
 
 export const root = new Box(0, 0, 320, 180);
 
-const cursor = new Box(0, 0, 320, 180);
-cursor.draw = () => mousingOver.drawCursor();
-
 export const mouse = {
   x: 0,
   y: 0,
@@ -133,11 +130,11 @@ export const mouse = {
 
 
 
-let mousingOver: Box = root;
+let lastHovered: Box = root;
 
 canvas.addEventListener('mousedown', (e) => {
   mouse.button = e.button;
-  mousingOver.onMouseDown();
+  lastHovered.onMouseDown();
 }, { passive: true });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -152,10 +149,10 @@ canvas.addEventListener('mousemove', (e) => {
 
   const hoveredOver = findElementAt(root, mouse.x, mouse.y)!;
 
-  if (mousingOver !== hoveredOver) {
-    mousingOver.hovered = false;
+  if (lastHovered !== hoveredOver) {
+    lastHovered.hovered = false;
     hoveredOver.hovered = true;
-    mousingOver = hoveredOver;
+    lastHovered = hoveredOver;
   }
 }, { passive: true });
 
@@ -194,7 +191,7 @@ function update(t: number) {
   if (t - last >= 30) {
     tick(t - last);
     root.draw();
-    cursor.draw();
+    lastHovered.drawCursor();
     last = t;
   }
   requestAnimationFrame(update);
