@@ -246,6 +246,32 @@ export function rectFill(x: number, y: number, w: number, h: number, c: string) 
 
 
 
+export class Selection {
+
+  x1: number;
+  y1: number;
+  x!: number;
+  y!: number;
+  w!: number;
+  h!: number;
+
+  constructor(public box: Box) {
+    this.x1 = this.box.mouse.x;
+    this.y1 = this.box.mouse.y;
+    this.update();
+  }
+
+  update() {
+    const x2 = this.box.mouse.x;
+    const y2 = this.box.mouse.y;
+    this.x = this.x1 < x2 ? this.x1 : x2;
+    this.y = this.y1 < y2 ? this.y1 : y2;
+    this.w = (this.x1 < x2 ? x2 - this.x1 : this.x1 - x2) + 1;
+    this.h = (this.y1 < y2 ? y2 - this.y1 : this.y1 - y2) + 1;
+  }
+
+}
+
 export class Dragging {
 
   startMouse;
