@@ -71,14 +71,14 @@ class Map {
   }
 
   useTool(tx: number, ty: number) {
-    if (tx < 0 || ty < 0 || tx >= mapData.width || ty >= mapData.height) return;
-    const ti = ty * mapData.width + tx;
-    mapData.terrain[ti] = currentTool;
+    if (tx < 0 || ty < 0 || tx >= this.width || ty >= this.height) return;
+    const ti = ty * this.width + tx;
+    this.terrain[ti] = currentTool;
   }
 
 }
 
-const mapData = new Map(50, 40);
+const map = new Map(50, 40);
 
 const drawTerrain: ((x: number, y: number) => void)[] = [];
 
@@ -133,7 +133,7 @@ const mapArea = new Box(40, 8, 320 - 40, 180 - 8, '#222');
 mapArea.clips = true;
 root.children.push(mapArea);
 
-const mapBox = new Box(0, 0, mapData.width * 4, mapData.height * 4);
+const mapBox = new Box(0, 0, map.width * 4, map.height * 4);
 mapArea.children.push(mapBox);
 
 mapBox.drawCursor = () => {
@@ -160,7 +160,7 @@ mapBox.onMouseDown = () => {
 
         for (let y = ty1; y < ty2; y++) {
           for (let x = tx1; x < tx2; x++) {
-            mapData.useTool(x, y);
+            map.useTool(x, y);
           }
         }
 
@@ -175,11 +175,11 @@ mapBox.onMouseDown = () => {
       move() {
         const x = Math.floor(mapBox.mouse.x / 4);
         const y = Math.floor(mapBox.mouse.y / 4);
-        mapData.useTool(x + 0, y + 0);
-        mapData.useTool(x + 1, y + 0);
-        mapData.useTool(x - 1, y + 0);
-        mapData.useTool(x + 0, y + 1);
-        mapData.useTool(x + 0, y - 1);
+        map.useTool(x + 0, y + 0);
+        map.useTool(x + 1, y + 0);
+        map.useTool(x - 1, y + 0);
+        map.useTool(x + 0, y + 1);
+        map.useTool(x + 0, y - 1);
       },
     });
   }
@@ -188,7 +188,7 @@ mapBox.onMouseDown = () => {
       move() {
         const x = Math.floor(mapBox.mouse.x / 4);
         const y = Math.floor(mapBox.mouse.y / 4);
-        mapData.useTool(x, y);
+        map.useTool(x, y);
       },
     });
   }
@@ -197,21 +197,21 @@ mapBox.onMouseDown = () => {
 mapBox.draw = () => {
   // rectFill(0, 0, map.w, map.h, '#070');
 
-  for (let y = 0; y < mapData.height; y++) {
-    for (let x = 0; x < mapData.width; x++) {
-      const i = y * mapData.width + x;
-      const t = mapData.terrain[i];
+  for (let y = 0; y < map.height; y++) {
+    for (let x = 0; x < map.width; x++) {
+      const i = y * map.width + x;
+      const t = map.terrain[i];
       drawTerrain[t](x * 4, y * 4);
     }
   }
 
   if (showGrid) {
-    for (let x = 0; x < mapData.width; x++) {
-      rectFill(x * 4, 0, 1, mapData.height * 4, '#0001');
+    for (let x = 0; x < map.width; x++) {
+      rectFill(x * 4, 0, 1, map.height * 4, '#0001');
     }
 
-    for (let y = 0; y < mapData.height; y++) {
-      rectFill(0, y * 4, mapData.width * 4, 1, '#0001');
+    for (let y = 0; y < map.height; y++) {
+      rectFill(0, y * 4, map.width * 4, 1, '#0001');
     }
   }
 
