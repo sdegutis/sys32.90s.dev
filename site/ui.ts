@@ -66,9 +66,10 @@ export class Box {
 
   trackMouse(fns: { move: () => void, up?: () => void }) {
     const done = new AbortController();
+    const opts = { signal: done.signal, passive: true };
     const wrappedUp = () => { done.abort(); fns.up?.(); };
-    canvas.addEventListener('mousemove', fns.move, { signal: done.signal });
-    canvas.addEventListener('mouseup', wrappedUp, { signal: done.signal });
+    canvas.addEventListener('mousemove', fns.move, opts);
+    canvas.addEventListener('mouseup', wrappedUp, opts);
     return () => done.abort();
   }
 
