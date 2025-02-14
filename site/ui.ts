@@ -1,4 +1,4 @@
-export const canvas = document.querySelector('canvas')!;
+const canvas = document.querySelector('canvas')!;
 const context = canvas.getContext('2d')!;
 
 
@@ -62,6 +62,13 @@ export class Box {
     pset(mouse.x, mouse.y, '#fff');
     pset(mouse.x + 1, mouse.y, '#fff');
     pset(mouse.x, mouse.y + 1, '#fff');
+  }
+
+  trackMouse(fns: { move: () => void, up: () => void }) {
+    const done = new AbortController();
+    canvas.addEventListener('mousemove', fns.move, { signal: done.signal });
+    canvas.addEventListener('mouseup', fns.up, { signal: done.signal });
+    return () => done.abort();
   }
 
 }
@@ -262,15 +269,10 @@ export class DragHandle extends Box {
 
   onMouseDown(): void {
     const dragger = new Dragging(this.moves);
-    const cancel = new AbortController();
-
-    canvas.addEventListener('mousemove', () => {
-      dragger.update();
-    }, { signal: cancel.signal });
-
-    canvas.addEventListener('mouseup', () => {
-      cancel.abort();
-    }, { signal: cancel.signal });
+    const done = this.trackMouse({
+      move: () => dragger.update(),
+      up: () => done(),
+    });
   }
 
 }
@@ -284,21 +286,21 @@ export class Button extends Box {
   onClick() { }
 
   onMouseDown(): void {
-    const cancel = new AbortController();
     this.clicking = true;
 
-    canvas.addEventListener('mousemove', () => {
-      if (!this.hovered) {
-        cancel.abort();
+    const done = this.trackMouse({
+      move: () => {
+        if (!this.hovered) {
+          done();
+          this.clicking = false;
+        }
+      },
+      up: () => {
+        done();
+        this.onClick();
         this.clicking = false;
-      }
-    }, { signal: cancel.signal });
-
-    canvas.addEventListener('mouseup', () => {
-      cancel.abort();
-      this.onClick();
-      this.clicking = false;
-    }, { signal: cancel.signal });
+      },
+    });
   }
 
   drawBackground() {

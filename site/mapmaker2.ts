@@ -1,4 +1,4 @@
-import { Box, Button, canvas, Dragging, keys, rectfill, root } from "./ui.js";
+import { Box, Button, Dragging, keys, rectfill, root } from "./ui.js";
 
 root.background = '#000';
 
@@ -47,15 +47,10 @@ map.drawCursor = () => {
 map.onMouseDown = () => {
   if (keys[' ']) {
     const dragger = new Dragging(map);
-    const cancel = new AbortController();
-
-    canvas.addEventListener('mousemove', () => {
-      dragger.update();
-    }, { signal: cancel.signal });
-
-    canvas.addEventListener('mouseup', () => {
-      cancel.abort();
-    }, { signal: cancel.signal });
+    const done = map.trackMouse({
+      move: () => dragger.update(),
+      up: () => done(),
+    });
   }
 };
 
