@@ -17,32 +17,32 @@ const mapArea = new Box(40, 0, 320 - 40, 180, '#222');
 mapArea.clips = true;
 root.children.push(mapArea);
 
-mapArea.drawCursor = () => {
+
+
+
+
+const map = new Box(0, 0, 50 * 4, 50 * 4, '#070');
+mapArea.children.push(map);
+
+map.drawCursor = () => {
   rectfill(mouse.x, mouse.y - 2, 1, 5, '#0007');
   rectfill(mouse.x - 2, mouse.y, 5, 1, '#0007');
   pset(mouse.x, mouse.y, '#fff');
 }
 
-
-
-
-
-const map = new Box(0, 0, 20 * 4, 20 * 4, '#000');
-mapArea.children.push(map);
-
 map.onMouseDown = () => {
-  if (!keys[' ']) return;
+  if (keys[' ']) {
+    const dragger = new Dragging(map);
+    const cancel = new AbortController();
 
-  const dragger = new Dragging(map);
-  const cancel = new AbortController();
+    canvas.addEventListener('mousemove', () => {
+      dragger?.update();
+    }, { signal: cancel.signal });
 
-  canvas.addEventListener('mousemove', () => {
-    dragger?.update();
-  }, { signal: cancel.signal });
-
-  canvas.addEventListener('mouseup', () => {
-    cancel.abort();
-  }, { once: true });
+    canvas.addEventListener('mouseup', () => {
+      cancel.abort();
+    }, { once: true });
+  }
 };
 
 map.draw = () => {
