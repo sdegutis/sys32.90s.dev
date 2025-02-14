@@ -265,7 +265,7 @@ export class DragHandle extends Box {
     const cancel = new AbortController();
 
     canvas.addEventListener('mousemove', () => {
-      dragger?.update();
+      dragger.update();
     }, { signal: cancel.signal });
 
     canvas.addEventListener('mouseup', () => {
