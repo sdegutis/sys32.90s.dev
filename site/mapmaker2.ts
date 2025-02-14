@@ -42,11 +42,30 @@ root.children.push(toolArea);
 
 
 
+const COLORS = [
+  '#000000', '#1D2B53', '#7E2553', '#008751',
+  '#AB5236', '#5F574F', '#C2C3C7', '#FFF1E8',
+  '#FF004D', '#FFA300', '#FFEC27', '#00E436',
+  '#29ADFF', '#83769C', '#FF77A8', '#FFCCAA',
+];
+
 const mapData = {
   width: 50,
   height: 40,
+  terrain: [] as number[],
+  units: [] as number[],
 };
 
+mapData.terrain = Array(mapData.width * mapData.height).fill(3);
+mapData.units = Array(mapData.width * mapData.height).fill(0);
+
+const drawTerrain: ((x: number, y: number) => void)[] = [];
+
+for (let i = 0; i < 16; i++) {
+  drawTerrain.push((x, y) => {
+    rectFill(x, y, 4, 4, COLORS[i]);
+  });
+}
 
 
 
@@ -87,6 +106,16 @@ map.onMouseDown = () => {
     map.trackMouse({
       move() {
         tilesel!.update();
+
+        const { tx1, tx2, ty1, ty2 } = tilesel!;
+
+        for (let y = ty1; y < ty2; y++) {
+          for (let x = tx1; x < tx2; x++) {
+            const i = y * mapData.width + x;
+            mapData.terrain[i] = 5;
+          }
+        }
+
       },
       up() {
         tilesel = null;
@@ -97,7 +126,15 @@ map.onMouseDown = () => {
 };
 
 map.draw = () => {
-  rectFill(0, 0, map.w, map.h, '#070');
+  // rectFill(0, 0, map.w, map.h, '#070');
+
+  for (let y = 0; y < mapData.height; y++) {
+    for (let x = 0; x < mapData.width; x++) {
+      const i = y * mapData.width + x;
+      const t = mapData.terrain[i];
+      drawTerrain[t](x * 4, y * 4);
+    }
+  }
 
   for (let x = 0; x < mapData.width; x++) {
     rectFill(x * 4, 0, 1, mapData.height * 4, '#0001');
@@ -116,7 +153,7 @@ map.draw = () => {
   if (tilesel) {
     const { tx1, tx2, ty1, ty2 } = tilesel;
 
-    rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), '#000');
-    rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), '#00f7');
+    rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), '#00f3');
+    rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), '#00f3');
   }
 }
