@@ -70,6 +70,7 @@ export class Box {
     const wrappedUp = () => { done.abort(); fns.up?.(); };
     canvas.addEventListener('mousemove', fns.move, opts);
     canvas.addEventListener('mouseup', wrappedUp, opts);
+    fns.move();
     return () => done.abort();
   }
 
