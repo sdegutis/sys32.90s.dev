@@ -5,12 +5,7 @@ const context = canvas.getContext('2d')!;
 
 const camera = { x: 0, y: 0 };
 
-const clips: {
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number,
-}[] = [];
+const clip = { x1: 0, y1: 0, x2: 320 - 1, y2: 180 - 1 };
 
 export class Box {
 
@@ -36,17 +31,25 @@ export class Box {
     if (this.clips) this.unclip();
   }
 
+  _oldclip = { x1: 0, y1: 0, x2: 0, y2: 0 };
+
   clip() {
-    clips.push({
-      x1: camera.x,
-      y1: camera.y,
-      x2: camera.x + this.w - 1,
-      y2: camera.y + this.h - 1,
-    });
+    this._oldclip.x1 = clip.x1;
+    this._oldclip.x2 = clip.x2;
+    this._oldclip.y1 = clip.y1;
+    this._oldclip.y2 = clip.y2;
+
+    clip.x1 = camera.x;
+    clip.y1 = camera.y;
+    clip.x2 = camera.x + this.w - 1;
+    clip.y2 = camera.y + this.h - 1;
   }
 
   unclip() {
-    clips.pop();
+    clip.x1 = this._oldclip.x1;
+    clip.x2 = this._oldclip.x2;
+    clip.y1 = this._oldclip.y1;
+    clip.y2 = this._oldclip.y2;
   }
 
   drawBackground() {
@@ -235,7 +238,6 @@ export function pset(x: number, y: number, c: number) {
   x += camera.x;
   y += camera.y;
 
-  const clip = clips[clips.length - 1];
   if (clip && (x < clip.x1 || y < clip.y1 || x > clip.x2 || y > clip.y2))
     return;
 
@@ -244,7 +246,7 @@ export function pset(x: number, y: number, c: number) {
   const r = c >> 24 & 0xff;
   const g = c >> 16 & 0xff;
   const b = c >> 8 & 0xff;
-  const a = c >> 0 & 0xff;
+  const a = c & 0xff;
 
   if (a === 255) {
     pixels[i + 0] = r;
@@ -252,9 +254,11 @@ export function pset(x: number, y: number, c: number) {
     pixels[i + 2] = b;
   }
   else {
-    pixels[i + 0] = (pixels[i + 0] * (255 - a) / 255) + (r * (a / 255));
-    pixels[i + 1] = (pixels[i + 1] * (255 - a) / 255) + (g * (a / 255));
-    pixels[i + 2] = (pixels[i + 2] * (255 - a) / 255) + (b * (a / 255));
+    const ia = (255 - a) / 255;
+    const aa = (a / 255);
+    pixels[i + 0] = (pixels[i + 0] * ia) + (r * aa);
+    pixels[i + 1] = (pixels[i + 1] * ia) + (g * aa);
+    pixels[i + 2] = (pixels[i + 2] * ia) + (b * aa);
   }
 }
 
@@ -276,17 +280,6 @@ export function rectFill(x: number, y: number, w: number, h: number, c: number) 
     }
   }
 }
-
-
-
-
-const c = 0x11ff0304;
-const r = c >> 24 & 0xff;
-const g = c >> 16 & 0xff;
-const b = c >> 8 & 0xff;
-const a = c >> 0 & 0xff;
-console.log(r, g, b, a)
-
 
 
 
