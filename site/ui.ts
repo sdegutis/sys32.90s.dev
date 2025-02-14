@@ -287,12 +287,6 @@ export class Button extends Box {
     const cancel = new AbortController();
     this.clicking = true;
 
-    canvas.addEventListener('mouseup', () => {
-      cancel.abort();
-      this.onClick();
-      this.clicking = false;
-    }, { signal: cancel.signal, once: true });
-
     canvas.addEventListener('mousemove', () => {
       if (!this.hovered) {
         cancel.abort();
@@ -300,6 +294,11 @@ export class Button extends Box {
       }
     }, { signal: cancel.signal });
 
+    canvas.addEventListener('mouseup', () => {
+      cancel.abort();
+      this.onClick();
+      this.clicking = false;
+    }, { signal: cancel.signal, once: true });
   }
 
   drawBackground() {
