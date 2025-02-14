@@ -9,12 +9,12 @@ const camera = { x: 0, y: 0 };
 
 export class Box {
 
+  onMouseDown() { }
+
   children: Box[] = [];
   hovered = false;
   mouse = { x: 0, y: 0 };
   clips = false;
-
-  onMouseDown() { }
 
   constructor(
     public x = 0,
@@ -311,6 +311,16 @@ export class Mover {
 
 }
 
+
+
+
+
+
+
+
+
+
+
 export class Button extends Box {
 
   text = '';
@@ -347,6 +357,50 @@ export class Button extends Box {
     }
 
     print(1, 1, this.color, this.text);
+  }
+
+}
+
+export class RadioGroup {
+
+  buttons = new Set<RadioButton>();
+
+  add(button: RadioButton) {
+    this.buttons.add(button);
+    button.group = this;
+  }
+
+  select(button: RadioButton) {
+    for (const b of this.buttons) {
+      b.selected = (b === button);
+    }
+  }
+
+}
+
+export class RadioButton extends Button {
+
+  drawButton() { }
+  onSelect() { }
+
+  selected = false;
+  group?: RadioGroup;
+
+  onClick(): void {
+    super.onClick();
+    this.group?.select(this);
+    this.onSelect();
+  }
+
+  drawBackground() {
+    this.drawButton();
+
+    if (this.selected) {
+      rectLine(0, 0, this.w, this.h, '#fff7');
+    }
+    else if (this.hovered) {
+      rectLine(0, 0, this.w, this.h, '#fff3');
+    }
   }
 
 }

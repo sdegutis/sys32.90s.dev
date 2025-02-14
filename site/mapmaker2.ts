@@ -1,4 +1,4 @@
-import { Box, Button, Mover, TileSelection, keys, rectFill, rectLine, root } from "./ui.js";
+import { Box, Button, Mover, RadioButton, RadioGroup, TileSelection, keys, rectFill, rectLine, root } from "./ui.js";
 
 root.background = '#000';
 
@@ -79,6 +79,7 @@ const drawTerrain: ((x: number, y: number) => void)[] = [];
 let currentTool = 5;
 
 
+const toolGroup = new RadioGroup();
 
 for (let i = 0; i < 16; i++) {
   drawTerrain.push((x, y) => {
@@ -86,11 +87,17 @@ for (let i = 0; i < 16; i++) {
   });
 
 
-  const b = new Button(2, 2 + (i * 7), 4, 4, COLORS[i]);
-  b.onClick = () => currentTool = i;
+  const b = new RadioButton(0, (i * 7), 8, 8);
+  b.drawButton = () => rectFill(2, 2, 4, 4, COLORS[i]);
+  toolGroup.add(b);
+  b.onSelect = () => currentTool = i;
   toolArea.children.push(b);
 
+  if (i === currentTool) toolGroup.select(b);
+
 }
+
+
 
 
 
