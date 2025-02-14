@@ -44,7 +44,7 @@ export class Box {
 
   drawBackground() {
     if (!this.background) return;
-    rectfill(0, 0, this.w, this.h, this.background);
+    rectFill(0, 0, this.w, this.h, this.background);
   }
 
   drawChildren() {
@@ -212,10 +212,10 @@ export function ontick(fn: (delta: number) => void) {
 
 
 export function pset(x: number, y: number, c: string) {
-  rectfill(x, y, 1, 1, c);
+  rectFill(x, y, 1, 1, c);
 }
 
-export function drawrect(x: number, y: number, w: number, h: number, c: string) {
+export function rectLine(x: number, y: number, w: number, h: number, c: string) {
   context.strokeStyle = c;
   context.strokeRect(
     x + 0.5 + camera.x,
@@ -224,7 +224,7 @@ export function drawrect(x: number, y: number, w: number, h: number, c: string) 
     h - 1);
 }
 
-export function rectfill(x: number, y: number, w: number, h: number, c: string) {
+export function rectFill(x: number, y: number, w: number, h: number, c: string) {
   context.fillStyle = c;
   context.fillRect(
     x + camera.x,
@@ -296,10 +296,10 @@ export class Button extends Box {
     super.drawBackground();
 
     if (this.clicking) {
-      rectfill(0, 0, this.w, this.h, '#fff2');
+      rectFill(0, 0, this.w, this.h, '#fff2');
     }
     else if (this.hovered) {
-      rectfill(0, 0, this.w, this.h, '#fff1');
+      rectFill(0, 0, this.w, this.h, '#fff1');
     }
 
     print(1, 1, this.color, this.text);

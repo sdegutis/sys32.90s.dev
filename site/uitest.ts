@@ -1,4 +1,4 @@
-import { Box, Button, DragHandle, drawrect, mouse, ontick, print, pset, rectfill, root } from "./ui.js";
+import { Box, Button, DragHandle, rectLine, mouse, ontick, print, pset, rectFill, root } from "./ui.js";
 
 const COLORS = [
   '#000000', '#1D2B53', '#7E2553', '#008751',
@@ -32,7 +32,7 @@ button.draw = () => {
   if (button.hovered) col = '#0f0';
   if (button.clicking) col = '#fff';
 
-  drawrect(0, 0, button.w, button.h, col);
+  rectLine(0, 0, button.w, button.h, col);
   pset(0, 0, '#fff');
 
 };

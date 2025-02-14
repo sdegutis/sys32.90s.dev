@@ -1,4 +1,4 @@
-import { Box, Button, Dragging, drawrect, keys, rectfill, root } from "./ui.js";
+import { Box, Button, Dragging, rectLine, keys, rectFill, root } from "./ui.js";
 
 root.background = '#000';
 
@@ -102,23 +102,23 @@ map.onMouseDown = () => {
 };
 
 map.draw = () => {
-  rectfill(0, 0, map.w, map.h, '#070');
+  rectFill(0, 0, map.w, map.h, '#070');
 
   for (let i = 0; i < 50; i++) {
-    rectfill(0, i * 4, 50 * 4, 1, '#0001');
-    rectfill(i * 4, 0, 1, 50 * 4, '#0001');
+    rectFill(0, i * 4, 50 * 4, 1, '#0001');
+    rectFill(i * 4, 0, 1, 50 * 4, '#0001');
   }
 
   if (map.hovered) {
     const tx = Math.floor(map.mouse.x / 4);
     const ty = Math.floor(map.mouse.y / 4);
-    rectfill(tx * 4, ty * 4, 4, 4, '#00f7');
+    rectFill(tx * 4, ty * 4, 4, 4, '#00f7');
   }
 
   if (dragger) {
     const { x, y, w, h } = dragger;
-    drawrect(x, y, w, h, '#000');
-    rectfill(x, y, w, h, '#00f7');
+    rectLine(x, y, w, h, '#000');
+    rectFill(x, y, w, h, '#00f7');
 
   }
 }
