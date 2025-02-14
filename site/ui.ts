@@ -117,11 +117,21 @@ canvas.addEventListener('keyup', (e) => {
 
 export const root = new Box(0, 0, 320, 180);
 
+const cursor = new Box(0, 0, 320, 180);
+cursor.draw = () => mousingOver.drawCursor();
+
 export const mouse = {
   x: 0,
   y: 0,
   button: 0,
 };
+
+
+
+
+
+
+
 
 let mousingOver: Box = root;
 
@@ -151,13 +161,27 @@ canvas.addEventListener('mousemove', (e) => {
 
 canvas.oncontextmenu = (e) => { e.preventDefault(); };
 
+function findElementAt(box: Box, x: number, y: number): Box | null {
+  const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
+  if (!inThis) return null;
+
+  box.mouse.x = x;
+  box.mouse.y = y;
+
+  let i = box.children.length;
+  while (i--) {
+    const child = box.children[i];
+    const found = findElementAt(child, x - child.x, y - child.y);
+    if (found) return found;
+  }
+
+  return box;
+}
 
 
 
 
 
-export const cursor = new Box(0, 0, 320, 180);
-cursor.draw = () => mousingOver.drawCursor();
 
 
 
@@ -186,23 +210,6 @@ export function ontick(fn: (delta: number) => void) {
 
 
 
-
-function findElementAt(box: Box, x: number, y: number): Box | null {
-  const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
-  if (!inThis) return null;
-
-  box.mouse.x = x;
-  box.mouse.y = y;
-
-  let i = box.children.length;
-  while (i--) {
-    const child = box.children[i];
-    const found = findElementAt(child, x - child.x, y - child.y);
-    if (found) return found;
-  }
-
-  return box;
-}
 
 
 
