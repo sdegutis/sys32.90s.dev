@@ -204,6 +204,7 @@ mapBox.onMouseDown = () => {
 };
 
 mapBox.draw = () => {
+  // for (let i = 0; i < 1000; i++)
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
       const i = y * map.width + x;

@@ -238,8 +238,7 @@ export function pset(x: number, y: number, c: number) {
   x += camera.x;
   y += camera.y;
 
-  if (clip && (x < clip.x1 || y < clip.y1 || x > clip.x2 || y > clip.y2))
-    return;
+  if (x < clip.x1 || y < clip.y1 || x > clip.x2 || y > clip.y2) return;
 
   const i = y * 320 * 4 + x * 4;
 
