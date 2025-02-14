@@ -1,21 +1,20 @@
 import { Box, Button, Mover, RadioButton, RadioGroup, TileSelection, keys, onWheel, rectFill, rectLine, root } from "./ui.js";
 
-root.background = '#000';
 
 
-const menu = new Box(0, 0, 320, 6, '#000');
+const menu = new Box(0, 0, 320, 6, 0x00_00_00_ff);
 root.children.push(menu);
 
-const saveButton = new Button(0, 0, 4 * 4 + 3, 8, '#000');
-saveButton.color = '#fff3';
+const saveButton = new Button(0, 0, 4 * 4 + 3, 8, 0x000000ff);
+saveButton.color = 0xffffff33;
 saveButton.text = 'save';
 saveButton.onClick = () => {
   console.log('saving')
 };
 menu.children.push(saveButton);
 
-const loadButton = new Button(20, 0, 4 * 4 + 3, 8, '#000');
-loadButton.color = '#fff3';
+const loadButton = new Button(20, 0, 4 * 4 + 3, 8, 0x000000ff);
+loadButton.color = 0xffffff33;
 loadButton.text = 'load';
 loadButton.onClick = () => {
   console.log('loading')
@@ -24,8 +23,8 @@ menu.children.push(loadButton);
 
 let showGrid = true;
 
-const gridButton = new Button(40, 0, 4 * 4 + 3, 8, '#000');
-gridButton.color = '#fff3';
+const gridButton = new Button(40, 0, 4 * 4 + 3, 8, 0x000000ff);
+gridButton.color = 0xffffff33;
 gridButton.text = 'grid';
 gridButton.onClick = () => showGrid = !showGrid;
 menu.children.push(gridButton);
@@ -35,7 +34,7 @@ menu.children.push(gridButton);
 
 
 
-const toolArea = new Box(0, 8, 40, 180 - 8, '#333');
+const toolArea = new Box(0, 8, 40, 180 - 8, 0x333333ff);
 root.children.push(toolArea);
 
 
@@ -51,10 +50,10 @@ root.children.push(toolArea);
 
 
 const COLORS = [
-  '#000000', '#1D2B53', '#7E2553', '#008751',
-  '#AB5236', '#5F574F', '#C2C3C7', '#FFF1E8',
-  '#FF004D', '#FFA300', '#FFEC27', '#00E436',
-  '#29ADFF', '#83769C', '#FF77A8', '#FFCCAA',
+  0x000000ff, 0x1D2B53ff, 0x7E2553ff, 0x008751ff,
+  0xAB5236ff, 0x5F574Fff, 0xC2C3C7ff, 0xFFF1E8ff,
+  0xFF004Dff, 0xFFA300ff, 0xFFEC27ff, 0x00E436ff,
+  0x29ADFFff, 0x83769Cff, 0xFF77A8ff, 0xFFCCAAff,
 ];
 
 class Map {
@@ -91,10 +90,20 @@ for (let i = 0; i < 16; i++) {
   drawTerrain.push((x, y) => {
     rectFill(x, y, 4, 4, COLORS[i]);
   });
+}
 
+drawTerrain.push((x, y) => {
+  rectFill(x, y, 4, 4, COLORS[3]);
+});
 
-  const b = new RadioButton(0, (i * 7), 8, 8);
-  b.drawButton = () => rectFill(2, 2, 4, 4, COLORS[i]);
+for (let i = 0; i < 17; i++) {
+
+  const maxlen = 24;
+  let toolx = Math.floor(i / maxlen) * 7;
+  let tooly = (i % maxlen) * 7;
+
+  const b = new RadioButton(toolx, tooly, 8, 8);
+  b.drawButton = () => rectFill(2, 2, 4, 4, COLORS[i % 16]);
   toolGroup.add(b);
   b.onSelect = () => currentTool = i;
   toolArea.children.push(b);
@@ -108,11 +117,11 @@ for (let i = 0; i < 16; i++) {
 onWheel(up => {
   if (up) {
     currentTool--;
-    if (currentTool < 0) currentTool = 15;
+    if (currentTool < 0) currentTool = 16;
   }
   else {
     currentTool++;
-    if (currentTool === 16) currentTool = 0;
+    if (currentTool === 17) currentTool = 0;
   }
 
   toolGroup.select(toolGroup.buttons[currentTool]);
@@ -129,7 +138,7 @@ onWheel(up => {
 
 
 
-const mapArea = new Box(40, 8, 320 - 40, 180 - 8, '#222');
+const mapArea = new Box(40, 8, 320 - 40, 180 - 8, 0x222222ff);
 mapArea.clips = true;
 root.children.push(mapArea);
 
@@ -195,8 +204,6 @@ mapBox.onMouseDown = () => {
 };
 
 mapBox.draw = () => {
-  // rectFill(0, 0, map.w, map.h, '#070');
-
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
       const i = y * map.width + x;
@@ -207,31 +214,31 @@ mapBox.draw = () => {
 
   if (showGrid) {
     for (let x = 0; x < map.width; x++) {
-      rectFill(x * 4, 0, 1, map.height * 4, '#0001');
+      rectFill(x * 4, 0, 1, map.height * 4, 0x00000011);
     }
 
     for (let y = 0; y < map.height; y++) {
-      rectFill(0, y * 4, map.width * 4, 1, '#0001');
+      rectFill(0, y * 4, map.width * 4, 1, 0x00000011);
     }
   }
 
   if (mapBox.hovered) {
     const tx = Math.floor(mapBox.mouse.x / 4);
     const ty = Math.floor(mapBox.mouse.y / 4);
-    rectFill(tx * 4, ty * 4, 4, 4, '#00f7');
+    rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);
 
     if (keys['Alt']) {
-      rectFill((tx + 0) * 4, (ty + 1) * 4, 4, 4, '#00f7');
-      rectFill((tx + 0) * 4, (ty - 1) * 4, 4, 4, '#00f7');
-      rectFill((tx + 1) * 4, (ty + 0) * 4, 4, 4, '#00f7');
-      rectFill((tx - 1) * 4, (ty + 0) * 4, 4, 4, '#00f7');
+      rectFill((tx + 0) * 4, (ty + 1) * 4, 4, 4, 0x0000ff77);
+      rectFill((tx + 0) * 4, (ty - 1) * 4, 4, 4, 0x0000ff77);
+      rectFill((tx + 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
+      rectFill((tx - 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
     }
   }
 
   if (tilesel) {
     const { tx1, tx2, ty1, ty2 } = tilesel;
 
-    rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), '#00f3');
-    rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), '#00f3');
+    rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
+    rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
   }
 }

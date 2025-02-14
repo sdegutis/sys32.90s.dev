@@ -3,9 +3,14 @@ const context = canvas.getContext('2d')!;
 
 
 
-
-
 const camera = { x: 0, y: 0 };
+
+const clips: {
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+}[] = [];
 
 export class Box {
 
@@ -21,7 +26,7 @@ export class Box {
     public y = 0,
     public w = 0,
     public h = 0,
-    public background?: string,
+    public background?: number,
   ) { }
 
   draw() {
@@ -32,14 +37,16 @@ export class Box {
   }
 
   clip() {
-    context.save();
-    context.beginPath();
-    context.rect(camera.x, camera.y, this.w, this.h);
-    context.clip();
+    clips.push({
+      x1: camera.x,
+      y1: camera.y,
+      x2: camera.x + this.w - 1,
+      y2: camera.y + this.h - 1,
+    });
   }
 
   unclip() {
-    context.restore();
+    clips.pop();
   }
 
   drawBackground() {
@@ -59,9 +66,9 @@ export class Box {
   }
 
   drawCursor() {
-    pset(mouse.x, mouse.y, '#fff');
-    pset(mouse.x + 1, mouse.y, '#fff');
-    pset(mouse.x, mouse.y + 1, '#fff');
+    pset(mouse.x, mouse.y, 0xffffffff);
+    pset(mouse.x + 1, mouse.y, 0xffffffff);
+    pset(mouse.x, mouse.y + 1, 0xffffffff);
   }
 
   trackMouse(fns: { move: () => void, up?: () => void }) {
@@ -116,7 +123,7 @@ canvas.addEventListener('keyup', (e) => {
 
 
 
-export const root = new Box(0, 0, 320, 180);
+export const root = new Box(0, 0, 320, 180, 0x000000ff);
 
 export const mouse = {
   x: 0,
@@ -189,6 +196,13 @@ export function onWheel(fn: (up: boolean) => void) {
 
 
 
+const pixels = new Uint8ClampedArray(320 * 180 * 4);
+const imgdata = new ImageData(pixels, 320, 180);
+
+for (let i = 0; i < 320 * 180 * 4; i += 4) {
+  pixels[i + 3] = 255;
+}
+
 
 let tick = (delta: number) => { };
 let last = +document.timeline.currentTime!;
@@ -198,7 +212,13 @@ function update(t: number) {
     tick(t - last);
     root.draw();
     lastHovered.drawCursor();
+    context.putImageData(imgdata, 0, 0);
     last = t;
+
+    // context.beginPath();
+    // context.moveTo(30, 30);
+    // context.bezierCurveTo(50, 60, 50, 60, 50, 60);
+    // context.stroke();
   }
   requestAnimationFrame(update);
 }
@@ -211,38 +231,61 @@ export function ontick(fn: (delta: number) => void) {
 
 
 
+export function pset(x: number, y: number, c: number) {
+  x += camera.x;
+  y += camera.y;
 
+  const clip = clips[clips.length - 1];
+  if (clip && (x < clip.x1 || y < clip.y1 || x > clip.x2 || y > clip.y2))
+    return;
 
+  const i = y * 320 * 4 + x * 4;
 
+  const r = c >> 24 & 0xff;
+  const g = c >> 16 & 0xff;
+  const b = c >> 8 & 0xff;
+  const a = c >> 0 & 0xff;
 
-
-
-export function pset(x: number, y: number, c: string) {
-  rectFill(x, y, 1, 1, c);
+  if (a === 255) {
+    pixels[i + 0] = r;
+    pixels[i + 1] = g;
+    pixels[i + 2] = b;
+  }
+  else {
+    pixels[i + 0] = (pixels[i + 0] * (255 - a) / 255) + (r * (a / 255));
+    pixels[i + 1] = (pixels[i + 1] * (255 - a) / 255) + (g * (a / 255));
+    pixels[i + 2] = (pixels[i + 2] * (255 - a) / 255) + (b * (a / 255));
+  }
 }
 
-export function rectLine(x: number, y: number, w: number, h: number, c: string) {
-  context.strokeStyle = c;
-  context.strokeRect(
-    x + 0.5 + camera.x,
-    y + 0.5 + camera.y,
-    w - 1,
-    h - 1);
+export function rectLine(x: number, y: number, w: number, h: number, c: number) {
+  for (let xx = 1; xx < w - 1; xx++) {
+    pset(x + xx, y, c);
+    pset(x + xx, y + h - 1, c);
+  }
+  for (let yy = 0; yy < h; yy++) {
+    pset(x, y + yy, c);
+    pset(x + w - 1, y + yy, c);
+  }
 }
 
-export function rectFill(x: number, y: number, w: number, h: number, c: string) {
-  context.fillStyle = c;
-  context.fillRect(
-    x + camera.x,
-    y + camera.y,
-    w,
-    h);
+export function rectFill(x: number, y: number, w: number, h: number, c: number) {
+  for (let yy = 0; yy < h; yy++) {
+    for (let xx = 0; xx < w; xx++) {
+      pset(x + xx, y + yy, c);
+    }
+  }
 }
 
 
 
 
-
+const c = 0x11ff0304;
+const r = c >> 24 & 0xff;
+const g = c >> 16 & 0xff;
+const b = c >> 8 & 0xff;
+const a = c >> 0 & 0xff;
+console.log(r, g, b, a)
 
 
 
@@ -329,7 +372,7 @@ export class Mover {
 export class Button extends Box {
 
   text = '';
-  color = '#fff';
+  color: number = 0xffffffff;
 
   clicking = false;
   onClick() { }
@@ -355,10 +398,10 @@ export class Button extends Box {
     super.drawBackground();
 
     if (this.clicking) {
-      rectFill(0, 0, this.w, this.h, '#fff2');
+      rectFill(0, 0, this.w, this.h, 0xffffff22);
     }
     else if (this.hovered) {
-      rectFill(0, 0, this.w, this.h, '#fff1');
+      rectFill(0, 0, this.w, this.h, 0xffffff11);
     }
 
     print(2, 2, this.color, this.text);
@@ -401,10 +444,10 @@ export class RadioButton extends Button {
     this.drawButton();
 
     if (this.selected) {
-      rectLine(0, 0, this.w, this.h, '#fff7');
+      rectLine(0, 0, this.w, this.h, 0xffffff77);
     }
     else if (this.hovered) {
-      rectLine(0, 0, this.w, this.h, '#fff3');
+      rectLine(0, 0, this.w, this.h, 0xffffff33);
     }
   }
 
@@ -463,7 +506,7 @@ for (let i = 0; i < mapping.length; i++) {
   }
 }
 
-export function print(x: number, y: number, c: string, text: string) {
+export function print(x: number, y: number, c: number, text: string) {
   let posx = 0;
   let posy = 0;
 
