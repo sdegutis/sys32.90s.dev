@@ -176,8 +176,13 @@ function findElementAt(box: Box, x: number, y: number): Box | null {
   return box;
 }
 
-
-
+export function onWheel(fn: (up: boolean) => void) {
+  const done = new AbortController();
+  canvas.addEventListener('wheel',
+    (e) => fn(e.deltaY < 0),
+    { passive: true, signal: done.signal });
+  return () => done.abort();
+}
 
 
 
@@ -363,10 +368,10 @@ export class Button extends Box {
 
 export class RadioGroup {
 
-  buttons = new Set<RadioButton>();
+  buttons: RadioButton[] = [];
 
   add(button: RadioButton) {
-    this.buttons.add(button);
+    this.buttons.push(button);
     button.group = this;
   }
 

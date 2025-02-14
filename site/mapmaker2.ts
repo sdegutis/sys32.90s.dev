@@ -1,4 +1,4 @@
-import { Box, Button, Mover, RadioButton, RadioGroup, TileSelection, keys, rectFill, rectLine, root } from "./ui.js";
+import { Box, Button, Mover, RadioButton, RadioGroup, TileSelection, keys, onWheel, rectFill, rectLine, root } from "./ui.js";
 
 root.background = '#000';
 
@@ -99,6 +99,18 @@ for (let i = 0; i < 16; i++) {
 
 
 
+onWheel(up => {
+  if (up) {
+    currentTool--;
+    if (currentTool < 0) currentTool = 15;
+  }
+  else {
+    currentTool++;
+    if (currentTool === 16) currentTool = 0;
+  }
+
+  toolGroup.select(toolGroup.buttons[currentTool]);
+});
 
 
 
