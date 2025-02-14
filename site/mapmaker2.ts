@@ -94,10 +94,12 @@ map.draw = () => {
 
     const tx1 = Math.floor(x / 4);
     const ty1 = Math.floor(y / 4);
-    const tx2 = Math.ceil(x + w / 4);
-    const ty2 = Math.ceil(y + h / 4);
+    const tx2 = Math.ceil(x / 4 + w / 4);
+    const ty2 = Math.ceil(y / 4 + h / 4);
 
-    rectLine(tx1, ty1, tx2 - tx1, ty2 - ty1, '#000');
-    rectFill(tx1, ty1, tx2 - tx1, ty2 - ty1, '#00f7');
+    console.log(x, y, w, h)
+
+    rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), '#000');
+    rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), '#00f7');
   }
 }
