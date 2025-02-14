@@ -1,4 +1,4 @@
-import { Box, Button, Mover, RadioButton, RadioGroup, TileSelection, keys, onWheel, rectFill, rectLine, root } from "./ui.js";
+import { Box, Button, Mover, RadioButton, RadioGroup, Textbox, TileSelection, keys, onWheel, rectFill, rectLine, root } from "./ui.js";
 
 
 
@@ -129,6 +129,12 @@ onWheel(up => {
 
 
 
+
+
+
+const textbox = new Textbox(2, 2, 30, 30, 0x111111ff);
+
+toolArea.children.push(textbox);
 
 
 

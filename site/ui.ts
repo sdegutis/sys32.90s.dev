@@ -10,6 +10,7 @@ const clip = { x1: 0, y1: 0, x2: 320 - 1, y2: 180 - 1 };
 export class Box {
 
   onMouseDown() { }
+  onKeyDown(key: string) { }
 
   children: Box[] = [];
   hovered = false;
@@ -84,6 +85,10 @@ export class Box {
     return () => done.abort();
   }
 
+  focus() {
+    focused = this;
+  }
+
 }
 
 
@@ -111,6 +116,7 @@ export const keys: Record<string, boolean> = {};
 
 canvas.addEventListener('keydown', (e) => {
   keys[e.key] = true;
+  focused.onKeyDown(e.key);
 }, { passive: true });
 
 canvas.addEventListener('keyup', (e) => {
@@ -127,6 +133,8 @@ canvas.addEventListener('keyup', (e) => {
 
 
 export const root = new Box(0, 0, 320, 180, 0x000000ff);
+
+export let focused: Box = root;
 
 export const mouse = {
   x: 0,
@@ -145,6 +153,7 @@ let lastHovered: Box = root;
 
 canvas.addEventListener('mousedown', (e) => {
   mouse.button = e.button;
+  lastHovered.focus();
   lastHovered.onMouseDown();
 }, { passive: true });
 
@@ -439,6 +448,62 @@ export class RadioButton extends Button {
   }
 
 }
+
+
+
+
+
+
+
+
+
+export class Textbox extends Box {
+
+  text = '';
+  color = 0xffffffff;
+
+  constructor(...args: ConstructorParameters<typeof Box>) {
+    super(...args);
+    this.clips = true;
+  }
+
+  onKeyDown(key: string): void {
+    if (key === 'Enter') {
+      this.text += '\n';
+    }
+    else if (key === 'Backspace') {
+      this.text = this.text.slice(0, -1);
+    }
+    else if (mapping.includes(key)) {
+      this.text += key;
+    }
+  }
+
+  drawBackground(): void {
+    super.drawBackground();
+    print(2, 2, this.color, this.text);
+
+    if (focused === this) {
+      rectLine(0, 0, this.w, this.h, 0xffffff33);
+
+      const drawCursor = last % 1000 < 500;
+      if (drawCursor) {
+        let cx = 0;
+        let cy = 0;
+
+        for (let i = 0; i < this.text.length; i++) {
+          const ch = this.text[i];
+          if (ch === '\n') { cy++; cx = 0; continue; }
+          cx++;
+        }
+
+        print((cx * 4) + 2, (cy * 6) + 2, 0x77aaffff, '_');
+      }
+    }
+  }
+
+}
+
 
 
 
