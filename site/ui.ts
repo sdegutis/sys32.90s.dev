@@ -217,11 +217,6 @@ function update(t: number) {
     lastHovered.drawCursor();
     context.putImageData(imgdata, 0, 0);
     last = t;
-
-    // context.beginPath();
-    // context.moveTo(30, 30);
-    // context.bezierCurveTo(50, 60, 50, 60, 50, 60);
-    // context.stroke();
   }
   requestAnimationFrame(update);
 }
