@@ -47,10 +47,7 @@ map.drawCursor = () => {
 map.onMouseDown = () => {
   if (keys[' ']) {
     const dragger = new Dragging(map);
-    const done = map.trackMouse({
-      move: () => dragger.update(),
-      up: () => done(),
-    });
+    map.trackMouse({ move: () => dragger.update() });
   }
 };
 

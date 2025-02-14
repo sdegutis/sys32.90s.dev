@@ -64,10 +64,11 @@ export class Box {
     pset(mouse.x, mouse.y + 1, '#fff');
   }
 
-  trackMouse(fns: { move: () => void, up: () => void }) {
+  trackMouse(fns: { move: () => void, up?: () => void }) {
     const done = new AbortController();
+    const wrappedUp = () => { done.abort(); fns.up?.(); };
     canvas.addEventListener('mousemove', fns.move, { signal: done.signal });
-    canvas.addEventListener('mouseup', fns.up, { signal: done.signal });
+    canvas.addEventListener('mouseup', wrappedUp, { signal: done.signal });
     return () => done.abort();
   }
 
@@ -269,10 +270,7 @@ export class DragHandle extends Box {
 
   onMouseDown(): void {
     const dragger = new Dragging(this.moves);
-    const done = this.trackMouse({
-      move: () => dragger.update(),
-      up: () => done(),
-    });
+    this.trackMouse({ move: () => dragger.update() });
   }
 
 }
@@ -296,7 +294,6 @@ export class Button extends Box {
         }
       },
       up: () => {
-        done();
         this.onClick();
         this.clicking = false;
       },
