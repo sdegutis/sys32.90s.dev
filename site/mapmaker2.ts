@@ -3,20 +3,23 @@ import { Box, Button, canvas, Dragging, keys, rectfill, root } from "./ui.js";
 root.background = '#000';
 
 
-const toolArea = new Box(0, 0, 40, 180, '#333');
+const toolArea = new Box(0, 8, 40, 180 - 8, '#333');
 root.children.push(toolArea);
 
+const menu = new Box(0, 0, 320, 6, '#000');
+root.children.push(menu);
 
-const saveButton = new Button(1, 1, 19, 8, '#0003');
+
+const saveButton = new Button(1, 1, 4 * 4 + 1, 6, '#0003');
 saveButton.color = '#fff3';
 saveButton.text = 'save';
 saveButton.onClick = () => {
   console.log('saving')
 };
-toolArea.children.push(saveButton);
+menu.children.push(saveButton);
 
 
-const mapArea = new Box(40, 0, 320 - 40, 180, '#222');
+const mapArea = new Box(40, 8, 320 - 40, 180 - 8, '#222');
 mapArea.clips = true;
 root.children.push(mapArea);
 

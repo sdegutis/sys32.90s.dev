@@ -306,13 +306,13 @@ export class Button extends Box {
     super.drawBackground();
 
     if (this.clicking) {
-      drawrect(0, 0, this.w, this.h, '#fff7');
+      rectfill(0, 0, this.w, this.h, '#fff2');
     }
     else if (this.hovered) {
-      drawrect(0, 0, this.w, this.h, '#fff4');
+      rectfill(0, 0, this.w, this.h, '#fff1');
     }
 
-    print(2, 2, this.color, this.text);
+    print(1, 1, this.color, this.text);
   }
 
 }
