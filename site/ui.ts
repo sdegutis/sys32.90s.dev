@@ -272,6 +272,23 @@ export class Selection {
 
 }
 
+export class TileSelection extends Selection {
+
+  tx1!: number;
+  ty1!: number;
+  tx2!: number;
+  ty2!: number;
+
+  update() {
+    super.update();
+    this.tx1 = Math.floor(this.x / 4);
+    this.ty1 = Math.floor(this.y / 4);
+    this.tx2 = Math.ceil(this.x / 4 + this.w / 4);
+    this.ty2 = Math.ceil(this.y / 4 + this.h / 4);
+  }
+
+}
+
 export class Mover {
 
   startMouse;

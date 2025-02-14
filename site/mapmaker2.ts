@@ -1,4 +1,4 @@
-import { Box, Button, Mover, keys, rectFill, rectLine, root, Selection } from "./ui.js";
+import { Box, Button, Mover, keys, rectFill, rectLine, root, Selection, TileSelection } from "./ui.js";
 
 root.background = '#000';
 
@@ -49,7 +49,7 @@ map.drawCursor = () => {
   // pset(mouse.x, mouse.y, '#fff');
 }
 
-let dragger: Selection | null = null;
+let tilesel: TileSelection | null = null;
 
 map.onMouseDown = () => {
   if (keys[' ']) {
@@ -58,17 +58,14 @@ map.onMouseDown = () => {
   }
   else {
 
-    dragger = new Selection(map);
+    tilesel = new TileSelection(map);
 
     map.trackMouse({
       move() {
-        dragger!.update();
-
-        const tx = Math.floor(map.mouse.x / 4);
-        const ty = Math.floor(map.mouse.y / 4);
+        tilesel!.update();
       },
       up() {
-        dragger = null;
+        tilesel = null;
       },
     });
 
@@ -89,15 +86,8 @@ map.draw = () => {
     rectFill(tx * 4, ty * 4, 4, 4, '#00f7');
   }
 
-  if (dragger) {
-    const { x, y, w, h } = dragger;
-
-    const tx1 = Math.floor(x / 4);
-    const ty1 = Math.floor(y / 4);
-    const tx2 = Math.ceil(x / 4 + w / 4);
-    const ty2 = Math.ceil(y / 4 + h / 4);
-
-    console.log(x, y, w, h)
+  if (tilesel) {
+    const { tx1, tx2, ty1, ty2 } = tilesel;
 
     rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), '#000');
     rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), '#00f7');
