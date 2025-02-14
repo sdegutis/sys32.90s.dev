@@ -1,4 +1,4 @@
-import { Box, Button, canvas, Dragging, keys, mouse, print, pset, rectfill, root } from "./ui.js";
+import { Box, Button, canvas, Dragging, keys, rectfill, root } from "./ui.js";
 
 root.background = '#000';
 
@@ -28,9 +28,9 @@ const map = new Box(0, 0, 50 * 4, 50 * 4, '#070');
 mapArea.children.push(map);
 
 map.drawCursor = () => {
-  rectfill(mouse.x, mouse.y - 2, 1, 5, '#0007');
-  rectfill(mouse.x - 2, mouse.y, 5, 1, '#0007');
-  pset(mouse.x, mouse.y, '#fff');
+  // rectfill(mouse.x, mouse.y - 2, 1, 5, '#0007');
+  // rectfill(mouse.x - 2, mouse.y, 5, 1, '#0007');
+  // pset(mouse.x, mouse.y, '#fff');
 }
 
 map.onMouseDown = () => {
@@ -50,5 +50,14 @@ map.onMouseDown = () => {
 
 map.draw = () => {
   map.drawBackground();
-  // print(1, 2, '#fff', 'testing');
+
+  for (let i = 0; i < 50; i++) {
+    rectfill(0, i * 4, 50 * 4, 1, '#0001');
+    rectfill(i * 4, 0, 1, 50 * 4, '#0001');
+  }
+
+  const tx = Math.floor(map.mouse.x / 4);
+  const ty = Math.floor(map.mouse.y / 4);
+
+  rectfill(tx * 4, ty * 4, 4, 4, '#00f7');
 }
