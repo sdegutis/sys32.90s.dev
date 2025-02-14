@@ -286,10 +286,10 @@ export class Button extends Box {
   onMouseDown(): void {
     this.clicking = true;
 
-    const done = this.trackMouse({
+    const cancel = this.trackMouse({
       move: () => {
         if (!this.hovered) {
-          done();
+          cancel();
           this.clicking = false;
         }
       },

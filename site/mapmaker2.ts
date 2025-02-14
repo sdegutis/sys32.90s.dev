@@ -49,6 +49,15 @@ map.onMouseDown = () => {
     const dragger = new Dragging(map);
     map.trackMouse({ move: () => dragger.update() });
   }
+  else {
+    map.trackMouse({
+      move: () => {
+        const tx = Math.floor(map.mouse.x / 4);
+        const ty = Math.floor(map.mouse.y / 4);
+      }
+    });
+
+  }
 };
 
 map.draw = () => {
