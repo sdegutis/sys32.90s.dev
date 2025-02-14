@@ -132,9 +132,6 @@ onWheel(up => {
 
 
 
-const textbox = new Textbox(2, 2, 30, 30, 0x111111ff);
-
-toolArea.children.push(textbox);
 
 
 
@@ -249,3 +246,10 @@ mapBox.draw = () => {
     rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
   }
 }
+
+
+
+
+const textbox = new Textbox(160, 0, 160, 180, 0x000000ff);
+textbox.text = `const foo = "test";`.toLowerCase();
+root.children.push(textbox);

@@ -514,7 +514,7 @@ export class Textbox extends Box {
 
 
 
-const mapping = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_`;
+const mapping = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$`;
 const src = `
  xxx     xx      xxx     xx      xxx     xxx     xxx     x x     xxx     xxx     x x     x       xxx     xxx     xxx     xxx  |
  x x     xxx     x       x x     xx      xx      x       xxx      x       x      xx      x       xxx     x x     x x     x x  |
@@ -524,17 +524,22 @@ const src = `
  xxx     xxx     xxx     xxx     x x     x x     x x     x x     x x     xxx                             xx       x      xxx  |
  x x     x x     x        x      x x     x x     x x      x      x x      xx                              x       x      x x  |
  xxx     xx       xx      x      x x     x x     xxx      x       x      x                        x                           |
-   x     x x     xxx      x      xxx      x      xxx     x x      x      xxx              x      xx               x        x  |
+   x     x x     xxx      x      xxx      x      xxx     x x      x      xxx              x      x                x        x  |
                                                                                                                               |
  xx      xx      xxx     x x     xxx     xxx     xxx     xxx     xxx      x               x        x       x      x      x x  |
   x        x      xx     x x     xx      x         x     xxx     x x     x x     xxx     xxx      x       x        x     x x  |
   x       x        x     xxx       x     xxx       x     x x      xx     x x              x       x       x        x          |
  xxx     xxx     xxx       x     xx      xxx       x     xxx     xx       x                      x         x      x           |
                                                                                                                               |
- x        x       x      x x     xx      xx      xx       x      x                                                            |
-                          x              x        x      x        x                                                           |
- x        x      xxx     x x     xx      x        x       x      x                                                            |
-         x        x                      xx      xx                      xxx                                                  |`;
+ x        x       x      x x     xx      xx      xx       x      x               xxx     xxx      x       xx     xx      x    |
+                          x              x        x      x        x              xxx     xxx      x      xx       xx      x   |
+ x        x      xxx     x x     xx      x        x       x      x               xx      xxx      x      xx       xx          |
+         x        x                      xx      xx                      xxx     xxx              x       xx     xx           |
+                                                                                                                              |
+  x                                                                                                                           |
+ x                                                                                                                            |
+  x                                                                                                                           |
+ x                                                                                                                            |`;
 
 const chars: Record<string, boolean[][]> = {};
 
@@ -573,13 +578,18 @@ export function print(x: number, y: number, c: number, text: string) {
 
     const map = chars[ch];
 
-    for (let yy = 0; yy < 4; yy++) {
-      for (let xx = 0; xx < 4; xx++) {
-        const px = x + (posx * 4) + xx;
-        const py = y + (posy * 6) + yy;
+    if (map === undefined) {
+      console.log('cant print:', ch);
+    }
+    else {
+      for (let yy = 0; yy < 4; yy++) {
+        for (let xx = 0; xx < 4; xx++) {
+          const px = x + (posx * 4) + xx;
+          const py = y + (posy * 6) + yy;
 
-        if (map[yy][xx]) {
-          pset(px, py, c);
+          if (map[yy][xx]) {
+            pset(px, py, c);
+          }
         }
       }
     }
