@@ -6,7 +6,7 @@ root.background = '#000';
 const menu = new Box(0, 0, 320, 6, '#000');
 root.children.push(menu);
 
-const saveButton = new Button(1, 1, 4 * 4 + 1, 6, '#000');
+const saveButton = new Button(0, 0, 4 * 4 + 3, 8, '#000');
 saveButton.color = '#fff3';
 saveButton.text = 'save';
 saveButton.onClick = () => {
@@ -14,7 +14,7 @@ saveButton.onClick = () => {
 };
 menu.children.push(saveButton);
 
-const loadButton = new Button(21, 1, 4 * 4 + 1, 6, '#000');
+const loadButton = new Button(20, 0, 4 * 4 + 3, 8, '#000');
 loadButton.color = '#fff3';
 loadButton.text = 'load';
 loadButton.onClick = () => {
@@ -24,7 +24,7 @@ menu.children.push(loadButton);
 
 let showGrid = true;
 
-const gridButton = new Button(41, 1, 4 * 4 + 1, 6, '#000');
+const gridButton = new Button(40, 0, 4 * 4 + 3, 8, '#000');
 gridButton.color = '#fff3';
 gridButton.text = 'grid';
 gridButton.onClick = () => showGrid = !showGrid;

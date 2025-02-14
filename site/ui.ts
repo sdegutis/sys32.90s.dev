@@ -361,7 +361,7 @@ export class Button extends Box {
       rectFill(0, 0, this.w, this.h, '#fff1');
     }
 
-    print(1, 1, this.color, this.text);
+    print(2, 2, this.color, this.text);
   }
 
 }
