@@ -1,4 +1,4 @@
-import { Box, Button, Mover, keys, rectFill, rectLine, root, Selection, TileSelection } from "./ui.js";
+import { Box, Button, Mover, TileSelection, keys, rectFill, rectLine, root } from "./ui.js";
 
 root.background = '#000';
 
@@ -36,11 +36,35 @@ root.children.push(toolArea);
 
 
 
+
+
+
+
+
+
+const mapData = {
+  width: 50,
+  height: 40,
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const mapArea = new Box(40, 8, 320 - 40, 180 - 8, '#222');
 mapArea.clips = true;
 root.children.push(mapArea);
 
-const map = new Box(0, 0, 50 * 4, 50 * 4);
+const map = new Box(0, 0, mapData.width * 4, mapData.height * 4);
 mapArea.children.push(map);
 
 map.drawCursor = () => {
@@ -75,9 +99,12 @@ map.onMouseDown = () => {
 map.draw = () => {
   rectFill(0, 0, map.w, map.h, '#070');
 
-  for (let i = 0; i < 50; i++) {
-    rectFill(0, i * 4, 50 * 4, 1, '#0001');
-    rectFill(i * 4, 0, 1, 50 * 4, '#0001');
+  for (let x = 0; x < mapData.width; x++) {
+    rectFill(x * 4, 0, 1, mapData.height * 4, '#0001');
+  }
+
+  for (let y = 0; y < mapData.height; y++) {
+    rectFill(0, y * 4, mapData.width * 4, 1, '#0001');
   }
 
   if (map.hovered) {
