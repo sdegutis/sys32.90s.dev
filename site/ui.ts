@@ -77,6 +77,12 @@ export class Box {
     pset(mouse.x, mouse.y, 0xffffffff);
     pset(mouse.x + 1, mouse.y, 0xffffffff);
     pset(mouse.x, mouse.y + 1, 0xffffffff);
+
+    rectFill(mouse.x - 1, mouse.y - 1, 4, 1, 0x00000077);
+    rectFill(mouse.x - 1, mouse.y + 2, 3, 1, 0x00000077);
+    rectFill(mouse.x - 1, mouse.y, 1, 2, 0x00000077);
+    rectFill(mouse.x + 2, mouse.y, 1, 2, 0x00000077);
+    pset(mouse.x + 1, mouse.y + 1, 0x00000077);
   }
 
   trackMouse(fns: { move: () => void, up?: () => void }) {
@@ -476,6 +482,25 @@ export class RadioButton extends Button {
 
 }
 
+export class Checkbox extends Box {
+
+  checked = false;
+
+  onChange() { }
+
+  drawContents(): void {
+    rectLine(0, 0, this.w, this.h, this.hovered ? 0xffffffff : 0x777777ff);
+    if (this.checked) {
+      rectFill(2, 2, 2, 2, 0xffffffff);
+    }
+  }
+
+  onMouseDown(): void {
+    this.checked = !this.checked;
+    this.onChange();
+  }
+
+}
 
 
 
