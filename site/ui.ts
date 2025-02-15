@@ -20,6 +20,7 @@ export class Box {
   hovered = false;
   mouse = { x: 0, y: 0 };
   clips = false;
+  passthrough = false;
 
   constructor(
     public x = 0,
@@ -78,11 +79,11 @@ export class Box {
     pset(mouse.x + 1, mouse.y, 0xffffffff);
     pset(mouse.x, mouse.y + 1, 0xffffffff);
 
-    rectFill(mouse.x - 1, mouse.y - 1, 4, 1, 0x00000077);
-    rectFill(mouse.x - 1, mouse.y + 2, 3, 1, 0x00000077);
-    rectFill(mouse.x - 1, mouse.y, 1, 2, 0x00000077);
-    rectFill(mouse.x + 2, mouse.y, 1, 2, 0x00000077);
-    pset(mouse.x + 1, mouse.y + 1, 0x00000077);
+    rectFill(mouse.x - 1, mouse.y - 1, 4, 1, 0x00000099);
+    rectFill(mouse.x - 1, mouse.y + 2, 3, 1, 0x00000099);
+    rectFill(mouse.x - 1, mouse.y, 1, 2, 0x00000099);
+    rectFill(mouse.x + 2, mouse.y, 1, 2, 0x00000099);
+    pset(mouse.x + 1, mouse.y + 1, 0x00000099);
   }
 
   trackMouse(fns: { move: () => void, up?: () => void }) {
@@ -206,6 +207,8 @@ canvas.addEventListener('mousemove', (e) => {
 canvas.oncontextmenu = (e) => { e.preventDefault(); };
 
 function hover(box: Box, x: number, y: number): Box | null {
+  if (box.passthrough) return null;
+
   const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
   if (!inThis) return null;
 
@@ -482,6 +485,22 @@ export class RadioButton extends Button {
 
 }
 
+export class Label extends Box {
+
+  color = 0xffffffff;
+
+  passthrough = true;
+
+  constructor(public text: string, ...args: ConstructorParameters<typeof Box>) {
+    super(...args);
+  }
+
+  drawContents(): void {
+    print(0, 0, this.color, this.text);
+  }
+
+}
+
 export class Checkbox extends Box {
 
   checked = false;
@@ -489,7 +508,7 @@ export class Checkbox extends Box {
   onChange() { }
 
   drawContents(): void {
-    rectLine(0, 0, this.w, this.h, this.hovered ? 0xffffffff : 0x777777ff);
+    rectLine(0, 0, 6, 6, this.hovered ? 0xffffffff : 0x777777ff);
     if (this.checked) {
       rectFill(2, 2, 2, 2, 0xffffffff);
     }
