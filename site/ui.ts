@@ -532,7 +532,7 @@ export class Checkbox extends Box {
 
 
 
-export class Textbox extends Box {
+export class TextField extends Box {
 
   text = '';
   color = 0xffffffff;
