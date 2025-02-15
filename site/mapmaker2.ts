@@ -1,4 +1,4 @@
-import { Box, Button, Mover, RadioButton, RadioGroup, TileSelection, keys, rectFill, rectLine, root } from "./ui.js";
+import { Box, Button, Mover, RadioButton, RadioGroup, TileSelection, keys, pset, rectFill, rectLine, root } from "./ui.js";
 
 
 
@@ -144,6 +144,17 @@ root.onScroll = up => {
 const mapArea = new Box(40, 8, 320 - 40, 180 - 8, 0x222222ff);
 mapArea.clips = true;
 root.children.push(mapArea);
+
+mapArea.drawContents = () => {
+  rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
+  let off = 0;
+  for (let y = 0; y < mapArea.h; y++) {
+    for (let x = 0; x < mapArea.w; x += 4) {
+      pset(off + x, y, 0x272727ff);
+    }
+    if (y % 2 === 0) off = (off + 1) % 4;
+  }
+};
 
 const mapBox = new Box(0, 0, map.width * 4, map.height * 4);
 mapArea.children.push(mapBox);
