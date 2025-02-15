@@ -1,5 +1,4 @@
 const canvas = document.querySelector('canvas')!;
-const context = canvas.getContext('2d')!;
 
 
 
@@ -22,10 +21,6 @@ class Bitmap {
 
 }
 
-
-const camera = { x: 0, y: 0 };
-
-const clip = { x1: 0, y1: 0, x2: 320 - 1, y2: 180 - 1 };
 
 const hovered: Box[] = [];
 
@@ -66,22 +61,22 @@ export class Box {
   _oldclip = { x1: 0, y1: 0, x2: 0, y2: 0 };
 
   clip() {
-    this._oldclip.x1 = clip.x1;
-    this._oldclip.x2 = clip.x2;
-    this._oldclip.y1 = clip.y1;
-    this._oldclip.y2 = clip.y2;
+    this._oldclip.x1 = screen.clip.x1;
+    this._oldclip.x2 = screen.clip.x2;
+    this._oldclip.y1 = screen.clip.y1;
+    this._oldclip.y2 = screen.clip.y2;
 
-    clip.x1 = camera.x;
-    clip.y1 = camera.y;
-    clip.x2 = clip.x1 + this.w - 1;
-    clip.y2 = clip.y1 + this.h - 1;
+    screen.clip.x1 = screen.camera.x;
+    screen.clip.y1 = screen.camera.y;
+    screen.clip.x2 = screen.clip.x1 + this.w - 1;
+    screen.clip.y2 = screen.clip.y1 + this.h - 1;
   }
 
   unclip() {
-    clip.x1 = this._oldclip.x1;
-    clip.x2 = this._oldclip.x2;
-    clip.y1 = this._oldclip.y1;
-    clip.y2 = this._oldclip.y2;
+    screen.clip.x1 = this._oldclip.x1;
+    screen.clip.x2 = this._oldclip.x2;
+    screen.clip.y1 = this._oldclip.y1;
+    screen.clip.y2 = this._oldclip.y2;
   }
 
   drawContents() {
@@ -92,11 +87,11 @@ export class Box {
   drawChildren() {
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
-      camera.x += child.x;
-      camera.y += child.y;
+      screen.camera.x += child.x;
+      screen.camera.y += child.y;
       child.draw();
-      camera.x -= child.x;
-      camera.y -= child.y;
+      screen.camera.x -= child.x;
+      screen.camera.y -= child.y;
     }
   }
 
@@ -260,13 +255,6 @@ canvas.addEventListener('wheel', (e) => {
 
 
 
-const pixels = new Uint8ClampedArray(320 * 180 * 4);
-const imgdata = new ImageData(pixels, 320, 180);
-
-for (let i = 0; i < 320 * 180 * 4; i += 4) {
-  pixels[i + 3] = 255;
-}
-
 
 let tick = (delta: number) => { };
 let last = +document.timeline.currentTime!;
@@ -276,7 +264,7 @@ function update(t: number) {
     tick(t - last);
     root.draw();
     lastHovered.drawCursor();
-    context.putImageData(imgdata, 0, 0);
+    screen.blit();
     last = t;
   }
   requestAnimationFrame(update);
@@ -297,58 +285,94 @@ export function ontick(fn: (delta: number) => void) {
 
 
 
+class Screen {
 
+  camera = { x: 0, y: 0 };
+
+  clip = { x1: 0, y1: 0, x2: 320 - 1, y2: 180 - 1 };
+
+  pixels;
+  imgdata;
+
+  constructor(public context: CanvasRenderingContext2D) {
+    this.pixels = new Uint8ClampedArray(320 * 180 * 4);
+    this.imgdata = new ImageData(this.pixels, 320, 180);
+
+    for (let i = 0; i < 320 * 180 * 4; i += 4) {
+      this.pixels[i + 3] = 255;
+    }
+  }
+
+  blit() {
+    this.context.putImageData(this.imgdata, 0, 0);
+  }
+
+  pset(x: number, y: number, c: number) {
+    rectFill(x, y, 1, 1, c);
+  }
+
+  rectLine(x: number, y: number, w: number, h: number, c: number) {
+    rectFill(x + 1, y, w - 2, 1, c);
+    rectFill(x + 1, y + h - 1, w - 2, 1, c);
+    rectFill(x, y, 1, h, c);
+    rectFill(x + w - 1, y, 1, h, c);
+  }
+
+  rectFill(x: number, y: number, w: number, h: number, c: number) {
+    let x1 = x + this.camera.x;
+    let y1 = y + this.camera.y;
+    let x2 = x1 + w - 1;
+    let y2 = y1 + h - 1;
+
+    if (this.clip.x1 > x1) x1 = this.clip.x1;
+    if (this.clip.y1 > y1) y1 = this.clip.y1;
+    if (this.clip.x2 < x2) x2 = this.clip.x2;
+    if (this.clip.y2 < y2) y2 = this.clip.y2;
+
+    // if (x2 < x1 || y2 < y1) return;
+
+    const r = c >> 24 & 0xff;
+    const g = c >> 16 & 0xff;
+    const b = c >> 8 & 0xff;
+    const a = c & 0xff;
+
+    for (y = y1; y <= y2; y++) {
+      for (x = x1; x <= x2; x++) {
+        const i = y * 320 * 4 + x * 4;
+
+        if (a === 255) {
+          this.pixels[i + 0] = r;
+          this.pixels[i + 1] = g;
+          this.pixels[i + 2] = b;
+        }
+        else {
+          const ia = (255 - a) / 255;
+          const aa = (a / 255);
+          this.pixels[i + 0] = (this.pixels[i + 0] * ia) + (r * aa);
+          this.pixels[i + 1] = (this.pixels[i + 1] * ia) + (g * aa);
+          this.pixels[i + 2] = (this.pixels[i + 2] * ia) + (b * aa);
+        }
+      }
+    }
+  }
+
+}
+
+const screen = new Screen(canvas.getContext('2d')!);
 
 
 
 
 export function pset(x: number, y: number, c: number) {
-  rectFill(x, y, 1, 1, c);
+  screen.pset(x, y, c);
 }
 
 export function rectLine(x: number, y: number, w: number, h: number, c: number) {
-  rectFill(x + 1, y, w - 2, 1, c);
-  rectFill(x + 1, y + h - 1, w - 2, 1, c);
-  rectFill(x, y, 1, h, c);
-  rectFill(x + w - 1, y, 1, h, c);
+  screen.rectLine(x, y, w, h, c);
 }
 
 export function rectFill(x: number, y: number, w: number, h: number, c: number) {
-  let x1 = x + camera.x;
-  let y1 = y + camera.y;
-  let x2 = x1 + w - 1;
-  let y2 = y1 + h - 1;
-
-  if (clip.x1 > x1) x1 = clip.x1;
-  if (clip.y1 > y1) y1 = clip.y1;
-  if (clip.x2 < x2) x2 = clip.x2;
-  if (clip.y2 < y2) y2 = clip.y2;
-
-  // if (x2 < x1 || y2 < y1) return;
-
-  const r = c >> 24 & 0xff;
-  const g = c >> 16 & 0xff;
-  const b = c >> 8 & 0xff;
-  const a = c & 0xff;
-
-  for (y = y1; y <= y2; y++) {
-    for (x = x1; x <= x2; x++) {
-      const i = y * 320 * 4 + x * 4;
-
-      if (a === 255) {
-        pixels[i + 0] = r;
-        pixels[i + 1] = g;
-        pixels[i + 2] = b;
-      }
-      else {
-        const ia = (255 - a) / 255;
-        const aa = (a / 255);
-        pixels[i + 0] = (pixels[i + 0] * ia) + (r * aa);
-        pixels[i + 1] = (pixels[i + 1] * ia) + (g * aa);
-        pixels[i + 2] = (pixels[i + 2] * ia) + (b * aa);
-      }
-    }
-  }
+  screen.rectFill(x, y, w, h, c);
 }
 
 
