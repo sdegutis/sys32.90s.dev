@@ -250,6 +250,17 @@ mapBox.draw = () => {
 
 
 
-const textbox = new Textbox(160, 0, 160, 180, 0x000000ff);
-textbox.text = `#include blobbycode.p8`;
-root.children.push(textbox);
+// const textbox = new Textbox(160, 0, 160, 180, 0x000000ff);
+// textbox.text = `#include blobbycode.p8`;
+// root.children.push(textbox);
+
+class Checkbox extends Box {
+
+  drawContents(): void {
+
+  }
+
+}
+
+const checkbox = new Checkbox(160, 0, 6, 6, 0x000000ff);
+root.children.push(checkbox);

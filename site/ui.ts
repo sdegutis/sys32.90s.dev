@@ -31,7 +31,7 @@ export class Box {
 
   draw() {
     if (this.clips) this.clip();
-    this.drawBackground();
+    this.drawContents();
     this.drawChildren();
     if (this.clips) this.unclip();
   }
@@ -57,7 +57,7 @@ export class Box {
     clip.y2 = this._oldclip.y2;
   }
 
-  drawBackground() {
+  drawContents() {
     if (!this.background) return;
     rectFill(0, 0, this.w, this.h, this.background);
   }
@@ -417,8 +417,8 @@ export class Button extends Box {
     });
   }
 
-  drawBackground() {
-    super.drawBackground();
+  drawContents() {
+    super.drawContents();
 
     if (this.clicking) {
       rectFill(0, 0, this.w, this.h, 0xffffff22);
@@ -463,7 +463,7 @@ export class RadioButton extends Button {
     this.onSelect();
   }
 
-  drawBackground() {
+  drawContents() {
     this.drawButton();
 
     if (this.selected) {
@@ -516,8 +516,8 @@ export class Textbox extends Box {
   //   });
   // }
 
-  drawBackground(): void {
-    super.drawBackground();
+  drawContents(): void {
+    super.drawContents();
     print(2, 2, this.color, this.text);
 
     if (focused === this) {
