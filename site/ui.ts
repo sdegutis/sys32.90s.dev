@@ -553,7 +553,7 @@ export class Textbox extends Box {
     else if (key === 'Backspace') {
       this.text = this.text.slice(0, -1);
     }
-    else if (fontmap.includes(key)) {
+    else {
       this.text += key.toLowerCase();
     }
   }
@@ -597,10 +597,38 @@ export class Textbox extends Box {
 
 
 
+class Font {
 
+  chars: Record<string, boolean[][]> = {};
 
-const fontmap = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^`;
-const font = `
+  constructor(w: number, h: number, perRow: number, map: string, bits: string) {
+    bits = bits.replace(/\|?\n/g, '');
+
+    for (let i = 0; i < map.length; i++) {
+      const ch = map[i];
+
+      const grid: boolean[][] = [];
+      this.chars[ch] = grid;
+
+      for (let y = 0; y < h; y++) {
+        const row: boolean[] = [];
+        grid.push(row);
+
+        for (let x = 0; x < w; x++) {
+          const rw = w + 3;
+          const py = (Math.floor(i / perRow) * rw * perRow * (h + 1)) + y * rw * perRow;
+          const px = (i % perRow) * rw + 2 + x;
+          row.push(bits[px + py] !== ' ');
+        }
+      }
+    }
+  }
+
+}
+
+const defaultFont = new Font(3, 4, 16,
+  `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^`,
+  `
 | xxx | xx  | xxx | xx  | xxx | xxx | xxx | x x | xxx | xxx | x x | x   | xxx | xxx | xxx | xxx |
 | x x | xxx | x   | x x | xx  | xx  | x   | xxx |  x  |  x  | xx  | x   | xxx | x x | x x | x x |
 | xxx | x x | x   | x x | x   | x   | x x | x x |  x  |  x  | xx  | x   | x x | x x | x x | xx  |
@@ -625,28 +653,9 @@ const font = `
 | x   | x x |  xx | x x |     |     |     |     |     |     |     |     |     |     |     |     |
 |  x  | x   |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
 | x   |  xx |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
-`.replace(/\|?\n/g, '');
+`);
 
-const chars: Record<string, boolean[][]> = {};
-
-for (let i = 0; i < fontmap.length; i++) {
-  const c = fontmap[i];
-
-  const grid: boolean[][] = [];
-  chars[c] = grid;
-
-  for (let y = 0; y < 4; y++) {
-    const row: boolean[] = [];
-    grid.push(row);
-
-    for (let x = 0; x < 3; x++) {
-      const py = (Math.floor(i / 16) * 6 * 16 * 5) + y * 6 * 16;
-      const px = (i % 16) * 6 + 2 + x;
-      const index = px + py;
-      row.push(font[index] !== ' ');
-    }
-  }
-}
+let font = defaultFont;
 
 export function print(x: number, y: number, c: number, text: string) {
   let posx = 0;
@@ -661,7 +670,7 @@ export function print(x: number, y: number, c: number, text: string) {
       continue;
     }
 
-    const map = chars[ch];
+    const map = font.chars[ch];
 
     for (let yy = 0; yy < 4; yy++) {
       for (let xx = 0; xx < 3; xx++) {
