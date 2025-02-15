@@ -3,6 +3,25 @@ const context = canvas.getContext('2d')!;
 
 
 
+
+
+class Bitmap {
+
+  constructor(public colors: number[], public steps: number[]) { }
+
+  draw(px: number, py: number) {
+    let x = 0;
+    let y = 0;
+    for (let i = 0; i < this.steps.length; i++) {
+      const s = this.steps[i];
+      if (s === -1) y++, x = 0;
+      else pset(px + x++, py + y, this.colors[s]);
+    }
+  }
+
+}
+
+
 const camera = { x: 0, y: 0 };
 
 const clip = { x1: 0, y1: 0, x2: 320 - 1, y2: 180 - 1 };
@@ -10,6 +29,13 @@ const clip = { x1: 0, y1: 0, x2: 320 - 1, y2: 180 - 1 };
 const hovered: Box[] = [];
 
 export class Box {
+
+  static cursor = new Bitmap([0x00000099, 0xffffffff], [
+    0, 0, 0, 0, -1,
+    0, 1, 1, 0, -1,
+    0, 1, 0, 0, -1,
+    0, 0, 0, -1,
+  ]);
 
   onScroll?: (up: boolean) => void;
 
@@ -75,37 +101,7 @@ export class Box {
   }
 
   drawCursor() {
-
-    const o = 0x00000099;
-    const X = 0xffffffff;
-    const a = [
-      o, o, o, o, -1,
-      o, X, X, o, -1,
-      o, X, o, o, -1,
-      o, o, o, -1,
-    ];
-
-    const px = mouse.x - 1;
-    const py = mouse.y - 1;
-
-    let x = 0;
-    let y = 0;
-    for (let i = 0; i < a.length; i++) {
-      const c = a[i];
-      if (c === -1) y++, x = 0;
-      else pset(px + x++, py + y, c);
-    }
-
-
-    // pset(mouse.x, mouse.y, 0xffffffff);
-    // pset(mouse.x + 1, mouse.y, 0xffffffff);
-    // pset(mouse.x, mouse.y + 1, 0xffffffff);
-
-    // rectFill(mouse.x - 1, mouse.y - 1, 4, 1, 0x00000099);
-    // rectFill(mouse.x - 1, mouse.y + 2, 3, 1, 0x00000099);
-    // rectFill(mouse.x - 1, mouse.y, 1, 2, 0x00000099);
-    // rectFill(mouse.x + 2, mouse.y, 1, 2, 0x00000099);
-    // pset(mouse.x + 1, mouse.y + 1, 0x00000099);
+    Box.cursor.draw(mouse.x - 1, mouse.y - 1);
   }
 
   trackMouse(fns: { move: () => void, up?: () => void }) {
@@ -290,6 +286,19 @@ requestAnimationFrame(update);
 export function ontick(fn: (delta: number) => void) {
   tick = fn;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
