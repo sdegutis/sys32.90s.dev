@@ -2,6 +2,41 @@ import { Box, Button, Mover, RadioButton, RadioGroup, TileSelection, keys, pset,
 
 
 
+
+class TabBox extends Box {
+
+  #allChildren: Box[] = [];
+
+  tab = -1;
+
+  addTab(box: Box) {
+    this.#allChildren.push(box);
+    this.children = [box];
+    this.tab = this.children.length - 1;
+  }
+
+  select(t: number) {
+    this.tab = t;
+    this.children = [this.#allChildren[this.tab]];
+  }
+
+}
+
+
+const tabBox = new TabBox(40, 8, 320 - 40, 180 - 8, 0x222222ff);
+root.children.push(tabBox);
+
+
+
+
+
+const mapArea2 = new Box(0, 0, 320 - 40, 180 - 8, 0x000033ff);
+tabBox.addTab(mapArea2);
+mapArea2.onMouseDown = () => console.log('haha nope');
+
+
+
+
 const menu = new Box(0, 0, 320, 8, 0x000000ff);
 root.children.push(menu);
 
@@ -26,7 +61,8 @@ let showGrid = true;
 const gridButton = new Button(40, 0, 4 * 4 + 3, 8, 0x000000ff);
 gridButton.color = 0xffffff33;
 gridButton.text = 'grid';
-gridButton.onClick = () => showGrid = !showGrid;
+gridButton.onClick = () => tabBox.select((tabBox.tab + 1) % 2);
+// gridButton.onClick = () => showGrid = !showGrid;
 menu.children.push(gridButton);
 
 
@@ -141,9 +177,9 @@ root.onScroll = up => {
 
 
 
-const mapArea = new Box(40, 8, 320 - 40, 180 - 8, 0x222222ff);
+const mapArea = new Box(0, 0, 320 - 40, 180 - 8, 0x222222ff);
 mapArea.clips = true;
-root.children.push(mapArea);
+tabBox.addTab(mapArea);
 
 mapArea.drawContents = () => {
   rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
@@ -270,3 +306,5 @@ mapBox.draw = () => {
 // checkbox.onChange = () => console.log(checkbox.checked)
 // checkbox.checked = true;
 // checkbox.children.push(new Label('testing', 8, 1, 4 * 7, 6));
+
+tabBox.select(1);
