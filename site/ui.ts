@@ -11,7 +11,7 @@ const hovered: Box[] = [];
 
 export class Box {
 
-  onWheel?: (up: boolean) => void;
+  onScroll?: (up: boolean) => void;
 
   onMouseDown() { }
   onKeyDown(key: string) { }
@@ -231,8 +231,8 @@ canvas.addEventListener('wheel', (e) => {
   let i = hovered.length;
   while (i--) {
     const box = hovered[i];
-    if (box.onWheel) {
-      box.onWheel(e.deltaY < 0);
+    if (box.onScroll) {
+      box.onScroll(e.deltaY < 0);
       return;
     }
   }
@@ -538,8 +538,8 @@ export class Textbox extends Box {
     this.clips = true;
   }
 
-  onWheel = (up: boolean) => {
-    console.log('mousing', up)
+  onScroll = (up: boolean) => {
+    console.log('scrolling', up)
   };
 
   onKeyDown(key: string): void {

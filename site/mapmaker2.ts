@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Label, Mover, RadioButton, RadioGroup, Textbox, TileSelection, keys, print, rectFill, rectLine, root } from "./ui.js";
+import { Box, Button, Mover, RadioButton, RadioGroup, TileSelection, keys, rectFill, rectLine, root } from "./ui.js";
 
 
 
@@ -114,7 +114,7 @@ for (let i = 0; i < 17; i++) {
 
 
 
-root.onWheel = up => {
+root.onScroll = up => {
   if (up) {
     currentTool--;
     if (currentTool < 0) currentTool = 16;
@@ -254,10 +254,8 @@ mapBox.draw = () => {
 // textbox.text = `#include blobbycode.p8`;
 // root.children.push(textbox);
 
-const checkbox = new Checkbox(160, 1, 8 + 4 * 7, 6, 0x000000ff);
-root.children.push(checkbox);
-checkbox.onChange = () => console.log(checkbox.checked)
-checkbox.checked = true;
-
-const label = new Label('testing', 8, 1, 4 * 7, 6);
-checkbox.children.push(label);
+// const checkbox = new Checkbox(160, 1, 8 + 4 * 7, 6, 0x000000ff);
+// root.children.push(checkbox);
+// checkbox.onChange = () => console.log(checkbox.checked)
+// checkbox.checked = true;
+// checkbox.children.push(new Label('testing', 8, 1, 4 * 7, 6));
