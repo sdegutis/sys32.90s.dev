@@ -89,13 +89,8 @@ export class Box {
     this.#clip?.unset();
   }
 
-  clip() {
-    this.#clip?.set();
-  }
-
-  unclip() {
-    this.#clip?.unset();
-  }
+  clip() { this.#clip?.set(); }
+  unclip() { this.#clip?.unset(); }
 
   drawContents() {
     if (!this.background) return;
