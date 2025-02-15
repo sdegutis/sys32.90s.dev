@@ -250,7 +250,7 @@ mapBox.draw = () => {
 
 
 
-// const textbox = new Textbox(160, 0, 160, 180, 0x000000ff);
+// const textbox = new TextField(160, 10, 60, 80, 0x000000ff);
 // textbox.text = `#include blobbycode.p8`;
 // root.children.push(textbox);
 
