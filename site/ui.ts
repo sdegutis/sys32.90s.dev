@@ -386,11 +386,13 @@ class Screen {
 
 class Sys {
 
-  screen = new Screen(canvas.getContext('2d')!);
+  screen;
 
   constructor(public canvas: HTMLCanvasElement) {
-    console.log(canvas);
-    console.log(screen);
+    this.screen = new Screen(this.canvas.getContext('2d')!);
+
+    console.log(this.canvas);
+    console.log(this.screen);
   }
 
 }
