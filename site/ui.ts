@@ -40,7 +40,7 @@ export class Box {
 
   onScroll?: (up: boolean) => void;
   onKeyDown?: (key: string) => void;
-  onMouseDown() { }
+  onMouseDown?: () => void;
 
   children: Box[] = [];
   hovered = false;
@@ -198,7 +198,7 @@ let lastHovered: Box = root;
 canvas.addEventListener('mousedown', (e) => {
   mouse.button = e.button;
   lastHovered.focus();
-  lastHovered.onMouseDown();
+  lastHovered.onMouseDown?.();
 }, { passive: true });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -444,7 +444,7 @@ export class Button extends Box {
   clicking = false;
   onClick() { }
 
-  onMouseDown(): void {
+  onMouseDown = () => {
     this.clicking = true;
 
     const cancel = this.trackMouse({
@@ -459,7 +459,7 @@ export class Button extends Box {
         this.clicking = false;
       },
     });
-  }
+  };
 
   drawContents() {
     super.drawContents();
@@ -549,10 +549,10 @@ export class Checkbox extends Box {
     }
   }
 
-  onMouseDown(): void {
+  onMouseDown = () => {
     this.checked = !this.checked;
     this.onChange();
-  }
+  };
 
 }
 
