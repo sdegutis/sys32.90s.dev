@@ -14,8 +14,9 @@ class Bitmap {
     let y = 0;
     for (let i = 0; i < this.steps.length; i++) {
       const s = this.steps[i];
-      if (s === -1) y++, x = 0;
-      else pset(px + x++, py + y, this.colors[s]);
+      if (s === 0) { x++; continue; }
+      else if (s === -1) { y++; x = 0; }
+      else pset(px + x++, py + y, this.colors[s - 1]);
     }
   }
 
@@ -31,10 +32,10 @@ const hovered: Box[] = [];
 export class Box {
 
   static cursor = new Bitmap([0x00000099, 0xffffffff], [
-    0, 0, 0, 0, -1,
-    0, 1, 1, 0, -1,
-    0, 1, 0, 0, -1,
-    0, 0, 0, -1,
+    1, 1, 1, 1, -1,
+    1, 2, 2, 1, -1,
+    1, 2, 1, 1, -1,
+    1, 1, 1, -1,
   ]);
 
   onScroll?: (up: boolean) => void;
