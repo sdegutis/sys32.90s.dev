@@ -48,8 +48,6 @@ class Clip {
 }
 
 
-const hovered: Box[] = [];
-
 export class Box {
 
   static cursor = new Bitmap([0x00000099, 0xffffffff], [
@@ -144,18 +142,6 @@ export class Box {
 
 
 
-new ResizeObserver(() => {
-  const box = canvas.parentElement!.getBoundingClientRect();
-  let w = 320;
-  let h = 180;
-  let s = 1;
-  while (
-    (w += 320) <= box.width &&
-    (h += 180) <= box.height
-  ) s++;
-  canvas.style.transform = `scale(${s})`;
-}).observe(canvas.parentElement!);
-
 
 
 
@@ -199,6 +185,7 @@ export const mouse = {
 
 
 
+const hovered: Box[] = [];
 let lastHovered: Box = root;
 
 canvas.addEventListener('mousedown', (e) => {
@@ -305,6 +292,8 @@ export class Screen {
   pixels;
   imgdata;
 
+  font = defaultFont;
+
   constructor(public context: CanvasRenderingContext2D) {
     this.pixels = new Uint8ClampedArray(320 * 180 * 4);
     this.imgdata = new ImageData(this.pixels, 320, 180);
@@ -368,33 +357,7 @@ export class Screen {
   }
 
   print(x: number, y: number, c: number, text: string) {
-    let posx = 0;
-    let posy = 0;
-
-    for (let i = 0; i < text.length; i++) {
-      const ch = text[i];
-
-      if (ch === '\n') {
-        posy++;
-        posx = 0;
-        continue;
-      }
-
-      const map = font.chars[ch];
-
-      for (let yy = 0; yy < 4; yy++) {
-        for (let xx = 0; xx < 3; xx++) {
-          const px = x + (posx * 4) + xx;
-          const py = y + (posy * 6) + yy;
-
-          if (map[yy][xx]) {
-            this.pset(px, py, c);
-          }
-        }
-      }
-
-      posx++;
-    }
+    this.font.print(this, x, y, c, text);
   }
 
 }
@@ -421,9 +384,25 @@ class Sys {
     console.log(this.screen);
   }
 
-}
+  autoscale() {
+    new ResizeObserver(() => {
+      const box = this.canvas.parentElement!.getBoundingClientRect();
+      let w = 320;
+      let h = 180;
+      let s = 1;
+      while (
+        (w += 320) <= box.width &&
+        (h += 180) <= box.height
+      ) s++;
+      this.scale(s);
+    }).observe(this.canvas.parentElement!);
+  }
 
-const sys = new Sys(canvas);
+  scale(scale: number) {
+    canvas.style.transform = `scale(${scale})`;
+  }
+
+}
 
 
 
@@ -731,6 +710,36 @@ class Font {
     }
   }
 
+  print(screen: Screen, x: number, y: number, c: number, text: string) {
+    let posx = 0;
+    let posy = 0;
+
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+
+      if (ch === '\n') {
+        posy++;
+        posx = 0;
+        continue;
+      }
+
+      const map = this.chars[ch];
+
+      for (let yy = 0; yy < 4; yy++) {
+        for (let xx = 0; xx < 3; xx++) {
+          const px = x + (posx * 4) + xx;
+          const py = y + (posy * 6) + yy;
+
+          if (map[yy][xx]) {
+            screen.pset(px, py, c);
+          }
+        }
+      }
+
+      posx++;
+    }
+  }
+
 }
 
 const defaultFont = new Font(3, 4, 16,
@@ -762,4 +771,6 @@ const defaultFont = new Font(3, 4, 16,
 | x   |  xx |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
 `);
 
-let font = defaultFont;
+
+const sys = new Sys(canvas);
+sys.autoscale();
