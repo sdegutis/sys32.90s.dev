@@ -251,20 +251,5 @@ mapBox.draw = () => {
 
 
 const textbox = new Textbox(160, 0, 160, 180, 0x000000ff);
-textbox.text = `
-const ~foo = "test * 3";
-
-@foo = $scale;
-%foo = ^scale;
-~foo = ({x});
-#foo = &bar;
-*foo = &bar;
-
-abcdefghijkl
-mnopqrstuvwx
-yz .,'!?1234
-567890-+/()"
-:;%*=[]<>_&#
-|{}\`$@~^
-`;
+textbox.text = `testing...`;
 root.children.push(textbox);
