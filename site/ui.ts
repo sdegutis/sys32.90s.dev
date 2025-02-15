@@ -80,12 +80,27 @@ export class Box {
   }
 
   trackMouse(fns: { move: () => void, up?: () => void }) {
+    fns.move();
+
     const done = new AbortController();
     const opts = { signal: done.signal, passive: true };
-    const wrappedUp = () => { done.abort(); fns.up?.(); };
-    canvas.addEventListener('mousemove', fns.move, opts);
-    canvas.addEventListener('mouseup', wrappedUp, opts);
-    fns.move();
+
+    let x = mouse.x;
+    let y = mouse.y;
+
+    canvas.addEventListener('mousemove', () => {
+      if (x !== mouse.x || y !== mouse.y) {
+        x = mouse.x;
+        y = mouse.y;
+        fns.move();
+      }
+    }, opts);
+
+    canvas.addEventListener('mouseup', (() => {
+      done.abort();
+      fns.up?.();
+    }), opts);
+
     return () => done.abort();
   }
 
@@ -173,7 +188,7 @@ canvas.addEventListener('mousemove', (e) => {
   mouse.x = x;
   mouse.y = y;
 
-  const hoveredOver = findElementAt(root, mouse.x, mouse.y)!;
+  const hoveredOver = hover(root, mouse.x, mouse.y)!;
 
   if (lastHovered !== hoveredOver) {
     lastHovered.hovered = false;
@@ -184,7 +199,7 @@ canvas.addEventListener('mousemove', (e) => {
 
 canvas.oncontextmenu = (e) => { e.preventDefault(); };
 
-function findElementAt(box: Box, x: number, y: number): Box | null {
+function hover(box: Box, x: number, y: number): Box | null {
   const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
   if (!inThis) return null;
 
@@ -196,7 +211,7 @@ function findElementAt(box: Box, x: number, y: number): Box | null {
   let i = box.children.length;
   while (i--) {
     const child = box.children[i];
-    const found = findElementAt(child, x - child.x, y - child.y);
+    const found = hover(child, x - child.x, y - child.y);
     if (found) return found;
   }
 
@@ -494,6 +509,12 @@ export class Textbox extends Box {
       this.text += key.toLowerCase();
     }
   }
+
+  // onMouseDown(): void {
+  //   this.trackMouse({
+  //     move: () => console.log(this.mouse)
+  //   });
+  // }
 
   drawBackground(): void {
     super.drawBackground();
