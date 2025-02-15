@@ -22,6 +22,34 @@ class Bitmap {
 }
 
 
+class Clip {
+
+  saved = { x1: 0, y1: 0, x2: 0, y2: 0 };
+
+  constructor(public box: Box) { }
+
+  set() {
+    this.saved.x1 = sys.screen.clip.x1;
+    this.saved.x2 = sys.screen.clip.x2;
+    this.saved.y1 = sys.screen.clip.y1;
+    this.saved.y2 = sys.screen.clip.y2;
+
+    sys.screen.clip.x1 = sys.screen.camera.x;
+    sys.screen.clip.y1 = sys.screen.camera.y;
+    sys.screen.clip.x2 = sys.screen.clip.x1 + this.box.w - 1;
+    sys.screen.clip.y2 = sys.screen.clip.y1 + this.box.h - 1;
+  }
+
+  unset() {
+    sys.screen.clip.x1 = this.saved.x1;
+    sys.screen.clip.x2 = this.saved.x2;
+    sys.screen.clip.y1 = this.saved.y1;
+    sys.screen.clip.y2 = this.saved.y2;
+  }
+
+}
+
+
 const hovered: Box[] = [];
 
 export class Box {
@@ -40,7 +68,6 @@ export class Box {
   children: Box[] = [];
   hovered = false;
   mouse = { x: 0, y: 0 };
-  clips = false;
   passthrough = false;
 
   constructor(
@@ -51,32 +78,23 @@ export class Box {
     public background?: number,
   ) { }
 
+  #clip?: Clip;
+  get clips() { return this.#clip !== undefined; }
+  set clips(should: boolean) { this.#clip = should ? new Clip(this) : undefined; }
+
   draw() {
-    if (this.clips) this.clip();
+    this.#clip?.set();
     this.drawContents();
     this.drawChildren();
-    if (this.clips) this.unclip();
+    this.#clip?.unset();
   }
 
-  _oldclip = { x1: 0, y1: 0, x2: 0, y2: 0 };
-
   clip() {
-    this._oldclip.x1 = screen.clip.x1;
-    this._oldclip.x2 = screen.clip.x2;
-    this._oldclip.y1 = screen.clip.y1;
-    this._oldclip.y2 = screen.clip.y2;
-
-    screen.clip.x1 = screen.camera.x;
-    screen.clip.y1 = screen.camera.y;
-    screen.clip.x2 = screen.clip.x1 + this.w - 1;
-    screen.clip.y2 = screen.clip.y1 + this.h - 1;
+    this.#clip?.set();
   }
 
   unclip() {
-    screen.clip.x1 = this._oldclip.x1;
-    screen.clip.x2 = this._oldclip.x2;
-    screen.clip.y1 = this._oldclip.y1;
-    screen.clip.y2 = this._oldclip.y2;
+    this.#clip?.unset();
   }
 
   drawContents() {
@@ -87,11 +105,11 @@ export class Box {
   drawChildren() {
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
-      screen.camera.x += child.x;
-      screen.camera.y += child.y;
+      sys.screen.camera.x += child.x;
+      sys.screen.camera.y += child.y;
       child.draw();
-      screen.camera.x -= child.x;
-      screen.camera.y -= child.y;
+      sys.screen.camera.x -= child.x;
+      sys.screen.camera.y -= child.y;
     }
   }
 
@@ -264,7 +282,7 @@ function update(t: number) {
     tick(t - last);
     root.draw();
     lastHovered.drawCursor();
-    screen.blit();
+    sys.screen.blit();
     last = t;
   }
   requestAnimationFrame(update);
@@ -358,21 +376,44 @@ class Screen {
 
 }
 
-const screen = new Screen(canvas.getContext('2d')!);
+// const screen = new Screen(canvas.getContext('2d')!);
 
+
+
+
+
+
+
+
+
+
+
+
+class Sys {
+
+  screen = new Screen(canvas.getContext('2d')!);
+
+  constructor(public canvas: HTMLCanvasElement) {
+    console.log(canvas);
+    console.log(screen);
+  }
+
+}
+
+const sys = new Sys(canvas);
 
 
 
 export function pset(x: number, y: number, c: number) {
-  screen.pset(x, y, c);
+  sys.screen.pset(x, y, c);
 }
 
 export function rectLine(x: number, y: number, w: number, h: number, c: number) {
-  screen.rectLine(x, y, w, h, c);
+  sys.screen.rectLine(x, y, w, h, c);
 }
 
 export function rectFill(x: number, y: number, w: number, h: number, c: number) {
-  screen.rectFill(x, y, w, h, c);
+  sys.screen.rectFill(x, y, w, h, c);
 }
 
 
