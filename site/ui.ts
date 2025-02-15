@@ -46,8 +46,8 @@ export class Box {
 
     clip.x1 = camera.x;
     clip.y1 = camera.y;
-    clip.x2 = camera.x + this.w - 1;
-    clip.y2 = camera.y + this.h - 1;
+    clip.x2 = clip.x1 + this.w - 1;
+    clip.y2 = clip.y1 + this.h - 1;
   }
 
   unclip() {
@@ -247,49 +247,51 @@ export function ontick(fn: (delta: number) => void) {
 
 
 
-
 export function pset(x: number, y: number, c: number) {
-  x += camera.x;
-  y += camera.y;
+  rectFill(x, y, 1, 1, c);
+}
 
-  if (x < clip.x1 || y < clip.y1 || x > clip.x2 || y > clip.y2) return;
+export function rectLine(x: number, y: number, w: number, h: number, c: number) {
+  rectFill(x + 1, y, w - 2, 1, c);
+  rectFill(x + 1, y + h - 1, w - 2, 1, c);
+  rectFill(x, y, 1, h, c);
+  rectFill(x + w - 1, y, 1, h, c);
+}
 
-  const i = y * 320 * 4 + x * 4;
+export function rectFill(x: number, y: number, w: number, h: number, c: number) {
+  let x1 = x + camera.x;
+  let y1 = y + camera.y;
+  let x2 = x1 + w - 1;
+  let y2 = y1 + h - 1;
+
+  if (clip.x1 > x1) x1 = clip.x1;
+  if (clip.y1 > y1) y1 = clip.y1;
+  if (clip.x2 < x2) x2 = clip.x2;
+  if (clip.y2 < y2) y2 = clip.y2;
+
+  // if (x2 < x1 || y2 < y1) return;
 
   const r = c >> 24 & 0xff;
   const g = c >> 16 & 0xff;
   const b = c >> 8 & 0xff;
   const a = c & 0xff;
 
-  if (a === 255) {
-    pixels[i + 0] = r;
-    pixels[i + 1] = g;
-    pixels[i + 2] = b;
-  }
-  else {
-    const ia = (255 - a) / 255;
-    const aa = (a / 255);
-    pixels[i + 0] = (pixels[i + 0] * ia) + (r * aa);
-    pixels[i + 1] = (pixels[i + 1] * ia) + (g * aa);
-    pixels[i + 2] = (pixels[i + 2] * ia) + (b * aa);
-  }
-}
+  for (y = y1; y <= y2; y++) {
+    for (x = x1; x <= x2; x++) {
+      const i = y * 320 * 4 + x * 4;
 
-export function rectLine(x: number, y: number, w: number, h: number, c: number) {
-  for (let xx = 1; xx < w - 1; xx++) {
-    pset(x + xx, y, c);
-    pset(x + xx, y + h - 1, c);
-  }
-  for (let yy = 0; yy < h; yy++) {
-    pset(x, y + yy, c);
-    pset(x + w - 1, y + yy, c);
-  }
-}
-
-export function rectFill(x: number, y: number, w: number, h: number, c: number) {
-  for (let yy = 0; yy < h; yy++) {
-    for (let xx = 0; xx < w; xx++) {
-      pset(x + xx, y + yy, c);
+      if (a === 255) {
+        pixels[i + 0] = r;
+        pixels[i + 1] = g;
+        pixels[i + 2] = b;
+      }
+      else {
+        const ia = (255 - a) / 255;
+        const aa = (a / 255);
+        pixels[i + 0] = (pixels[i + 0] * ia) + (r * aa);
+        pixels[i + 1] = (pixels[i + 1] * ia) + (g * aa);
+        pixels[i + 2] = (pixels[i + 2] * ia) + (b * aa);
+      }
     }
   }
 }
