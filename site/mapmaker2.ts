@@ -207,7 +207,7 @@ mapBox.onMouseDown = () => {
 };
 
 mapBox.draw = () => {
-  // for (let i = 0; i < 1000; i++)
+  // for (let i = 0; i < 300; i++)
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
       const i = y * map.width + x;
@@ -251,5 +251,5 @@ mapBox.draw = () => {
 
 
 const textbox = new Textbox(160, 0, 160, 180, 0x000000ff);
-textbox.text = `testing...`;
+textbox.text = `#include blobbycode.p8`;
 root.children.push(textbox);

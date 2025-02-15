@@ -136,7 +136,7 @@ canvas.addEventListener('keyup', (e) => {
 
 
 
-export const root = new Box(0, 0, 320, 180, 0x000000ff);
+export const root = new Box(0, 0, 320, 180);
 
 export let focused: Box = root;
 
@@ -489,7 +489,7 @@ export class Textbox extends Box {
       this.text = this.text.slice(0, -1);
     }
     else if (fontmap.includes(key)) {
-      this.text += key;
+      this.text += key.toLowerCase();
     }
   }
 
