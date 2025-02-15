@@ -162,7 +162,7 @@ mapBox.onMouseDown = () => {
     mapBox.trackMouse({ move: () => dragger.update() });
   }
   else if (keys['Control']) {
-    tilesel = new TileSelection(mapBox);
+    tilesel = new TileSelection(mapBox, 4);
 
     mapBox.trackMouse({
       move() {

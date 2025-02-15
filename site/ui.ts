@@ -355,6 +355,10 @@ export class Selection {
 
 export class TileSelection extends Selection {
 
+  constructor(box: Box, public size: number) {
+    super(box);
+  }
+
   tx1!: number;
   ty1!: number;
   tx2!: number;
@@ -362,10 +366,10 @@ export class TileSelection extends Selection {
 
   update() {
     super.update();
-    this.tx1 = Math.floor(this.x / 4);
-    this.ty1 = Math.floor(this.y / 4);
-    this.tx2 = Math.ceil(this.x / 4 + this.w / 4);
-    this.ty2 = Math.ceil(this.y / 4 + this.h / 4);
+    this.tx1 = Math.floor(this.x / this.size);
+    this.ty1 = Math.floor(this.y / this.size);
+    this.tx2 = Math.ceil(this.x / this.size + this.w / this.size);
+    this.ty2 = Math.ceil(this.y / this.size + this.h / this.size);
   }
 
 }
