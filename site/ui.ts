@@ -75,15 +75,37 @@ export class Box {
   }
 
   drawCursor() {
-    pset(mouse.x, mouse.y, 0xffffffff);
-    pset(mouse.x + 1, mouse.y, 0xffffffff);
-    pset(mouse.x, mouse.y + 1, 0xffffffff);
 
-    rectFill(mouse.x - 1, mouse.y - 1, 4, 1, 0x00000099);
-    rectFill(mouse.x - 1, mouse.y + 2, 3, 1, 0x00000099);
-    rectFill(mouse.x - 1, mouse.y, 1, 2, 0x00000099);
-    rectFill(mouse.x + 2, mouse.y, 1, 2, 0x00000099);
-    pset(mouse.x + 1, mouse.y + 1, 0x00000099);
+    const o = 0x00000099;
+    const X = 0xffffffff;
+    const a = [
+      o, o, o, o, -1,
+      o, X, X, o, -1,
+      o, X, o, o, -1,
+      o, o, o, -1,
+    ];
+
+    const px = mouse.x - 1;
+    const py = mouse.y - 1;
+
+    let x = 0;
+    let y = 0;
+    for (let i = 0; i < a.length; i++) {
+      const c = a[i];
+      if (c === -1) y++, x = 0;
+      else pset(px + x++, py + y, c);
+    }
+
+
+    // pset(mouse.x, mouse.y, 0xffffffff);
+    // pset(mouse.x + 1, mouse.y, 0xffffffff);
+    // pset(mouse.x, mouse.y + 1, 0xffffffff);
+
+    // rectFill(mouse.x - 1, mouse.y - 1, 4, 1, 0x00000099);
+    // rectFill(mouse.x - 1, mouse.y + 2, 3, 1, 0x00000099);
+    // rectFill(mouse.x - 1, mouse.y, 1, 2, 0x00000099);
+    // rectFill(mouse.x + 2, mouse.y, 1, 2, 0x00000099);
+    // pset(mouse.x + 1, mouse.y + 1, 0x00000099);
   }
 
   trackMouse(fns: { move: () => void, up?: () => void }) {
