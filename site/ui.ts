@@ -7,7 +7,11 @@ const camera = { x: 0, y: 0 };
 
 const clip = { x1: 0, y1: 0, x2: 320 - 1, y2: 180 - 1 };
 
+const hovered: Box[] = [];
+
 export class Box {
+
+  onWheel?: (up: boolean) => void;
 
   onMouseDown() { }
   onKeyDown(key: string) { }
@@ -164,6 +168,8 @@ canvas.addEventListener('mousemove', (e) => {
   if (x === mouse.x && y === mouse.y) return;
   if (x >= 320 || y >= 180) return;
 
+  hovered.length = 0;
+
   mouse.x = x;
   mouse.y = y;
 
@@ -182,6 +188,8 @@ function findElementAt(box: Box, x: number, y: number): Box | null {
   const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
   if (!inThis) return null;
 
+  hovered.push(box);
+
   box.mouse.x = x;
   box.mouse.y = y;
 
@@ -195,14 +203,16 @@ function findElementAt(box: Box, x: number, y: number): Box | null {
   return box;
 }
 
-export function onWheel(fn: (up: boolean) => void) {
-  const done = new AbortController();
-  canvas.addEventListener('wheel',
-    (e) => fn(e.deltaY < 0),
-    { passive: true, signal: done.signal });
-  return () => done.abort();
-}
-
+canvas.addEventListener('wheel', (e) => {
+  let i = hovered.length;
+  while (i--) {
+    const box = hovered[i];
+    if (box.onWheel) {
+      box.onWheel(e.deltaY < 0);
+      return;
+    }
+  }
+}, { passive: true })
 
 
 
@@ -466,6 +476,10 @@ export class Textbox extends Box {
     super(...args);
     this.clips = true;
   }
+
+  onWheel = (up: boolean) => {
+    console.log('mousing', up)
+  };
 
   onKeyDown(key: string): void {
     if (key === 'Enter') {
