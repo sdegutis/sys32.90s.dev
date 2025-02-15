@@ -39,9 +39,8 @@ export class Box {
   ]);
 
   onScroll?: (up: boolean) => void;
-
+  onKeyDown?: (key: string) => void;
   onMouseDown() { }
-  onKeyDown(key: string) { }
 
   children: Box[] = [];
   hovered = false;
@@ -161,7 +160,7 @@ export const keys: Record<string, boolean> = {};
 
 canvas.addEventListener('keydown', (e) => {
   keys[e.key] = true;
-  focused.onKeyDown(e.key);
+  focused.onKeyDown?.(e.key);
 }, { passive: true });
 
 canvas.addEventListener('keyup', (e) => {
@@ -578,7 +577,7 @@ export class TextField extends Box {
     console.log('scrolling', up)
   };
 
-  onKeyDown(key: string): void {
+  onKeyDown = (key: string) => {
     if (key === 'Enter') {
       this.text += '\n';
     }
@@ -588,7 +587,7 @@ export class TextField extends Box {
     else {
       this.text += key.toLowerCase();
     }
-  }
+  };
 
   // onMouseDown(): void {
   //   this.trackMouse({
