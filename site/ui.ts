@@ -474,7 +474,7 @@ export class Textbox extends Box {
     else if (key === 'Backspace') {
       this.text = this.text.slice(0, -1);
     }
-    else if (mapping.includes(key)) {
+    else if (fontmap.includes(key)) {
       this.text += key;
     }
   }
@@ -514,37 +514,38 @@ export class Textbox extends Box {
 
 
 
-const mapping = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$`;
-const src = `
- xxx     xx      xxx     xx      xxx     xxx     xxx     x x     xxx     xxx     x x     x       xxx     xxx     xxx     xxx  |
- x x     xxx     x       x x     xx      xx      x       xxx      x       x      xx      x       xxx     x x     x x     x x  |
- xxx     x x     x       x x     x       x       x x     x x      x       x      xx      x       x x     x x     x x     xx   |
- x x     xxx     xxx     xx      xxx     x       xxx     x x     xxx     xx      x x     xxx     x x     x x     xxx     x    |
-                                                                                                                              |
- xxx     xxx     xxx     xxx     x x     x x     x x     x x     x x     xxx                             xx       x      xxx  |
- x x     x x     x        x      x x     x x     x x      x      x x      xx                              x       x      x x  |
- xxx     xx       xx      x      x x     x x     xxx      x       x      x                        x                           |
-   x     x x     xxx      x      xxx      x      xxx     x x      x      xxx              x      x                x        x  |
-                                                                                                                              |
- xx      xx      xxx     x x     xxx     xxx     xxx     xxx     xxx      x               x        x       x      x      x x  |
-  x        x      xx     x x     xx      x         x     xxx     x x     x x     xxx     xxx      x       x        x     x x  |
-  x       x        x     xxx       x     xxx       x     x x      xx     x x              x       x       x        x          |
- xxx     xxx     xxx       x     xx      xxx       x     xxx     xx       x                      x         x      x           |
-                                                                                                                              |
- x        x       x      x x     xx      xx      xx       x      x               xxx     xxx      x       xx     xx      x    |
-                          x              x        x      x        x              xxx     xxx      x      xx       xx      x   |
- x        x      xxx     x x     xx      x        x       x      x               xx      xxx      x      xx       xx          |
-         x        x                      xx      xx                      xxx     xxx              x       xx     xx           |
-                                                                                                                              |
-  x                                                                                                                           |
- x                                                                                                                            |
-  x                                                                                                                           |
- x                                                                                                                            |`;
+const fontmap = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^`;
+const font = `
+| xxx | xx  | xxx | xx  | xxx | xxx | xxx | x x | xxx | xxx | x x | x   | xxx | xxx | xxx | xxx |
+| x x | xxx | x   | x x | xx  | xx  | x   | xxx |  x  |  x  | xx  | x   | xxx | x x | x x | x x |
+| xxx | x x | x   | x x | x   | x   | x x | x x |  x  |  x  | xx  | x   | x x | x x | x x | xx  |
+| x x | xxx | xxx | xx  | xxx | x   | xxx | x x | xxx | xx  | x x | xxx | x x | x x | xxx | x   |
+|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
+| xxx | xxx | xxx | xxx | x x | x x | x x | x x | x x | xxx |     |     |     | xx  |  x  | xxx |
+| x x | x x | x   |  x  | x x | x x | x x |  x  | x x |  xx |     |     |     |  x  |  x  | x x |
+| xxx | xx  |  xx |  x  | x x | x x | xxx |  x  |  x  | x   |     |     |  x  |     |     |     |
+|   x | x x | xxx |  x  | xxx |  x  | xxx | x x |  x  | xxx |     |  x  | x   |     |  x  |   x |
+|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
+| xx  | xx  | xxx | x x | xxx | xxx | xxx | xxx | xxx |  x  |     |  x  |   x |   x |  x  | x x |
+|  x  |   x |  xx | x x | xx  | x   |   x | xxx | x x | x x | xxx | xxx |  x  |  x  |   x | x x |
+|  x  |  x  |   x | xxx |   x | xxx |   x | x x |  xx | x x |     |  x  |  x  |  x  |   x |     |
+| xxx | xxx | xxx |   x | xx  | xxx |   x | xxx | xx  |  x  |     |     | x   |   x |  x  |     |
+|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
+| x   |  x  |  x  | x x | xx  | xx  | xx  |  x  | x   |     | xxx | xxx |  x  |  xx | xx  | x   |
+|     |     |     |  x  |     | x   |  x  | x   |  x  |     | x x | xxx |  x  | xx  |  xx |  x  |
+| x   |  x  | xxx | x x | xx  | x   |  x  |  x  | x   |     | xx  | xxx |  x  | xx  |  xx |     |
+|     | x   |  x  |     |     | xx  | xx  |     |     | xxx | xxx |     |  x  |  xx | xx  |     |
+|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
+|  x  |  xx | xx  |  x  |     |     |     |     |     |     |     |     |     |     |     |     |
+| x   | x x |  xx | x x |     |     |     |     |     |     |     |     |     |     |     |     |
+|  x  | x   |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
+| x   |  xx |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
+`.replace(/\|?\n/g, '');
 
 const chars: Record<string, boolean[][]> = {};
 
-for (let i = 0; i < mapping.length; i++) {
-  const c = mapping[i];
+for (let i = 0; i < fontmap.length; i++) {
+  const c = fontmap[i];
 
   const grid: boolean[][] = [];
   chars[c] = grid;
@@ -553,12 +554,11 @@ for (let i = 0; i < mapping.length; i++) {
     const row: boolean[] = [];
     grid.push(row);
 
-    for (let x = 0; x < 4; x++) {
-      const px = (i % 16) * 8 + 1 + x;
-      const py = (Math.floor(i / 16) * 5) + y;
-      const index = 1 + (px + py * 16 * 8);
-
-      row.push(src[index] === ' ' ? false : true);
+    for (let x = 0; x < 3; x++) {
+      const py = (Math.floor(i / 16) * 6 * 16 * 5) + y * 6 * 16;
+      const px = (i % 16) * 6 + 2 + x;
+      const index = px + py;
+      row.push(font[index] !== ' ');
     }
   }
 }
@@ -583,7 +583,7 @@ export function print(x: number, y: number, c: number, text: string) {
     }
     else {
       for (let yy = 0; yy < 4; yy++) {
-        for (let xx = 0; xx < 4; xx++) {
+        for (let xx = 0; xx < 3; xx++) {
           const px = x + (posx * 4) + xx;
           const py = y + (posy * 6) + yy;
 
