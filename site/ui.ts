@@ -8,14 +8,14 @@ class Bitmap {
 
   constructor(public colors: number[], public steps: number[]) { }
 
-  draw(px: number, py: number) {
+  draw(screen: Screen, px: number, py: number) {
     let x = 0;
     let y = 0;
     for (let i = 0; i < this.steps.length; i++) {
       const s = this.steps[i];
       if (s === 0) { x++; continue; }
       else if (s === -1) { y++; x = 0; }
-      else pset(px + x++, py + y, this.colors[s - 1]);
+      else screen.pset(px + x++, py + y, this.colors[s - 1]);
     }
   }
 
@@ -26,25 +26,23 @@ class Clip {
 
   saved = { x1: 0, y1: 0, x2: 0, y2: 0 };
 
-  constructor(public box: Box) { }
+  set(screen: Screen, w: number, h: number) {
+    this.saved.x1 = screen.clip.x1;
+    this.saved.x2 = screen.clip.x2;
+    this.saved.y1 = screen.clip.y1;
+    this.saved.y2 = screen.clip.y2;
 
-  set() {
-    this.saved.x1 = sys.screen.clip.x1;
-    this.saved.x2 = sys.screen.clip.x2;
-    this.saved.y1 = sys.screen.clip.y1;
-    this.saved.y2 = sys.screen.clip.y2;
-
-    sys.screen.clip.x1 = sys.screen.camera.x;
-    sys.screen.clip.y1 = sys.screen.camera.y;
-    sys.screen.clip.x2 = sys.screen.clip.x1 + this.box.w - 1;
-    sys.screen.clip.y2 = sys.screen.clip.y1 + this.box.h - 1;
+    screen.clip.x1 = screen.camera.x;
+    screen.clip.y1 = screen.camera.y;
+    screen.clip.x2 = screen.clip.x1 + w - 1;
+    screen.clip.y2 = screen.clip.y1 + h - 1;
   }
 
-  unset() {
-    sys.screen.clip.x1 = this.saved.x1;
-    sys.screen.clip.x2 = this.saved.x2;
-    sys.screen.clip.y1 = this.saved.y1;
-    sys.screen.clip.y2 = this.saved.y2;
+  unset(screen: Screen) {
+    screen.clip.x1 = this.saved.x1;
+    screen.clip.x2 = this.saved.x2;
+    screen.clip.y1 = this.saved.y1;
+    screen.clip.y2 = this.saved.y2;
   }
 
 }
@@ -80,36 +78,36 @@ export class Box {
 
   #clip?: Clip;
   get clips() { return this.#clip !== undefined; }
-  set clips(should: boolean) { this.#clip = should ? new Clip(this) : undefined; }
+  set clips(should: boolean) { this.#clip = should ? new Clip() : undefined; }
 
-  draw() {
-    this.#clip?.set();
-    this.drawContents();
-    this.drawChildren();
-    this.#clip?.unset();
+  draw(screen: Screen) {
+    this.clip(screen);
+    this.drawContents(screen);
+    this.drawChildren(screen);
+    this.unclip(screen);
   }
 
-  clip() { this.#clip?.set(); }
-  unclip() { this.#clip?.unset(); }
+  clip(screen: Screen) { this.#clip?.set(screen, this.w, this.h); }
+  unclip(screen: Screen) { this.#clip?.unset(screen); }
 
-  drawContents() {
+  drawContents(screen: Screen) {
     if (!this.background) return;
-    rectFill(0, 0, this.w, this.h, this.background);
+    screen.rectFill(0, 0, this.w, this.h, this.background);
   }
 
-  drawChildren() {
+  drawChildren(screen: Screen) {
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
-      sys.screen.camera.x += child.x;
-      sys.screen.camera.y += child.y;
-      child.draw();
-      sys.screen.camera.x -= child.x;
-      sys.screen.camera.y -= child.y;
+      screen.camera.x += child.x;
+      screen.camera.y += child.y;
+      child.draw(screen);
+      screen.camera.x -= child.x;
+      screen.camera.y -= child.y;
     }
   }
 
-  drawCursor() {
-    Box.cursor.draw(mouse.x - 1, mouse.y - 1);
+  drawCursor(screen: Screen) {
+    Box.cursor.draw(screen, mouse.x - 1, mouse.y - 1);
   }
 
   trackMouse(fns: { move: () => void, up?: () => void }) {
@@ -275,8 +273,8 @@ let last = +document.timeline.currentTime!;
 function update(t: number) {
   if (t - last >= 30) {
     tick(t - last);
-    root.draw();
-    lastHovered.drawCursor();
+    root.draw(sys.screen);
+    lastHovered.drawCursor(sys.screen);
     sys.screen.blit();
     last = t;
   }
@@ -298,7 +296,7 @@ export function ontick(fn: (delta: number) => void) {
 
 
 
-class Screen {
+export class Screen {
 
   camera = { x: 0, y: 0 };
 
@@ -321,14 +319,14 @@ class Screen {
   }
 
   pset(x: number, y: number, c: number) {
-    rectFill(x, y, 1, 1, c);
+    this.rectFill(x, y, 1, 1, c);
   }
 
   rectLine(x: number, y: number, w: number, h: number, c: number) {
-    rectFill(x + 1, y, w - 2, 1, c);
-    rectFill(x + 1, y + h - 1, w - 2, 1, c);
-    rectFill(x, y, 1, h, c);
-    rectFill(x + w - 1, y, 1, h, c);
+    this.rectFill(x + 1, y, w - 2, 1, c);
+    this.rectFill(x + 1, y + h - 1, w - 2, 1, c);
+    this.rectFill(x, y, 1, h, c);
+    this.rectFill(x + w - 1, y, 1, h, c);
   }
 
   rectFill(x: number, y: number, w: number, h: number, c: number) {
@@ -369,9 +367,37 @@ class Screen {
     }
   }
 
-}
+  print(x: number, y: number, c: number, text: string) {
+    let posx = 0;
+    let posy = 0;
 
-// const screen = new Screen(canvas.getContext('2d')!);
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+
+      if (ch === '\n') {
+        posy++;
+        posx = 0;
+        continue;
+      }
+
+      const map = font.chars[ch];
+
+      for (let yy = 0; yy < 4; yy++) {
+        for (let xx = 0; xx < 3; xx++) {
+          const px = x + (posx * 4) + xx;
+          const py = y + (posy * 6) + yy;
+
+          if (map[yy][xx]) {
+            this.pset(px, py, c);
+          }
+        }
+      }
+
+      posx++;
+    }
+  }
+
+}
 
 
 
@@ -400,18 +426,6 @@ class Sys {
 const sys = new Sys(canvas);
 
 
-
-export function pset(x: number, y: number, c: number) {
-  sys.screen.pset(x, y, c);
-}
-
-export function rectLine(x: number, y: number, w: number, h: number, c: number) {
-  sys.screen.rectLine(x, y, w, h, c);
-}
-
-export function rectFill(x: number, y: number, w: number, h: number, c: number) {
-  sys.screen.rectFill(x, y, w, h, c);
-}
 
 
 
@@ -523,17 +537,17 @@ export class Button extends Box {
     });
   };
 
-  drawContents() {
-    super.drawContents();
+  drawContents(screen: Screen) {
+    super.drawContents(screen);
 
     if (this.clicking) {
-      rectFill(0, 0, this.w, this.h, 0xffffff22);
+      screen.rectFill(0, 0, this.w, this.h, 0xffffff22);
     }
     else if (this.hovered) {
-      rectFill(0, 0, this.w, this.h, 0xffffff11);
+      screen.rectFill(0, 0, this.w, this.h, 0xffffff11);
     }
 
-    print(2, 2, this.color, this.text);
+    screen.print(2, 2, this.color, this.text);
   }
 
 }
@@ -557,7 +571,7 @@ export class RadioGroup {
 
 export class RadioButton extends Button {
 
-  drawButton() { }
+  drawButton(screen: Screen) { }
   onSelect() { }
 
   selected = false;
@@ -569,14 +583,14 @@ export class RadioButton extends Button {
     this.onSelect();
   }
 
-  drawContents() {
-    this.drawButton();
+  drawContents(screen: Screen) {
+    this.drawButton(screen);
 
     if (this.selected) {
-      rectLine(0, 0, this.w, this.h, 0xffffff77);
+      screen.rectLine(0, 0, this.w, this.h, 0xffffff77);
     }
     else if (this.hovered) {
-      rectLine(0, 0, this.w, this.h, 0xffffff33);
+      screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
     }
   }
 
@@ -592,8 +606,8 @@ export class Label extends Box {
     super(...args);
   }
 
-  drawContents(): void {
-    print(0, 0, this.color, this.text);
+  drawContents(screen: Screen): void {
+    screen.print(0, 0, this.color, this.text);
   }
 
 }
@@ -604,10 +618,10 @@ export class Checkbox extends Box {
 
   onChange() { }
 
-  drawContents(): void {
-    rectLine(0, 0, 6, 6, this.hovered ? 0xffffffff : 0x777777ff);
+  drawContents(screen: Screen): void {
+    screen.rectLine(0, 0, 6, 6, this.hovered ? 0xffffffff : 0x777777ff);
     if (this.checked) {
-      rectFill(2, 2, 2, 2, 0xffffffff);
+      screen.rectFill(2, 2, 2, 2, 0xffffffff);
     }
   }
 
@@ -657,12 +671,12 @@ export class TextField extends Box {
   //   });
   // }
 
-  drawContents(): void {
-    super.drawContents();
-    print(2, 2, this.color, this.text);
+  drawContents(screen: Screen): void {
+    super.drawContents(screen);
+    screen.print(2, 2, this.color, this.text);
 
     if (focused === this) {
-      rectLine(0, 0, this.w, this.h, 0xffffff33);
+      screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
 
       const drawCursor = last % 1000 < 500;
       if (drawCursor) {
@@ -675,7 +689,7 @@ export class TextField extends Box {
           cx++;
         }
 
-        print((cx * 4) + 2, (cy * 6) + 2, 0x77aaffff, '_');
+        screen.print((cx * 4) + 2, (cy * 6) + 2, 0x77aaffff, '_');
       }
     }
   }
@@ -749,33 +763,3 @@ const defaultFont = new Font(3, 4, 16,
 `);
 
 let font = defaultFont;
-
-export function print(x: number, y: number, c: number, text: string) {
-  let posx = 0;
-  let posy = 0;
-
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-
-    if (ch === '\n') {
-      posy++;
-      posx = 0;
-      continue;
-    }
-
-    const map = font.chars[ch];
-
-    for (let yy = 0; yy < 4; yy++) {
-      for (let xx = 0; xx < 3; xx++) {
-        const px = x + (posx * 4) + xx;
-        const py = y + (posy * 6) + yy;
-
-        if (map[yy][xx]) {
-          pset(px, py, c);
-        }
-      }
-    }
-
-    posx++;
-  }
-}

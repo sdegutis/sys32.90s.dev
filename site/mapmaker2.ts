@@ -1,4 +1,4 @@
-import { Box, Button, Mover, RadioButton, RadioGroup, TileSelection, keys, pset, rectFill, rectLine, root } from "./ui.js";
+import { Box, Button, Mover, RadioButton, RadioGroup, Screen, TileSelection, keys, root } from "./ui.js";
 
 
 
@@ -115,7 +115,7 @@ class Map {
 
 const map = new Map(50, 40);
 
-const drawTerrain: ((x: number, y: number) => void)[] = [];
+const drawTerrain: ((screen: Screen, x: number, y: number) => void)[] = [];
 
 let currentTool = 5;
 
@@ -123,13 +123,13 @@ let currentTool = 5;
 const toolGroup = new RadioGroup();
 
 for (let i = 0; i < 16; i++) {
-  drawTerrain.push((x, y) => {
-    rectFill(x, y, 4, 4, COLORS[i]);
+  drawTerrain.push((screen, x, y) => {
+    screen.rectFill(x, y, 4, 4, COLORS[i]);
   });
 }
 
-drawTerrain.push((x, y) => {
-  rectFill(x, y, 4, 4, COLORS[3]);
+drawTerrain.push((screen, x, y) => {
+  screen.rectFill(x, y, 4, 4, COLORS[3]);
 });
 
 for (let i = 0; i < 17; i++) {
@@ -139,7 +139,7 @@ for (let i = 0; i < 17; i++) {
   let tooly = (i % maxlen) * 7;
 
   const b = new RadioButton(toolx, tooly, 8, 8);
-  b.drawButton = () => rectFill(2, 2, 4, 4, COLORS[i % 16]);
+  b.drawButton = (screen) => screen.rectFill(2, 2, 4, 4, COLORS[i % 16]);
   toolGroup.add(b);
   b.onSelect = () => currentTool = i;
   toolArea.children.push(b);
@@ -181,12 +181,12 @@ const mapArea = new Box(0, 0, 320 - 40, 180 - 8, 0x222222ff);
 mapArea.clips = true;
 tabBox.addTab(mapArea);
 
-mapArea.drawContents = () => {
-  rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
+mapArea.drawContents = (screen) => {
+  screen.rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
   let off = 0;
   for (let y = 0; y < mapArea.h; y++) {
     for (let x = 0; x < mapArea.w; x += 4) {
-      pset(off + x, y, 0x272727ff);
+      screen.pset(off + x, y, 0x272727ff);
     }
     if (y % 2 === 0) off = (off + 1) % 4;
   }
@@ -253,44 +253,44 @@ mapBox.onMouseDown = () => {
   }
 };
 
-mapBox.draw = () => {
+mapBox.draw = (screen) => {
   // for (let i = 0; i < 300; i++)
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
       const i = y * map.width + x;
       const t = map.terrain[i];
-      drawTerrain[t](x * 4, y * 4);
+      drawTerrain[t](screen, x * 4, y * 4);
     }
   }
 
   if (showGrid) {
     for (let x = 0; x < map.width; x++) {
-      rectFill(x * 4, 0, 1, map.height * 4, 0x00000011);
+      screen.rectFill(x * 4, 0, 1, map.height * 4, 0x00000011);
     }
 
     for (let y = 0; y < map.height; y++) {
-      rectFill(0, y * 4, map.width * 4, 1, 0x00000011);
+      screen.rectFill(0, y * 4, map.width * 4, 1, 0x00000011);
     }
   }
 
   if (mapBox.hovered) {
     const tx = Math.floor(mapBox.mouse.x / 4);
     const ty = Math.floor(mapBox.mouse.y / 4);
-    rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);
+    screen.rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);
 
     if (keys['Alt']) {
-      rectFill((tx + 0) * 4, (ty + 1) * 4, 4, 4, 0x0000ff77);
-      rectFill((tx + 0) * 4, (ty - 1) * 4, 4, 4, 0x0000ff77);
-      rectFill((tx + 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
-      rectFill((tx - 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
+      screen.rectFill((tx + 0) * 4, (ty + 1) * 4, 4, 4, 0x0000ff77);
+      screen.rectFill((tx + 0) * 4, (ty - 1) * 4, 4, 4, 0x0000ff77);
+      screen.rectFill((tx + 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
+      screen.rectFill((tx - 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
     }
   }
 
   if (tilesel) {
     const { tx1, tx2, ty1, ty2 } = tilesel;
 
-    rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
-    rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
+    screen.rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
+    screen.rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
   }
 }
 
