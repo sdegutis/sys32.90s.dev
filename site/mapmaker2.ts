@@ -378,15 +378,25 @@ screen.root.add(slider);
 
 const test1 = new CRT.Box();
 test1.x = 100;
+test1.clips = true;
 test1.y = 100;
-test1.w = 20;
-test1.h = 10;
+test1.w = 70;
+test1.h = 60;
 test1.drawContents = () => {
   screen.rectFill(1, 1, test1.w - 2, test1.h - 2, 0x00000099);
-  screen.rectFill(1, 0, test1.w - 2, 1, 0xffffff99);
-  screen.rectFill(1, test1.h - 1, test1.w - 2, 1, 0xffffff99);
-  screen.rectFill(0, 1, 1, test1.h - 2, 0xffffff99);
-  screen.rectFill(test1.w - 1, 1, 1, test1.h - 2, 0xffffff99);
+
+  screen.rectFill(1, 0, test1.w - 2, 1, 0x00000099);
+  screen.rectFill(1, test1.h - 1, test1.w - 2, 1, 0x00000099);
+  screen.rectFill(0, 1, 1, test1.h - 2, 0x00000099);
+  screen.rectFill(test1.w - 1, 1, 1, test1.h - 2, 0x00000099);
+
+  screen.rectFill(1, 0, test1.w - 2, 1, 0xffffff77);
+  screen.rectFill(1, test1.h - 1, test1.w - 2, 1, 0xffffff77);
+  screen.rectFill(0, 1, 1, test1.h - 2, 0xffffff77);
+  screen.rectFill(test1.w - 1, 1, 1, test1.h - 2, 0xffffff77);
+
+  screen.print(2, 2, 0xffffff44, 'test window')
+  screen.rectFill(1, 7, test1.w - 2, 1, 0xffffff77);
 
   screen.pset(test1.w - 3, test1.h - 3, 0xffffffff)
 };
