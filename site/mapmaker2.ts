@@ -1,19 +1,20 @@
-import { Box, Button, Mover, RadioButton, RadioGroup, Screen, TileSelection } from "./ui.js";
+import * as CRT from "./ui.js";
 
 
-
-const screen = new Screen(document.querySelector('canvas')!);
+const screen = new CRT.Screen(document.querySelector('canvas')!);
 screen.autoscale();
 
 
 
-class TabBox extends Box {
 
-  #allChildren: Box[] = [];
+
+class TabBox extends CRT.Box {
+
+  #allChildren: CRT.Box[] = [];
 
   tab = -1;
 
-  addTab(box: Box) {
+  addTab(box: CRT.Box) {
     this.#allChildren.push(box);
     this.children = [box];
     this.tab = this.children.length - 1;
@@ -34,17 +35,17 @@ screen.root.children.push(tabBox);
 
 
 
-const mapArea2 = new Box(0, 0, 320 - 40, 180 - 8, 0x000033ff);
+const mapArea2 = new CRT.Box(0, 0, 320 - 40, 180 - 8, 0x000033ff);
 tabBox.addTab(mapArea2);
 mapArea2.onMouseDown = () => console.log('haha nope');
 
 
 
 
-const menu = new Box(0, 0, 320, 8, 0x000000ff);
+const menu = new CRT.Box(0, 0, 320, 8, 0x000000ff);
 screen.root.children.push(menu);
 
-const saveButton = new Button(0, 0, 4 * 4 + 3, 8, 0x000000ff);
+const saveButton = new CRT.Button(0, 0, 4 * 4 + 3, 8, 0x000000ff);
 saveButton.color = 0xffffff33;
 saveButton.text = 'save';
 saveButton.onClick = () => {
@@ -52,7 +53,7 @@ saveButton.onClick = () => {
 };
 menu.children.push(saveButton);
 
-const loadButton = new Button(20, 0, 4 * 4 + 3, 8, 0x000000ff);
+const loadButton = new CRT.Button(20, 0, 4 * 4 + 3, 8, 0x000000ff);
 loadButton.color = 0xffffff33;
 loadButton.text = 'load';
 loadButton.onClick = () => {
@@ -62,7 +63,7 @@ menu.children.push(loadButton);
 
 let showGrid = true;
 
-const gridButton = new Button(40, 0, 4 * 4 + 3, 8, 0x000000ff);
+const gridButton = new CRT.Button(40, 0, 4 * 4 + 3, 8, 0x000000ff);
 gridButton.color = 0xffffff33;
 gridButton.text = 'grid';
 gridButton.onClick = () => tabBox.select((tabBox.tab + 1) % 2);
@@ -74,7 +75,7 @@ menu.children.push(gridButton);
 
 
 
-const toolArea = new Box(0, 8, 40, 180 - 8, 0x333333ff);
+const toolArea = new CRT.Box(0, 8, 40, 180 - 8, 0x333333ff);
 screen.root.children.push(toolArea);
 
 
@@ -119,12 +120,12 @@ class Map {
 
 const map = new Map(50, 40);
 
-const drawTerrain: ((screen: Screen, x: number, y: number) => void)[] = [];
+const drawTerrain: ((screen: CRT.Screen, x: number, y: number) => void)[] = [];
 
 let currentTool = 5;
 
 
-const toolGroup = new RadioGroup();
+const toolGroup = new CRT.RadioGroup();
 
 for (let i = 0; i < 16; i++) {
   drawTerrain.push((screen, x, y) => {
@@ -142,7 +143,7 @@ for (let i = 0; i < 17; i++) {
   let toolx = Math.floor(i / maxlen) * 7;
   let tooly = (i % maxlen) * 7;
 
-  const b = new RadioButton(toolx, tooly, 8, 8);
+  const b = new CRT.RadioButton(toolx, tooly, 8, 8);
   b.drawButton = (screen) => screen.rectFill(2, 2, 4, 4, COLORS[i % 16]);
   toolGroup.add(b);
   b.onSelect = () => currentTool = i;
@@ -181,7 +182,7 @@ screen.root.onScroll = (screen, up) => {
 
 
 
-const mapArea = new Box(0, 0, 320 - 40, 180 - 8, 0x222222ff);
+const mapArea = new CRT.Box(0, 0, 320 - 40, 180 - 8, 0x222222ff);
 mapArea.clips = true;
 tabBox.addTab(mapArea);
 
@@ -196,7 +197,7 @@ mapArea.drawContents = (screen) => {
   }
 };
 
-const mapBox = new Box(0, 0, map.width * 4, map.height * 4);
+const mapBox = new CRT.Box(0, 0, map.width * 4, map.height * 4);
 mapArea.children.push(mapBox);
 
 mapBox.drawCursor = () => {
@@ -205,15 +206,15 @@ mapBox.drawCursor = () => {
   // pset(mouse.x, mouse.y, '#fff');
 }
 
-let tilesel: TileSelection | null = null;
+let tilesel: CRT.TileSelection | null = null;
 
 mapBox.onMouseDown = () => {
   if (screen.keys[' ']) {
-    const dragger = new Mover(screen, mapBox);
+    const dragger = new CRT.Mover(screen, mapBox);
     screen.trackMouse({ move: () => dragger.update() });
   }
   else if (screen.keys['Control']) {
-    tilesel = new TileSelection(mapBox, 4);
+    tilesel = new CRT.TileSelection(mapBox, 4);
 
     screen.trackMouse({
       move() {
