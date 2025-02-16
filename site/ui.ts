@@ -1,4 +1,4 @@
-class Bitmap {
+export class Bitmap {
 
   constructor(public colors: number[], public steps: number[]) { }
 
@@ -126,16 +126,16 @@ export class Screen {
   camera = { x: 0, y: 0 };
   clip;
 
+  context;
   pixels;
   imgdata;
 
   font = Font.crt2025;
 
-  root;
-
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0, button: 0 };
 
+  root;
   focused: Box;
   hovered: Box[] = [];
   lastHovered: Box;
@@ -143,19 +143,16 @@ export class Screen {
   tick = (delta: number) => { };
   last = +document.timeline.currentTime!;
 
-  context;
-
   constructor(public canvas: HTMLCanvasElement) {
     this.context = this.canvas.getContext('2d')!;
 
     this.pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
     this.imgdata = new ImageData(this.pixels, canvas.width, canvas.height);
-
-    this.clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
-
     for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
       this.pixels[i + 3] = 255;
     }
+
+    this.clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
 
     this.root = new Box(0, 0, canvas.width, canvas.height);
     this.focused = this.root;
@@ -169,6 +166,8 @@ export class Screen {
     canvas.addEventListener('keyup', (e) => {
       this.keys[e.key] = false;
     }, { passive: true });
+
+    canvas.oncontextmenu = (e) => { e.preventDefault(); };
 
     canvas.addEventListener('mousedown', (e) => {
       this.mouse.button = e.button;
@@ -197,8 +196,6 @@ export class Screen {
       }
     }, { passive: true });
 
-    canvas.oncontextmenu = (e) => { e.preventDefault(); };
-
     canvas.addEventListener('wheel', (e) => {
       let i = this.hovered.length;
       while (i--) {
@@ -221,7 +218,6 @@ export class Screen {
       requestAnimationFrame(update);
     };
     requestAnimationFrame(update);
-
   }
 
   autoscale() {
@@ -638,7 +634,7 @@ export class TextField extends Box {
 
 
 
-class Font {
+export class Font {
 
   static crt2025 = new Font(3, 4, 16,
     `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^`,
