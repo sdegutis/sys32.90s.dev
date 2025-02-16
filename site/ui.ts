@@ -12,10 +12,11 @@ export class Screen {
   _hovered: Box;
   _trackingMouse?: { move: () => void, up?: () => void };
 
+  pixels;
+
   _camera = { x: 0, y: 0 };
   _clip;
   _context;
-  _pixels;
   _imgdata;
 
   _destroyer = new AbortController();
@@ -23,10 +24,10 @@ export class Screen {
   constructor(public canvas: HTMLCanvasElement) {
     this._context = canvas.getContext('2d')!;
 
-    this._pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
-    this._imgdata = new ImageData(this._pixels, canvas.width, canvas.height);
+    this.pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
+    this._imgdata = new ImageData(this.pixels, canvas.width, canvas.height);
     for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
-      this._pixels[i + 3] = 255;
+      this.pixels[i + 3] = 255;
     }
 
     this._clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
@@ -192,16 +193,16 @@ export class Screen {
         const i = y * cw * 4 + x * 4;
 
         if (a === 255) {
-          this._pixels[i + 0] = r;
-          this._pixels[i + 1] = g;
-          this._pixels[i + 2] = b;
+          this.pixels[i + 0] = r;
+          this.pixels[i + 1] = g;
+          this.pixels[i + 2] = b;
         }
         else {
           const ia = (255 - a) / 255;
           const aa = (a / 255);
-          this._pixels[i + 0] = (this._pixels[i + 0] * ia) + (r * aa);
-          this._pixels[i + 1] = (this._pixels[i + 1] * ia) + (g * aa);
-          this._pixels[i + 2] = (this._pixels[i + 2] * ia) + (b * aa);
+          this.pixels[i + 0] = (this.pixels[i + 0] * ia) + (r * aa);
+          this.pixels[i + 1] = (this.pixels[i + 1] * ia) + (g * aa);
+          this.pixels[i + 2] = (this.pixels[i + 2] * ia) + (b * aa);
         }
       }
     }
