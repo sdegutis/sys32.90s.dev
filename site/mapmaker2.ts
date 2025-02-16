@@ -10,7 +10,11 @@ screen.autoscale();
 
 
 
-const tabBox = new CRT.TabBox(40, 8, 320 - 40, 180 - 8);
+const tabBox = new CRT.TabBox();
+tabBox.x = 40;
+tabBox.y = 8;
+tabBox.w = 320 - 40;
+tabBox.h = 180 - 8;
 tabBox.background = 0x222222ff;
 screen.root.add(tabBox);
 
@@ -18,7 +22,9 @@ screen.root.add(tabBox);
 
 
 
-const mapArea2 = new CRT.Box(0, 0, 320 - 40, 180 - 8);
+const mapArea2 = new CRT.Box();
+mapArea2.w = 320 - 40;
+mapArea2.h = 180 - 8;
 mapArea2.background = 0x000033ff;
 tabBox.addTab(mapArea2);
 mapArea2.onMouseDown = () => console.log('haha nope');
@@ -26,11 +32,19 @@ mapArea2.onMouseDown = () => console.log('haha nope');
 
 
 
-const menu = new CRT.Box(0, 0, 320, 8);
+const menu = new CRT.Box();
+menu.x = 0;
+menu.y = 0;
+menu.w = 320;
+menu.h = 8;
 menu.background = 0x000000ff;
 screen.root.add(menu);
 
-const saveButton = new CRT.Button(0, 0, 4 * 4 + 3, 8);
+const saveButton = new CRT.Button();
+saveButton.x = 0;
+saveButton.y = 0;
+saveButton.w = 4 * 4 + 3;
+saveButton.h = 8;
 saveButton.background = 0x000000ff;
 saveButton.color = 0xffffff33;
 saveButton.text = 'save';
@@ -39,7 +53,11 @@ saveButton.onClick = () => {
 };
 menu.add(saveButton);
 
-const loadButton = new CRT.Button(20, 0, 4 * 4 + 3, 8);
+const loadButton = new CRT.Button();
+loadButton.x = 20;
+loadButton.y = 0;
+loadButton.w = 4 * 4 + 3;
+loadButton.h = 8;
 loadButton.background = 0x000000ff;
 loadButton.color = 0xffffff33;
 loadButton.text = 'load';
@@ -50,14 +68,22 @@ menu.add(loadButton);
 
 let showGrid = true;
 
-const gridButton = new CRT.Button(40, 0, 4 * 4 + 3, 8);
+const gridButton = new CRT.Button();
+gridButton.x = 40;
+gridButton.y = 0;
+gridButton.w = 4 * 4 + 3;
+gridButton.h = 8;
 gridButton.background = 0x000000ff;
 gridButton.color = 0xffffff33;
 gridButton.text = 'grid';
 gridButton.onClick = () => showGrid = !showGrid;
 menu.add(gridButton);
 
-const tabButton = new CRT.Button(60, 0, 4 * 4 + 3, 8);
+const tabButton = new CRT.Button();
+tabButton.x = 60;
+tabButton.y = 0;
+tabButton.w = 4 * 4 + 3;
+tabButton.h = 8;
 tabButton.background = 0x000000ff;
 tabButton.color = 0xffffff33;
 tabButton.text = 'tabs';
@@ -69,7 +95,11 @@ menu.add(tabButton);
 
 
 
-const toolArea = new CRT.Box(0, 8, 40, 180 - 8);
+const toolArea = new CRT.Box();
+toolArea.x = 0;
+toolArea.y = 8;
+toolArea.w = 40;
+toolArea.h = 180 - 8;
 toolArea.background = 0x333333ff;
 screen.root.add(toolArea);
 
@@ -138,7 +168,11 @@ for (let i = 0; i < 17; i++) {
   let toolx = Math.floor(i / maxlen) * 7;
   let tooly = (i % maxlen) * 7;
 
-  const b = new CRT.RadioButton(toolx, tooly, 8, 8);
+  const b = new CRT.RadioButton();
+  b.x = toolx;
+  b.y = tooly;
+  b.w = 8;
+  b.h = 8;
   b.drawButton = (screen) => screen.rectFill(2, 2, 4, 4, COLORS[i % 16]);
   toolGroup.add(b);
   b.onSelect = () => currentTool = i;
@@ -177,7 +211,11 @@ screen.root.onScroll = (up) => {
 
 
 
-const mapArea = new CRT.Box(0, 0, 320 - 40, 180 - 8);
+const mapArea = new CRT.Box();
+mapArea.x = 0;
+mapArea.y = 0;
+mapArea.w = 320 - 40;
+mapArea.h = 180 - 8;
 mapArea.background = 0x222222ff;
 mapArea.clips = true;
 tabBox.addTab(mapArea);
@@ -193,7 +231,11 @@ mapArea.drawContents = () => {
   }
 };
 
-const mapBox = new CRT.Box(0, 0, map.width * 4, map.height * 4);
+const mapBox = new CRT.Box();
+mapBox.x = 0;
+mapBox.y = 0;
+mapBox.w = map.width * 4;
+mapBox.h = map.height * 4;
 mapArea.add(mapBox);
 
 mapBox.drawCursor = () => {
@@ -297,7 +339,11 @@ mapBox.draw = () => {
 
 
 
-const textbox = new CRT.TextField(160, 10, 60, 80);
+const textbox = new CRT.TextField();
+textbox.x = 160;
+textbox.y = 10;
+textbox.w = 60;
+textbox.h = 80;
 textbox.background = 0x000000ff;
 textbox.text = `test`;
 screen.root.add(textbox);
@@ -306,9 +352,20 @@ textbox.onMouseMove = () => { console.log('move', textbox.mouse); }
 textbox.onMouseEnter = () => { console.log('enter', textbox.mouse); }
 textbox.onMouseExit = () => { console.log('exit', textbox.mouse); }
 
-const checkbox = new CRT.Checkbox(160, 1, 8 + 4 * 7, 6);
+const checkbox = new CRT.Checkbox();
+checkbox.x = 160;
+checkbox.y = 1;
+checkbox.w = 8 + 4 * 7;
+checkbox.h = 6;
 checkbox.background = 0x000000ff;
 screen.root.add(checkbox);
 checkbox.onChange = () => console.log(checkbox.checked)
 checkbox.checked = true;
-checkbox.add(new CRT.Label('testing', 8, 1, 4 * 7, 6));
+
+const label = new CRT.Label();
+label.text = 'testing';
+label.x = 8;
+label.y = 1;
+label.w = 4 * 7;
+label.h = 6;
+checkbox.add(label);

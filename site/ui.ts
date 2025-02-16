@@ -31,7 +31,9 @@ export class Screen {
 
     this._clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
 
-    this.root = new Box(0, 0, canvas.width, canvas.height);
+    this.root = new Box();
+    this.root.w = canvas.width;
+    this.root.h = canvas.height;
     this.root.screen = this;
 
     this.focused = this.root;
@@ -255,12 +257,10 @@ export class Box {
 
   background = 0;
 
-  constructor(
-    public x = 0,
-    public y = 0,
-    public w = 0,
-    public h = 0,
-  ) { }
+  x = 0;
+  y = 0;
+  w = 0;
+  h = 0;
 
   add(child: Box) {
     child.screen = this.screen;
@@ -399,9 +399,7 @@ export class Label extends Box {
 
   passthrough = true;
 
-  constructor(public text: string, ...args: ConstructorParameters<typeof Box>) {
-    super(...args);
-  }
+  text = '';
 
   drawContents(): void {
     this.screen.print(0, 0, this.color, this.text);
@@ -434,8 +432,8 @@ export class TextField extends Box {
   text = '';
   color = 0xffffffff;
 
-  constructor(...args: ConstructorParameters<typeof Box>) {
-    super(...args);
+  constructor() {
+    super();
     this.clips = true;
   }
 
