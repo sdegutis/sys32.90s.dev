@@ -1,21 +1,3 @@
-export class Bitmap {
-
-  constructor(public colors: number[], public steps: number[]) { }
-
-  draw(screen: Screen, px: number, py: number) {
-    let x = 0;
-    let y = 0;
-    for (let i = 0; i < this.steps.length; i++) {
-      const s = this.steps[i];
-      if (s === 0) { x++; continue; }
-      else if (s === -1) { y++; x = 0; }
-      else screen.pset(px + x++, py + y, this.colors[s - 1]);
-    }
-  }
-
-}
-
-
 class Clip {
 
   saved = { x1: 0, y1: 0, x2: 0, y2: 0 };
@@ -40,7 +22,6 @@ class Clip {
   }
 
 }
-
 
 export class Box {
 
@@ -101,26 +82,6 @@ export class Box {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export class Screen {
 
   camera = { x: 0, y: 0 };
@@ -139,9 +100,6 @@ export class Screen {
   focused: Box;
   hovered: Box[] = [];
   lastHovered: Box;
-
-  tick = (delta: number) => { };
-  last = +document.timeline.currentTime!;
 
   constructor(public canvas: HTMLCanvasElement) {
     this.context = this.canvas.getContext('2d')!;
@@ -187,7 +145,7 @@ export class Screen {
       this.mouse.x = x;
       this.mouse.y = y;
 
-      const hoveredOver = this._hover(this.root, this.mouse.x, this.mouse.y)!;
+      const hoveredOver = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
 
       if (this.lastHovered !== hoveredOver) {
         this.lastHovered.hovered = false;
@@ -207,13 +165,14 @@ export class Screen {
       }
     }, { passive: true })
 
+
+    let last = +document.timeline.currentTime!;
     const update = (t: number) => {
-      if (t - this.last >= 30) {
-        this.tick(t - this.last);
+      if (t - last >= 30) {
         this.root.draw(this);
         this.lastHovered.drawCursor(this);
         this.blit();
-        this.last = t;
+        last = t;
       }
       requestAnimationFrame(update);
     };
@@ -322,7 +281,7 @@ export class Screen {
     return () => done.abort();
   }
 
-  _hover(box: Box, x: number, y: number): Box | null {
+  #hover(box: Box, x: number, y: number): Box | null {
     if (box.passthrough) return null;
 
     const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
@@ -336,7 +295,7 @@ export class Screen {
     let i = box.children.length;
     while (i--) {
       const child = box.children[i];
-      const found = this._hover(child, x - child.x, y - child.y);
+      const found = this.#hover(child, x - child.x, y - child.y);
       if (found) return found;
     }
 
@@ -345,24 +304,22 @@ export class Screen {
 
 }
 
+export class Bitmap {
 
+  constructor(public colors: number[], public steps: number[]) { }
 
+  draw(screen: Screen, px: number, py: number) {
+    let x = 0;
+    let y = 0;
+    for (let i = 0; i < this.steps.length; i++) {
+      const s = this.steps[i];
+      if (s === 0) { x++; continue; }
+      else if (s === -1) { y++; x = 0; }
+      else screen.pset(px + x++, py + y, this.colors[s - 1]);
+    }
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
 
 export class Selection {
 
@@ -431,16 +388,6 @@ export class Mover {
   }
 
 }
-
-
-
-
-
-
-
-
-
-
 
 export class Button extends Box {
 
@@ -562,13 +509,6 @@ export class Checkbox extends Box {
 
 }
 
-
-
-
-
-
-
-
 export class TextField extends Box {
 
   text = '';
@@ -608,7 +548,7 @@ export class TextField extends Box {
     if (screen.focused === this) {
       screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
 
-      const drawCursor = screen.last % 1000 < 500;
+      const drawCursor = +document.timeline.currentTime! % 1000 < 500;
       if (drawCursor) {
         let cx = 0;
         let cy = 0;
@@ -625,14 +565,6 @@ export class TextField extends Box {
   }
 
 }
-
-
-
-
-
-
-
-
 
 export class Font {
 
