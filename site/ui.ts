@@ -693,6 +693,27 @@ export class Mover {
 
 }
 
+export class Resizer {
+
+  startMouse;
+  startElPos;
+
+  constructor(private screen: Screen, private el: Box) {
+    this.startMouse = { x: screen.mouse.x, y: screen.mouse.y };
+    this.startElPos = { w: el.w, h: el.h };
+  }
+
+  update() {
+    const offx = this.startMouse.x - this.startElPos.w;
+    const offy = this.startMouse.y - this.startElPos.h;
+    const diffx = this.screen.mouse.x - this.startElPos.w;
+    const diffy = this.screen.mouse.y - this.startElPos.h;
+    this.el.w = this.startElPos.w + diffx - offx;
+    this.el.h = this.startElPos.h + diffy - offy;
+  }
+
+}
+
 class Clip {
 
   saved = { x1: 0, y1: 0, x2: 0, y2: 0 };

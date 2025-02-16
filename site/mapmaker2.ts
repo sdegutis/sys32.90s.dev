@@ -357,3 +357,59 @@ label.y = 1;
 label.w = 4 * 7;
 label.h = 6;
 checkbox.add(label);
+
+export class Slider extends CRT.Box {
+
+  value = 0;
+  min = 0;
+  max = 10;
+
+
+
+}
+
+const slider = new Slider();
+slider.x = 60;
+slider.y = 40;
+slider.w = 8 + 4 * 7;
+slider.h = 6;
+slider.background = 0x000000ff;
+screen.root.add(slider);
+
+const test1 = new CRT.Box();
+test1.x = 100;
+test1.y = 100;
+test1.w = 20;
+test1.h = 10;
+test1.drawContents = () => {
+  screen.rectFill(1, 1, test1.w - 2, test1.h - 2, 0x00000099);
+  screen.rectFill(1, 0, test1.w - 2, 1, 0xffffff99);
+  screen.rectFill(1, test1.h - 1, test1.w - 2, 1, 0xffffff99);
+  screen.rectFill(0, 1, 1, test1.h - 2, 0xffffff99);
+  screen.rectFill(test1.w - 1, 1, 1, test1.h - 2, 0xffffff99);
+
+  screen.pset(test1.w - 3, test1.h - 3, 0xffffffff)
+};
+test1.onMouseDown = () => {
+  if (test1.mouse.x >= test1.w - 3 && test1.mouse.y >= test1.h - 3) {
+    const dragger = new CRT.Resizer(screen, test1);
+    screen.trackMouse({ move: () => dragger.update() });
+  }
+  else {
+    const dragger = new CRT.Mover(screen, test1);
+    screen.trackMouse({ move: () => dragger.update() });
+  }
+};
+screen.root.add(test1);
+
+// screen.root.draw = () => {
+
+//   for (let y = 0; y < 180; y++) {
+//     for (let x = 0; x < 320; x++) {
+//       screen.pset(x, y, Math.floor(Math.random() * 0xffffffff))
+//     }
+//   }
+
+//   screen.needsRedraw = true;
+
+// };
