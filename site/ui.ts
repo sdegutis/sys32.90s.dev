@@ -93,8 +93,6 @@ export class Screen {
         }
       }
     }, { passive: true })
-
-    this.redraw();
   }
 
   autoscale() {
