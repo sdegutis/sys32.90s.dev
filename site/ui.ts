@@ -44,7 +44,9 @@ export class Screen {
       this.needsRedraw = true;
     }, { passive: true });
 
-    canvas.oncontextmenu = (e) => { e.preventDefault(); };
+    canvas.oncontextmenu = (e) => {
+      e.preventDefault();
+    };
 
     canvas.addEventListener('mousedown', (e) => {
       this.mouse.button = e.button;
@@ -115,13 +117,13 @@ export class Screen {
 
   autoscale() {
     new ResizeObserver(() => {
-      const box = this.canvas.parentElement!.getBoundingClientRect();
+      const rect = this.canvas.parentElement!.getBoundingClientRect();
       let w = this.canvas.width;
       let h = this.canvas.height;
       let s = 1;
       while (
-        (w += this.canvas.width) <= box.width &&
-        (h += this.canvas.height) <= box.height
+        (w += this.canvas.width) <= rect.width &&
+        (h += this.canvas.height) <= rect.height
       ) s++;
       this.scale(s);
     }).observe(this.canvas.parentElement!);
