@@ -78,16 +78,18 @@ export class Screen {
 
       const currentHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
 
+      const notTracking = !this._trackingMouse;
+
       if (this._hovered !== currentHovered) {
-        this._hovered.onMouseExit?.();
+        if (notTracking) this._hovered.onMouseExit?.();
         this._hovered.hovered = false;
         currentHovered.hovered = true;
         this._hovered = currentHovered;
-        this._hovered.onMouseEnter?.();
+        if (notTracking) this._hovered.onMouseEnter?.();
       }
 
-      this._hovered.onMouseMove?.();
       this._trackingMouse?.move();
+      if (notTracking) this._hovered.onMouseMove?.();
 
       this.needsRedraw = true;
     }, callbackOpts);

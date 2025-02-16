@@ -384,15 +384,17 @@ test1.h = 60;
 test1.drawContents = () => {
   screen.rectFill(1, 1, test1.w - 2, test1.h - 2, 0x00000099);
 
-  screen.rectFill(1, 0, test1.w - 2, 1, 0x00000099);
-  screen.rectFill(1, test1.h - 1, test1.w - 2, 1, 0x00000099);
-  screen.rectFill(0, 1, 1, test1.h - 2, 0x00000099);
-  screen.rectFill(test1.w - 1, 1, 1, test1.h - 2, 0x00000099);
+  screen.rectLine(0, 0, test1.w, test1.h, 0xffffff77)
 
-  screen.rectFill(1, 0, test1.w - 2, 1, 0xffffff77);
-  screen.rectFill(1, test1.h - 1, test1.w - 2, 1, 0xffffff77);
-  screen.rectFill(0, 1, 1, test1.h - 2, 0xffffff77);
-  screen.rectFill(test1.w - 1, 1, 1, test1.h - 2, 0xffffff77);
+  // screen.rectFill(1, 0, test1.w - 2, 1, 0x00000099);
+  // screen.rectFill(1, test1.h - 1, test1.w - 2, 1, 0x00000099);
+  // screen.rectFill(0, 1, 1, test1.h - 2, 0x00000099);
+  // screen.rectFill(test1.w - 1, 1, 1, test1.h - 2, 0x00000099);
+
+  // screen.rectFill(1, 0, test1.w - 2, 1, 0xffffff77);
+  // screen.rectFill(1, test1.h - 1, test1.w - 2, 1, 0xffffff77);
+  // screen.rectFill(0, 1, 1, test1.h - 2, 0xffffff77);
+  // screen.rectFill(test1.w - 1, 1, 1, test1.h - 2, 0xffffff77);
 
   screen.print(3, 3, 0xffffff44, 'test window')
   screen.rectFill(1, 9, test1.w - 2, 1, 0xffffff77);
