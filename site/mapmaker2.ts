@@ -12,23 +12,17 @@ class TabBox extends CRT.Box {
 
   tab = -1;
 
+  realChildren: CRT.Box[] = [];
+
   addTab(box: CRT.Box) {
+    this.children = this.realChildren;
     this.add(box);
     this.select(this.children.length - 1);
   }
 
   select(t: number) {
     this.tab = t;
-    for (let i = 0; i < this.children.length; i++) {
-      this.children[i].passthrough = (i !== t);
-    }
-  }
-
-  drawChildren(): void {
-    const allChildren = this.children;
-    this.children = [allChildren[this.tab]];
-    super.drawChildren();
-    this.children = allChildren;
+    this.children = [this.realChildren[this.tab]];
   }
 
 }
@@ -72,9 +66,14 @@ let showGrid = true;
 const gridButton = new CRT.Button(40, 0, 4 * 4 + 3, 8, 0x000000ff);
 gridButton.color = 0xffffff33;
 gridButton.text = 'grid';
-gridButton.onClick = () => tabBox.select((tabBox.tab + 1) % 2);
-// gridButton.onClick = () => showGrid = !showGrid;
+gridButton.onClick = () => showGrid = !showGrid;
 menu.add(gridButton);
+
+const tabButton = new CRT.Button(60, 0, 4 * 4 + 3, 8, 0x000000ff);
+tabButton.color = 0xffffff33;
+tabButton.text = 'tabs';
+tabButton.onClick = () => tabBox.select((tabBox.tab + 1) % 2);
+menu.add(tabButton);
 
 
 
@@ -316,5 +315,3 @@ screen.root.add(checkbox);
 checkbox.onChange = () => console.log(checkbox.checked)
 checkbox.checked = true;
 checkbox.add(new CRT.Label('testing', 8, 1, 4 * 7, 6));
-
-tabBox.select(1);
