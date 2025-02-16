@@ -312,5 +312,3 @@ checkbox.checked = true;
 checkbox.children.push(new CRT.Label('testing', 8, 1, 4 * 7, 6));
 
 tabBox.select(1);
-
-screen.redraw();

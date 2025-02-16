@@ -6,6 +6,8 @@ export class Screen {
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0, button: 0 };
 
+  needsRedraw = true;
+
   _hovered: Box[] = [];
   _lastHovered: Box;
   _trackingMouse?: { move: () => void, up?: () => void };
@@ -34,12 +36,12 @@ export class Screen {
     canvas.addEventListener('keydown', (e) => {
       this.keys[e.key] = true;
       this.focused.onKeyDown?.(this, e.key);
-      this.redraw();
+      this.needsRedraw = true;
     }, { passive: true });
 
     canvas.addEventListener('keyup', (e) => {
       this.keys[e.key] = false;
-      this.redraw();
+      this.needsRedraw = true;
     }, { passive: true });
 
     canvas.oncontextmenu = (e) => { e.preventDefault(); };
@@ -49,7 +51,7 @@ export class Screen {
       this.focused.onUnfocus?.(this);
       this._lastHovered.focus(this);
       this._lastHovered.onMouseDown?.(this);
-      this.redraw();
+      this.needsRedraw = true;
     }, { passive: true });
 
     canvas.addEventListener('mousemove', (e) => {
@@ -74,13 +76,13 @@ export class Screen {
 
       this._trackingMouse?.move();
 
-      this.redraw();
+      this.needsRedraw = true;
     }, { passive: true });
 
     canvas.addEventListener('mouseup', (e) => {
       this._trackingMouse?.up?.();
       this._trackingMouse = undefined;
-      this.redraw();
+      this.needsRedraw = true;
     }, { passive: true });
 
     canvas.addEventListener('wheel', (e) => {
@@ -89,11 +91,25 @@ export class Screen {
         const box = this._hovered[i];
         if (box.onScroll) {
           box.onScroll(this, e.deltaY < 0);
-          this.redraw();
+          this.needsRedraw = true;
           return;
         }
       }
     }, { passive: true })
+
+    let last = +document.timeline.currentTime!;
+    const update = (t: number) => {
+      if (t - last >= 30) {
+        if (this.needsRedraw) {
+          this.root.draw(this);
+          this._lastHovered.drawCursor(this);
+          this.blit();
+        }
+        last = t;
+      }
+      requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
   }
 
   autoscale() {
@@ -112,12 +128,6 @@ export class Screen {
 
   scale(scale: number) {
     this.canvas.style.transform = `scale(${scale})`;
-  }
-
-  redraw() {
-    this.root.draw(this);
-    this._lastHovered.drawCursor(this);
-    this.blit();
   }
 
   blit() {
@@ -494,8 +504,7 @@ export class TextField extends Box {
     let last = +document.timeline.currentTime!;
     const update = (t: number) => {
       if (t - last >= 30) {
-        // console.log('looping')
-        screen.redraw();
+        screen.needsRedraw = true;
         last = t;
       }
       if (this.animate) requestAnimationFrame(update);
