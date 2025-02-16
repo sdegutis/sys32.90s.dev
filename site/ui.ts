@@ -219,48 +219,6 @@ export class Screen {
 
 }
 
-class Clip {
-
-  saved = { x1: 0, y1: 0, x2: 0, y2: 0 };
-
-  set(screen: Screen, w: number, h: number) {
-    this.saved.x1 = screen._clip.x1;
-    this.saved.x2 = screen._clip.x2;
-    this.saved.y1 = screen._clip.y1;
-    this.saved.y2 = screen._clip.y2;
-
-    screen._clip.x1 = screen._camera.x;
-    screen._clip.y1 = screen._camera.y;
-    screen._clip.x2 = screen._clip.x1 + w - 1;
-    screen._clip.y2 = screen._clip.y1 + h - 1;
-  }
-
-  unset(screen: Screen) {
-    screen._clip.x1 = this.saved.x1;
-    screen._clip.x2 = this.saved.x2;
-    screen._clip.y1 = this.saved.y1;
-    screen._clip.y2 = this.saved.y2;
-  }
-
-}
-
-export class Bitmap {
-
-  constructor(public colors: number[], public steps: number[]) { }
-
-  draw(screen: Screen, px: number, py: number) {
-    let x = 0;
-    let y = 0;
-    for (let i = 0; i < this.steps.length; i++) {
-      const s = this.steps[i];
-      if (s === 0) { x++; continue; }
-      else if (s === -1) { y++; x = 0; }
-      else screen.pset(px + x++, py + y, this.colors[s - 1]);
-    }
-  }
-
-}
-
 export class Box {
 
   onScroll?: (screen: Screen, up: boolean) => void;
@@ -676,6 +634,48 @@ export class Mover {
     const diffy = this.screen.mouse.y - this.startElPos.y;
     this.el.x = this.startElPos.x + diffx - offx;
     this.el.y = this.startElPos.y + diffy - offy;
+  }
+
+}
+
+class Clip {
+
+  saved = { x1: 0, y1: 0, x2: 0, y2: 0 };
+
+  set(screen: Screen, w: number, h: number) {
+    this.saved.x1 = screen._clip.x1;
+    this.saved.x2 = screen._clip.x2;
+    this.saved.y1 = screen._clip.y1;
+    this.saved.y2 = screen._clip.y2;
+
+    screen._clip.x1 = screen._camera.x;
+    screen._clip.y1 = screen._camera.y;
+    screen._clip.x2 = screen._clip.x1 + w - 1;
+    screen._clip.y2 = screen._clip.y1 + h - 1;
+  }
+
+  unset(screen: Screen) {
+    screen._clip.x1 = this.saved.x1;
+    screen._clip.x2 = this.saved.x2;
+    screen._clip.y1 = this.saved.y1;
+    screen._clip.y2 = this.saved.y2;
+  }
+
+}
+
+export class Bitmap {
+
+  constructor(public colors: number[], public steps: number[]) { }
+
+  draw(screen: Screen, px: number, py: number) {
+    let x = 0;
+    let y = 0;
+    for (let i = 0; i < this.steps.length; i++) {
+      const s = this.steps[i];
+      if (s === 0) { x++; continue; }
+      else if (s === -1) { y++; x = 0; }
+      else screen.pset(px + x++, py + y, this.colors[s - 1]);
+    }
   }
 
 }
