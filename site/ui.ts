@@ -3,22 +3,22 @@ class Clip {
   saved = { x1: 0, y1: 0, x2: 0, y2: 0 };
 
   set(screen: Screen, w: number, h: number) {
-    this.saved.x1 = screen.clip.x1;
-    this.saved.x2 = screen.clip.x2;
-    this.saved.y1 = screen.clip.y1;
-    this.saved.y2 = screen.clip.y2;
+    this.saved.x1 = screen._clip.x1;
+    this.saved.x2 = screen._clip.x2;
+    this.saved.y1 = screen._clip.y1;
+    this.saved.y2 = screen._clip.y2;
 
-    screen.clip.x1 = screen.camera.x;
-    screen.clip.y1 = screen.camera.y;
-    screen.clip.x2 = screen.clip.x1 + w - 1;
-    screen.clip.y2 = screen.clip.y1 + h - 1;
+    screen._clip.x1 = screen._camera.x;
+    screen._clip.y1 = screen._camera.y;
+    screen._clip.x2 = screen._clip.x1 + w - 1;
+    screen._clip.y2 = screen._clip.y1 + h - 1;
   }
 
   unset(screen: Screen) {
-    screen.clip.x1 = this.saved.x1;
-    screen.clip.x2 = this.saved.x2;
-    screen.clip.y1 = this.saved.y1;
-    screen.clip.y2 = this.saved.y2;
+    screen._clip.x1 = this.saved.x1;
+    screen._clip.x2 = this.saved.x2;
+    screen._clip.y1 = this.saved.y1;
+    screen._clip.y2 = this.saved.y2;
   }
 
 }
@@ -64,11 +64,11 @@ export class Box {
   drawChildren(screen: Screen) {
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
-      screen.camera.x += child.x;
-      screen.camera.y += child.y;
+      screen._camera.x += child.x;
+      screen._camera.y += child.y;
       child.draw(screen);
-      screen.camera.x -= child.x;
-      screen.camera.y -= child.y;
+      screen._camera.x -= child.x;
+      screen._camera.y -= child.y;
     }
   }
 
@@ -84,52 +84,48 @@ export class Box {
 
 export class Screen {
 
-  camera = { x: 0, y: 0 };
-  clip;
+  _camera = { x: 0, y: 0 };
+  _clip;
 
-  context;
-  pixels;
-  imgdata;
+  _context;
+  _pixels;
+  blit;
 
   font = Font.crt2025;
 
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0, button: 0 };
+  _trackingMouse?: { move: () => void, up?: () => void };
 
   root;
   focused: Box;
-  hovered: Box[] = [];
-  lastHovered: Box;
-
-  blit;
-
-  trackingMouse?: { move: () => void, up?: () => void };
+  _hovered: Box[] = [];
+  _lastHovered: Box;
 
   constructor(public canvas: HTMLCanvasElement) {
-    this.context = this.canvas.getContext('2d')!;
+    this._context = canvas.getContext('2d')!;
 
-    this.pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
-    this.imgdata = new ImageData(this.pixels, canvas.width, canvas.height);
-
+    this._pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
     for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
-      this.pixels[i + 3] = 255;
+      this._pixels[i + 3] = 255;
     }
 
+    const imgdata = new ImageData(this._pixels, canvas.width, canvas.height);
     this.blit = () => {
-      this.context.putImageData(this.imgdata, 0, 0);
+      this._context.putImageData(imgdata, 0, 0);
     };
 
     const redrawAll = () => {
       this.root.draw(this);
-      this.lastHovered.drawCursor(this);
+      this._lastHovered.drawCursor(this);
       this.blit();
     };
 
-    this.clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
+    this._clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
 
     this.root = new Box(0, 0, canvas.width, canvas.height);
     this.focused = this.root;
-    this.lastHovered = this.root;
+    this._lastHovered = this.root;
 
     canvas.addEventListener('keydown', (e) => {
       this.keys[e.key] = true;
@@ -146,8 +142,8 @@ export class Screen {
 
     canvas.addEventListener('mousedown', (e) => {
       this.mouse.button = e.button;
-      this.lastHovered.focus(this);
-      this.lastHovered.onMouseDown?.(this);
+      this._lastHovered.focus(this);
+      this._lastHovered.onMouseDown?.(this);
       redrawAll();
     }, { passive: true });
 
@@ -158,33 +154,33 @@ export class Screen {
       if (x === this.mouse.x && y === this.mouse.y) return;
       if (x >= canvas.width || y >= canvas.height) return;
 
-      this.hovered.length = 0;
+      this._hovered.length = 0;
 
       this.mouse.x = x;
       this.mouse.y = y;
 
       const hoveredOver = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
 
-      if (this.lastHovered !== hoveredOver) {
-        this.lastHovered.hovered = false;
+      if (this._lastHovered !== hoveredOver) {
+        this._lastHovered.hovered = false;
         hoveredOver.hovered = true;
-        this.lastHovered = hoveredOver;
+        this._lastHovered = hoveredOver;
       }
 
-      this.trackingMouse?.move();
+      this._trackingMouse?.move();
 
       redrawAll();
     }, { passive: true });
 
     canvas.addEventListener('mouseup', (e) => {
-      this.trackingMouse?.up?.();
+      this._trackingMouse?.up?.();
       redrawAll();
     }, { passive: true });
 
     canvas.addEventListener('wheel', (e) => {
-      let i = this.hovered.length;
+      let i = this._hovered.length;
       while (i--) {
-        const box = this.hovered[i];
+        const box = this._hovered[i];
         if (box.onScroll) {
           box.onScroll(this, e.deltaY < 0);
           redrawAll();
@@ -226,15 +222,15 @@ export class Screen {
   rectFill(x: number, y: number, w: number, h: number, c: number) {
     const cw = this.canvas.width;
 
-    let x1 = x + this.camera.x;
-    let y1 = y + this.camera.y;
+    let x1 = x + this._camera.x;
+    let y1 = y + this._camera.y;
     let x2 = x1 + w - 1;
     let y2 = y1 + h - 1;
 
-    if (this.clip.x1 > x1) x1 = this.clip.x1;
-    if (this.clip.y1 > y1) y1 = this.clip.y1;
-    if (this.clip.x2 < x2) x2 = this.clip.x2;
-    if (this.clip.y2 < y2) y2 = this.clip.y2;
+    if (this._clip.x1 > x1) x1 = this._clip.x1;
+    if (this._clip.y1 > y1) y1 = this._clip.y1;
+    if (this._clip.x2 < x2) x2 = this._clip.x2;
+    if (this._clip.y2 < y2) y2 = this._clip.y2;
 
     // if (x2 < x1 || y2 < y1) return;
 
@@ -248,16 +244,16 @@ export class Screen {
         const i = y * cw * 4 + x * 4;
 
         if (a === 255) {
-          this.pixels[i + 0] = r;
-          this.pixels[i + 1] = g;
-          this.pixels[i + 2] = b;
+          this._pixels[i + 0] = r;
+          this._pixels[i + 1] = g;
+          this._pixels[i + 2] = b;
         }
         else {
           const ia = (255 - a) / 255;
           const aa = (a / 255);
-          this.pixels[i + 0] = (this.pixels[i + 0] * ia) + (r * aa);
-          this.pixels[i + 1] = (this.pixels[i + 1] * ia) + (g * aa);
-          this.pixels[i + 2] = (this.pixels[i + 2] * ia) + (b * aa);
+          this._pixels[i + 0] = (this._pixels[i + 0] * ia) + (r * aa);
+          this._pixels[i + 1] = (this._pixels[i + 1] * ia) + (g * aa);
+          this._pixels[i + 2] = (this._pixels[i + 2] * ia) + (b * aa);
         }
       }
     }
@@ -270,8 +266,8 @@ export class Screen {
   trackMouse(fns: { move: () => void, up?: () => void }) {
     fns.move();
 
-    const done = () => this.trackingMouse = undefined;
-    this.trackingMouse = {
+    const done = () => this._trackingMouse = undefined;
+    this._trackingMouse = {
       move: () => { fns.move(); },
       up: () => { done(); fns.up?.(); },
     };
@@ -284,7 +280,7 @@ export class Screen {
     const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
     if (!inThis) return null;
 
-    this.hovered.push(box);
+    this._hovered.push(box);
 
     box.mouse.x = x;
     box.mouse.y = y;
