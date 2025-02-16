@@ -1,87 +1,3 @@
-class Clip {
-
-  saved = { x1: 0, y1: 0, x2: 0, y2: 0 };
-
-  set(screen: Screen, w: number, h: number) {
-    this.saved.x1 = screen._clip.x1;
-    this.saved.x2 = screen._clip.x2;
-    this.saved.y1 = screen._clip.y1;
-    this.saved.y2 = screen._clip.y2;
-
-    screen._clip.x1 = screen._camera.x;
-    screen._clip.y1 = screen._camera.y;
-    screen._clip.x2 = screen._clip.x1 + w - 1;
-    screen._clip.y2 = screen._clip.y1 + h - 1;
-  }
-
-  unset(screen: Screen) {
-    screen._clip.x1 = this.saved.x1;
-    screen._clip.x2 = this.saved.x2;
-    screen._clip.y1 = this.saved.y1;
-    screen._clip.y2 = this.saved.y2;
-  }
-
-}
-
-export class Box {
-
-  onScroll?: (screen: Screen, up: boolean) => void;
-  onKeyDown?: (screen: Screen, key: string) => void;
-  onMouseDown?: (screen: Screen) => void;
-
-  children: Box[] = [];
-  hovered = false;
-  mouse = { x: 0, y: 0 };
-  passthrough = false;
-
-  constructor(
-    public x = 0,
-    public y = 0,
-    public w = 0,
-    public h = 0,
-    public background?: number,
-  ) { }
-
-  #clip?: Clip;
-  get clips() { return this.#clip !== undefined; }
-  set clips(should: boolean) { this.#clip = should ? new Clip() : undefined; }
-
-  draw(screen: Screen) {
-    this.clip(screen);
-    this.drawContents(screen);
-    this.drawChildren(screen);
-    this.unclip(screen);
-  }
-
-  clip(screen: Screen) { this.#clip?.set(screen, this.w, this.h); }
-  unclip(screen: Screen) { this.#clip?.unset(screen); }
-
-  drawContents(screen: Screen) {
-    if (!this.background) return;
-    screen.rectFill(0, 0, this.w, this.h, this.background);
-  }
-
-  drawChildren(screen: Screen) {
-    for (let i = 0; i < this.children.length; i++) {
-      const child = this.children[i];
-      screen._camera.x += child.x;
-      screen._camera.y += child.y;
-      child.draw(screen);
-      screen._camera.x -= child.x;
-      screen._camera.y -= child.y;
-    }
-  }
-
-  drawCursor(screen: Screen) {
-    cursors.pointer.draw(screen, screen.mouse.x - 1, screen.mouse.y - 1);
-  }
-
-  focus(screen: Screen) {
-    screen.focused = this;
-  }
-
-}
-
 export class Screen {
 
   _camera = { x: 0, y: 0 };
@@ -297,6 +213,31 @@ export class Screen {
 
 }
 
+class Clip {
+
+  saved = { x1: 0, y1: 0, x2: 0, y2: 0 };
+
+  set(screen: Screen, w: number, h: number) {
+    this.saved.x1 = screen._clip.x1;
+    this.saved.x2 = screen._clip.x2;
+    this.saved.y1 = screen._clip.y1;
+    this.saved.y2 = screen._clip.y2;
+
+    screen._clip.x1 = screen._camera.x;
+    screen._clip.y1 = screen._camera.y;
+    screen._clip.x2 = screen._clip.x1 + w - 1;
+    screen._clip.y2 = screen._clip.y1 + h - 1;
+  }
+
+  unset(screen: Screen) {
+    screen._clip.x1 = this.saved.x1;
+    screen._clip.x2 = this.saved.x2;
+    screen._clip.y1 = this.saved.y1;
+    screen._clip.y2 = this.saved.y2;
+  }
+
+}
+
 export class Bitmap {
 
   constructor(public colors: number[], public steps: number[]) { }
@@ -314,70 +255,61 @@ export class Bitmap {
 
 }
 
-export class Selection {
+export class Box {
 
-  x1: number;
-  y1: number;
-  x!: number;
-  y!: number;
-  w!: number;
-  h!: number;
+  onScroll?: (screen: Screen, up: boolean) => void;
+  onKeyDown?: (screen: Screen, key: string) => void;
+  onMouseDown?: (screen: Screen) => void;
 
-  constructor(public box: Box) {
-    this.x1 = this.box.mouse.x;
-    this.y1 = this.box.mouse.y;
-    this.update();
+  children: Box[] = [];
+  hovered = false;
+  mouse = { x: 0, y: 0 };
+  passthrough = false;
+
+  constructor(
+    public x = 0,
+    public y = 0,
+    public w = 0,
+    public h = 0,
+    public background?: number,
+  ) { }
+
+  #clip?: Clip;
+  get clips() { return this.#clip !== undefined; }
+  set clips(should: boolean) { this.#clip = should ? new Clip() : undefined; }
+
+  draw(screen: Screen) {
+    this.clip(screen);
+    this.drawContents(screen);
+    this.drawChildren(screen);
+    this.unclip(screen);
   }
 
-  update() {
-    const x2 = this.box.mouse.x;
-    const y2 = this.box.mouse.y;
-    this.x = this.x1 < x2 ? this.x1 : x2;
-    this.y = this.y1 < y2 ? this.y1 : y2;
-    this.w = (this.x1 < x2 ? x2 - this.x1 : this.x1 - x2) + 1;
-    this.h = (this.y1 < y2 ? y2 - this.y1 : this.y1 - y2) + 1;
+  clip(screen: Screen) { this.#clip?.set(screen, this.w, this.h); }
+  unclip(screen: Screen) { this.#clip?.unset(screen); }
+
+  drawContents(screen: Screen) {
+    if (!this.background) return;
+    screen.rectFill(0, 0, this.w, this.h, this.background);
   }
 
-}
-
-export class TileSelection extends Selection {
-
-  constructor(box: Box, public size: number) {
-    super(box);
+  drawChildren(screen: Screen) {
+    for (let i = 0; i < this.children.length; i++) {
+      const child = this.children[i];
+      screen._camera.x += child.x;
+      screen._camera.y += child.y;
+      child.draw(screen);
+      screen._camera.x -= child.x;
+      screen._camera.y -= child.y;
+    }
   }
 
-  tx1!: number;
-  ty1!: number;
-  tx2!: number;
-  ty2!: number;
-
-  update() {
-    super.update();
-    this.tx1 = Math.floor(this.x / this.size);
-    this.ty1 = Math.floor(this.y / this.size);
-    this.tx2 = Math.ceil(this.x / this.size + this.w / this.size);
-    this.ty2 = Math.ceil(this.y / this.size + this.h / this.size);
+  drawCursor(screen: Screen) {
+    cursors.pointer.draw(screen, screen.mouse.x - 1, screen.mouse.y - 1);
   }
 
-}
-
-export class Mover {
-
-  startMouse;
-  startElPos;
-
-  constructor(private screen: Screen, private el: Box) {
-    this.startMouse = { x: screen.mouse.x, y: screen.mouse.y };
-    this.startElPos = { x: el.x, y: el.y };
-  }
-
-  update() {
-    const offx = this.startMouse.x - this.startElPos.x;
-    const offy = this.startMouse.y - this.startElPos.y;
-    const diffx = this.screen.mouse.x - this.startElPos.x;
-    const diffy = this.screen.mouse.y - this.startElPos.y;
-    this.el.x = this.startElPos.x + diffx - offx;
-    this.el.y = this.startElPos.y + diffy - offy;
+  focus(screen: Screen) {
+    screen.focused = this;
   }
 
 }
@@ -643,6 +575,74 @@ export class Font {
 
       posx++;
     }
+  }
+
+}
+
+export class Selection {
+
+  x1: number;
+  y1: number;
+  x!: number;
+  y!: number;
+  w!: number;
+  h!: number;
+
+  constructor(public box: Box) {
+    this.x1 = this.box.mouse.x;
+    this.y1 = this.box.mouse.y;
+    this.update();
+  }
+
+  update() {
+    const x2 = this.box.mouse.x;
+    const y2 = this.box.mouse.y;
+    this.x = this.x1 < x2 ? this.x1 : x2;
+    this.y = this.y1 < y2 ? this.y1 : y2;
+    this.w = (this.x1 < x2 ? x2 - this.x1 : this.x1 - x2) + 1;
+    this.h = (this.y1 < y2 ? y2 - this.y1 : this.y1 - y2) + 1;
+  }
+
+}
+
+export class TileSelection extends Selection {
+
+  constructor(box: Box, public size: number) {
+    super(box);
+  }
+
+  tx1!: number;
+  ty1!: number;
+  tx2!: number;
+  ty2!: number;
+
+  update() {
+    super.update();
+    this.tx1 = Math.floor(this.x / this.size);
+    this.ty1 = Math.floor(this.y / this.size);
+    this.tx2 = Math.ceil(this.x / this.size + this.w / this.size);
+    this.ty2 = Math.ceil(this.y / this.size + this.h / this.size);
+  }
+
+}
+
+export class Mover {
+
+  startMouse;
+  startElPos;
+
+  constructor(private screen: Screen, private el: Box) {
+    this.startMouse = { x: screen.mouse.x, y: screen.mouse.y };
+    this.startElPos = { x: el.x, y: el.y };
+  }
+
+  update() {
+    const offx = this.startMouse.x - this.startElPos.x;
+    const offy = this.startMouse.y - this.startElPos.y;
+    const diffx = this.screen.mouse.x - this.startElPos.x;
+    const diffy = this.screen.mouse.y - this.startElPos.y;
+    this.el.x = this.startElPos.x + diffx - offx;
+    this.el.y = this.startElPos.y + diffy - offy;
   }
 
 }
