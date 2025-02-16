@@ -467,6 +467,7 @@ export class TextField extends Box {
     else {
       this.text += key.toLowerCase();
     }
+    this.restartBlinking(screen);
   };
 
   // onMouseDown(): void {
@@ -482,8 +483,7 @@ export class TextField extends Box {
     if (screen.focused === this) {
       screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
 
-      const drawCursor = +document.timeline.currentTime! % 1000 < 500;
-      if (drawCursor) {
+      if (this.blinkShow) {
         let cx = 0;
         let cy = 0;
 
@@ -498,23 +498,28 @@ export class TextField extends Box {
     }
   }
 
-  animate = false;
+  blink?: number;
+  blinkShow = false;
+
+  restartBlinking(screen: Screen) {
+    this.stopBlinking();
+    this.blinkShow = true;
+    this.blink = setInterval(() => {
+      this.blinkShow = !this.blinkShow;
+      screen.needsRedraw = true;
+    }, 500);
+  }
+
+  stopBlinking() {
+    clearInterval(this.blink);
+  }
 
   onFocus = (screen: Screen) => {
-    this.animate = true;
-    let last = +document.timeline.currentTime!;
-    const update = (t: number) => {
-      if (t - last >= 30) {
-        screen.needsRedraw = true;
-        last = t;
-      }
-      if (this.animate) requestAnimationFrame(update);
-    };
-    requestAnimationFrame(update);
+    this.restartBlinking(screen);
   };
 
   onUnfocus = () => {
-    this.animate = false;
+    this.stopBlinking();
   };
 
 }
