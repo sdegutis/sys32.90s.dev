@@ -82,6 +82,8 @@ export class Screen {
         this._hovered = currentHovered;
       }
 
+      this._hovered.onMouseMove?.();
+
       this._trackingMouse?.move();
 
       this.needsRedraw = true;
@@ -238,6 +240,7 @@ export class Box {
   onScroll?: (up: boolean) => void;
   onKeyDown?: (key: string) => void;
   onMouseDown?: () => void;
+  onMouseMove?: () => void;
   onFocus?: () => void;
   onUnfocus?: () => void;
 

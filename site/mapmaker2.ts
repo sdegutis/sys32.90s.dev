@@ -292,6 +292,10 @@ const textbox = new CRT.TextField(160, 10, 60, 80, 0x000000ff);
 textbox.text = `test`;
 screen.root.add(textbox);
 
+textbox.onMouseMove = () => {
+  console.log('move', textbox.mouse);
+}
+
 const checkbox = new CRT.Checkbox(160, 1, 8 + 4 * 7, 6, 0x000000ff);
 screen.root.add(checkbox);
 checkbox.onChange = () => console.log(checkbox.checked)
