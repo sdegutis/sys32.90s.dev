@@ -129,6 +129,11 @@ export class Screen {
     }).observe(this.canvas.parentElement!);
   }
 
+  add(box: Box, to: Box) {
+    box.screen = this;
+    to.children.push(box);
+  }
+
   scale(scale: number) {
     this.canvas.style.transform = `scale(${scale})`;
   }
@@ -229,6 +234,7 @@ export class Box {
   onFocus?: (screen: Screen) => void;
   onUnfocus?: (screen: Screen) => void;
 
+  screen!: Screen;
   children: Box[] = [];
   hovered = false;
   mouse = { x: 0, y: 0 };

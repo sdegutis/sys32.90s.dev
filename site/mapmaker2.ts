@@ -10,26 +10,32 @@ screen.autoscale();
 
 class TabBox extends CRT.Box {
 
-  #allChildren: CRT.Box[] = [];
-
   tab = -1;
 
   addTab(box: CRT.Box) {
-    this.#allChildren.push(box);
-    this.children = [box];
-    this.tab = this.children.length - 1;
+    screen.add(box, this);
+    this.select(this.children.length - 1);
   }
 
   select(t: number) {
     this.tab = t;
-    this.children = [this.#allChildren[this.tab]];
+    for (let i = 0; i < this.children.length; i++) {
+      this.children[i].passthrough = (i !== t);
+    }
+  }
+
+  drawChildren(screen: CRT.Screen): void {
+    const allChildren = this.children;
+    this.children = [this.children[this.tab]];
+    super.drawChildren(screen);
+    this.children = allChildren;
   }
 
 }
 
 
 const tabBox = new TabBox(40, 8, 320 - 40, 180 - 8, 0x222222ff);
-screen.root.children.push(tabBox);
+screen.add(tabBox, screen.root);
 
 
 
@@ -43,7 +49,7 @@ mapArea2.onMouseDown = () => console.log('haha nope');
 
 
 const menu = new CRT.Box(0, 0, 320, 8, 0x000000ff);
-screen.root.children.push(menu);
+screen.add(menu, screen.root);
 
 const saveButton = new CRT.Button(0, 0, 4 * 4 + 3, 8, 0x000000ff);
 saveButton.color = 0xffffff33;
@@ -51,7 +57,7 @@ saveButton.text = 'save';
 saveButton.onClick = () => {
   console.log('saving')
 };
-menu.children.push(saveButton);
+screen.add(saveButton, menu);
 
 const loadButton = new CRT.Button(20, 0, 4 * 4 + 3, 8, 0x000000ff);
 loadButton.color = 0xffffff33;
@@ -59,7 +65,7 @@ loadButton.text = 'load';
 loadButton.onClick = () => {
   console.log('loading')
 };
-menu.children.push(loadButton);
+screen.add(loadButton, menu);
 
 let showGrid = true;
 
@@ -68,7 +74,7 @@ gridButton.color = 0xffffff33;
 gridButton.text = 'grid';
 gridButton.onClick = () => tabBox.select((tabBox.tab + 1) % 2);
 // gridButton.onClick = () => showGrid = !showGrid;
-menu.children.push(gridButton);
+screen.add(gridButton, menu);
 
 
 
@@ -76,7 +82,7 @@ menu.children.push(gridButton);
 
 
 const toolArea = new CRT.Box(0, 8, 40, 180 - 8, 0x333333ff);
-screen.root.children.push(toolArea);
+screen.add(toolArea, screen.root);
 
 
 
@@ -147,7 +153,7 @@ for (let i = 0; i < 17; i++) {
   b.drawButton = (screen) => screen.rectFill(2, 2, 4, 4, COLORS[i % 16]);
   toolGroup.add(b);
   b.onSelect = () => currentTool = i;
-  toolArea.children.push(b);
+  screen.add(b, toolArea);
 
   if (i === currentTool) toolGroup.select(b);
 
@@ -198,7 +204,7 @@ mapArea.drawContents = (screen) => {
 };
 
 const mapBox = new CRT.Box(0, 0, map.width * 4, map.height * 4);
-mapArea.children.push(mapBox);
+screen.add(mapBox, mapArea);
 
 mapBox.drawCursor = () => {
   // rectFill(mouse.x, mouse.y - 2, 1, 5, '#0007');
@@ -303,10 +309,10 @@ mapBox.draw = (screen) => {
 
 const textbox = new CRT.TextField(160, 10, 60, 80, 0x000000ff);
 textbox.text = `test`;
-screen.root.children.push(textbox);
+screen.add(textbox, screen.root);
 
 const checkbox = new CRT.Checkbox(160, 1, 8 + 4 * 7, 6, 0x000000ff);
-screen.root.children.push(checkbox);
+screen.add(checkbox, screen.root);
 checkbox.onChange = () => console.log(checkbox.checked)
 checkbox.checked = true;
 checkbox.children.push(new CRT.Label('testing', 8, 1, 4 * 7, 6));
