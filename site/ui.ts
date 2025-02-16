@@ -77,13 +77,14 @@ export class Screen {
       const currentHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
 
       if (this._hovered !== currentHovered) {
+        this._hovered.onMouseExit?.();
         this._hovered.hovered = false;
         currentHovered.hovered = true;
         this._hovered = currentHovered;
+        this._hovered.onMouseEnter?.();
       }
 
       this._hovered.onMouseMove?.();
-
       this._trackingMouse?.move();
 
       this.needsRedraw = true;
@@ -241,6 +242,8 @@ export class Box {
   onKeyDown?: (key: string) => void;
   onMouseDown?: () => void;
   onMouseMove?: () => void;
+  onMouseEnter?: () => void;
+  onMouseExit?: () => void;
   onFocus?: () => void;
   onUnfocus?: () => void;
 
