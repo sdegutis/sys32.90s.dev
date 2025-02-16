@@ -675,46 +675,30 @@ export class TileSelection extends Selection {
 
 }
 
-export class Mover {
-
-  startMouse;
-  startElPos;
-
-  constructor(private screen: Screen, private el: Box) {
-    this.startMouse = { x: screen.mouse.x, y: screen.mouse.y };
-    this.startElPos = { x: el.x, y: el.y };
-  }
-
-  update() {
-    const offx = this.startMouse.x - this.startElPos.x;
-    const offy = this.startMouse.y - this.startElPos.y;
-    const diffx = this.screen.mouse.x - this.startElPos.x;
-    const diffy = this.screen.mouse.y - this.startElPos.y;
-    this.el.x = this.startElPos.x + diffx - offx;
-    this.el.y = this.startElPos.y + diffy - offy;
-  }
-
+export function dragMove(screen: Screen, el: { x: number, y: number }) {
+  const startMouse = { x: screen.mouse.x, y: screen.mouse.y };
+  const startElPos = { x: el.x, y: el.y };
+  return () => {
+    const offx = startMouse.x - startElPos.x;
+    const offy = startMouse.y - startElPos.y;
+    const diffx = screen.mouse.x - startElPos.x;
+    const diffy = screen.mouse.y - startElPos.y;
+    el.x = startElPos.x + diffx - offx;
+    el.y = startElPos.y + diffy - offy;
+  };
 }
 
-export class Resizer {
-
-  startMouse;
-  startElPos;
-
-  constructor(private screen: Screen, private el: Box) {
-    this.startMouse = { x: screen.mouse.x, y: screen.mouse.y };
-    this.startElPos = { w: el.w, h: el.h };
-  }
-
-  update() {
-    const offx = this.startMouse.x - this.startElPos.w;
-    const offy = this.startMouse.y - this.startElPos.h;
-    const diffx = this.screen.mouse.x - this.startElPos.w;
-    const diffy = this.screen.mouse.y - this.startElPos.h;
-    this.el.w = this.startElPos.w + diffx - offx;
-    this.el.h = this.startElPos.h + diffy - offy;
-  }
-
+export function dragResize(screen: Screen, el: { w: number, h: number }) {
+  const startMouse = { x: screen.mouse.x, y: screen.mouse.y };
+  const startElPos = { w: el.w, h: el.h };
+  return () => {
+    const offx = startMouse.x - startElPos.w;
+    const offy = startMouse.y - startElPos.h;
+    const diffx = screen.mouse.x - startElPos.w;
+    const diffy = screen.mouse.y - startElPos.h;
+    el.w = startElPos.w + diffx - offx;
+    el.h = startElPos.h + diffy - offy;
+  };
 }
 
 class Clip {
