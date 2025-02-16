@@ -131,17 +131,17 @@ export class Screen {
   }
 
   autoscale() {
-    new ResizeObserver(() => {
+    const observer = new ResizeObserver(() => {
       const rect = this.canvas.parentElement!.getBoundingClientRect();
       let w = this.canvas.width;
       let h = this.canvas.height;
       let s = 1;
-      while (
-        (w += this.canvas.width) <= rect.width &&
-        (h += this.canvas.height) <= rect.height
-      ) s++;
+      while ((w += this.canvas.width) <= rect.width &&
+        (h += this.canvas.height) <= rect.height) s++;
       this.scale(s);
-    }).observe(this.canvas.parentElement!);
+    });
+    observer.observe(this.canvas.parentElement!);
+    return observer;
   }
 
   scale(scale: number) {
@@ -451,7 +451,7 @@ export class TextField extends Box {
       this.text = this.text.slice(0, -1);
     }
     else {
-      this.text += key.toLowerCase();
+      this.text += key;
     }
     this.restartBlinking();
   };
@@ -585,6 +585,8 @@ export class Font {
   }
 
   print(screen: Screen, x: number, y: number, c: number, text: string) {
+    text = text.toLowerCase();
+
     let posx = 0;
     let posy = 0;
 
