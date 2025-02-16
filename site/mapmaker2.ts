@@ -33,16 +33,12 @@ mapArea2.onMouseDown = () => console.log('haha nope');
 
 
 const menu = new CRT.Box();
-menu.x = 0;
-menu.y = 0;
 menu.w = 320;
 menu.h = 8;
 menu.background = 0x000000ff;
 screen.root.add(menu);
 
 const saveButton = new CRT.Button();
-saveButton.x = 0;
-saveButton.y = 0;
 saveButton.w = 4 * 4 + 3;
 saveButton.h = 8;
 saveButton.background = 0x000000ff;
@@ -55,7 +51,6 @@ menu.add(saveButton);
 
 const loadButton = new CRT.Button();
 loadButton.x = 20;
-loadButton.y = 0;
 loadButton.w = 4 * 4 + 3;
 loadButton.h = 8;
 loadButton.background = 0x000000ff;
@@ -70,7 +65,6 @@ let showGrid = true;
 
 const gridButton = new CRT.Button();
 gridButton.x = 40;
-gridButton.y = 0;
 gridButton.w = 4 * 4 + 3;
 gridButton.h = 8;
 gridButton.background = 0x000000ff;
@@ -81,7 +75,6 @@ menu.add(gridButton);
 
 const tabButton = new CRT.Button();
 tabButton.x = 60;
-tabButton.y = 0;
 tabButton.w = 4 * 4 + 3;
 tabButton.h = 8;
 tabButton.background = 0x000000ff;
@@ -96,7 +89,6 @@ menu.add(tabButton);
 
 
 const toolArea = new CRT.Box();
-toolArea.x = 0;
 toolArea.y = 8;
 toolArea.w = 40;
 toolArea.h = 180 - 8;
@@ -212,8 +204,6 @@ screen.root.onScroll = (up) => {
 
 
 const mapArea = new CRT.Box();
-mapArea.x = 0;
-mapArea.y = 0;
 mapArea.w = 320 - 40;
 mapArea.h = 180 - 8;
 mapArea.background = 0x222222ff;
@@ -232,8 +222,6 @@ mapArea.drawContents = () => {
 };
 
 const mapBox = new CRT.Box();
-mapBox.x = 0;
-mapBox.y = 0;
 mapBox.w = map.width * 4;
 mapBox.h = map.height * 4;
 mapArea.add(mapBox);
