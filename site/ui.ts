@@ -1,9 +1,3 @@
-const canvas = document.querySelector('canvas')!;
-
-
-
-
-
 class Bitmap {
 
   constructor(public colors: number[], public steps: number[]) { }
@@ -105,36 +99,11 @@ export class Box {
   }
 
   drawCursor(screen: Screen) {
-    Box.cursor.draw(screen, sys.mouse.x - 1, sys.mouse.y - 1);
-  }
-
-  trackMouse(fns: { move: () => void, up?: () => void }) {
-    fns.move();
-
-    const done = new AbortController();
-    const opts = { signal: done.signal, passive: true };
-
-    let x = sys.mouse.x;
-    let y = sys.mouse.y;
-
-    canvas.addEventListener('mousemove', () => {
-      if (x !== sys.mouse.x || y !== sys.mouse.y) {
-        x = sys.mouse.x;
-        y = sys.mouse.y;
-        fns.move();
-      }
-    }, opts);
-
-    canvas.addEventListener('mouseup', (() => {
-      done.abort();
-      fns.up?.();
-    }), opts);
-
-    return () => done.abort();
+    Box.cursor.draw(screen, screen.mouse.x - 1, screen.mouse.y - 1);
   }
 
   focus() {
-    sys.focused = this;
+    screen.focused = this;
   }
 
 }
@@ -147,102 +116,6 @@ export class Box {
 
 
 
-
-canvas.addEventListener('keydown', (e) => {
-  sys.keys[e.key] = true;
-  sys.focused.onKeyDown?.(e.key);
-}, { passive: true });
-
-canvas.addEventListener('keyup', (e) => {
-  sys.keys[e.key] = false;
-}, { passive: true });
-
-
-
-
-
-
-
-
-
-
-canvas.addEventListener('mousedown', (e) => {
-  sys.mouse.button = e.button;
-  sys.lastHovered.focus();
-  sys.lastHovered.onMouseDown?.();
-}, { passive: true });
-
-canvas.addEventListener('mousemove', (e) => {
-  const x = Math.floor(e.offsetX);
-  const y = Math.floor(e.offsetY);
-
-  if (x === sys.mouse.x && y === sys.mouse.y) return;
-  if (x >= canvas.width || y >= canvas.height) return;
-
-  sys.hovered.length = 0;
-
-  sys.mouse.x = x;
-  sys.mouse.y = y;
-
-  const hoveredOver = hover(sys.root, sys.mouse.x, sys.mouse.y)!;
-
-  if (sys.lastHovered !== hoveredOver) {
-    sys.lastHovered.hovered = false;
-    hoveredOver.hovered = true;
-    sys.lastHovered = hoveredOver;
-  }
-}, { passive: true });
-
-canvas.oncontextmenu = (e) => { e.preventDefault(); };
-
-function hover(box: Box, x: number, y: number): Box | null {
-  if (box.passthrough) return null;
-
-  const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
-  if (!inThis) return null;
-
-  sys.hovered.push(box);
-
-  box.mouse.x = x;
-  box.mouse.y = y;
-
-  let i = box.children.length;
-  while (i--) {
-    const child = box.children[i];
-    const found = hover(child, x - child.x, y - child.y);
-    if (found) return found;
-  }
-
-  return box;
-}
-
-canvas.addEventListener('wheel', (e) => {
-  let i = sys.hovered.length;
-  while (i--) {
-    const box = sys.hovered[i];
-    if (box.onScroll) {
-      box.onScroll(e.deltaY < 0);
-      return;
-    }
-  }
-}, { passive: true })
-
-
-
-
-
-
-function update(t: number) {
-  if (t - sys.last >= 30) {
-    sys.tick(t - sys.last);
-    sys.root.draw(sys.screen);
-    sys.lastHovered.drawCursor(sys.screen);
-    sys.screen.blit();
-    sys.last = t;
-  }
-  requestAnimationFrame(update);
-}
-requestAnimationFrame(update);
 
 
 
@@ -258,21 +131,143 @@ requestAnimationFrame(update);
 export class Screen {
 
   camera = { x: 0, y: 0 };
-
-  clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
+  clip;
 
   pixels;
   imgdata;
 
   font = defaultFont;
 
-  constructor(public context: CanvasRenderingContext2D) {
+  root;
+
+  keys: Record<string, boolean> = {};
+  mouse = { x: 0, y: 0, button: 0 };
+
+  focused: Box;
+  hovered: Box[] = [];
+  lastHovered: Box;
+
+  tick = (delta: number) => { };
+  last = +document.timeline.currentTime!;
+
+  context;
+
+  constructor(public canvas: HTMLCanvasElement) {
+    this.context = this.canvas.getContext('2d')!;
+
     this.pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
     this.imgdata = new ImageData(this.pixels, canvas.width, canvas.height);
+
+    this.clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
 
     for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
       this.pixels[i + 3] = 255;
     }
+
+    this.root = new Box(0, 0, canvas.width, canvas.height);
+    this.focused = this.root;
+    this.lastHovered = this.root;
+
+    canvas.addEventListener('keydown', (e) => {
+      screen.keys[e.key] = true;
+      screen.focused.onKeyDown?.(e.key);
+    }, { passive: true });
+
+    canvas.addEventListener('keyup', (e) => {
+      screen.keys[e.key] = false;
+    }, { passive: true });
+
+    canvas.addEventListener('mousedown', (e) => {
+      screen.mouse.button = e.button;
+      screen.lastHovered.focus();
+      screen.lastHovered.onMouseDown?.();
+    }, { passive: true });
+
+    canvas.addEventListener('mousemove', (e) => {
+      const x = Math.floor(e.offsetX);
+      const y = Math.floor(e.offsetY);
+
+      if (x === screen.mouse.x && y === screen.mouse.y) return;
+      if (x >= canvas.width || y >= canvas.height) return;
+
+      screen.hovered.length = 0;
+
+      screen.mouse.x = x;
+      screen.mouse.y = y;
+
+      const hoveredOver = hover(screen.root, screen.mouse.x, screen.mouse.y)!;
+
+      if (screen.lastHovered !== hoveredOver) {
+        screen.lastHovered.hovered = false;
+        hoveredOver.hovered = true;
+        screen.lastHovered = hoveredOver;
+      }
+    }, { passive: true });
+
+    canvas.oncontextmenu = (e) => { e.preventDefault(); };
+
+    function hover(box: Box, x: number, y: number): Box | null {
+      if (box.passthrough) return null;
+
+      const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
+      if (!inThis) return null;
+
+      screen.hovered.push(box);
+
+      box.mouse.x = x;
+      box.mouse.y = y;
+
+      let i = box.children.length;
+      while (i--) {
+        const child = box.children[i];
+        const found = hover(child, x - child.x, y - child.y);
+        if (found) return found;
+      }
+
+      return box;
+    }
+
+    canvas.addEventListener('wheel', (e) => {
+      let i = screen.hovered.length;
+      while (i--) {
+        const box = screen.hovered[i];
+        if (box.onScroll) {
+          box.onScroll(e.deltaY < 0);
+          return;
+        }
+      }
+    }, { passive: true })
+
+    function update(t: number) {
+      if (t - screen.last >= 30) {
+        screen.tick(t - screen.last);
+        screen.root.draw(screen);
+        screen.lastHovered.drawCursor(screen);
+        screen.blit();
+        screen.last = t;
+      }
+      requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+
+  }
+
+  autoscale() {
+    new ResizeObserver(() => {
+      const box = this.canvas.parentElement!.getBoundingClientRect();
+      let w = this.canvas.width;
+      let h = this.canvas.height;
+      let s = 1;
+      while (
+        (w += this.canvas.width) <= box.width &&
+        (h += this.canvas.height) <= box.height
+      ) s++;
+      this.scale(s);
+    }).observe(this.canvas.parentElement!);
+  }
+
+  scale(scale: number) {
+    this.canvas.style.transform = `scale(${scale})`;
   }
 
   blit() {
@@ -291,7 +286,7 @@ export class Screen {
   }
 
   rectFill(x: number, y: number, w: number, h: number, c: number) {
-    const cw = canvas.width;
+    const cw = this.context.canvas.width;
 
     let x1 = x + this.camera.x;
     let y1 = y + this.camera.y;
@@ -334,60 +329,42 @@ export class Screen {
     this.font.print(this, x, y, c, text);
   }
 
-}
+  trackMouse(fns: { move: () => void, up?: () => void }) {
+    fns.move();
 
+    const done = new AbortController();
+    const opts = { signal: done.signal, passive: true };
 
+    let x = this.mouse.x;
+    let y = this.mouse.y;
 
+    this.canvas.addEventListener('mousemove', () => {
+      if (x !== this.mouse.x || y !== this.mouse.y) {
+        x = this.mouse.x;
+        y = this.mouse.y;
+        fns.move();
+      }
+    }, opts);
 
+    this.canvas.addEventListener('mouseup', (() => {
+      done.abort();
+      fns.up?.();
+    }), opts);
 
-
-
-
-
-
-
-
-class Sys {
-
-  screen;
-  root;
-
-  keys: Record<string, boolean> = {};
-  mouse = { x: 0, y: 0, button: 0 };
-
-  focused: Box;
-  hovered: Box[] = [];
-  lastHovered: Box;
-
-  tick = (delta: number) => { };
-  last = +document.timeline.currentTime!;
-
-  constructor(public canvas: HTMLCanvasElement) {
-    this.root = new Box(0, 0, canvas.width, canvas.height);
-    this.screen = new Screen(this.canvas.getContext('2d')!);
-    this.focused = this.root;
-    this.lastHovered = this.root;
-  }
-
-  autoscale() {
-    new ResizeObserver(() => {
-      const box = this.canvas.parentElement!.getBoundingClientRect();
-      let w = this.canvas.width;
-      let h = this.canvas.height;
-      let s = 1;
-      while (
-        (w += this.canvas.width) <= box.width &&
-        (h += this.canvas.height) <= box.height
-      ) s++;
-      this.scale(s);
-    }).observe(this.canvas.parentElement!);
-  }
-
-  scale(scale: number) {
-    canvas.style.transform = `scale(${scale})`;
+    return () => done.abort();
   }
 
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -451,15 +428,15 @@ export class Mover {
   startElPos;
 
   constructor(private el: Box) {
-    this.startMouse = { x: sys.mouse.x, y: sys.mouse.y };
+    this.startMouse = { x: screen.mouse.x, y: screen.mouse.y };
     this.startElPos = { x: el.x, y: el.y };
   }
 
   update() {
     const offx = this.startMouse.x - this.startElPos.x;
     const offy = this.startMouse.y - this.startElPos.y;
-    const diffx = sys.mouse.x - this.startElPos.x;
-    const diffy = sys.mouse.y - this.startElPos.y;
+    const diffx = screen.mouse.x - this.startElPos.x;
+    const diffy = screen.mouse.y - this.startElPos.y;
     this.el.x = this.startElPos.x + diffx - offx;
     this.el.y = this.startElPos.y + diffy - offy;
   }
@@ -639,10 +616,10 @@ export class TextField extends Box {
     super.drawContents(screen);
     screen.print(2, 2, this.color, this.text);
 
-    if (sys.focused === this) {
+    if (screen.focused === this) {
       screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
 
-      const drawCursor = sys.last % 1000 < 500;
+      const drawCursor = screen.last % 1000 < 500;
       if (drawCursor) {
         let cx = 0;
         let cy = 0;
@@ -757,5 +734,5 @@ const defaultFont = new Font(3, 4, 16,
 `);
 
 
-export const sys = new Sys(canvas);
-sys.autoscale();
+export const screen = new Screen(document.querySelector('canvas')!);
+screen.autoscale();

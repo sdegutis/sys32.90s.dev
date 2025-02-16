@@ -1,4 +1,4 @@
-import { Box, Button, Mover, RadioButton, RadioGroup, Screen, sys, TileSelection } from "./ui.js";
+import { Box, Button, Mover, RadioButton, RadioGroup, Screen, screen, TileSelection } from "./ui.js";
 
 
 
@@ -24,7 +24,7 @@ class TabBox extends Box {
 
 
 const tabBox = new TabBox(40, 8, 320 - 40, 180 - 8, 0x222222ff);
-sys.root.children.push(tabBox);
+screen.root.children.push(tabBox);
 
 
 
@@ -38,7 +38,7 @@ mapArea2.onMouseDown = () => console.log('haha nope');
 
 
 const menu = new Box(0, 0, 320, 8, 0x000000ff);
-sys.root.children.push(menu);
+screen.root.children.push(menu);
 
 const saveButton = new Button(0, 0, 4 * 4 + 3, 8, 0x000000ff);
 saveButton.color = 0xffffff33;
@@ -71,7 +71,7 @@ menu.children.push(gridButton);
 
 
 const toolArea = new Box(0, 8, 40, 180 - 8, 0x333333ff);
-sys.root.children.push(toolArea);
+screen.root.children.push(toolArea);
 
 
 
@@ -150,7 +150,7 @@ for (let i = 0; i < 17; i++) {
 
 
 
-sys.root.onScroll = up => {
+screen.root.onScroll = up => {
   if (up) {
     currentTool--;
     if (currentTool < 0) currentTool = 16;
@@ -204,14 +204,14 @@ mapBox.drawCursor = () => {
 let tilesel: TileSelection | null = null;
 
 mapBox.onMouseDown = () => {
-  if (sys.keys[' ']) {
+  if (screen.keys[' ']) {
     const dragger = new Mover(mapBox);
-    mapBox.trackMouse({ move: () => dragger.update() });
+    screen.trackMouse({ move: () => dragger.update() });
   }
-  else if (sys.keys['Control']) {
+  else if (screen.keys['Control']) {
     tilesel = new TileSelection(mapBox, 4);
 
-    mapBox.trackMouse({
+    screen.trackMouse({
       move() {
         tilesel!.update();
 
@@ -229,8 +229,8 @@ mapBox.onMouseDown = () => {
       },
     });
   }
-  else if (sys.keys['Alt']) {
-    mapBox.trackMouse({
+  else if (screen.keys['Alt']) {
+    screen.trackMouse({
       move() {
         const x = Math.floor(mapBox.mouse.x / 4);
         const y = Math.floor(mapBox.mouse.y / 4);
@@ -243,7 +243,7 @@ mapBox.onMouseDown = () => {
     });
   }
   else {
-    mapBox.trackMouse({
+    screen.trackMouse({
       move() {
         const x = Math.floor(mapBox.mouse.x / 4);
         const y = Math.floor(mapBox.mouse.y / 4);
@@ -278,7 +278,7 @@ mapBox.draw = (screen) => {
     const ty = Math.floor(mapBox.mouse.y / 4);
     screen.rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);
 
-    if (sys.keys['Alt']) {
+    if (screen.keys['Alt']) {
       screen.rectFill((tx + 0) * 4, (ty + 1) * 4, 4, 4, 0x0000ff77);
       screen.rectFill((tx + 0) * 4, (ty - 1) * 4, 4, 4, 0x0000ff77);
       screen.rectFill((tx + 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
