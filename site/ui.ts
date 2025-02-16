@@ -105,7 +105,7 @@ export class Box {
   }
 
   drawCursor(screen: Screen) {
-    Box.cursor.draw(screen, mouse.x - 1, mouse.y - 1);
+    Box.cursor.draw(screen, sys.mouse.x - 1, sys.mouse.y - 1);
   }
 
   trackMouse(fns: { move: () => void, up?: () => void }) {
@@ -114,13 +114,13 @@ export class Box {
     const done = new AbortController();
     const opts = { signal: done.signal, passive: true };
 
-    let x = mouse.x;
-    let y = mouse.y;
+    let x = sys.mouse.x;
+    let y = sys.mouse.y;
 
     canvas.addEventListener('mousemove', () => {
-      if (x !== mouse.x || y !== mouse.y) {
-        x = mouse.x;
-        y = mouse.y;
+      if (x !== sys.mouse.x || y !== sys.mouse.y) {
+        x = sys.mouse.x;
+        y = sys.mouse.y;
         fns.move();
       }
     }, opts);
@@ -134,7 +134,7 @@ export class Box {
   }
 
   focus() {
-    focused = this;
+    sys.focused = this;
   }
 
 }
@@ -148,15 +148,13 @@ export class Box {
 
 
 
-export const keys: Record<string, boolean> = {};
-
 canvas.addEventListener('keydown', (e) => {
-  keys[e.key] = true;
-  focused.onKeyDown?.(e.key);
+  sys.keys[e.key] = true;
+  sys.focused.onKeyDown?.(e.key);
 }, { passive: true });
 
 canvas.addEventListener('keyup', (e) => {
-  keys[e.key] = false;
+  sys.keys[e.key] = false;
 }, { passive: true });
 
 
@@ -168,50 +166,30 @@ canvas.addEventListener('keyup', (e) => {
 
 
 
-export const root = new Box(0, 0, 320, 180);
-
-export let focused: Box = root;
-
-export const mouse = {
-  x: 0,
-  y: 0,
-  button: 0,
-};
-
-
-
-
-
-
-
-
-const hovered: Box[] = [];
-let lastHovered: Box = root;
-
 canvas.addEventListener('mousedown', (e) => {
-  mouse.button = e.button;
-  lastHovered.focus();
-  lastHovered.onMouseDown?.();
+  sys.mouse.button = e.button;
+  sys.lastHovered.focus();
+  sys.lastHovered.onMouseDown?.();
 }, { passive: true });
 
 canvas.addEventListener('mousemove', (e) => {
   const x = Math.floor(e.offsetX);
   const y = Math.floor(e.offsetY);
 
-  if (x === mouse.x && y === mouse.y) return;
-  if (x >= 320 || y >= 180) return;
+  if (x === sys.mouse.x && y === sys.mouse.y) return;
+  if (x >= canvas.width || y >= canvas.height) return;
 
-  hovered.length = 0;
+  sys.hovered.length = 0;
 
-  mouse.x = x;
-  mouse.y = y;
+  sys.mouse.x = x;
+  sys.mouse.y = y;
 
-  const hoveredOver = hover(root, mouse.x, mouse.y)!;
+  const hoveredOver = hover(sys.root, sys.mouse.x, sys.mouse.y)!;
 
-  if (lastHovered !== hoveredOver) {
-    lastHovered.hovered = false;
+  if (sys.lastHovered !== hoveredOver) {
+    sys.lastHovered.hovered = false;
     hoveredOver.hovered = true;
-    lastHovered = hoveredOver;
+    sys.lastHovered = hoveredOver;
   }
 }, { passive: true });
 
@@ -223,7 +201,7 @@ function hover(box: Box, x: number, y: number): Box | null {
   const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
   if (!inThis) return null;
 
-  hovered.push(box);
+  sys.hovered.push(box);
 
   box.mouse.x = x;
   box.mouse.y = y;
@@ -239,9 +217,9 @@ function hover(box: Box, x: number, y: number): Box | null {
 }
 
 canvas.addEventListener('wheel', (e) => {
-  let i = hovered.length;
+  let i = sys.hovered.length;
   while (i--) {
-    const box = hovered[i];
+    const box = sys.hovered[i];
     if (box.onScroll) {
       box.onScroll(e.deltaY < 0);
       return;
@@ -254,24 +232,18 @@ canvas.addEventListener('wheel', (e) => {
 
 
 
-let tick = (delta: number) => { };
-let last = +document.timeline.currentTime!;
-
 function update(t: number) {
-  if (t - last >= 30) {
-    tick(t - last);
-    root.draw(sys.screen);
-    lastHovered.drawCursor(sys.screen);
+  if (t - sys.last >= 30) {
+    sys.tick(t - sys.last);
+    sys.root.draw(sys.screen);
+    sys.lastHovered.drawCursor(sys.screen);
     sys.screen.blit();
-    last = t;
+    sys.last = t;
   }
   requestAnimationFrame(update);
 }
 requestAnimationFrame(update);
 
-export function ontick(fn: (delta: number) => void) {
-  tick = fn;
-}
 
 
 
@@ -287,7 +259,7 @@ export class Screen {
 
   camera = { x: 0, y: 0 };
 
-  clip = { x1: 0, y1: 0, x2: 320 - 1, y2: 180 - 1 };
+  clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
 
   pixels;
   imgdata;
@@ -295,10 +267,10 @@ export class Screen {
   font = defaultFont;
 
   constructor(public context: CanvasRenderingContext2D) {
-    this.pixels = new Uint8ClampedArray(320 * 180 * 4);
-    this.imgdata = new ImageData(this.pixels, 320, 180);
+    this.pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
+    this.imgdata = new ImageData(this.pixels, canvas.width, canvas.height);
 
-    for (let i = 0; i < 320 * 180 * 4; i += 4) {
+    for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
       this.pixels[i + 3] = 255;
     }
   }
@@ -319,6 +291,8 @@ export class Screen {
   }
 
   rectFill(x: number, y: number, w: number, h: number, c: number) {
+    const cw = canvas.width;
+
     let x1 = x + this.camera.x;
     let y1 = y + this.camera.y;
     let x2 = x1 + w - 1;
@@ -338,7 +312,7 @@ export class Screen {
 
     for (y = y1; y <= y2; y++) {
       for (x = x1; x <= x2; x++) {
-        const i = y * 320 * 4 + x * 4;
+        const i = y * cw * 4 + x * 4;
 
         if (a === 255) {
           this.pixels[i + 0] = r;
@@ -376,23 +350,34 @@ export class Screen {
 class Sys {
 
   screen;
+  root;
+
+  keys: Record<string, boolean> = {};
+  mouse = { x: 0, y: 0, button: 0 };
+
+  focused: Box;
+  hovered: Box[] = [];
+  lastHovered: Box;
+
+  tick = (delta: number) => { };
+  last = +document.timeline.currentTime!;
 
   constructor(public canvas: HTMLCanvasElement) {
+    this.root = new Box(0, 0, canvas.width, canvas.height);
     this.screen = new Screen(this.canvas.getContext('2d')!);
-
-    console.log(this.canvas);
-    console.log(this.screen);
+    this.focused = this.root;
+    this.lastHovered = this.root;
   }
 
   autoscale() {
     new ResizeObserver(() => {
       const box = this.canvas.parentElement!.getBoundingClientRect();
-      let w = 320;
-      let h = 180;
+      let w = this.canvas.width;
+      let h = this.canvas.height;
       let s = 1;
       while (
-        (w += 320) <= box.width &&
-        (h += 180) <= box.height
+        (w += this.canvas.width) <= box.width &&
+        (h += this.canvas.height) <= box.height
       ) s++;
       this.scale(s);
     }).observe(this.canvas.parentElement!);
@@ -466,15 +451,15 @@ export class Mover {
   startElPos;
 
   constructor(private el: Box) {
-    this.startMouse = { x: mouse.x, y: mouse.y };
+    this.startMouse = { x: sys.mouse.x, y: sys.mouse.y };
     this.startElPos = { x: el.x, y: el.y };
   }
 
   update() {
     const offx = this.startMouse.x - this.startElPos.x;
     const offy = this.startMouse.y - this.startElPos.y;
-    const diffx = mouse.x - this.startElPos.x;
-    const diffy = mouse.y - this.startElPos.y;
+    const diffx = sys.mouse.x - this.startElPos.x;
+    const diffy = sys.mouse.y - this.startElPos.y;
     this.el.x = this.startElPos.x + diffx - offx;
     this.el.y = this.startElPos.y + diffy - offy;
   }
@@ -654,10 +639,10 @@ export class TextField extends Box {
     super.drawContents(screen);
     screen.print(2, 2, this.color, this.text);
 
-    if (focused === this) {
+    if (sys.focused === this) {
       screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
 
-      const drawCursor = last % 1000 < 500;
+      const drawCursor = sys.last % 1000 < 500;
       if (drawCursor) {
         let cx = 0;
         let cy = 0;
@@ -772,5 +757,5 @@ const defaultFont = new Font(3, 4, 16,
 `);
 
 
-const sys = new Sys(canvas);
+export const sys = new Sys(canvas);
 sys.autoscale();

@@ -1,4 +1,4 @@
-import { Box, Button, Mover, RadioButton, RadioGroup, Screen, TileSelection, keys, root } from "./ui.js";
+import { Box, Button, Mover, RadioButton, RadioGroup, Screen, sys, TileSelection } from "./ui.js";
 
 
 
@@ -24,7 +24,7 @@ class TabBox extends Box {
 
 
 const tabBox = new TabBox(40, 8, 320 - 40, 180 - 8, 0x222222ff);
-root.children.push(tabBox);
+sys.root.children.push(tabBox);
 
 
 
@@ -38,7 +38,7 @@ mapArea2.onMouseDown = () => console.log('haha nope');
 
 
 const menu = new Box(0, 0, 320, 8, 0x000000ff);
-root.children.push(menu);
+sys.root.children.push(menu);
 
 const saveButton = new Button(0, 0, 4 * 4 + 3, 8, 0x000000ff);
 saveButton.color = 0xffffff33;
@@ -71,7 +71,7 @@ menu.children.push(gridButton);
 
 
 const toolArea = new Box(0, 8, 40, 180 - 8, 0x333333ff);
-root.children.push(toolArea);
+sys.root.children.push(toolArea);
 
 
 
@@ -150,7 +150,7 @@ for (let i = 0; i < 17; i++) {
 
 
 
-root.onScroll = up => {
+sys.root.onScroll = up => {
   if (up) {
     currentTool--;
     if (currentTool < 0) currentTool = 16;
@@ -204,11 +204,11 @@ mapBox.drawCursor = () => {
 let tilesel: TileSelection | null = null;
 
 mapBox.onMouseDown = () => {
-  if (keys[' ']) {
+  if (sys.keys[' ']) {
     const dragger = new Mover(mapBox);
     mapBox.trackMouse({ move: () => dragger.update() });
   }
-  else if (keys['Control']) {
+  else if (sys.keys['Control']) {
     tilesel = new TileSelection(mapBox, 4);
 
     mapBox.trackMouse({
@@ -229,7 +229,7 @@ mapBox.onMouseDown = () => {
       },
     });
   }
-  else if (keys['Alt']) {
+  else if (sys.keys['Alt']) {
     mapBox.trackMouse({
       move() {
         const x = Math.floor(mapBox.mouse.x / 4);
@@ -278,7 +278,7 @@ mapBox.draw = (screen) => {
     const ty = Math.floor(mapBox.mouse.y / 4);
     screen.rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);
 
-    if (keys['Alt']) {
+    if (sys.keys['Alt']) {
       screen.rectFill((tx + 0) * 4, (ty + 1) * 4, 4, 4, 0x0000ff77);
       screen.rectFill((tx + 0) * 4, (ty - 1) * 4, 4, 4, 0x0000ff77);
       screen.rectFill((tx + 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
