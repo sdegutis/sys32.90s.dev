@@ -13,7 +13,7 @@ class TabBox extends CRT.Box {
   tab = -1;
 
   addTab(box: CRT.Box) {
-    screen.add(box, this);
+    this.add(box);
     this.select(this.children.length - 1);
   }
 
@@ -35,7 +35,7 @@ class TabBox extends CRT.Box {
 
 
 const tabBox = new TabBox(40, 8, 320 - 40, 180 - 8, 0x222222ff);
-screen.add(tabBox, screen.root);
+screen.root.add(tabBox);
 
 
 
@@ -49,7 +49,7 @@ mapArea2.onMouseDown = () => console.log('haha nope');
 
 
 const menu = new CRT.Box(0, 0, 320, 8, 0x000000ff);
-screen.add(menu, screen.root);
+screen.root.add(menu);
 
 const saveButton = new CRT.Button(0, 0, 4 * 4 + 3, 8, 0x000000ff);
 saveButton.color = 0xffffff33;
@@ -57,7 +57,7 @@ saveButton.text = 'save';
 saveButton.onClick = () => {
   console.log('saving')
 };
-screen.add(saveButton, menu);
+menu.add(saveButton);
 
 const loadButton = new CRT.Button(20, 0, 4 * 4 + 3, 8, 0x000000ff);
 loadButton.color = 0xffffff33;
@@ -65,7 +65,7 @@ loadButton.text = 'load';
 loadButton.onClick = () => {
   console.log('loading')
 };
-screen.add(loadButton, menu);
+menu.add(loadButton);
 
 let showGrid = true;
 
@@ -74,7 +74,7 @@ gridButton.color = 0xffffff33;
 gridButton.text = 'grid';
 gridButton.onClick = () => tabBox.select((tabBox.tab + 1) % 2);
 // gridButton.onClick = () => showGrid = !showGrid;
-screen.add(gridButton, menu);
+menu.add(gridButton);
 
 
 
@@ -82,7 +82,7 @@ screen.add(gridButton, menu);
 
 
 const toolArea = new CRT.Box(0, 8, 40, 180 - 8, 0x333333ff);
-screen.add(toolArea, screen.root);
+screen.root.add(toolArea);
 
 
 
@@ -153,7 +153,7 @@ for (let i = 0; i < 17; i++) {
   b.drawButton = (screen) => screen.rectFill(2, 2, 4, 4, COLORS[i % 16]);
   toolGroup.add(b);
   b.onSelect = () => currentTool = i;
-  screen.add(b, toolArea);
+  toolArea.add(b);
 
   if (i === currentTool) toolGroup.select(b);
 
@@ -204,7 +204,7 @@ mapArea.drawContents = () => {
 };
 
 const mapBox = new CRT.Box(0, 0, map.width * 4, map.height * 4);
-screen.add(mapBox, mapArea);
+mapArea.add(mapBox);
 
 mapBox.drawCursor = () => {
   // rectFill(mouse.x, mouse.y - 2, 1, 5, '#0007');
@@ -309,12 +309,12 @@ mapBox.draw = () => {
 
 const textbox = new CRT.TextField(160, 10, 60, 80, 0x000000ff);
 textbox.text = `test`;
-screen.add(textbox, screen.root);
+screen.root.add(textbox);
 
 const checkbox = new CRT.Checkbox(160, 1, 8 + 4 * 7, 6, 0x000000ff);
-screen.add(checkbox, screen.root);
+screen.root.add(checkbox);
 checkbox.onChange = () => console.log(checkbox.checked)
 checkbox.checked = true;
-screen.add(new CRT.Label('testing', 8, 1, 4 * 7, 6), checkbox);
+checkbox.add(new CRT.Label('testing', 8, 1, 4 * 7, 6));
 
 tabBox.select(1);

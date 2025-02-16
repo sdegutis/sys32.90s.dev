@@ -131,11 +131,6 @@ export class Screen {
     }).observe(this.canvas.parentElement!);
   }
 
-  add(box: Box, to: Box) {
-    box.screen = this;
-    to.children.push(box);
-  }
-
   scale(scale: number) {
     this.canvas.style.transform = `scale(${scale})`;
   }
@@ -249,6 +244,11 @@ export class Box {
     public h = 0,
     public background?: number,
   ) { }
+
+  add(child: Box) {
+    child.screen = this.screen;
+    this.children.push(child);
+  }
 
   #clip?: Clip;
   get clips() { return this.#clip !== undefined; }
