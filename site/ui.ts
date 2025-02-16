@@ -18,6 +18,8 @@ export class Screen {
   _pixels;
   _imgdata;
 
+  _destroyer = new AbortController();
+
   constructor(public canvas: HTMLCanvasElement) {
     this._context = canvas.getContext('2d')!;
 
@@ -35,20 +37,22 @@ export class Screen {
     this.focused = this.root;
     this._hovered = this.root;
 
+    const callbackOpts = { passive: true, signal: this._destroyer.signal };
+
     canvas.addEventListener('keydown', (e) => {
       this.keys[e.key] = true;
       this.focused.onKeyDown?.(e.key);
       this.needsRedraw = true;
-    }, { passive: true });
+    }, callbackOpts);
 
     canvas.addEventListener('keyup', (e) => {
       this.keys[e.key] = false;
       this.needsRedraw = true;
-    }, { passive: true });
+    }, callbackOpts);
 
-    canvas.oncontextmenu = (e) => {
+    canvas.addEventListener('contextmenu', (e) => {
       e.preventDefault();
-    };
+    }, callbackOpts);
 
     canvas.addEventListener('mousedown', (e) => {
       this.mouse.button = e.button;
@@ -56,7 +60,7 @@ export class Screen {
       this._hovered.focus();
       this._hovered.onMouseDown?.();
       this.needsRedraw = true;
-    }, { passive: true });
+    }, callbackOpts);
 
     canvas.addEventListener('mousemove', (e) => {
       const x = Math.floor(e.offsetX);
@@ -81,13 +85,13 @@ export class Screen {
       this._trackingMouse?.move();
 
       this.needsRedraw = true;
-    }, { passive: true });
+    }, callbackOpts);
 
     canvas.addEventListener('mouseup', (e) => {
       this._trackingMouse?.up?.();
       this._trackingMouse = undefined;
       this.needsRedraw = true;
-    }, { passive: true });
+    }, callbackOpts);
 
     canvas.addEventListener('wheel', (e) => {
       let i = this._allHovered.length;
@@ -99,7 +103,7 @@ export class Screen {
           return;
         }
       }
-    }, { passive: true })
+    }, callbackOpts)
 
     let last = +document.timeline.currentTime!;
     const update = (t: number) => {
@@ -112,9 +116,15 @@ export class Screen {
         }
         last = t;
       }
-      requestAnimationFrame(update);
+      if (!this._destroyer.signal.aborted) {
+        requestAnimationFrame(update);
+      }
     };
     requestAnimationFrame(update);
+  }
+
+  destroy() {
+    this._destroyer.abort();
   }
 
   autoscale() {
