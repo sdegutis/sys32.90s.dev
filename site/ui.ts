@@ -526,6 +526,15 @@ export class TabBox extends Box {
 
 }
 
+const controls = {
+  Box,
+  TextField,
+  Button,
+  Label,
+  Checkbox,
+  TabBox,
+};
+
 export class Font {
 
   static crt2025 = new Font(3, 4, 16,
