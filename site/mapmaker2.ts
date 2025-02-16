@@ -24,10 +24,10 @@ class TabBox extends CRT.Box {
     }
   }
 
-  drawChildren(screen: CRT.Screen): void {
+  drawChildren(): void {
     const allChildren = this.children;
-    this.children = [this.children[this.tab]];
-    super.drawChildren(screen);
+    this.children = [allChildren[this.tab]];
+    super.drawChildren();
     this.children = allChildren;
   }
 
@@ -126,7 +126,7 @@ class Map {
 
 const map = new Map(50, 40);
 
-const drawTerrain: ((screen: CRT.Screen, x: number, y: number) => void)[] = [];
+const drawTerrain: ((x: number, y: number) => void)[] = [];
 
 let currentTool = 5;
 
@@ -134,12 +134,12 @@ let currentTool = 5;
 const toolGroup = new CRT.RadioGroup();
 
 for (let i = 0; i < 16; i++) {
-  drawTerrain.push((screen, x, y) => {
+  drawTerrain.push((x, y) => {
     screen.rectFill(x, y, 4, 4, COLORS[i]);
   });
 }
 
-drawTerrain.push((screen, x, y) => {
+drawTerrain.push((x, y) => {
   screen.rectFill(x, y, 4, 4, COLORS[3]);
 });
 
@@ -161,7 +161,7 @@ for (let i = 0; i < 17; i++) {
 
 
 
-screen.root.onScroll = (screen, up) => {
+screen.root.onScroll = (up) => {
   if (up) {
     currentTool--;
     if (currentTool < 0) currentTool = 16;
@@ -192,7 +192,7 @@ const mapArea = new CRT.Box(0, 0, 320 - 40, 180 - 8, 0x222222ff);
 mapArea.clips = true;
 tabBox.addTab(mapArea);
 
-mapArea.drawContents = (screen) => {
+mapArea.drawContents = () => {
   screen.rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
   let off = 0;
   for (let y = 0; y < mapArea.h; y++) {
@@ -264,13 +264,13 @@ mapBox.onMouseDown = () => {
   }
 };
 
-mapBox.draw = (screen) => {
+mapBox.draw = () => {
   // for (let i = 0; i < 300; i++)
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
       const i = y * map.width + x;
       const t = map.terrain[i];
-      drawTerrain[t](screen, x * 4, y * 4);
+      drawTerrain[t](x * 4, y * 4);
     }
   }
 
@@ -315,6 +315,6 @@ const checkbox = new CRT.Checkbox(160, 1, 8 + 4 * 7, 6, 0x000000ff);
 screen.add(checkbox, screen.root);
 checkbox.onChange = () => console.log(checkbox.checked)
 checkbox.checked = true;
-checkbox.children.push(new CRT.Label('testing', 8, 1, 4 * 7, 6));
+screen.add(new CRT.Label('testing', 8, 1, 4 * 7, 6), checkbox);
 
 tabBox.select(1);

@@ -30,12 +30,14 @@ export class Screen {
     this._clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
 
     this.root = new Box(0, 0, canvas.width, canvas.height);
+    this.root.screen = this;
+
     this.focused = this.root;
     this._hovered = this.root;
 
     canvas.addEventListener('keydown', (e) => {
       this.keys[e.key] = true;
-      this.focused.onKeyDown?.(this, e.key);
+      this.focused.onKeyDown?.(e.key);
       this.needsRedraw = true;
     }, { passive: true });
 
@@ -50,9 +52,9 @@ export class Screen {
 
     canvas.addEventListener('mousedown', (e) => {
       this.mouse.button = e.button;
-      this.focused.onUnfocus?.(this);
-      this._hovered.focus(this);
-      this._hovered.onMouseDown?.(this);
+      this.focused.onUnfocus?.();
+      this._hovered.focus();
+      this._hovered.onMouseDown?.();
       this.needsRedraw = true;
     }, { passive: true });
 
@@ -92,7 +94,7 @@ export class Screen {
       while (i--) {
         const box = this._allHovered[i];
         if (box.onScroll) {
-          box.onScroll(this, e.deltaY < 0);
+          box.onScroll(e.deltaY < 0);
           this.needsRedraw = true;
           return;
         }
@@ -104,8 +106,8 @@ export class Screen {
       if (t - last >= 30) {
         if (this.needsRedraw) {
           this.needsRedraw = false;
-          this.root.draw(this);
-          this._hovered.drawCursor(this);
+          this.root.draw();
+          this._hovered.drawCursor();
           this.blit();
         }
         last = t;
@@ -228,11 +230,11 @@ export class Screen {
 
 export class Box {
 
-  onScroll?: (screen: Screen, up: boolean) => void;
-  onKeyDown?: (screen: Screen, key: string) => void;
-  onMouseDown?: (screen: Screen) => void;
-  onFocus?: (screen: Screen) => void;
-  onUnfocus?: (screen: Screen) => void;
+  onScroll?: (up: boolean) => void;
+  onKeyDown?: (key: string) => void;
+  onMouseDown?: () => void;
+  onFocus?: () => void;
+  onUnfocus?: () => void;
 
   screen!: Screen;
   children: Box[] = [];
@@ -252,39 +254,39 @@ export class Box {
   get clips() { return this.#clip !== undefined; }
   set clips(should: boolean) { this.#clip = should ? new Clip() : undefined; }
 
-  draw(screen: Screen) {
-    this.clip(screen);
-    this.drawContents(screen);
-    this.drawChildren(screen);
-    this.unclip(screen);
+  draw() {
+    this.clip();
+    this.drawContents();
+    this.drawChildren();
+    this.unclip();
   }
 
-  clip(screen: Screen) { this.#clip?.set(screen, this.w, this.h); }
-  unclip(screen: Screen) { this.#clip?.unset(screen); }
+  clip() { this.#clip?.set(this.screen, this.w, this.h); }
+  unclip() { this.#clip?.unset(this.screen); }
 
-  drawContents(screen: Screen) {
+  drawContents() {
     if (!this.background) return;
-    screen.rectFill(0, 0, this.w, this.h, this.background);
+    this.screen.rectFill(0, 0, this.w, this.h, this.background);
   }
 
-  drawChildren(screen: Screen) {
+  drawChildren() {
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
-      screen._camera.x += child.x;
-      screen._camera.y += child.y;
-      child.draw(screen);
-      screen._camera.x -= child.x;
-      screen._camera.y -= child.y;
+      this.screen._camera.x += child.x;
+      this.screen._camera.y += child.y;
+      child.draw();
+      this.screen._camera.x -= child.x;
+      this.screen._camera.y -= child.y;
     }
   }
 
-  drawCursor(screen: Screen) {
-    cursors.pointer.draw(screen, screen.mouse.x - 1, screen.mouse.y - 1);
+  drawCursor() {
+    cursors.pointer.draw(this.screen, this.screen.mouse.x - 1, this.screen.mouse.y - 1);
   }
 
-  focus(screen: Screen) {
-    screen.focused = this;
-    this.onFocus?.(screen);
+  focus() {
+    this.screen.focused = this;
+    this.onFocus?.();
   }
 
 }
@@ -297,10 +299,10 @@ export class Button extends Box {
   clicking = false;
   onClick() { }
 
-  onMouseDown = (screen: Screen) => {
+  onMouseDown = () => {
     this.clicking = true;
 
-    const cancel = screen.trackMouse({
+    const cancel = this.screen.trackMouse({
       move: () => {
         if (!this.hovered) {
           cancel();
@@ -314,17 +316,17 @@ export class Button extends Box {
     });
   };
 
-  drawContents(screen: Screen) {
-    super.drawContents(screen);
+  drawContents() {
+    super.drawContents();
 
     if (this.clicking) {
-      screen.rectFill(0, 0, this.w, this.h, 0xffffff22);
+      this.screen.rectFill(0, 0, this.w, this.h, 0xffffff22);
     }
     else if (this.hovered) {
-      screen.rectFill(0, 0, this.w, this.h, 0xffffff11);
+      this.screen.rectFill(0, 0, this.w, this.h, 0xffffff11);
     }
 
-    screen.print(2, 2, this.color, this.text);
+    this.screen.print(2, 2, this.color, this.text);
   }
 
 }
@@ -360,14 +362,14 @@ export class RadioButton extends Button {
     this.onSelect();
   }
 
-  drawContents(screen: Screen) {
-    this.drawButton(screen);
+  drawContents() {
+    this.drawButton(this.screen);
 
     if (this.selected) {
-      screen.rectLine(0, 0, this.w, this.h, 0xffffff77);
+      this.screen.rectLine(0, 0, this.w, this.h, 0xffffff77);
     }
     else if (this.hovered) {
-      screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
+      this.screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
     }
   }
 
@@ -383,8 +385,8 @@ export class Label extends Box {
     super(...args);
   }
 
-  drawContents(screen: Screen): void {
-    screen.print(0, 0, this.color, this.text);
+  drawContents(): void {
+    this.screen.print(0, 0, this.color, this.text);
   }
 
 }
@@ -395,10 +397,10 @@ export class Checkbox extends Box {
 
   onChange() { }
 
-  drawContents(screen: Screen): void {
-    screen.rectLine(0, 0, 6, 6, this.hovered ? 0xffffffff : 0x777777ff);
+  drawContents(): void {
+    this.screen.rectLine(0, 0, 6, 6, this.hovered ? 0xffffffff : 0x777777ff);
     if (this.checked) {
-      screen.rectFill(2, 2, 2, 2, 0xffffffff);
+      this.screen.rectFill(2, 2, 2, 2, 0xffffffff);
     }
   }
 
@@ -419,11 +421,11 @@ export class TextField extends Box {
     this.clips = true;
   }
 
-  onScroll = (screen: Screen, up: boolean) => {
+  onScroll = (up: boolean) => {
     console.log('scrolling', up)
   };
 
-  onKeyDown = (screen: Screen, key: string) => {
+  onKeyDown = (key: string) => {
     if (key === 'Enter') {
       this.text += '\n';
     }
@@ -433,7 +435,7 @@ export class TextField extends Box {
     else {
       this.text += key.toLowerCase();
     }
-    this.restartBlinking(screen);
+    this.restartBlinking();
   };
 
   // onMouseDown(): void {
@@ -442,12 +444,12 @@ export class TextField extends Box {
   //   });
   // }
 
-  drawContents(screen: Screen): void {
-    super.drawContents(screen);
-    screen.print(2, 2, this.color, this.text);
+  drawContents(): void {
+    super.drawContents();
+    this.screen.print(2, 2, this.color, this.text);
 
-    if (screen.focused === this) {
-      screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
+    if (this.screen.focused === this) {
+      this.screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
 
       if (this.blinkShow) {
         let cx = 0;
@@ -459,7 +461,7 @@ export class TextField extends Box {
           cx++;
         }
 
-        screen.print((cx * 4) + 2, (cy * 6) + 2, 0x77aaffff, '_');
+        this.screen.print((cx * 4) + 2, (cy * 6) + 2, 0x77aaffff, '_');
       }
     }
   }
@@ -467,12 +469,12 @@ export class TextField extends Box {
   blink?: number;
   blinkShow = false;
 
-  restartBlinking(screen: Screen) {
+  restartBlinking() {
     this.stopBlinking();
     this.blinkShow = true;
     this.blink = setInterval(() => {
       this.blinkShow = !this.blinkShow;
-      screen.needsRedraw = true;
+      this.screen.needsRedraw = true;
     }, 500);
   }
 
@@ -480,8 +482,8 @@ export class TextField extends Box {
     clearInterval(this.blink);
   }
 
-  onFocus = (screen: Screen) => {
-    this.restartBlinking(screen);
+  onFocus = () => {
+    this.restartBlinking();
   };
 
   onUnfocus = () => {
