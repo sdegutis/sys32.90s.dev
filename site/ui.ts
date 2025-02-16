@@ -101,14 +101,29 @@ export class Screen {
   hovered: Box[] = [];
   lastHovered: Box;
 
+  blit;
+
+  trackingMouse?: { move: () => void, up?: () => void };
+
   constructor(public canvas: HTMLCanvasElement) {
     this.context = this.canvas.getContext('2d')!;
 
     this.pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
     this.imgdata = new ImageData(this.pixels, canvas.width, canvas.height);
+
     for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
       this.pixels[i + 3] = 255;
     }
+
+    this.blit = () => {
+      this.context.putImageData(this.imgdata, 0, 0);
+    };
+
+    const redrawAll = () => {
+      this.root.draw(this);
+      this.lastHovered.drawCursor(this);
+      this.blit();
+    };
 
     this.clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
 
@@ -119,10 +134,12 @@ export class Screen {
     canvas.addEventListener('keydown', (e) => {
       this.keys[e.key] = true;
       this.focused.onKeyDown?.(this, e.key);
+      redrawAll();
     }, { passive: true });
 
     canvas.addEventListener('keyup', (e) => {
       this.keys[e.key] = false;
+      redrawAll();
     }, { passive: true });
 
     canvas.oncontextmenu = (e) => { e.preventDefault(); };
@@ -131,6 +148,7 @@ export class Screen {
       this.mouse.button = e.button;
       this.lastHovered.focus(this);
       this.lastHovered.onMouseDown?.(this);
+      redrawAll();
     }, { passive: true });
 
     canvas.addEventListener('mousemove', (e) => {
@@ -152,6 +170,15 @@ export class Screen {
         hoveredOver.hovered = true;
         this.lastHovered = hoveredOver;
       }
+
+      this.trackingMouse?.move();
+
+      redrawAll();
+    }, { passive: true });
+
+    canvas.addEventListener('mouseup', (e) => {
+      this.trackingMouse?.up?.();
+      redrawAll();
     }, { passive: true });
 
     canvas.addEventListener('wheel', (e) => {
@@ -160,23 +187,11 @@ export class Screen {
         const box = this.hovered[i];
         if (box.onScroll) {
           box.onScroll(this, e.deltaY < 0);
+          redrawAll();
           return;
         }
       }
     }, { passive: true })
-
-
-    let last = +document.timeline.currentTime!;
-    const update = (t: number) => {
-      if (t - last >= 30) {
-        this.root.draw(this);
-        this.lastHovered.drawCursor(this);
-        this.blit();
-        last = t;
-      }
-      requestAnimationFrame(update);
-    };
-    requestAnimationFrame(update);
   }
 
   autoscale() {
@@ -197,10 +212,6 @@ export class Screen {
     this.canvas.style.transform = `scale(${scale})`;
   }
 
-  blit() {
-    this.context.putImageData(this.imgdata, 0, 0);
-  }
-
   pset(x: number, y: number, c: number) {
     this.rectFill(x, y, 1, 1, c);
   }
@@ -213,7 +224,7 @@ export class Screen {
   }
 
   rectFill(x: number, y: number, w: number, h: number, c: number) {
-    const cw = this.context.canvas.width;
+    const cw = this.canvas.width;
 
     let x1 = x + this.camera.x;
     let y1 = y + this.camera.y;
@@ -259,26 +270,12 @@ export class Screen {
   trackMouse(fns: { move: () => void, up?: () => void }) {
     fns.move();
 
-    const done = new AbortController();
-    const opts = { signal: done.signal, passive: true };
-
-    let x = this.mouse.x;
-    let y = this.mouse.y;
-
-    this.canvas.addEventListener('mousemove', () => {
-      if (x !== this.mouse.x || y !== this.mouse.y) {
-        x = this.mouse.x;
-        y = this.mouse.y;
-        fns.move();
-      }
-    }, opts);
-
-    this.canvas.addEventListener('mouseup', (() => {
-      done.abort();
-      fns.up?.();
-    }), opts);
-
-    return () => done.abort();
+    const done = () => this.trackingMouse = undefined;
+    this.trackingMouse = {
+      move: () => { fns.move(); },
+      up: () => { done(); fns.up?.(); },
+    };
+    return done;
   }
 
   #hover(box: Box, x: number, y: number): Box | null {

@@ -301,7 +301,6 @@ mapBox.draw = (screen) => {
 
 
 
-
 // const textbox = new CRT.TextField(160, 10, 60, 80, 0x000000ff);
 // textbox.text = `#include blobbycode.p8`;
 // screen.root.children.push(textbox);
