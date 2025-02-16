@@ -79,6 +79,7 @@ export class Screen {
 
     canvas.addEventListener('mouseup', (e) => {
       this._trackingMouse?.up?.();
+      this._trackingMouse = undefined;
       this.redraw();
     }, { passive: true });
 
@@ -180,13 +181,8 @@ export class Screen {
 
   trackMouse(fns: { move: () => void, up?: () => void }) {
     fns.move();
-
-    const done = () => this._trackingMouse = undefined;
-    this._trackingMouse = {
-      move: () => { fns.move(); },
-      up: () => { done(); fns.up?.(); },
-    };
-    return done;
+    this._trackingMouse = fns;
+    return () => this._trackingMouse = undefined;
   }
 
   #hover(box: Box, x: number, y: number): Box | null {
