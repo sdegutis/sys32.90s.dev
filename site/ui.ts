@@ -8,8 +8,8 @@ export class Screen {
 
   needsRedraw = true;
 
-  _hovered: Box[] = [];
-  _lastHovered: Box;
+  _allHovered: Box[] = [];
+  _hovered: Box;
   _trackingMouse?: { move: () => void, up?: () => void };
 
   _camera = { x: 0, y: 0 };
@@ -31,7 +31,7 @@ export class Screen {
 
     this.root = new Box(0, 0, canvas.width, canvas.height);
     this.focused = this.root;
-    this._lastHovered = this.root;
+    this._hovered = this.root;
 
     canvas.addEventListener('keydown', (e) => {
       this.keys[e.key] = true;
@@ -49,8 +49,8 @@ export class Screen {
     canvas.addEventListener('mousedown', (e) => {
       this.mouse.button = e.button;
       this.focused.onUnfocus?.(this);
-      this._lastHovered.focus(this);
-      this._lastHovered.onMouseDown?.(this);
+      this._hovered.focus(this);
+      this._hovered.onMouseDown?.(this);
       this.needsRedraw = true;
     }, { passive: true });
 
@@ -61,17 +61,17 @@ export class Screen {
       if (x === this.mouse.x && y === this.mouse.y) return;
       if (x >= canvas.width || y >= canvas.height) return;
 
-      this._hovered.length = 0;
+      this._allHovered.length = 0;
 
       this.mouse.x = x;
       this.mouse.y = y;
 
-      const hoveredOver = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
+      const currentHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
 
-      if (this._lastHovered !== hoveredOver) {
-        this._lastHovered.hovered = false;
-        hoveredOver.hovered = true;
-        this._lastHovered = hoveredOver;
+      if (this._hovered !== currentHovered) {
+        this._hovered.hovered = false;
+        currentHovered.hovered = true;
+        this._hovered = currentHovered;
       }
 
       this._trackingMouse?.move();
@@ -86,9 +86,9 @@ export class Screen {
     }, { passive: true });
 
     canvas.addEventListener('wheel', (e) => {
-      let i = this._hovered.length;
+      let i = this._allHovered.length;
       while (i--) {
-        const box = this._hovered[i];
+        const box = this._allHovered[i];
         if (box.onScroll) {
           box.onScroll(this, e.deltaY < 0);
           this.needsRedraw = true;
@@ -103,7 +103,7 @@ export class Screen {
         if (this.needsRedraw) {
           this.needsRedraw = false;
           this.root.draw(this);
-          this._lastHovered.drawCursor(this);
+          this._hovered.drawCursor(this);
           this.blit();
         }
         last = t;
@@ -202,7 +202,7 @@ export class Screen {
     const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
     if (!inThis) return null;
 
-    this._hovered.push(box);
+    this._allHovered.push(box);
 
     box.mouse.x = x;
     box.mouse.y = y;
