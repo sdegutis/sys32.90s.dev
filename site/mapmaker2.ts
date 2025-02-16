@@ -328,13 +328,12 @@ mapBox.draw = () => {
 
 
 const textbox = new CRT.TextField();
-textbox.x = 160;
-textbox.y = 10;
-textbox.w = 60;
-textbox.h = 80;
+textbox.x = 10;
+textbox.y = 25;
+textbox.w = 50;
+textbox.h = 20;
 textbox.background = 0x000000ff;
 textbox.text = `test`;
-screen.root.add(textbox);
 
 textbox.onMouseMove = () => { console.log('move', textbox.mouse); }
 textbox.onMouseEnter = () => { console.log('enter', textbox.mouse); }
@@ -395,8 +394,8 @@ test1.drawContents = () => {
   screen.rectFill(0, 1, 1, test1.h - 2, 0xffffff77);
   screen.rectFill(test1.w - 1, 1, 1, test1.h - 2, 0xffffff77);
 
-  screen.print(2, 2, 0xffffff44, 'test window')
-  screen.rectFill(1, 7, test1.w - 2, 1, 0xffffff77);
+  screen.print(3, 3, 0xffffff44, 'test window')
+  screen.rectFill(1, 9, test1.w - 2, 1, 0xffffff77);
 
   screen.pset(test1.w - 3, test1.h - 3, 0xffffffff)
 };
@@ -405,12 +404,18 @@ test1.onMouseDown = () => {
     const dragger = new CRT.Resizer(screen, test1);
     screen.trackMouse({ move: () => dragger.update() });
   }
-  else {
+  else if (test1.mouse.y < 10) {
     const dragger = new CRT.Mover(screen, test1);
     screen.trackMouse({ move: () => dragger.update() });
   }
 };
 screen.root.add(test1);
+
+const b1 = new CRT.Button();
+b1.x = 3; b1.y = 15; b1.w = 20; b1.h = 10;
+b1.text = 'hmm';
+test1.add(b1)
+test1.add(textbox);
 
 // screen.root.draw = () => {
 
