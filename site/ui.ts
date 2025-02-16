@@ -492,6 +492,24 @@ export class TextField extends Box {
 
 }
 
+export class TabBox extends Box {
+
+  tab = -1;
+  #realChildren: Box[] = [];
+
+  addTab(box: Box) {
+    this.children = this.#realChildren;
+    this.add(box);
+    this.select(this.children.length - 1);
+  }
+
+  select(t: number) {
+    this.tab = t;
+    this.children = [this.#realChildren[this.tab]];
+  }
+
+}
+
 export class Font {
 
   static crt2025 = new Font(3, 4, 16,

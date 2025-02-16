@@ -8,27 +8,9 @@ screen.autoscale();
 
 
 
-class TabBox extends CRT.Box {
-
-  tab = -1;
-
-  realChildren: CRT.Box[] = [];
-
-  addTab(box: CRT.Box) {
-    this.children = this.realChildren;
-    this.add(box);
-    this.select(this.children.length - 1);
-  }
-
-  select(t: number) {
-    this.tab = t;
-    this.children = [this.realChildren[this.tab]];
-  }
-
-}
 
 
-const tabBox = new TabBox(40, 8, 320 - 40, 180 - 8, 0x222222ff);
+const tabBox = new CRT.TabBox(40, 8, 320 - 40, 180 - 8, 0x222222ff);
 screen.root.add(tabBox);
 
 
