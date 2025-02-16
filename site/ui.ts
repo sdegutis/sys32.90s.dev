@@ -253,12 +253,13 @@ export class Box {
   mouse = { x: 0, y: 0 };
   passthrough = false;
 
+  background = 0;
+
   constructor(
     public x = 0,
     public y = 0,
     public w = 0,
     public h = 0,
-    public background = 0,
   ) { }
 
   add(child: Box) {
