@@ -44,16 +44,9 @@ class Clip {
 
 export class Box {
 
-  static cursor = new Bitmap([0x00000099, 0xffffffff], [
-    1, 1, 1, 1, -1,
-    1, 2, 2, 1, -1,
-    1, 2, 1, 1, -1,
-    1, 1, 1, -1,
-  ]);
-
-  onScroll?: (up: boolean) => void;
-  onKeyDown?: (key: string) => void;
-  onMouseDown?: () => void;
+  onScroll?: (screen: Screen, up: boolean) => void;
+  onKeyDown?: (screen: Screen, key: string) => void;
+  onMouseDown?: (screen: Screen) => void;
 
   children: Box[] = [];
   hovered = false;
@@ -99,10 +92,10 @@ export class Box {
   }
 
   drawCursor(screen: Screen) {
-    Box.cursor.draw(screen, screen.mouse.x - 1, screen.mouse.y - 1);
+    cursors.pointer.draw(screen, screen.mouse.x - 1, screen.mouse.y - 1);
   }
 
-  focus() {
+  focus(screen: Screen) {
     screen.focused = this;
   }
 
@@ -136,7 +129,7 @@ export class Screen {
   pixels;
   imgdata;
 
-  font = defaultFont;
+  font = Font.crt2025;
 
   root;
 
@@ -169,85 +162,64 @@ export class Screen {
     this.lastHovered = this.root;
 
     canvas.addEventListener('keydown', (e) => {
-      screen.keys[e.key] = true;
-      screen.focused.onKeyDown?.(e.key);
+      this.keys[e.key] = true;
+      this.focused.onKeyDown?.(this, e.key);
     }, { passive: true });
 
     canvas.addEventListener('keyup', (e) => {
-      screen.keys[e.key] = false;
+      this.keys[e.key] = false;
     }, { passive: true });
 
     canvas.addEventListener('mousedown', (e) => {
-      screen.mouse.button = e.button;
-      screen.lastHovered.focus();
-      screen.lastHovered.onMouseDown?.();
+      this.mouse.button = e.button;
+      this.lastHovered.focus(this);
+      this.lastHovered.onMouseDown?.(this);
     }, { passive: true });
 
     canvas.addEventListener('mousemove', (e) => {
       const x = Math.floor(e.offsetX);
       const y = Math.floor(e.offsetY);
 
-      if (x === screen.mouse.x && y === screen.mouse.y) return;
+      if (x === this.mouse.x && y === this.mouse.y) return;
       if (x >= canvas.width || y >= canvas.height) return;
 
-      screen.hovered.length = 0;
+      this.hovered.length = 0;
 
-      screen.mouse.x = x;
-      screen.mouse.y = y;
+      this.mouse.x = x;
+      this.mouse.y = y;
 
-      const hoveredOver = hover(screen.root, screen.mouse.x, screen.mouse.y)!;
+      const hoveredOver = this._hover(this.root, this.mouse.x, this.mouse.y)!;
 
-      if (screen.lastHovered !== hoveredOver) {
-        screen.lastHovered.hovered = false;
+      if (this.lastHovered !== hoveredOver) {
+        this.lastHovered.hovered = false;
         hoveredOver.hovered = true;
-        screen.lastHovered = hoveredOver;
+        this.lastHovered = hoveredOver;
       }
     }, { passive: true });
 
     canvas.oncontextmenu = (e) => { e.preventDefault(); };
 
-    function hover(box: Box, x: number, y: number): Box | null {
-      if (box.passthrough) return null;
-
-      const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
-      if (!inThis) return null;
-
-      screen.hovered.push(box);
-
-      box.mouse.x = x;
-      box.mouse.y = y;
-
-      let i = box.children.length;
-      while (i--) {
-        const child = box.children[i];
-        const found = hover(child, x - child.x, y - child.y);
-        if (found) return found;
-      }
-
-      return box;
-    }
-
     canvas.addEventListener('wheel', (e) => {
-      let i = screen.hovered.length;
+      let i = this.hovered.length;
       while (i--) {
-        const box = screen.hovered[i];
+        const box = this.hovered[i];
         if (box.onScroll) {
-          box.onScroll(e.deltaY < 0);
+          box.onScroll(this, e.deltaY < 0);
           return;
         }
       }
     }, { passive: true })
 
-    function update(t: number) {
-      if (t - screen.last >= 30) {
-        screen.tick(t - screen.last);
-        screen.root.draw(screen);
-        screen.lastHovered.drawCursor(screen);
-        screen.blit();
-        screen.last = t;
+    const update = (t: number) => {
+      if (t - this.last >= 30) {
+        this.tick(t - this.last);
+        this.root.draw(this);
+        this.lastHovered.drawCursor(this);
+        this.blit();
+        this.last = t;
       }
       requestAnimationFrame(update);
-    }
+    };
     requestAnimationFrame(update);
 
   }
@@ -354,6 +326,27 @@ export class Screen {
     return () => done.abort();
   }
 
+  _hover(box: Box, x: number, y: number): Box | null {
+    if (box.passthrough) return null;
+
+    const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
+    if (!inThis) return null;
+
+    this.hovered.push(box);
+
+    box.mouse.x = x;
+    box.mouse.y = y;
+
+    let i = box.children.length;
+    while (i--) {
+      const child = box.children[i];
+      const found = this._hover(child, x - child.x, y - child.y);
+      if (found) return found;
+    }
+
+    return box;
+  }
+
 }
 
 
@@ -427,7 +420,7 @@ export class Mover {
   startMouse;
   startElPos;
 
-  constructor(private el: Box) {
+  constructor(private screen: Screen, private el: Box) {
     this.startMouse = { x: screen.mouse.x, y: screen.mouse.y };
     this.startElPos = { x: el.x, y: el.y };
   }
@@ -435,8 +428,8 @@ export class Mover {
   update() {
     const offx = this.startMouse.x - this.startElPos.x;
     const offy = this.startMouse.y - this.startElPos.y;
-    const diffx = screen.mouse.x - this.startElPos.x;
-    const diffy = screen.mouse.y - this.startElPos.y;
+    const diffx = this.screen.mouse.x - this.startElPos.x;
+    const diffy = this.screen.mouse.y - this.startElPos.y;
     this.el.x = this.startElPos.x + diffx - offx;
     this.el.y = this.startElPos.y + diffy - offy;
   }
@@ -461,10 +454,10 @@ export class Button extends Box {
   clicking = false;
   onClick() { }
 
-  onMouseDown = () => {
+  onMouseDown = (screen: Screen) => {
     this.clicking = true;
 
-    const cancel = this.trackMouse({
+    const cancel = screen.trackMouse({
       move: () => {
         if (!this.hovered) {
           cancel();
@@ -590,11 +583,11 @@ export class TextField extends Box {
     this.clips = true;
   }
 
-  onScroll = (up: boolean) => {
+  onScroll = (screen: Screen, up: boolean) => {
     console.log('scrolling', up)
   };
 
-  onKeyDown = (key: string) => {
+  onKeyDown = (screen: Screen, key: string) => {
     if (key === 'Enter') {
       this.text += '\n';
     }
@@ -646,6 +639,35 @@ export class TextField extends Box {
 
 
 class Font {
+
+  static crt2025 = new Font(3, 4, 16,
+    `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^`,
+    `
+| xxx | xx  | xxx | xx  | xxx | xxx | xxx | x x | xxx | xxx | x x | x   | xxx | xxx | xxx | xxx |
+| x x | xxx | x   | x x | xx  | xx  | x   | xxx |  x  |  x  | xx  | x   | xxx | x x | x x | x x |
+| xxx | x x | x   | x x | x   | x   | x x | x x |  x  |  x  | xx  | x   | x x | x x | x x | xx  |
+| x x | xxx | xxx | xx  | xxx | x   | xxx | x x | xxx | xx  | x x | xxx | x x | x x | xxx | x   |
+|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
+| xxx | xxx | xxx | xxx | x x | x x | x x | x x | x x | xxx |     |     |     | xx  |  x  | xxx |
+| x x | x x | x   |  x  | x x | x x | x x |  x  | x x |  xx |     |     |     |  x  |  x  | x x |
+| xxx | xx  |  xx |  x  | x x | x x | xxx |  x  |  x  | x   |     |     |  x  |     |     |     |
+|   x | x x | xxx |  x  | xxx |  x  | xxx | x x |  x  | xxx |     |  x  | x   |     |  x  |   x |
+|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
+| xx  | xx  | xxx | x x | xxx | xxx | xxx | xxx | xxx |  x  |     |  x  |   x |   x |  x  | x x |
+|  x  |   x |  xx | x x | xx  | x   |   x | xxx | x x | x x | xxx | xxx |  x  |  x  |   x | x x |
+|  x  |  x  |   x | xxx |   x | xxx |   x | x x |  xx | x x |     |  x  |  x  |  x  |   x |     |
+| xxx | xxx | xxx |   x | xx  | xxx |   x | xxx | xx  |  x  |     |     | x   |   x |  x  |     |
+|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
+| x   |  x  |  x  | x x | xx  | xx  | xx  |  x  | x   |     | xxx | xxx |  x  |  xx | xx  | x   |
+|     |     |     |  x  |     | x   |  x  | x   |  x  |     | x x | xxx |  x  | xx  |  xx |  x  |
+| x   |  x  | xxx | x x | xx  | x   |  x  |  x  | x   |     | xx  | xxx |  x  | xx  |  xx |     |
+|     | x   |  x  |     |     | xx  | xx  |     |     | xxx | xxx |     |  x  |  xx | xx  |     |
+|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
+|  x  |  xx | xx  |  x  |     |     |     |     |     |     |     |     |     |     |     |     |
+| x   | x x |  xx | x x |     |     |     |     |     |     |     |     |     |     |     |     |
+|  x  | x   |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
+| x   |  xx |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
+  `);
 
   chars: Record<string, boolean[][]> = {};
 
@@ -704,35 +726,11 @@ class Font {
 
 }
 
-const defaultFont = new Font(3, 4, 16,
-  `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^`,
-  `
-| xxx | xx  | xxx | xx  | xxx | xxx | xxx | x x | xxx | xxx | x x | x   | xxx | xxx | xxx | xxx |
-| x x | xxx | x   | x x | xx  | xx  | x   | xxx |  x  |  x  | xx  | x   | xxx | x x | x x | x x |
-| xxx | x x | x   | x x | x   | x   | x x | x x |  x  |  x  | xx  | x   | x x | x x | x x | xx  |
-| x x | xxx | xxx | xx  | xxx | x   | xxx | x x | xxx | xx  | x x | xxx | x x | x x | xxx | x   |
-|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
-| xxx | xxx | xxx | xxx | x x | x x | x x | x x | x x | xxx |     |     |     | xx  |  x  | xxx |
-| x x | x x | x   |  x  | x x | x x | x x |  x  | x x |  xx |     |     |     |  x  |  x  | x x |
-| xxx | xx  |  xx |  x  | x x | x x | xxx |  x  |  x  | x   |     |     |  x  |     |     |     |
-|   x | x x | xxx |  x  | xxx |  x  | xxx | x x |  x  | xxx |     |  x  | x   |     |  x  |   x |
-|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
-| xx  | xx  | xxx | x x | xxx | xxx | xxx | xxx | xxx |  x  |     |  x  |   x |   x |  x  | x x |
-|  x  |   x |  xx | x x | xx  | x   |   x | xxx | x x | x x | xxx | xxx |  x  |  x  |   x | x x |
-|  x  |  x  |   x | xxx |   x | xxx |   x | x x |  xx | x x |     |  x  |  x  |  x  |   x |     |
-| xxx | xxx | xxx |   x | xx  | xxx |   x | xxx | xx  |  x  |     |     | x   |   x |  x  |     |
-|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
-| x   |  x  |  x  | x x | xx  | xx  | xx  |  x  | x   |     | xxx | xxx |  x  |  xx | xx  | x   |
-|     |     |     |  x  |     | x   |  x  | x   |  x  |     | x x | xxx |  x  | xx  |  xx |  x  |
-| x   |  x  | xxx | x x | xx  | x   |  x  |  x  | x   |     | xx  | xxx |  x  | xx  |  xx |     |
-|     | x   |  x  |     |     | xx  | xx  |     |     | xxx | xxx |     |  x  |  xx | xx  |     |
-|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
-|  x  |  xx | xx  |  x  |     |     |     |     |     |     |     |     |     |     |     |     |
-| x   | x x |  xx | x x |     |     |     |     |     |     |     |     |     |     |     |     |
-|  x  | x   |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
-| x   |  xx |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
-`);
-
-
-export const screen = new Screen(document.querySelector('canvas')!);
-screen.autoscale();
+const cursors = {
+  pointer: new Bitmap([0x00000099, 0xffffffff], [
+    1, 1, 1, 1, -1,
+    1, 2, 2, 1, -1,
+    1, 2, 1, 1, -1,
+    1, 1, 1, -1,
+  ]),
+};

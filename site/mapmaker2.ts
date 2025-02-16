@@ -1,5 +1,9 @@
-import { Box, Button, Mover, RadioButton, RadioGroup, Screen, screen, TileSelection } from "./ui.js";
+import { Box, Button, Mover, RadioButton, RadioGroup, Screen, TileSelection } from "./ui.js";
 
+
+
+const screen = new Screen(document.querySelector('canvas')!);
+screen.autoscale();
 
 
 
@@ -150,7 +154,7 @@ for (let i = 0; i < 17; i++) {
 
 
 
-screen.root.onScroll = up => {
+screen.root.onScroll = (screen, up) => {
   if (up) {
     currentTool--;
     if (currentTool < 0) currentTool = 16;
@@ -205,7 +209,7 @@ let tilesel: TileSelection | null = null;
 
 mapBox.onMouseDown = () => {
   if (screen.keys[' ']) {
-    const dragger = new Mover(mapBox);
+    const dragger = new Mover(screen, mapBox);
     screen.trackMouse({ move: () => dragger.update() });
   }
   else if (screen.keys['Control']) {
