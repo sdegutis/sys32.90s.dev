@@ -101,6 +101,7 @@ export class Screen {
     const update = (t: number) => {
       if (t - last >= 30) {
         if (this.needsRedraw) {
+          this.needsRedraw = false;
           this.root.draw(this);
           this._lastHovered.drawCursor(this);
           this.blit();
