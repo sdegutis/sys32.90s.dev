@@ -1,7 +1,36 @@
 import * as CRT from "./ui.js";
 
+
 const screen = new CRT.Screen(document.querySelector('canvas')!);
 screen.autoscale();
+
+
+
+
+
+
+
+const tabBox = new CRT.TabBox();
+tabBox.x = 40;
+tabBox.y = 8;
+tabBox.w = 320 - 40;
+tabBox.h = 180 - 8;
+tabBox.background = 0x222222ff;
+screen.root.add(tabBox);
+
+
+
+
+
+const mapArea2 = new CRT.Box();
+mapArea2.w = 320 - 40;
+mapArea2.h = 180 - 8;
+mapArea2.background = 0x000033ff;
+tabBox.addTab(mapArea2);
+mapArea2.onMouseDown = () => console.log('haha nope');
+
+
+
 
 const menu = new CRT.Box();
 menu.w = 320;
@@ -43,6 +72,16 @@ gridButton.color = 0xffffff33;
 gridButton.text = 'grid';
 gridButton.onClick = () => showGrid = !showGrid;
 menu.add(gridButton);
+
+const tabButton = new CRT.Button();
+tabButton.x = 60;
+tabButton.w = 4 * 4 + 3;
+tabButton.h = 8;
+tabButton.background = 0x000000ff;
+tabButton.color = 0xffffff33;
+tabButton.text = 'tabs';
+tabButton.onClick = () => tabBox.select((tabBox.tab + 1) % 2);
+menu.add(tabButton);
 
 
 
@@ -165,13 +204,11 @@ screen.root.onScroll = (up) => {
 
 
 const mapArea = new CRT.Box();
-mapArea.x = 40;
-mapArea.y = 8;
 mapArea.w = 320 - 40;
 mapArea.h = 180 - 8;
 mapArea.background = 0x222222ff;
 mapArea.clips = true;
-screen.root.add(mapArea);
+tabBox.addTab(mapArea);
 
 mapArea.drawContents = () => {
   screen.rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
@@ -287,3 +324,123 @@ mapBox.draw = () => {
     screen.rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
   }
 }
+
+
+
+const textbox = new CRT.TextField();
+textbox.x = 10;
+textbox.y = 25;
+textbox.w = 50;
+textbox.h = 20;
+textbox.background = 0x000000ff;
+textbox.text = `test`;
+
+textbox.onMouseMove = () => { console.log('move', textbox.mouse); }
+textbox.onMouseEnter = () => { console.log('enter', textbox.mouse); }
+textbox.onMouseExit = () => { console.log('exit', textbox.mouse); }
+
+const checkbox = new CRT.Checkbox();
+checkbox.x = 160;
+checkbox.y = 1;
+checkbox.w = 8 + 4 * 7;
+checkbox.h = 6;
+checkbox.background = 0x000000ff;
+screen.root.add(checkbox);
+checkbox.onChange = () => console.log(checkbox.checked)
+checkbox.checked = true;
+
+const label = new CRT.Label();
+label.text = 'testing';
+label.x = 8;
+label.y = 1;
+label.w = 4 * 7;
+label.h = 6;
+checkbox.add(label);
+
+export class Slider extends CRT.Box {
+
+  value = 0;
+  min = 0;
+  max = 10;
+
+  drawContents(): void {
+    super.drawContents();
+
+    const p = this.value / this.max * this.w;
+    console.log(p)
+    this.screen.pset(p, 1, 0xfffffffff);
+  }
+
+  onMouseDown = () => {
+    this.screen.trackMouse({
+      move: () => {
+        this.value = this.mouse.x / this.w * this.max;
+      }
+    });
+  };
+
+}
+
+const slider = new Slider();
+slider.x = 60;
+slider.y = 40;
+slider.w = 8 + 4 * 7;
+slider.h = 6;
+slider.background = 0x000000ff;
+screen.root.add(slider);
+
+const test1 = new CRT.Box();
+test1.x = 100;
+test1.clips = true;
+test1.y = 100;
+test1.w = 70;
+test1.h = 60;
+test1.drawContents = () => {
+  screen.rectFill(1, 1, test1.w - 2, test1.h - 2, 0x00000099);
+
+  screen.rectLine(0, 0, test1.w, test1.h, 0xffffff77)
+
+  // screen.rectFill(1, 0, test1.w - 2, 1, 0x00000099);
+  // screen.rectFill(1, test1.h - 1, test1.w - 2, 1, 0x00000099);
+  // screen.rectFill(0, 1, 1, test1.h - 2, 0x00000099);
+  // screen.rectFill(test1.w - 1, 1, 1, test1.h - 2, 0x00000099);
+
+  // screen.rectFill(1, 0, test1.w - 2, 1, 0xffffff77);
+  // screen.rectFill(1, test1.h - 1, test1.w - 2, 1, 0xffffff77);
+  // screen.rectFill(0, 1, 1, test1.h - 2, 0xffffff77);
+  // screen.rectFill(test1.w - 1, 1, 1, test1.h - 2, 0xffffff77);
+
+  screen.print(3, 3, 0xffffff44, 'test window')
+  screen.rectFill(1, 9, test1.w - 2, 1, 0xffffff77);
+
+  screen.pset(test1.w - 3, test1.h - 3, 0xffffffff)
+};
+test1.onMouseDown = () => {
+  if (test1.mouse.x >= test1.w - 3 && test1.mouse.y >= test1.h - 3) {
+    const dragger = new CRT.Resizer(screen, test1);
+    screen.trackMouse({ move: () => dragger.update() });
+  }
+  else if (test1.mouse.y < 10) {
+    const dragger = new CRT.Mover(screen, test1);
+    screen.trackMouse({ move: () => dragger.update() });
+  }
+};
+screen.root.add(test1);
+
+const b1 = new CRT.Button();
+b1.x = 3; b1.y = 15; b1.w = 20; b1.h = 10;
+b1.text = 'hmm';
+test1.add(b1)
+test1.add(textbox);
+
+// screen.root.draw = () => {
+
+//   for (let y = 0; y < 180; y++) {
+//     for (let x = 0; x < 320; x++) {
+//       screen.pset(x, y, Math.floor(Math.random() * 0xffffffff))
+//     }
+//   }
+
+//   screen.needsRedraw = true;
+
+// };
