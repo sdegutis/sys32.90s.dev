@@ -242,7 +242,7 @@ export class Box {
     public y = 0,
     public w = 0,
     public h = 0,
-    public background?: number,
+    public background = 0,
   ) { }
 
   add(child: Box) {
@@ -265,8 +265,9 @@ export class Box {
   unclip() { this.#clip?.unset(this.screen); }
 
   drawContents() {
-    if (!this.background) return;
-    this.screen.rectFill(0, 0, this.w, this.h, this.background);
+    if (this.background !== 0) {
+      this.screen.rectFill(0, 0, this.w, this.h, this.background);
+    }
   }
 
   drawChildren() {
