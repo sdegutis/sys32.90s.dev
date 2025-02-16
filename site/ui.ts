@@ -1,35 +1,29 @@
 export class Screen {
 
-  _camera = { x: 0, y: 0 };
-  _clip;
-
-  _context;
-  _pixels;
-  blit;
-
-  font = Font.crt2025;
-
-  keys: Record<string, boolean> = {};
-  mouse = { x: 0, y: 0, button: 0 };
-  _trackingMouse?: { move: () => void, up?: () => void };
-
   root;
   focused: Box;
+  font = Font.crt2025;
+  keys: Record<string, boolean> = {};
+  mouse = { x: 0, y: 0, button: 0 };
+
   _hovered: Box[] = [];
   _lastHovered: Box;
+  _trackingMouse?: { move: () => void, up?: () => void };
+
+  _camera = { x: 0, y: 0 };
+  _clip;
+  _context;
+  _pixels;
+  _imgdata;
 
   constructor(public canvas: HTMLCanvasElement) {
     this._context = canvas.getContext('2d')!;
 
     this._pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
+    this._imgdata = new ImageData(this._pixels, canvas.width, canvas.height);
     for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
       this._pixels[i + 3] = 255;
     }
-
-    const imgdata = new ImageData(this._pixels, canvas.width, canvas.height);
-    this.blit = () => {
-      this._context.putImageData(imgdata, 0, 0);
-    };
 
     this._clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
 
@@ -125,6 +119,10 @@ export class Screen {
     this.root.draw(this);
     this._lastHovered.drawCursor(this);
     this.blit();
+  }
+
+  blit() {
+    this._context.putImageData(this._imgdata, 0, 0);
   }
 
   pset(x: number, y: number, c: number) {
