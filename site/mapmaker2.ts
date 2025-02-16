@@ -301,14 +301,14 @@ mapBox.draw = (screen) => {
 
 
 
-// const textbox = new CRT.TextField(160, 10, 60, 80, 0x000000ff);
-// textbox.text = `#include blobbycode.p8`;
-// screen.root.children.push(textbox);
+const textbox = new CRT.TextField(160, 10, 60, 80, 0x000000ff);
+textbox.text = `test`;
+screen.root.children.push(textbox);
 
-// const checkbox = new CRT.Checkbox(160, 1, 8 + 4 * 7, 6, 0x000000ff);
-// screen.root.children.push(checkbox);
-// checkbox.onChange = () => console.log(checkbox.checked)
-// checkbox.checked = true;
-// checkbox.children.push(new CRT.Label('testing', 8, 1, 4 * 7, 6));
+const checkbox = new CRT.Checkbox(160, 1, 8 + 4 * 7, 6, 0x000000ff);
+screen.root.children.push(checkbox);
+checkbox.onChange = () => console.log(checkbox.checked)
+checkbox.checked = true;
+checkbox.children.push(new CRT.Label('testing', 8, 1, 4 * 7, 6));
 
 tabBox.select(1);

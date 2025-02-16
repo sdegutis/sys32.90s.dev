@@ -31,12 +31,6 @@ export class Screen {
       this._context.putImageData(imgdata, 0, 0);
     };
 
-    const redrawAll = () => {
-      this.root.draw(this);
-      this._lastHovered.drawCursor(this);
-      this.blit();
-    };
-
     this._clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
 
     this.root = new Box(0, 0, canvas.width, canvas.height);
@@ -46,21 +40,22 @@ export class Screen {
     canvas.addEventListener('keydown', (e) => {
       this.keys[e.key] = true;
       this.focused.onKeyDown?.(this, e.key);
-      redrawAll();
+      this.redraw();
     }, { passive: true });
 
     canvas.addEventListener('keyup', (e) => {
       this.keys[e.key] = false;
-      redrawAll();
+      this.redraw();
     }, { passive: true });
 
     canvas.oncontextmenu = (e) => { e.preventDefault(); };
 
     canvas.addEventListener('mousedown', (e) => {
       this.mouse.button = e.button;
+      this.focused.onUnfocus?.(this);
       this._lastHovered.focus(this);
       this._lastHovered.onMouseDown?.(this);
-      redrawAll();
+      this.redraw();
     }, { passive: true });
 
     canvas.addEventListener('mousemove', (e) => {
@@ -85,12 +80,12 @@ export class Screen {
 
       this._trackingMouse?.move();
 
-      redrawAll();
+      this.redraw();
     }, { passive: true });
 
     canvas.addEventListener('mouseup', (e) => {
       this._trackingMouse?.up?.();
-      redrawAll();
+      this.redraw();
     }, { passive: true });
 
     canvas.addEventListener('wheel', (e) => {
@@ -99,11 +94,13 @@ export class Screen {
         const box = this._hovered[i];
         if (box.onScroll) {
           box.onScroll(this, e.deltaY < 0);
-          redrawAll();
+          this.redraw();
           return;
         }
       }
     }, { passive: true })
+
+    this.redraw();
   }
 
   autoscale() {
@@ -122,6 +119,12 @@ export class Screen {
 
   scale(scale: number) {
     this.canvas.style.transform = `scale(${scale})`;
+  }
+
+  redraw() {
+    this.root.draw(this);
+    this._lastHovered.drawCursor(this);
+    this.blit();
   }
 
   pset(x: number, y: number, c: number) {
@@ -260,6 +263,8 @@ export class Box {
   onScroll?: (screen: Screen, up: boolean) => void;
   onKeyDown?: (screen: Screen, key: string) => void;
   onMouseDown?: (screen: Screen) => void;
+  onFocus?: (screen: Screen) => void;
+  onUnfocus?: (screen: Screen) => void;
 
   children: Box[] = [];
   hovered = false;
@@ -310,6 +315,7 @@ export class Box {
 
   focus(screen: Screen) {
     screen.focused = this;
+    this.onFocus?.(screen);
   }
 
 }
@@ -488,6 +494,26 @@ export class TextField extends Box {
       }
     }
   }
+
+  animate = false;
+
+  onFocus = (screen: Screen) => {
+    this.animate = true;
+    let last = +document.timeline.currentTime!;
+    const update = (t: number) => {
+      if (t - last >= 30) {
+        // console.log('looping')
+        screen.redraw();
+        last = t;
+      }
+      if (this.animate) requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+  };
+
+  onUnfocus = () => {
+    this.animate = false;
+  };
 
 }
 
