@@ -363,7 +363,21 @@ export class Slider extends CRT.Box {
   min = 0;
   max = 10;
 
+  drawContents(): void {
+    super.drawContents();
 
+    const p = this.value / this.max * this.w;
+    console.log(p)
+    this.screen.pset(p, 1, 0xfffffffff);
+  }
+
+  onMouseDown = () => {
+    this.screen.trackMouse({
+      move: () => {
+        this.value = this.mouse.x / this.w * this.max;
+      }
+    });
+  };
 
 }
 
