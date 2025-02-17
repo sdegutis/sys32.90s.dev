@@ -1,7 +1,12 @@
 import * as CRT from "./ui.js";
 
-const screen = new CRT.Screen(document.querySelector('canvas')!);
+const canvas = document.querySelector('canvas')!;
+canvas.width = 320;
+canvas.height = 180;
+const screen = new CRT.Screen(canvas);
 screen.autoscale();
+
+screen.root.onKeyDown = k => console.log(k.toUpperCase())
 
 const menu = new CRT.Box();
 menu.w = 320;

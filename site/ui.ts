@@ -22,6 +22,13 @@ export class Screen {
   _destroyer = new AbortController();
 
   constructor(public canvas: HTMLCanvasElement) {
+    canvas.style.imageRendering = 'pixelated';
+    canvas.style.backgroundColor = '#000';
+    canvas.style.outline = 'none';
+    canvas.style.cursor = 'none';
+    canvas.tabIndex = 0;
+    canvas.focus();
+
     this._context = canvas.getContext('2d')!;
 
     this.pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
