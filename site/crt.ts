@@ -223,25 +223,25 @@ export class Screen {
     return () => this.#trackingMouse = undefined;
   }
 
-  #hover(box: Box, x: number, y: number): Box | null {
-    if (box.passthrough) return null;
+  #hover(node: Box, x: number, y: number): Box | null {
+    if (node.passthrough) return null;
 
-    const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
+    const inThis = (x >= 0 && y >= 0 && x < node.w && y < node.h);
     if (!inThis) return null;
 
-    this.#allHovered.push(box);
+    this.#allHovered.push(node);
 
-    box.mouse.x = x;
-    box.mouse.y = y;
+    node.mouse.x = x;
+    node.mouse.y = y;
 
-    let i = box.children.length;
+    let i = node.children.length;
     while (i--) {
-      const child = box.children[i];
+      const child = node.children[i];
       const found = this.#hover(child, x - child.x, y - child.y);
       if (found) return found;
     }
 
-    return box;
+    return node;
   }
 
   #draw(node: Box) {

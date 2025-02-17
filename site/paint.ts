@@ -4,6 +4,16 @@ import { Box, Screen, TileSelection, dragMove, dragResize } from "./crt.js";
 const screen = new Screen(document.querySelector('canvas')!);
 screen.autoscale();
 
+class BorderBox extends Box {
+
+  border = 0x000000ff;
+
+  draw = () => {
+    this.screen.rectLine(0, 0, this.w, this.h, this.border);
+  };
+
+}
+
 class VacuumBox extends Box {
 
   layout(): void {
@@ -42,7 +52,6 @@ class SplitBox extends Box {
       this.children[1].y = this.pos;
       this.children[1].h -= this.pos;
     }
-
     super.layout();
   }
 
@@ -56,9 +65,9 @@ const split = new SplitBox();
 split.pos = 10;
 split.dir = 'y';
 
-const red = new Box(); red.background = 0x330000ff;
-const green = new Box(); green.background = 0x003300ff;
-const blue = new Box(); blue.background = 0x000033ff;
+const red = new BorderBox(); red.background = 0x330000ff; red.border = 0xffffff33;
+const green = new BorderBox(); green.background = 0x003300ff; green.border = 0xffffff33;
+const blue = new BorderBox(); blue.background = 0x000033ff; blue.border = 0xffffff33;
 
 const split2 = new SplitBox();
 split2.pos = 30;
