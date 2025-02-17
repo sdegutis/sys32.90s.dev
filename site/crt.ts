@@ -44,22 +44,20 @@ export class Screen {
     this.focused = this.root;
     this.#hovered = this.root;
 
-    const callbackOpts = { signal: this.#destroyer.signal };
-
     canvas.addEventListener('keydown', (e) => {
       this.keys[e.key] = true;
       this.focused.onKeyDown?.(e.key);
       this.needsRedraw = true;
-    }, callbackOpts);
+    }, { passive: true, signal: this.#destroyer.signal });
 
     canvas.addEventListener('keyup', (e) => {
       this.keys[e.key] = false;
       this.needsRedraw = true;
-    }, callbackOpts);
+    }, { passive: true, signal: this.#destroyer.signal });
 
     canvas.addEventListener('contextmenu', (e) => {
       e.preventDefault();
-    }, callbackOpts);
+    }, { signal: this.#destroyer.signal });
 
     canvas.addEventListener('mousedown', (e) => {
       this.mouse.button = e.button;
@@ -67,7 +65,7 @@ export class Screen {
       this.#hovered.focus();
       this.#hovered.onMouseDown?.();
       this.needsRedraw = true;
-    }, callbackOpts);
+    }, { passive: true, signal: this.#destroyer.signal });
 
     canvas.addEventListener('mousemove', (e) => {
       const x = Math.floor(e.offsetX);
@@ -97,13 +95,13 @@ export class Screen {
       if (notTracking) this.#hovered.onMouseMove?.();
 
       this.needsRedraw = true;
-    }, callbackOpts);
+    }, { passive: true, signal: this.#destroyer.signal });
 
     canvas.addEventListener('mouseup', (e) => {
       this.#trackingMouse?.up?.();
       this.#trackingMouse = undefined;
       this.needsRedraw = true;
-    }, callbackOpts);
+    }, { passive: true, signal: this.#destroyer.signal });
 
     canvas.addEventListener('wheel', (e) => {
       let i = this.#allHovered.length;
@@ -115,7 +113,7 @@ export class Screen {
           return;
         }
       }
-    }, callbackOpts)
+    }, { passive: true, signal: this.#destroyer.signal })
 
     let alive = true;
     this.#destroyer.signal.addEventListener('abort', () => {
