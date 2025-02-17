@@ -14,7 +14,7 @@ export class Screen {
 
   pixels;
 
-  #camera = { x: 0, y: 0, x1: 0, y1: 0, x2: 0, y2: 0 };
+  #clip = { cx: 0, cy: 0, x1: 0, y1: 0, x2: Infinity, y2: Infinity };
   #context;
   #imgdata;
 
@@ -35,9 +35,6 @@ export class Screen {
     for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
       this.pixels[i + 3] = 255;
     }
-
-    this.#camera.x2 = canvas.width - 1;
-    this.#camera.y2 = canvas.height - 1;
 
     this.root = new Box();
     this.root.w = canvas.width;
@@ -181,15 +178,15 @@ export class Screen {
   rectFill(x: number, y: number, w: number, h: number, c: number) {
     const cw = this.canvas.width;
 
-    let x1 = x + this.#camera.x;
-    let y1 = y + this.#camera.y;
+    let x1 = x + this.#clip.cx;
+    let y1 = y + this.#clip.cy;
     let x2 = x1 + w - 1;
     let y2 = y1 + h - 1;
 
-    if (this.#camera.x1 > x1) x1 = this.#camera.x1;
-    if (this.#camera.y1 > y1) y1 = this.#camera.y1;
-    if (this.#camera.x2 < x2) x2 = this.#camera.x2;
-    if (this.#camera.y2 < y2) y2 = this.#camera.y2;
+    if (this.#clip.x1 > x1) x1 = this.#clip.x1;
+    if (this.#clip.y1 > y1) y1 = this.#clip.y1;
+    if (this.#clip.x2 < x2) x2 = this.#clip.x2;
+    if (this.#clip.y2 < y2) y2 = this.#clip.y2;
 
     const r = c >> 24 & 0xff;
     const g = c >> 16 & 0xff;
@@ -248,17 +245,17 @@ export class Screen {
   }
 
   #draw(node: Box) {
-    const cx1 = this.#camera.x1;
-    const cx2 = this.#camera.x2;
-    const cy1 = this.#camera.y1;
-    const cy2 = this.#camera.y2;
+    const cx1 = this.#clip.x1;
+    const cx2 = this.#clip.x2;
+    const cy1 = this.#clip.y1;
+    const cy2 = this.#clip.y2;
 
-    this.#camera.x += node.x;
-    this.#camera.y += node.y;
-    this.#camera.x1 = Math.max(cx1, this.#camera.x);
-    this.#camera.y1 = Math.max(cy1, this.#camera.y);
-    this.#camera.x2 = Math.min(cx2, (this.#camera.x + node.w - 1));
-    this.#camera.y2 = Math.min(cy2, (this.#camera.y + node.h - 1));
+    this.#clip.cx += node.x;
+    this.#clip.cy += node.y;
+    this.#clip.x1 = Math.max(cx1, this.#clip.cx);
+    this.#clip.y1 = Math.max(cy1, this.#clip.cy);
+    this.#clip.x2 = Math.min(cx2, (this.#clip.cx + node.w - 1));
+    this.#clip.y2 = Math.min(cy2, (this.#clip.cy + node.h - 1));
 
     if ((node.background & 0xff) > 0) {
       node.screen.rectFill(0, 0, node.w, node.h, node.background);
@@ -270,13 +267,13 @@ export class Screen {
       this.#draw(node.children[i]);
     }
 
-    this.#camera.x -= node.x;
-    this.#camera.y -= node.y;
+    this.#clip.cx -= node.x;
+    this.#clip.cy -= node.y;
 
-    this.#camera.x1 = cx1;
-    this.#camera.x2 = cx2;
-    this.#camera.y1 = cy1;
-    this.#camera.y2 = cy2;
+    this.#clip.x1 = cx1;
+    this.#clip.x2 = cx2;
+    this.#clip.y1 = cy1;
+    this.#clip.y2 = cy2;
   }
 
 }
