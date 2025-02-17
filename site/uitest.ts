@@ -568,19 +568,19 @@ export class Slider extends Box {
   min = 0;
   max = 10;
 
-  draw = () => {
+  draw(): void {
     const p = this.value / this.max * this.w;
     console.log(p)
     this.screen.pset(p, 1, 0xfffffffff);
-  };
+  }
 
-  onMouseDown = (trackMouse: MouseTracker) => {
+  onMouseDown(trackMouse: MouseTracker): void {
     trackMouse({
       move: () => {
         this.value = this.mouse.x / this.w * this.max;
       }
     });
-  };
+  }
 
 }
 

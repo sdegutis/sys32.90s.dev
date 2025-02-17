@@ -10,7 +10,7 @@ class Button extends Box {
   clicking = false;
   onClick() { }
 
-  onMouseDown = (trackMouse: MouseTracker) => {
+  onMouseDown(trackMouse: MouseTracker): void {
     this.clicking = true;
 
     const cancel = trackMouse({
@@ -25,9 +25,9 @@ class Button extends Box {
         this.clicking = false;
       },
     });
-  };
+  }
 
-  draw = () => {
+  draw(): void {
     if (this.clicking) {
       this.screen.rectFill(0, 0, this.w, this.h, 0xffffff22);
     }
@@ -36,7 +36,7 @@ class Button extends Box {
     }
 
     this.screen.print(2, 2, this.color, this.text);
-  };
+  }
 
 }
 
@@ -71,7 +71,7 @@ class RadioButton extends Button {
     this.onSelect();
   }
 
-  draw = () => {
+  draw(): void {
     this.drawButton();
 
     if (this.selected) {
@@ -80,7 +80,7 @@ class RadioButton extends Button {
     else if (this.hovered) {
       this.screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
     }
-  };
+  }
 
 }
 

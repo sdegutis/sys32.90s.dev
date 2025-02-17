@@ -350,16 +350,16 @@ export type Property = {
 
 export class Box {
 
-  onScroll?: (up: boolean) => void;
-  onKeyDown?: (key: string) => void;
-  onMouseDown?: (trackMouse: MouseTracker) => void;
-  onMouseMove?: () => void;
-  onMouseEnter?: () => void;
-  onMouseExit?: () => void;
-  onFocus?: () => void;
-  onUnfocus?: () => void;
-  draw?: () => void;
-  layout?: () => void;
+  onScroll?(up: boolean): void;
+  onKeyDown?(key: string): void;
+  onMouseDown?(trackMouse: MouseTracker): void;
+  onMouseMove?(): void;
+  onMouseEnter?(): void;
+  onMouseExit?(): void;
+  onFocus?(): void;
+  onUnfocus?(): void;
+  draw?(): void;
+  layout?(): void;
 
   static props: Property[] = [
     { name: 'x', type: 'number' },

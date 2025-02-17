@@ -7,9 +7,9 @@ class BorderBox extends Box {
 
   border = 0xffffff33;
 
-  draw = () => {
+  draw(): void {
     this.screen.rectLine(0, 0, this.w, this.h, this.border);
-  };
+  }
 
 }
 
@@ -46,7 +46,7 @@ class SplitBox extends Box {
 
   #resizer?: Box;
 
-  layout = () => {
+  layout(): void {
     const dx = this.dir;
     const dw = dx === 'x' ? 'w' : 'h';
 
@@ -120,7 +120,7 @@ class SplitBox extends Box {
       this.#resizer.trackingArea[dx] = -3;
       this.#resizer.trackingArea[dw] = this.dividerWidth + 6;
     }
-  };
+  }
 
 }
 
@@ -181,7 +181,6 @@ class Label extends Box {
   #text = '';
   font = Font.crt2025;
   padding = 1;
-  background = 0xffffff33;
   passthrough = true;
 
   get text() { return this.#text; }
@@ -192,9 +191,9 @@ class Label extends Box {
     this.h = size.h + this.padding * 2;
   }
 
-  draw = () => {
+  draw() {
     this.screen.print(this.padding, this.padding, 0xffffffff, this.text);
-  };
+  }
 
 }
 
@@ -216,19 +215,12 @@ class Button extends BorderBox {
     }
   }
 
-  constructor(screen: Screen) {
-    super(screen);
-
-    const oldDraw = this.draw;
-
-    this.draw = () => {
-      oldDraw();
-      if (this.hovered) {
-        this.screen.rectFill(0, 0, this.w, this.h, 0x00000033);
-      }
+  draw(): void {
+    super.draw();
+    if (this.hovered) {
+      this.screen.rectFill(0, 0, this.w, this.h, 0xffffff33);
     }
   }
-
 
 }
 
@@ -238,7 +230,7 @@ button.y = 30;
 button.w = 30;
 button.h = 10;
 button.background = 0x00000033;
-button.border = 0xff0000ff;
+button.border = 0xff000033;
 green.children.push(button);
 
 const label = new Label(screen);
