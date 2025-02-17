@@ -29,28 +29,59 @@ class SplitBox extends Box {
 
   pos = 0;
   dir: 'x' | 'y' = 'y';
+  resizable = false;
+  dividerWidth = 2;
+  dividerColor = 0xaaaaaaff;
+
+  #resizer?: Box;
 
   layout(): void {
-    this.children[0].x = 0;
-    this.children[0].y = 0;
-    this.children[0].w = this.w;
-    this.children[0].h = this.h;
 
-    this.children[1].x = 0;
-    this.children[1].y = 0;
-    this.children[1].w = this.w;
-    this.children[1].h = this.h;
+    const dw = this.dir === 'x' ? 'w' : 'h';
+    const dx = this.dir;
 
-    if (this.dir === 'x') {
-      this.children[0].w = this.pos;
-      this.children[1].x = this.pos;
-      this.children[1].w -= this.pos;
+    if (!this.resizable && this.#resizer) {
+      this.#resizer = undefined;
     }
-    else {
-      this.children[0].h = this.pos;
-      this.children[1].y = this.pos;
-      this.children[1].h -= this.pos;
+    else if (this.resizable && !this.#resizer) {
+      this.#resizer = new Box();
+      this.#resizer.background = this.dividerColor;
+      this.children.splice(1, 0, this.#resizer);
+      this.#resizer.screen = this.screen;
+      this.#resizer.onMouseDown = () => {
+        const b = { x: 0, y: 0 };
+        b[dx] = this.pos;
+
+        const move = dragMove(this.screen, b);
+        this.screen.trackMouse({
+          move: () => {
+            move();
+            this.pos = b[dx];
+            this.layout();
+          },
+        });
+      };
+      // this.add(this.#resizer);
     }
+
+    const steps = [this.pos, this[dw] - this.pos];
+    if (this.resizable) {
+      steps[1] -= this.dividerWidth;
+      steps.splice(1, 0, this.dividerWidth);
+    }
+
+    let x = 0;
+    for (let i = 0; i < this.children.length; i++) {
+      this.children[i].x = 0;
+      this.children[i].y = 0;
+      this.children[i].w = this.w;
+      this.children[i].h = this.h;
+
+      this.children[i][dx] = x;
+      this.children[i][dw] = steps[i];
+      x += steps[i];
+    }
+
     super.layout();
   }
 
@@ -75,6 +106,7 @@ const green = new BorderBox(); green.background = 0x003300ff; //green.border = 0
 const blue = new BorderBox(); blue.background = 0x000033ff; //blue.border = 0xffffff33;
 
 const split2 = new SplitBox();
+split2.resizable = true;
 split2.pos = 30;
 split2.dir = 'x';
 
