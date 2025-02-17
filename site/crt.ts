@@ -127,7 +127,7 @@ export class Screen {
       if (t - last >= 30) {
         if (this.needsRedraw) {
           this.needsRedraw = false;
-          this.#drawNode(this.root);
+          this.#draw(this.root);
           this.#hovered.drawCursor();
           this.blit();
         }
@@ -138,24 +138,6 @@ export class Screen {
       }
     };
     requestAnimationFrame(update);
-  }
-
-  #drawNode(node: Box) {
-    this.#camera.x += node.x;
-    this.#camera.y += node.y;
-
-    if ((node.background & 0xff) > 0) {
-      node.screen.rectFill(0, 0, node.w, node.h, node.background);
-    }
-
-    node.draw?.();
-
-    for (let i = 0; i < node.children.length; i++) {
-      this.#drawNode(node.children[i]);
-    }
-
-    this.#camera.x -= node.x;
-    this.#camera.y -= node.y;
   }
 
   destroy() {
@@ -262,6 +244,24 @@ export class Screen {
     }
 
     return box;
+  }
+
+  #draw(node: Box) {
+    this.#camera.x += node.x;
+    this.#camera.y += node.y;
+
+    if ((node.background & 0xff) > 0) {
+      node.screen.rectFill(0, 0, node.w, node.h, node.background);
+    }
+
+    node.draw?.();
+
+    for (let i = 0; i < node.children.length; i++) {
+      this.#draw(node.children[i]);
+    }
+
+    this.#camera.x -= node.x;
+    this.#camera.y -= node.y;
   }
 
 }
