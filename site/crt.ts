@@ -422,7 +422,7 @@ export class Font {
 
   chars: Record<string, boolean[][]> = {};
 
-  constructor(w: number, h: number, perRow: number, map: string, bits: string) {
+  constructor(private w: number, private h: number, perRow: number, map: string, bits: string) {
     bits = bits.replace(/\|?\n/g, '');
 
     for (let i = 0; i < map.length; i++) {
@@ -443,6 +443,28 @@ export class Font {
         }
       }
     }
+  }
+
+  calcSize(text: string) {
+    let x = 0;
+    let w = 0;
+    let h = 1;
+
+    for (let i = 0; i < text.length; i++) {
+      if (text[i] === '\n') {
+        h++;
+        x = 0;
+      }
+      else {
+        x++;
+        w = Math.max(x, w);
+      }
+    }
+
+    return {
+      w: w * (this.w + 1) - 1,
+      h: h * (this.h + 2) - 2,
+    };
   }
 
   print(screen: Screen, x: number, y: number, c: number, text: string) {

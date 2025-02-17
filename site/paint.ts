@@ -1,4 +1,4 @@
-import { Bitmap, Box, Property, Screen, dragMove } from "./crt.js";
+import { Bitmap, Box, Font, Property, Screen, dragMove } from "./crt.js";
 
 const screen = new Screen(document.querySelector('canvas')!);
 screen.autoscale();
@@ -124,18 +124,6 @@ class SplitBox extends Box {
 
 }
 
-class GridBox extends Box {
-
-  // static props: Property[] = [
-  //   ...super.props,
-  //   { name: 'id', type: 'string' },
-  // ];
-
-}
-
-
-console.log(GridBox.props)
-
 const split = new SplitBox(screen);
 split.w = 320;
 split.h = 180;
@@ -165,20 +153,102 @@ split2.children.push(green);
 
 split.resizable = true;
 
+
+
+
+
+
+
+class GridBox extends Box {
+
+  // static props: Property[] = [
+  //   ...super.props,
+  //   { name: 'id', type: 'string' },
+  // ];
+
+}
+
+
+// console.log(GridBox.props)
+
+
+
+
+
+
+class Label extends Box {
+
+  #text = '';
+  font = Font.crt2025;
+  padding = 1;
+  background = 0xffffff33;
+  passthrough = true;
+
+  get text() { return this.#text; }
+  set text(s: string) {
+    this.#text = s;
+    const size = this.font.calcSize(s);
+    this.w = size.w + this.padding * 2;
+    this.h = size.h + this.padding * 2;
+  }
+
+  draw = () => {
+    this.screen.print(this.padding, this.padding, 0xffffffff, this.text);
+  };
+
+}
+
+
+class Button extends BorderBox {
+
+  #label?: Label;
+  padding = 5;
+
+  get label(): Label | undefined { return this.#label; }
+  set label(l: Label | undefined) {
+    this.#label = l;
+    this.children = l ? [l] : [];
+    if (l) {
+      l.x = this.padding;
+      l.y = this.padding;
+      this.w = l.w + this.padding * 2;
+      this.h = l.h + this.padding * 2;
+    }
+  }
+
+  constructor(screen: Screen) {
+    super(screen);
+
+    const oldDraw = this.draw;
+
+    this.draw = () => {
+      oldDraw();
+      if (this.hovered) {
+        this.screen.rectFill(0, 0, this.w, this.h, 0x00000033);
+      }
+    }
+  }
+
+
+}
+
+const button = new Button(screen);
+button.x = 30;
+button.y = 30;
+button.w = 30;
+button.h = 10;
+button.background = 0x00000033;
+button.border = 0xff0000ff;
+green.children.push(button);
+
+const label = new Label(screen);
+// label.w = 30;
+// label.h = 10;
+label.text = 'yes\nno\nhmm this';
+
+button.label = label;
+
+// button.children.push(label);
+
+
 screen.layoutTree();
-
-// setInterval(() => {
-
-//   split2.resizable = !split2.resizable
-//   screen.layoutTree(split2);
-
-//   console.log(split2.children)
-
-// }, 2000);
-
-// setInterval(() => {
-
-//   split2.pos++;
-//   screen.layoutTree(split2);
-
-// }, 100);
