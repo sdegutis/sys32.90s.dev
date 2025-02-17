@@ -1,5 +1,93 @@
 import * as CRT from "./crt.js";
 
+
+
+class Button extends CRT.Box {
+
+  text = '';
+  color: number = 0xffffffff;
+
+  clicking = false;
+  onClick() { }
+
+  onMouseDown = () => {
+    this.clicking = true;
+
+    const cancel = this.screen.trackMouse({
+      move: () => {
+        if (!this.hovered) {
+          cancel();
+          this.clicking = false;
+        }
+      },
+      up: () => {
+        this.onClick();
+        this.clicking = false;
+      },
+    });
+  };
+
+  drawContents() {
+    super.drawContents();
+
+    if (this.clicking) {
+      this.screen.rectFill(0, 0, this.w, this.h, 0xffffff22);
+    }
+    else if (this.hovered) {
+      this.screen.rectFill(0, 0, this.w, this.h, 0xffffff11);
+    }
+
+    this.screen.print(2, 2, this.color, this.text);
+  }
+
+}
+
+class RadioGroup {
+
+  buttons: RadioButton[] = [];
+
+  add(button: RadioButton) {
+    this.buttons.push(button);
+    button.group = this;
+  }
+
+  select(button: RadioButton) {
+    for (const b of this.buttons) {
+      b.selected = (b === button);
+    }
+  }
+
+}
+
+class RadioButton extends Button {
+
+  drawButton() { }
+  onSelect() { }
+
+  selected = false;
+  group?: RadioGroup;
+
+  onClick(): void {
+    super.onClick();
+    this.group?.select(this);
+    this.onSelect();
+  }
+
+  drawContents() {
+    this.drawButton();
+
+    if (this.selected) {
+      this.screen.rectLine(0, 0, this.w, this.h, 0xffffff77);
+    }
+    else if (this.hovered) {
+      this.screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
+    }
+  }
+
+}
+
+
+
 const canvas = document.querySelector('canvas')!;
 canvas.width = 320;
 canvas.height = 180;
@@ -14,7 +102,7 @@ menu.h = 8;
 menu.background = 0x000000ff;
 screen.root.add(menu);
 
-const saveButton = new CRT.Button();
+const saveButton = new Button();
 saveButton.w = 4 * 4 + 3;
 saveButton.h = 8;
 saveButton.background = 0x000000ff;
@@ -25,7 +113,7 @@ saveButton.onClick = () => {
 };
 menu.add(saveButton);
 
-const loadButton = new CRT.Button();
+const loadButton = new Button();
 loadButton.x = 20;
 loadButton.w = 4 * 4 + 3;
 loadButton.h = 8;
@@ -39,7 +127,7 @@ menu.add(loadButton);
 
 let showGrid = true;
 
-const gridButton = new CRT.Button();
+const gridButton = new Button();
 gridButton.x = 40;
 gridButton.w = 4 * 4 + 3;
 gridButton.h = 8;
@@ -108,7 +196,7 @@ const drawTerrain: ((x: number, y: number) => void)[] = [];
 let currentTool = 5;
 
 
-const toolGroup = new CRT.RadioGroup();
+const toolGroup = new RadioGroup();
 
 for (let i = 0; i < 16; i++) {
   drawTerrain.push((x, y) => {
@@ -126,12 +214,12 @@ for (let i = 0; i < 17; i++) {
   let toolx = Math.floor(i / maxlen) * 7;
   let tooly = (i % maxlen) * 7;
 
-  const b = new CRT.RadioButton();
+  const b = new RadioButton();
   b.x = toolx;
   b.y = tooly;
   b.w = 8;
   b.h = 8;
-  b.drawButton = (screen) => screen.rectFill(2, 2, 4, 4, COLORS[i % 16]);
+  b.drawButton = () => screen.rectFill(2, 2, 4, 4, COLORS[i % 16]);
   toolGroup.add(b);
   b.onSelect = () => currentTool = i;
   toolArea.add(b);

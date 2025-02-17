@@ -5,10 +5,227 @@ const screen = new CRT.Screen(document.querySelector('canvas')!);
 screen.autoscale();
 
 
+class Button extends CRT.Box {
+
+  text = '';
+  color: number = 0xffffffff;
+
+  clicking = false;
+  onClick() { }
+
+  onMouseDown = () => {
+    this.clicking = true;
+
+    const cancel = this.screen.trackMouse({
+      move: () => {
+        if (!this.hovered) {
+          cancel();
+          this.clicking = false;
+        }
+      },
+      up: () => {
+        this.onClick();
+        this.clicking = false;
+      },
+    });
+  };
+
+  drawContents() {
+    super.drawContents();
+
+    if (this.clicking) {
+      this.screen.rectFill(0, 0, this.w, this.h, 0xffffff22);
+    }
+    else if (this.hovered) {
+      this.screen.rectFill(0, 0, this.w, this.h, 0xffffff11);
+    }
+
+    this.screen.print(2, 2, this.color, this.text);
+  }
+
+}
+
+class RadioGroup {
+
+  buttons: RadioButton[] = [];
+
+  add(button: RadioButton) {
+    this.buttons.push(button);
+    button.group = this;
+  }
+
+  select(button: RadioButton) {
+    for (const b of this.buttons) {
+      b.selected = (b === button);
+    }
+  }
+
+}
+
+class RadioButton extends Button {
+
+  drawButton() { }
+  onSelect() { }
+
+  selected = false;
+  group?: RadioGroup;
+
+  onClick(): void {
+    super.onClick();
+    this.group?.select(this);
+    this.onSelect();
+  }
+
+  drawContents() {
+    this.drawButton();
+
+    if (this.selected) {
+      this.screen.rectLine(0, 0, this.w, this.h, 0xffffff77);
+    }
+    else if (this.hovered) {
+      this.screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
+    }
+  }
+
+}
+
+
+class Label extends CRT.Box {
+
+  color = 0xffffffff;
+
+  passthrough = true;
+
+  text = '';
+
+  drawContents(): void {
+    this.screen.print(0, 0, this.color, this.text);
+  }
+
+}
+
+class Checkbox extends CRT.Box {
+
+  checked = false;
+
+  onChange() { }
+
+  drawContents(): void {
+    this.screen.rectLine(0, 0, 6, 6, this.hovered ? 0xffffffff : 0x777777ff);
+    if (this.checked) {
+      this.screen.rectFill(2, 2, 2, 2, 0xffffffff);
+    }
+  }
+
+  onMouseDown = () => {
+    this.checked = !this.checked;
+    this.onChange();
+  };
+
+}
+
+class TextField extends CRT.Box {
+
+  text = '';
+  color = 0xffffffff;
+
+  constructor() {
+    super();
+    this.clips = true;
+  }
+
+  onScroll = (up: boolean) => {
+    console.log('scrolling', up)
+  };
+
+  onKeyDown = (key: string) => {
+    if (key === 'Enter') {
+      this.text += '\n';
+    }
+    else if (key === 'Backspace') {
+      this.text = this.text.slice(0, -1);
+    }
+    else {
+      this.text += key;
+    }
+    this.restartBlinking();
+  };
+
+  // onMouseDown(): void {
+  //   this.trackMouse({
+  //     move: () => console.log(this.mouse)
+  //   });
+  // }
+
+  drawContents(): void {
+    super.drawContents();
+    this.screen.print(2, 2, this.color, this.text);
+
+    if (this.screen.focused === this) {
+      this.screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
+
+      if (this.blinkShow) {
+        let cx = 0;
+        let cy = 0;
+
+        for (let i = 0; i < this.text.length; i++) {
+          const ch = this.text[i];
+          if (ch === '\n') { cy++; cx = 0; continue; }
+          cx++;
+        }
+
+        this.screen.print((cx * 4) + 2, (cy * 6) + 2, 0x77aaffff, '_');
+      }
+    }
+  }
+
+  blink?: number;
+  blinkShow = false;
+
+  restartBlinking() {
+    this.stopBlinking();
+    this.blinkShow = true;
+    this.blink = setInterval(() => {
+      this.blinkShow = !this.blinkShow;
+      this.screen.needsRedraw = true;
+    }, 500);
+  }
+
+  stopBlinking() {
+    clearInterval(this.blink);
+  }
+
+  onFocus = () => {
+    this.restartBlinking();
+  };
+
+  onUnfocus = () => {
+    this.stopBlinking();
+  };
+
+}
+
+class TabBox extends CRT.Box {
+
+  tab = -1;
+  #realChildren: CRT.Box[] = [];
+
+  addTab(box: CRT.Box) {
+    this.children = this.#realChildren;
+    this.add(box);
+    this.select(this.children.length - 1);
+  }
+
+  select(t: number) {
+    this.tab = t;
+    this.children = [this.#realChildren[this.tab]];
+  }
+
+}
 
 
 
-const tabBox = new CRT.TabBox();
+const tabBox = new TabBox();
 tabBox.x = 40;
 tabBox.y = 8;
 tabBox.w = 320 - 40;
@@ -36,7 +253,7 @@ menu.h = 8;
 menu.background = 0x000000ff;
 screen.root.add(menu);
 
-const saveButton = new CRT.Button();
+const saveButton = new Button();
 saveButton.w = 4 * 4 + 3;
 saveButton.h = 8;
 saveButton.background = 0x000000ff;
@@ -47,7 +264,7 @@ saveButton.onClick = () => {
 };
 menu.add(saveButton);
 
-const loadButton = new CRT.Button();
+const loadButton = new Button();
 loadButton.x = 20;
 loadButton.w = 4 * 4 + 3;
 loadButton.h = 8;
@@ -61,7 +278,7 @@ menu.add(loadButton);
 
 let showGrid = true;
 
-const gridButton = new CRT.Button();
+const gridButton = new Button();
 gridButton.x = 40;
 gridButton.w = 4 * 4 + 3;
 gridButton.h = 8;
@@ -71,7 +288,7 @@ gridButton.text = 'grid';
 gridButton.onClick = () => showGrid = !showGrid;
 menu.add(gridButton);
 
-const tabButton = new CRT.Button();
+const tabButton = new Button();
 tabButton.x = 60;
 tabButton.w = 4 * 4 + 3;
 tabButton.h = 8;
@@ -140,7 +357,7 @@ const drawTerrain: ((x: number, y: number) => void)[] = [];
 let currentTool = 5;
 
 
-const toolGroup = new CRT.RadioGroup();
+const toolGroup = new RadioGroup();
 
 for (let i = 0; i < 16; i++) {
   drawTerrain.push((x, y) => {
@@ -158,12 +375,12 @@ for (let i = 0; i < 17; i++) {
   let toolx = Math.floor(i / maxlen) * 7;
   let tooly = (i % maxlen) * 7;
 
-  const b = new CRT.RadioButton();
+  const b = new RadioButton();
   b.x = toolx;
   b.y = tooly;
   b.w = 8;
   b.h = 8;
-  b.drawButton = (screen) => screen.rectFill(2, 2, 4, 4, COLORS[i % 16]);
+  b.drawButton = () => screen.rectFill(2, 2, 4, 4, COLORS[i % 16]);
   toolGroup.add(b);
   b.onSelect = () => currentTool = i;
   toolArea.add(b);
@@ -324,7 +541,7 @@ mapBox.draw = () => {
 
 
 
-const textbox = new CRT.TextField();
+const textbox = new TextField();
 textbox.x = 10;
 textbox.y = 25;
 textbox.w = 50;
@@ -336,7 +553,7 @@ textbox.onMouseMove = () => { console.log('move', textbox.mouse); }
 textbox.onMouseEnter = () => { console.log('enter', textbox.mouse); }
 textbox.onMouseExit = () => { console.log('exit', textbox.mouse); }
 
-const checkbox = new CRT.Checkbox();
+const checkbox = new Checkbox();
 checkbox.x = 160;
 checkbox.y = 1;
 checkbox.w = 8 + 4 * 7;
@@ -346,7 +563,7 @@ screen.root.add(checkbox);
 checkbox.onChange = () => console.log(checkbox.checked)
 checkbox.checked = true;
 
-const label = new CRT.Label();
+const label = new Label();
 label.text = 'testing';
 label.x = 8;
 label.y = 1;
@@ -422,7 +639,7 @@ test1.onMouseDown = () => {
 };
 screen.root.add(test1);
 
-const b1 = new CRT.Button();
+const b1 = new Button();
 b1.x = 3; b1.y = 15; b1.w = 20; b1.h = 10;
 b1.text = 'hmm';
 test1.add(b1)
