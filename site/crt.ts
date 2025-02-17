@@ -56,10 +56,9 @@ export class Screen {
     this.#clip.x2 = canvas.width - 1;
     this.#clip.y2 = canvas.height - 1;
 
-    this.root = new Box();
+    this.root = new Box(this);
     this.root.w = canvas.width;
     this.root.h = canvas.height;
-    this.root.screen = this;
 
     this.focused = this.root;
     this.#hovered = this.root;
@@ -376,17 +375,13 @@ export class Box {
   h = 0;
   background = 0x00000000;
 
-  screen!: Screen;
   children: Box[] = [];
   hovered = false;
   mouse = { x: 0, y: 0 };
   passthrough = false;
   trackingArea?: { x: number, y: number, w: number, h: number };
 
-  addChild(child: Box, pos?: number) {
-    child.screen = this.screen;
-    this.children.splice(pos ?? this.children.length, 0, child);
-  }
+  constructor(public screen: Screen) { }
 
   drawCursor(x: number, y: number) {
     cursors.pointer.draw(this.screen, x - 1, y - 1);

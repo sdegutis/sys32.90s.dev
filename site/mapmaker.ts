@@ -94,13 +94,13 @@ screen.autoscale();
 
 screen.root.onKeyDown = k => console.log(k.toUpperCase())
 
-const menu = new Box();
+const menu = new Box(screen);
 menu.w = 320;
 menu.h = 8;
 menu.background = 0x000000ff;
-screen.root.addChild(menu);
+screen.root.children.push(menu);
 
-const saveButton = new Button();
+const saveButton = new Button(screen);
 saveButton.w = 4 * 4 + 3;
 saveButton.h = 8;
 saveButton.background = 0x000000ff;
@@ -109,9 +109,9 @@ saveButton.text = 'save';
 saveButton.onClick = () => {
   console.log('saving')
 };
-menu.addChild(saveButton);
+menu.children.push(saveButton);
 
-const loadButton = new Button();
+const loadButton = new Button(screen);
 loadButton.x = 20;
 loadButton.w = 4 * 4 + 3;
 loadButton.h = 8;
@@ -121,11 +121,11 @@ loadButton.text = 'load';
 loadButton.onClick = () => {
   console.log('loading')
 };
-menu.addChild(loadButton);
+menu.children.push(loadButton);
 
 let showGrid = true;
 
-const gridButton = new Button();
+const gridButton = new Button(screen);
 gridButton.x = 40;
 gridButton.w = 4 * 4 + 3;
 gridButton.h = 8;
@@ -133,19 +133,19 @@ gridButton.background = 0x000000ff;
 gridButton.color = 0xffffff33;
 gridButton.text = 'grid';
 gridButton.onClick = () => showGrid = !showGrid;
-menu.addChild(gridButton);
+menu.children.push(gridButton);
 
 
 
 
 
 
-const toolArea = new Box();
+const toolArea = new Box(screen);
 toolArea.y = 8;
 toolArea.w = 40;
 toolArea.h = 180 - 8;
 toolArea.background = 0x333333ff;
-screen.root.addChild(toolArea);
+screen.root.children.push(toolArea);
 
 
 
@@ -212,7 +212,7 @@ for (let i = 0; i < 17; i++) {
   let toolx = Math.floor(i / maxlen) * 7;
   let tooly = (i % maxlen) * 7;
 
-  const b = new RadioButton();
+  const b = new RadioButton(screen);
   b.x = toolx;
   b.y = tooly;
   b.w = 8;
@@ -220,7 +220,7 @@ for (let i = 0; i < 17; i++) {
   b.drawButton = () => screen.rectFill(2, 2, 4, 4, COLORS[i % 16]);
   toolGroup.add(b);
   b.onSelect = () => currentTool = i;
-  toolArea.addChild(b);
+  toolArea.children.push(b);
 
   if (i === currentTool) toolGroup.select(b);
 
@@ -255,13 +255,13 @@ screen.root.onScroll = (up) => {
 
 
 
-const mapArea = new Box();
+const mapArea = new Box(screen);
 mapArea.x = 40;
 mapArea.y = 8;
 mapArea.w = 320 - 40;
 mapArea.h = 180 - 8;
 mapArea.background = 0x222222ff;
-screen.root.addChild(mapArea);
+screen.root.children.push(mapArea);
 
 mapArea.draw = () => {
   screen.rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
@@ -274,10 +274,10 @@ mapArea.draw = () => {
   }
 };
 
-const mapBox = new Box();
+const mapBox = new Box(screen);
 mapBox.w = map.width * 4;
 mapBox.h = map.height * 4;
-mapArea.addChild(mapBox);
+mapArea.children.push(mapBox);
 
 mapBox.drawCursor = () => {
   // rectFill(mouse.x, mouse.y - 2, 1, 5, '#0007');

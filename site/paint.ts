@@ -15,7 +15,7 @@ class BorderBox extends Box {
 
 class SplitBox extends Box {
 
-  pos = 0;
+  pos = 10;
   min = 0;
   max = 0;
   dir: 'x' | 'y' = 'y';
@@ -57,7 +57,7 @@ class SplitBox extends Box {
     else if (this.resizable && !this.#resizer) {
       const cursor = this.dir === 'x' ? SplitBox.xresize : SplitBox.yresize;
 
-      this.#resizer = new Box();
+      this.#resizer = new Box(screen);
       this.#resizer.background = this.dividerColor;
 
       this.#resizer.draw = () => {
@@ -84,7 +84,7 @@ class SplitBox extends Box {
           },
         });
       };
-      this.addChild(this.#resizer);
+      this.children.push(this.#resizer);
     }
 
     const steps = [this.pos, this[dw] - this.pos];
@@ -136,7 +136,7 @@ class GridBox extends Box {
 
 console.log(GridBox.props)
 
-const split = new SplitBox();
+const split = new SplitBox(screen);
 split.w = 320;
 split.h = 180;
 split.pos = 10;
@@ -144,24 +144,24 @@ split.min = 8;
 split.max = 18;
 split.dir = 'y';
 
-const red = new BorderBox(); red.background = 0x330000ff; //red.border = 0xffffff00;
-const green = new BorderBox(); green.background = 0x003300ff; //green.border = 0xffffff00;
-const blue = new BorderBox(); blue.background = 0x000033ff; //blue.border = 0xffffff00;
+const red = new BorderBox(screen); red.background = 0x330000ff; //red.border = 0xffffff00;
+const green = new BorderBox(screen); green.background = 0x003300ff; //green.border = 0xffffff00;
+const blue = new BorderBox(screen); blue.background = 0x000033ff; //blue.border = 0xffffff00;
 
-const split2 = new SplitBox();
+const split2 = new SplitBox(screen);
 split2.resizable = true;
 split2.pos = 30;
 split2.min = 28;
 split2.max = 38;
 split2.dir = 'x';
 
-screen.root.addChild(split);
+screen.root.children.push(split);
 
-split.addChild(blue);
-split.addChild(split2);
+split.children.push(blue);
+split.children.push(split2);
 
-split2.addChild(red);
-split2.addChild(green);
+split2.children.push(red);
+split2.children.push(green);
 
 split.resizable = true;
 
