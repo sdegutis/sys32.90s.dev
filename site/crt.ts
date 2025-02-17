@@ -1,3 +1,20 @@
+export class Bitmap {
+
+  constructor(public colors: number[], public steps: number[]) { }
+
+  draw(screen: Screen, px: number, py: number) {
+    let x = 0;
+    let y = 0;
+    for (let i = 0; i < this.steps.length; i++) {
+      const s = this.steps[i];
+      if (s === 0) { x++; continue; }
+      else if (s === -1) { y++; x = 0; }
+      else screen.pset(px + x++, py + y, this.colors[s - 1]);
+    }
+  }
+
+}
+
 export class Screen {
 
   root;
@@ -116,8 +133,12 @@ export class Screen {
       if (t - last >= 30) {
         if (this.needsRedraw) {
           this.needsRedraw = false;
+
           this.#draw(this.root);
-          this.#hovered.drawCursor();
+
+          const c = this.#hovered.cursor;
+          c.bitmap.draw(this, this.mouse.x - c.offset[0], this.mouse.y - c.offset[1]);
+
           this.blit();
         }
         last = t;
@@ -319,6 +340,18 @@ export class Box {
 
   background = 0x00000000;
 
+  static cursor = {
+    bitmap: new Bitmap([0x00000099, 0xffffffff], [
+      1, 1, 1, 1, -1,
+      1, 2, 2, 1, -1,
+      1, 2, 1, 1, -1,
+      1, 1, 1, -1,
+    ]),
+    offset: [1, 1],
+  };
+
+  cursor = Box.cursor;
+
   x = 0;
   y = 0;
   w = 0;
@@ -327,10 +360,6 @@ export class Box {
   add(child: Box, pos?: number) {
     child.screen = this.screen;
     this.children.splice(pos ?? this.children.length, 0, child);
-  }
-
-  drawCursor() {
-    cursors.pointer.draw(this.screen, this.screen.mouse.x - 1, this.screen.mouse.y - 1);
   }
 
 }
@@ -497,29 +526,3 @@ export function dragResize(screen: Screen, el: { w: number, h: number }) {
     el.h = startElPos.h + diffy - offy;
   };
 }
-
-export class Bitmap {
-
-  constructor(public colors: number[], public steps: number[]) { }
-
-  draw(screen: Screen, px: number, py: number) {
-    let x = 0;
-    let y = 0;
-    for (let i = 0; i < this.steps.length; i++) {
-      const s = this.steps[i];
-      if (s === 0) { x++; continue; }
-      else if (s === -1) { y++; x = 0; }
-      else screen.pset(px + x++, py + y, this.colors[s - 1]);
-    }
-  }
-
-}
-
-const cursors = {
-  pointer: new Bitmap([0x00000099, 0xffffffff], [
-    1, 1, 1, 1, -1,
-    1, 2, 2, 1, -1,
-    1, 2, 1, 1, -1,
-    1, 1, 1, -1,
-  ]),
-};

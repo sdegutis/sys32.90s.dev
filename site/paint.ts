@@ -1,4 +1,4 @@
-import { Box, Screen, TileSelection, dragMove, dragResize } from "./crt.js";
+import { Bitmap, Box, Screen, TileSelection, dragMove, dragResize } from "./crt.js";
 
 const screen = new Screen(document.querySelector('canvas')!);
 screen.autoscale();
@@ -19,7 +19,27 @@ class SplitBox extends Box {
   dir: 'x' | 'y' = 'y';
   resizable = false;
   dividerWidth = 2;
-  dividerColor = 0xaaaaaaff;
+  dividerColor = 0x000000ff;
+
+  static xcursor = {
+    bitmap: new Bitmap([0x00000099, 0xffffffff], [
+      1, 1, 1, 1, 1, -1,
+      1, 2, 2, 2, 1, -1,
+      1, 1, 1, 1, 1, -1,
+    ]),
+    offset: [2, 1],
+  };
+
+  static ycursor = {
+    bitmap: new Bitmap([0x00000099, 0xffffffff], [
+      1, 1, 1, -1,
+      1, 2, 1, -1,
+      1, 2, 1, -1,
+      1, 2, 1, -1,
+      1, 1, 1, -1,
+    ]),
+    offset: [1, 2],
+  };
 
   #resizer?: Box;
 
@@ -34,6 +54,7 @@ class SplitBox extends Box {
     else if (this.resizable && !this.#resizer) {
       this.#resizer = new Box();
       this.#resizer.background = this.dividerColor;
+      this.#resizer.cursor = this.dir === 'x' ? SplitBox.xcursor : SplitBox.ycursor;
       this.#resizer.onMouseDown = () => {
         const b = { x: 0, y: 0 };
         b[dx] = this.pos;
