@@ -83,7 +83,13 @@ export class Screen {
       this.mouse.button = e.button;
       this.focused.onUnfocus?.();
       this.focus(this.#hovered);
-      this.#hovered.onMouseDown?.();
+      if (this.#hovered.onMouseDown) {
+        this.#hovered.onMouseDown((fns: { move: () => void; up?: () => void; }) => {
+          fns.move();
+          this.#trackingMouse = fns;
+          return () => this.#trackingMouse = undefined;
+        });
+      }
       this.needsRedraw = true;
     }, { passive: true, signal: this.#destroyer.signal });
 
@@ -133,12 +139,8 @@ export class Screen {
       if (t - last >= 30) {
         if (this.needsRedraw) {
           this.needsRedraw = false;
-
           this.#draw(this.root);
-
-          const c = this.#hovered.cursor;
-          c.bitmap.draw(this, this.mouse.x - c.offset[0], this.mouse.y - c.offset[1]);
-
+          this.#hovered.drawCursor();
           this.blit();
         }
         last = t;
@@ -258,12 +260,6 @@ export class Screen {
     node.onFocus?.();
   }
 
-  trackMouse(fns: { move: () => void, up?: () => void }) {
-    fns.move();
-    this.#trackingMouse = fns;
-    return () => this.#trackingMouse = undefined;
-  }
-
   #hover(node: Box, x: number, y: number): Box | null {
     if (node.passthrough) return null;
 
@@ -319,11 +315,27 @@ export class Screen {
 
 }
 
+export type MouseTracker = (fns: {
+  move: () => void;
+  up?: () => void;
+}) => () => void;
+
+const cursors = {
+
+  pointer: new Bitmap([0x00000099, 0xffffffff], [
+    1, 1, 1, 1, -1,
+    1, 2, 2, 1, -1,
+    1, 2, 1, 1, -1,
+    1, 1, 1, -1,
+  ]),
+
+};
+
 export class Box {
 
   onScroll?: (up: boolean) => void;
   onKeyDown?: (key: string) => void;
-  onMouseDown?: () => void;
+  onMouseDown?: (trackMouse: MouseTracker) => void;
   onMouseMove?: () => void;
   onMouseEnter?: () => void;
   onMouseExit?: () => void;
@@ -340,17 +352,9 @@ export class Box {
 
   background = 0x00000000;
 
-  static cursor = {
-    bitmap: new Bitmap([0x00000099, 0xffffffff], [
-      1, 1, 1, 1, -1,
-      1, 2, 2, 1, -1,
-      1, 2, 1, 1, -1,
-      1, 1, 1, -1,
-    ]),
-    offset: [1, 1],
-  };
-
-  cursor = Box.cursor;
+  drawCursor() {
+    cursors.pointer.draw(this.screen, this.screen.mouse.x - 1, this.screen.mouse.y - 1);
+  }
 
   x = 0;
   y = 0;

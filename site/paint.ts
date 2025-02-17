@@ -54,12 +54,15 @@ class SplitBox extends Box {
     else if (this.resizable && !this.#resizer) {
       this.#resizer = new Box();
       this.#resizer.background = this.dividerColor;
-      this.#resizer.cursor = this.dir === 'x' ? SplitBox.xcursor : SplitBox.ycursor;
-      this.#resizer.onMouseDown = () => {
+      this.#resizer.drawCursor = () => {
+        const c = this.dir === 'x' ? SplitBox.xcursor : SplitBox.ycursor;
+        c.bitmap.draw(screen, screen.mouse.x - c.offset[0], screen.mouse.y - c.offset[1]);
+      };
+      this.#resizer.onMouseDown = (trackMouse) => {
         const b = { x: 0, y: 0 };
         b[dx] = this.pos;
         const drag = dragMove(this.screen, b);
-        this.screen.trackMouse({
+        trackMouse({
           move: () => {
             drag();
             this.pos = b[dx];

@@ -1,4 +1,4 @@
-import { Box, Screen, TileSelection, dragMove, dragResize } from "./crt.js";
+import { Box, MouseTracker, Screen, TileSelection, dragMove, dragResize } from "./crt.js";
 
 
 const screen = new Screen(document.querySelector('canvas')!);
@@ -13,10 +13,10 @@ class Button extends Box {
   clicking = false;
   onClick() { }
 
-  onMouseDown = () => {
+  onMouseDown = (trackMouse: MouseTracker) => {
     this.clicking = true;
 
-    const cancel = this.screen.trackMouse({
+    const cancel = trackMouse({
       move: () => {
         if (!this.hovered) {
           cancel();
@@ -440,14 +440,14 @@ mapBox.drawCursor = () => {
 
 let tilesel: TileSelection | null = null;
 
-mapBox.onMouseDown = () => {
+mapBox.onMouseDown = (trackMouse) => {
   if (screen.keys[' ']) {
-    screen.trackMouse({ move: dragMove(screen, mapBox) });
+    trackMouse({ move: dragMove(screen, mapBox) });
   }
   else if (screen.keys['Control']) {
     tilesel = new TileSelection(mapBox, 4);
 
-    screen.trackMouse({
+    trackMouse({
       move() {
         tilesel!.update();
 
@@ -466,7 +466,7 @@ mapBox.onMouseDown = () => {
     });
   }
   else if (screen.keys['Alt']) {
-    screen.trackMouse({
+    trackMouse({
       move() {
         const x = Math.floor(mapBox.mouse.x / 4);
         const y = Math.floor(mapBox.mouse.y / 4);
@@ -479,7 +479,7 @@ mapBox.onMouseDown = () => {
     });
   }
   else {
-    screen.trackMouse({
+    trackMouse({
       move() {
         const x = Math.floor(mapBox.mouse.x / 4);
         const y = Math.floor(mapBox.mouse.y / 4);
@@ -574,8 +574,8 @@ export class Slider extends Box {
     this.screen.pset(p, 1, 0xfffffffff);
   };
 
-  onMouseDown = () => {
-    this.screen.trackMouse({
+  onMouseDown = (trackMouse: MouseTracker) => {
+    trackMouse({
       move: () => {
         this.value = this.mouse.x / this.w * this.max;
       }
@@ -617,12 +617,12 @@ test1.draw = () => {
 
   screen.pset(test1.w - 3, test1.h - 3, 0xffffffff)
 };
-test1.onMouseDown = () => {
+test1.onMouseDown = (trackMouse) => {
   if (test1.mouse.x >= test1.w - 3 && test1.mouse.y >= test1.h - 3) {
-    screen.trackMouse({ move: dragResize(screen, test1) });
+    trackMouse({ move: dragResize(screen, test1) });
   }
   else if (test1.mouse.y < 10) {
-    screen.trackMouse({ move: dragMove(screen, test1) });
+    trackMouse({ move: dragMove(screen, test1) });
   }
 };
 screen.root.add(test1);
