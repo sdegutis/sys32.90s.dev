@@ -44,7 +44,7 @@ export class Screen {
     this.focused = this.root;
     this.#hovered = this.root;
 
-    const callbackOpts = { passive: true, signal: this.#destroyer.signal };
+    const callbackOpts = { signal: this.#destroyer.signal };
 
     canvas.addEventListener('keydown', (e) => {
       this.keys[e.key] = true;
