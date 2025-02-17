@@ -263,7 +263,18 @@ export class Screen {
   #hover(node: Box, x: number, y: number): Box | null {
     if (node.passthrough) return null;
 
-    const inThis = (x >= 0 && y >= 0 && x < node.w && y < node.h);
+    let tx = 0;
+    let ty = 0;
+    let tw = node.w;
+    let th = node.h;
+    if (node.trackingArea) {
+      tx = node.trackingArea.x;
+      ty = node.trackingArea.y;
+      tw = tx + node.trackingArea.w;
+      th = ty + node.trackingArea.h;
+    }
+
+    const inThis = (x >= tx && y >= ty && x < tw && y < th);
     if (!inThis) return null;
 
     this.#allHovered.push(node);
@@ -286,6 +297,8 @@ export class Screen {
     const cx2 = this.#clip.x2;
     const cy1 = this.#clip.y1;
     const cy2 = this.#clip.y2;
+
+    // TODO: skip drawing if entirely clipped?
 
     this.#clip.cx += node.x;
     this.#clip.cy += node.y;
@@ -348,6 +361,8 @@ export class Box {
   y = 0;
   w = 0;
   h = 0;
+
+  trackingArea?: { x: number, y: number, w: number, h: number };
 
   background = 0x00000000;
 
