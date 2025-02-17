@@ -14,7 +14,7 @@ export class Screen {
 
   pixels;
 
-  #clip = { cx: 0, cy: 0, x1: 0, y1: 0, x2: Infinity, y2: Infinity };
+  #clip = { cx: 0, cy: 0, x1: 0, y1: 0, x2: 0, y2: 0 };
   #context;
   #imgdata;
 
@@ -35,6 +35,9 @@ export class Screen {
     for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
       this.pixels[i + 3] = 255;
     }
+
+    this.#clip.x2 = canvas.width - 1;
+    this.#clip.y2 = canvas.height - 1;
 
     this.root = new Box();
     this.root.w = canvas.width;
