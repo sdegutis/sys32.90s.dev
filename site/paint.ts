@@ -13,11 +13,6 @@ class BorderBox extends Box {
 
 }
 
-class SplitDivider extends Box {
-
-
-}
-
 class SplitBox extends Box {
 
   pos = 0;
@@ -100,7 +95,7 @@ class SplitBox extends Box {
 
 }
 
-class StackBox extends Box {
+class GridBox extends Box {
 
 
 
