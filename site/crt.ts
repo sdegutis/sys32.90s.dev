@@ -130,7 +130,7 @@ export class Screen {
       if (t - last >= 30) {
         if (this.needsRedraw) {
           this.needsRedraw = false;
-          this.root.draw();
+          this.#drawNode(this.root);
           this._hovered.drawCursor();
           this.blit();
         }
@@ -141,6 +141,24 @@ export class Screen {
       }
     };
     requestAnimationFrame(update);
+  }
+
+  #drawNode(node: Box) {
+    this._camera.x += node.x;
+    this._camera.y += node.y;
+
+    if ((node.background & 0xff) > 0) {
+      node.screen.rectFill(0, 0, node.w, node.h, node.background);
+    }
+
+    node.draw?.();
+
+    for (let i = 0; i < node.children.length; i++) {
+      this.#drawNode(node.children[i]);
+    }
+
+    this._camera.x -= node.x;
+    this._camera.y -= node.y;
   }
 
   destroy() {
@@ -188,10 +206,10 @@ export class Screen {
     let x2 = x1 + w - 1;
     let y2 = y1 + h - 1;
 
-    if (this._clip.x1 > x1) x1 = this._clip.x1;
-    if (this._clip.y1 > y1) y1 = this._clip.y1;
-    if (this._clip.x2 < x2) x2 = this._clip.x2;
-    if (this._clip.y2 < y2) y2 = this._clip.y2;
+    // if (this._clip.x1 > x1) x1 = this._clip.x1;
+    // if (this._clip.y1 > y1) y1 = this._clip.y1;
+    // if (this._clip.x2 < x2) x2 = this._clip.x2;
+    // if (this._clip.y2 < y2) y2 = this._clip.y2;
 
     const r = c >> 24 & 0xff;
     const g = c >> 16 & 0xff;
@@ -261,6 +279,7 @@ export class Box {
   onMouseExit?: () => void;
   onFocus?: () => void;
   onUnfocus?: () => void;
+  draw?: () => void;
 
   screen!: Screen;
   children: Box[] = [];
@@ -278,37 +297,6 @@ export class Box {
   add(child: Box) {
     child.screen = this.screen;
     this.children.push(child);
-  }
-
-  #clip?: Clip;
-  get clips() { return this.#clip !== undefined; }
-  set clips(should: boolean) { this.#clip = should ? new Clip() : undefined; }
-
-  draw() {
-    this.clip();
-    this.drawContents();
-    this.drawChildren();
-    this.unclip();
-  }
-
-  clip() { this.#clip?.set(this.screen, this.w, this.h); }
-  unclip() { this.#clip?.unset(this.screen); }
-
-  drawContents() {
-    if (this.background !== 0) {
-      this.screen.rectFill(0, 0, this.w, this.h, this.background);
-    }
-  }
-
-  drawChildren() {
-    for (let i = 0; i < this.children.length; i++) {
-      const child = this.children[i];
-      this.screen._camera.x += child.x;
-      this.screen._camera.y += child.y;
-      child.draw();
-      this.screen._camera.x -= child.x;
-      this.screen._camera.y -= child.y;
-    }
   }
 
   drawCursor() {
@@ -483,31 +471,6 @@ export function dragResize(screen: Screen, el: { w: number, h: number }) {
     el.w = startElPos.w + diffx - offx;
     el.h = startElPos.h + diffy - offy;
   };
-}
-
-class Clip {
-
-  saved = { x1: 0, y1: 0, x2: 0, y2: 0 };
-
-  set(screen: Screen, w: number, h: number) {
-    this.saved.x1 = screen._clip.x1;
-    this.saved.x2 = screen._clip.x2;
-    this.saved.y1 = screen._clip.y1;
-    this.saved.y2 = screen._clip.y2;
-
-    screen._clip.x1 = screen._camera.x;
-    screen._clip.y1 = screen._camera.y;
-    screen._clip.x2 = screen._clip.x1 + w - 1;
-    screen._clip.y2 = screen._clip.y1 + h - 1;
-  }
-
-  unset(screen: Screen) {
-    screen._clip.x1 = this.saved.x1;
-    screen._clip.x2 = this.saved.x2;
-    screen._clip.y1 = this.saved.y1;
-    screen._clip.y2 = this.saved.y2;
-  }
-
 }
 
 export class Bitmap {

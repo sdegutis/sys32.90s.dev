@@ -30,9 +30,7 @@ class Button extends Box {
     });
   };
 
-  drawContents() {
-    super.drawContents();
-
+  draw = () => {
     if (this.clicking) {
       this.screen.rectFill(0, 0, this.w, this.h, 0xffffff22);
     }
@@ -41,7 +39,7 @@ class Button extends Box {
     }
 
     this.screen.print(2, 2, this.color, this.text);
-  }
+  };
 
 }
 
@@ -76,7 +74,7 @@ class RadioButton extends Button {
     this.onSelect();
   }
 
-  drawContents() {
+  draw = () => {
     this.drawButton();
 
     if (this.selected) {
@@ -85,7 +83,7 @@ class RadioButton extends Button {
     else if (this.hovered) {
       this.screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
     }
-  }
+  };
 
 }
 
@@ -98,9 +96,9 @@ class Label extends Box {
 
   text = '';
 
-  drawContents(): void {
+  draw = () => {
     this.screen.print(0, 0, this.color, this.text);
-  }
+  };
 
 }
 
@@ -110,12 +108,12 @@ class Checkbox extends Box {
 
   onChange() { }
 
-  drawContents(): void {
+  draw = () => {
     this.screen.rectLine(0, 0, 6, 6, this.hovered ? 0xffffffff : 0x777777ff);
     if (this.checked) {
       this.screen.rectFill(2, 2, 2, 2, 0xffffffff);
     }
-  }
+  };
 
   onMouseDown = () => {
     this.checked = !this.checked;
@@ -128,11 +126,6 @@ class TextField extends Box {
 
   text = '';
   color = 0xffffffff;
-
-  constructor() {
-    super();
-    this.clips = true;
-  }
 
   onScroll = (up: boolean) => {
     console.log('scrolling', up)
@@ -157,8 +150,7 @@ class TextField extends Box {
   //   });
   // }
 
-  drawContents(): void {
-    super.drawContents();
+  draw = () => {
     this.screen.print(2, 2, this.color, this.text);
 
     if (this.screen.focused === this) {
@@ -177,7 +169,7 @@ class TextField extends Box {
         this.screen.print((cx * 4) + 2, (cy * 6) + 2, 0x77aaffff, '_');
       }
     }
-  }
+  };
 
   blink?: number;
   blinkShow = false;
@@ -422,10 +414,9 @@ const mapArea = new Box();
 mapArea.w = 320 - 40;
 mapArea.h = 180 - 8;
 mapArea.background = 0x222222ff;
-mapArea.clips = true;
 tabBox.addTab(mapArea);
 
-mapArea.drawContents = () => {
+mapArea.draw = () => {
   screen.rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
   let off = 0;
   for (let y = 0; y < mapArea.h; y++) {
@@ -577,13 +568,11 @@ export class Slider extends Box {
   min = 0;
   max = 10;
 
-  drawContents(): void {
-    super.drawContents();
-
+  draw = () => {
     const p = this.value / this.max * this.w;
     console.log(p)
     this.screen.pset(p, 1, 0xfffffffff);
-  }
+  };
 
   onMouseDown = () => {
     this.screen.trackMouse({
@@ -605,11 +594,10 @@ screen.root.add(slider);
 
 const test1 = new Box();
 test1.x = 100;
-test1.clips = true;
 test1.y = 100;
 test1.w = 70;
 test1.h = 60;
-test1.drawContents = () => {
+test1.draw = () => {
   screen.rectFill(1, 1, test1.w - 2, test1.h - 2, 0x00000099);
 
   screen.rectLine(0, 0, test1.w, test1.h, 0xffffff77)
