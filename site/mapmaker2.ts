@@ -199,8 +199,7 @@ let tilesel: CRT.TileSelection | null = null;
 
 mapBox.onMouseDown = () => {
   if (screen.keys[' ']) {
-    const move = CRT.dragMove(screen, mapBox);
-    screen.trackMouse({ move });
+    screen.trackMouse({ move: CRT.dragMove(screen, mapBox) });
   }
   else if (screen.keys['Control']) {
     tilesel = new CRT.TileSelection(mapBox, 4);
