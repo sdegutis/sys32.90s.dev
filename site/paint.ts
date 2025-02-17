@@ -165,7 +165,7 @@ screen.layoutTree();
 // setInterval(() => {
 
 //   split2.resizable = !split2.resizable
-//   screen.layout(split2);
+//   screen.layoutTree(split2);
 
 //   console.log(split2.children)
 
@@ -174,6 +174,6 @@ screen.layoutTree();
 // setInterval(() => {
 
 //   split2.pos++;
-//   screen.layout(split2);
+//   screen.layoutTree(split2);
 
 // }, 100);
