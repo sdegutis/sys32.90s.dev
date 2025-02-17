@@ -186,10 +186,10 @@ export class Screen {
     let x2 = x1 + w - 1;
     let y2 = y1 + h - 1;
 
-    // if (this._clip.x1 > x1) x1 = this._clip.x1;
-    // if (this._clip.y1 > y1) y1 = this._clip.y1;
-    // if (this._clip.x2 < x2) x2 = this._clip.x2;
-    // if (this._clip.y2 < y2) y2 = this._clip.y2;
+    if (this.#camera.x1 > x1) x1 = this.#camera.x1;
+    if (this.#camera.y1 > y1) y1 = this.#camera.y1;
+    if (this.#camera.x2 < x2) x2 = this.#camera.x2;
+    if (this.#camera.y2 < y2) y2 = this.#camera.y2;
 
     const r = c >> 24 & 0xff;
     const g = c >> 16 & 0xff;
@@ -255,6 +255,10 @@ export class Screen {
 
     this.#camera.x += node.x;
     this.#camera.y += node.y;
+    this.#camera.x1 = Math.max(cx1, this.#camera.x);
+    this.#camera.y1 = Math.max(cy1, this.#camera.y);
+    this.#camera.x2 = Math.min(cx2, (this.#camera.x + node.w - 1));
+    this.#camera.y2 = Math.min(cy2, (this.#camera.y + node.h - 1));
 
     if ((node.background & 0xff) > 0) {
       node.screen.rectFill(0, 0, node.w, node.h, node.background);
