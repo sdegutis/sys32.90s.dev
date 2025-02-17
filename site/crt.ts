@@ -8,18 +8,18 @@ export class Screen {
 
   needsRedraw = true;
 
-  _allHovered: Box[] = [];
-  _hovered: Box;
-  _trackingMouse?: { move: () => void, up?: () => void };
+  #allHovered: Box[] = [];
+  #hovered: Box;
+  #trackingMouse?: { move: () => void, up?: () => void };
 
   pixels;
 
-  _camera = { x: 0, y: 0 };
-  _clip;
-  _context;
-  _imgdata;
+  #camera = { x: 0, y: 0 };
+  // #clip = { x: 0, y: 0, w: 0, h: 0 };
+  #context;
+  #imgdata;
 
-  _destroyer = new AbortController();
+  #destroyer = new AbortController();
 
   constructor(public canvas: HTMLCanvasElement) {
     canvas.style.imageRendering = 'pixelated';
@@ -29,15 +29,16 @@ export class Screen {
     canvas.tabIndex = 0;
     canvas.focus();
 
-    this._context = canvas.getContext('2d')!;
+    this.#context = canvas.getContext('2d')!;
 
     this.pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
-    this._imgdata = new ImageData(this.pixels, canvas.width, canvas.height);
+    this.#imgdata = new ImageData(this.pixels, canvas.width, canvas.height);
     for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
       this.pixels[i + 3] = 255;
     }
 
-    this._clip = { x1: 0, y1: 0, x2: canvas.width - 1, y2: canvas.height - 1 };
+    // this.#clip.w = canvas.width - 1;
+    // this.#clip.h = canvas.height - 1;
 
     this.root = new Box();
     this.root.w = canvas.width;
@@ -45,9 +46,9 @@ export class Screen {
     this.root.screen = this;
 
     this.focused = this.root;
-    this._hovered = this.root;
+    this.#hovered = this.root;
 
-    const callbackOpts = { passive: true, signal: this._destroyer.signal };
+    const callbackOpts = { passive: true, signal: this.#destroyer.signal };
 
     canvas.addEventListener('keydown', (e) => {
       this.keys[e.key] = true;
@@ -67,8 +68,8 @@ export class Screen {
     canvas.addEventListener('mousedown', (e) => {
       this.mouse.button = e.button;
       this.focused.onUnfocus?.();
-      this._hovered.focus();
-      this._hovered.onMouseDown?.();
+      this.#hovered.focus();
+      this.#hovered.onMouseDown?.();
       this.needsRedraw = true;
     }, callbackOpts);
 
@@ -79,39 +80,39 @@ export class Screen {
       if (x === this.mouse.x && y === this.mouse.y) return;
       if (x >= canvas.width || y >= canvas.height) return;
 
-      this._allHovered.length = 0;
+      this.#allHovered.length = 0;
 
       this.mouse.x = x;
       this.mouse.y = y;
 
       const currentHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
 
-      const notTracking = !this._trackingMouse;
+      const notTracking = !this.#trackingMouse;
 
-      if (this._hovered !== currentHovered) {
-        if (notTracking) this._hovered.onMouseExit?.();
-        this._hovered.hovered = false;
+      if (this.#hovered !== currentHovered) {
+        if (notTracking) this.#hovered.onMouseExit?.();
+        this.#hovered.hovered = false;
         currentHovered.hovered = true;
-        this._hovered = currentHovered;
-        if (notTracking) this._hovered.onMouseEnter?.();
+        this.#hovered = currentHovered;
+        if (notTracking) this.#hovered.onMouseEnter?.();
       }
 
-      this._trackingMouse?.move();
-      if (notTracking) this._hovered.onMouseMove?.();
+      this.#trackingMouse?.move();
+      if (notTracking) this.#hovered.onMouseMove?.();
 
       this.needsRedraw = true;
     }, callbackOpts);
 
     canvas.addEventListener('mouseup', (e) => {
-      this._trackingMouse?.up?.();
-      this._trackingMouse = undefined;
+      this.#trackingMouse?.up?.();
+      this.#trackingMouse = undefined;
       this.needsRedraw = true;
     }, callbackOpts);
 
     canvas.addEventListener('wheel', (e) => {
-      let i = this._allHovered.length;
+      let i = this.#allHovered.length;
       while (i--) {
-        const box = this._allHovered[i];
+        const box = this.#allHovered[i];
         if (box.onScroll) {
           box.onScroll(e.deltaY < 0);
           this.needsRedraw = true;
@@ -121,7 +122,7 @@ export class Screen {
     }, callbackOpts)
 
     let alive = true;
-    this._destroyer.signal.addEventListener('abort', () => {
+    this.#destroyer.signal.addEventListener('abort', () => {
       alive = false;
     });
 
@@ -131,7 +132,7 @@ export class Screen {
         if (this.needsRedraw) {
           this.needsRedraw = false;
           this.#drawNode(this.root);
-          this._hovered.drawCursor();
+          this.#hovered.drawCursor();
           this.blit();
         }
         last = t;
@@ -144,8 +145,8 @@ export class Screen {
   }
 
   #drawNode(node: Box) {
-    this._camera.x += node.x;
-    this._camera.y += node.y;
+    this.#camera.x += node.x;
+    this.#camera.y += node.y;
 
     if ((node.background & 0xff) > 0) {
       node.screen.rectFill(0, 0, node.w, node.h, node.background);
@@ -157,12 +158,12 @@ export class Screen {
       this.#drawNode(node.children[i]);
     }
 
-    this._camera.x -= node.x;
-    this._camera.y -= node.y;
+    this.#camera.x -= node.x;
+    this.#camera.y -= node.y;
   }
 
   destroy() {
-    this._destroyer.abort();
+    this.#destroyer.abort();
   }
 
   autoscale() {
@@ -184,7 +185,7 @@ export class Screen {
   }
 
   blit() {
-    this._context.putImageData(this._imgdata, 0, 0);
+    this.#context.putImageData(this.#imgdata, 0, 0);
   }
 
   pset(x: number, y: number, c: number) {
@@ -201,8 +202,8 @@ export class Screen {
   rectFill(x: number, y: number, w: number, h: number, c: number) {
     const cw = this.canvas.width;
 
-    let x1 = x + this._camera.x;
-    let y1 = y + this._camera.y;
+    let x1 = x + this.#camera.x;
+    let y1 = y + this.#camera.y;
     let x2 = x1 + w - 1;
     let y2 = y1 + h - 1;
 
@@ -242,8 +243,8 @@ export class Screen {
 
   trackMouse(fns: { move: () => void, up?: () => void }) {
     fns.move();
-    this._trackingMouse = fns;
-    return () => this._trackingMouse = undefined;
+    this.#trackingMouse = fns;
+    return () => this.#trackingMouse = undefined;
   }
 
   #hover(box: Box, x: number, y: number): Box | null {
@@ -252,7 +253,7 @@ export class Screen {
     const inThis = (x >= 0 && y >= 0 && x < box.w && y < box.h);
     if (!inThis) return null;
 
-    this._allHovered.push(box);
+    this.#allHovered.push(box);
 
     box.mouse.x = x;
     box.mouse.y = y;

@@ -27,9 +27,7 @@ class Button extends Box {
     });
   };
 
-  drawContents() {
-    super.drawContents();
-
+  draw = () => {
     if (this.clicking) {
       this.screen.rectFill(0, 0, this.w, this.h, 0xffffff22);
     }
@@ -38,7 +36,7 @@ class Button extends Box {
     }
 
     this.screen.print(2, 2, this.color, this.text);
-  }
+  };
 
 }
 
@@ -73,7 +71,7 @@ class RadioButton extends Button {
     this.onSelect();
   }
 
-  drawContents() {
+  draw = () => {
     this.drawButton();
 
     if (this.selected) {
@@ -82,7 +80,7 @@ class RadioButton extends Button {
     else if (this.hovered) {
       this.screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
     }
-  }
+  };
 
 }
 
@@ -263,10 +261,9 @@ mapArea.y = 8;
 mapArea.w = 320 - 40;
 mapArea.h = 180 - 8;
 mapArea.background = 0x222222ff;
-mapArea.clips = true;
 screen.root.add(mapArea);
 
-mapArea.drawContents = () => {
+mapArea.draw = () => {
   screen.rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
   let off = 0;
   for (let y = 0; y < mapArea.h; y++) {
