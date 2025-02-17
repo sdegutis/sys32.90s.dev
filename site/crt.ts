@@ -317,6 +317,12 @@ export class Box {
     this.onFocus?.();
   }
 
+  layout() {
+    for (let i = 0; i < this.children.length; i++) {
+      this.children[i].layout();
+    }
+  }
+
 }
 
 export class Font {
