@@ -98,7 +98,7 @@ const menu = new Box();
 menu.w = 320;
 menu.h = 8;
 menu.background = 0x000000ff;
-screen.root.add(menu);
+screen.root.addChild(menu);
 
 const saveButton = new Button();
 saveButton.w = 4 * 4 + 3;
@@ -109,7 +109,7 @@ saveButton.text = 'save';
 saveButton.onClick = () => {
   console.log('saving')
 };
-menu.add(saveButton);
+menu.addChild(saveButton);
 
 const loadButton = new Button();
 loadButton.x = 20;
@@ -121,7 +121,7 @@ loadButton.text = 'load';
 loadButton.onClick = () => {
   console.log('loading')
 };
-menu.add(loadButton);
+menu.addChild(loadButton);
 
 let showGrid = true;
 
@@ -133,7 +133,7 @@ gridButton.background = 0x000000ff;
 gridButton.color = 0xffffff33;
 gridButton.text = 'grid';
 gridButton.onClick = () => showGrid = !showGrid;
-menu.add(gridButton);
+menu.addChild(gridButton);
 
 
 
@@ -145,7 +145,7 @@ toolArea.y = 8;
 toolArea.w = 40;
 toolArea.h = 180 - 8;
 toolArea.background = 0x333333ff;
-screen.root.add(toolArea);
+screen.root.addChild(toolArea);
 
 
 
@@ -220,7 +220,7 @@ for (let i = 0; i < 17; i++) {
   b.drawButton = () => screen.rectFill(2, 2, 4, 4, COLORS[i % 16]);
   toolGroup.add(b);
   b.onSelect = () => currentTool = i;
-  toolArea.add(b);
+  toolArea.addChild(b);
 
   if (i === currentTool) toolGroup.select(b);
 
@@ -261,7 +261,7 @@ mapArea.y = 8;
 mapArea.w = 320 - 40;
 mapArea.h = 180 - 8;
 mapArea.background = 0x222222ff;
-screen.root.add(mapArea);
+screen.root.addChild(mapArea);
 
 mapArea.draw = () => {
   screen.rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
@@ -277,7 +277,7 @@ mapArea.draw = () => {
 const mapBox = new Box();
 mapBox.w = map.width * 4;
 mapBox.h = map.height * 4;
-mapArea.add(mapBox);
+mapArea.addChild(mapBox);
 
 mapBox.drawCursor = () => {
   // rectFill(mouse.x, mouse.y - 2, 1, 5, '#0007');

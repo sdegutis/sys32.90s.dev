@@ -13,6 +13,11 @@ class BorderBox extends Box {
 
 }
 
+class SplitDivider extends Box {
+
+
+}
+
 class SplitBox extends Box {
 
   pos = 0;
@@ -21,7 +26,7 @@ class SplitBox extends Box {
   dividerWidth = 2;
   dividerColor = 0x000000ff;
 
-  static xcursor = {
+  static xresize = {
     bitmap: new Bitmap([0x00000099, 0xffffffff], [
       1, 1, 1, 1, 1, -1,
       1, 2, 2, 2, 1, -1,
@@ -30,7 +35,7 @@ class SplitBox extends Box {
     offset: [2, 1],
   };
 
-  static ycursor = {
+  static yresize = {
     bitmap: new Bitmap([0x00000099, 0xffffffff], [
       1, 1, 1, -1,
       1, 2, 1, -1,
@@ -55,7 +60,7 @@ class SplitBox extends Box {
       this.#resizer = new Box();
       this.#resizer.background = this.dividerColor;
       this.#resizer.drawCursor = () => {
-        const c = this.dir === 'x' ? SplitBox.xcursor : SplitBox.ycursor;
+        const c = this.dir === 'x' ? SplitBox.xresize : SplitBox.yresize;
         c.bitmap.draw(screen, screen.mouse.x - c.offset[0], screen.mouse.y - c.offset[1]);
       };
       this.#resizer.onMouseDown = (trackMouse) => {
@@ -70,7 +75,7 @@ class SplitBox extends Box {
           },
         });
       };
-      this.add(this.#resizer, 1);
+      this.addChild(this.#resizer, 1);
     }
 
     const steps = [this.pos, this[dw] - this.pos];
@@ -116,13 +121,13 @@ split2.resizable = true;
 split2.pos = 30;
 split2.dir = 'x';
 
-screen.root.add(split);
+screen.root.addChild(split);
 
-split.add(blue);
-split.add(split2);
+split.addChild(blue);
+split.addChild(split2);
 
-split2.add(red);
-split2.add(green);
+split2.addChild(red);
+split2.addChild(green);
 
 split.resizable = true;
 

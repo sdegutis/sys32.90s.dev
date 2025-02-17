@@ -204,7 +204,7 @@ class TabBox extends Box {
 
   addTab(box: Box) {
     this.children = this.#realChildren;
-    this.add(box);
+    this.addChild(box);
     this.select(this.children.length - 1);
   }
 
@@ -223,7 +223,7 @@ tabBox.y = 8;
 tabBox.w = 320 - 40;
 tabBox.h = 180 - 8;
 tabBox.background = 0x222222ff;
-screen.root.add(tabBox);
+screen.root.addChild(tabBox);
 
 
 
@@ -243,7 +243,7 @@ const menu = new Box();
 menu.w = 320;
 menu.h = 8;
 menu.background = 0x000000ff;
-screen.root.add(menu);
+screen.root.addChild(menu);
 
 const saveButton = new Button();
 saveButton.w = 4 * 4 + 3;
@@ -254,7 +254,7 @@ saveButton.text = 'save';
 saveButton.onClick = () => {
   console.log('saving')
 };
-menu.add(saveButton);
+menu.addChild(saveButton);
 
 const loadButton = new Button();
 loadButton.x = 20;
@@ -266,7 +266,7 @@ loadButton.text = 'load';
 loadButton.onClick = () => {
   console.log('loading')
 };
-menu.add(loadButton);
+menu.addChild(loadButton);
 
 let showGrid = true;
 
@@ -278,7 +278,7 @@ gridButton.background = 0x000000ff;
 gridButton.color = 0xffffff33;
 gridButton.text = 'grid';
 gridButton.onClick = () => showGrid = !showGrid;
-menu.add(gridButton);
+menu.addChild(gridButton);
 
 const tabButton = new Button();
 tabButton.x = 60;
@@ -288,7 +288,7 @@ tabButton.background = 0x000000ff;
 tabButton.color = 0xffffff33;
 tabButton.text = 'tabs';
 tabButton.onClick = () => tabBox.select((tabBox.tab + 1) % 2);
-menu.add(tabButton);
+menu.addChild(tabButton);
 
 
 
@@ -300,7 +300,7 @@ toolArea.y = 8;
 toolArea.w = 40;
 toolArea.h = 180 - 8;
 toolArea.background = 0x333333ff;
-screen.root.add(toolArea);
+screen.root.addChild(toolArea);
 
 
 
@@ -375,7 +375,7 @@ for (let i = 0; i < 17; i++) {
   b.drawButton = () => screen.rectFill(2, 2, 4, 4, COLORS[i % 16]);
   toolGroup.add(b);
   b.onSelect = () => currentTool = i;
-  toolArea.add(b);
+  toolArea.addChild(b);
 
   if (i === currentTool) toolGroup.select(b);
 
@@ -430,7 +430,7 @@ mapArea.draw = () => {
 const mapBox = new Box();
 mapBox.w = map.width * 4;
 mapBox.h = map.height * 4;
-mapArea.add(mapBox);
+mapArea.addChild(mapBox);
 
 mapBox.drawCursor = () => {
   // rectFill(mouse.x, mouse.y - 2, 1, 5, '#0007');
@@ -550,7 +550,7 @@ checkbox.y = 1;
 checkbox.w = 8 + 4 * 7;
 checkbox.h = 6;
 checkbox.background = 0x000000ff;
-screen.root.add(checkbox);
+screen.root.addChild(checkbox);
 checkbox.onChange = () => console.log(checkbox.checked)
 checkbox.checked = true;
 
@@ -560,7 +560,7 @@ label.x = 8;
 label.y = 1;
 label.w = 4 * 7;
 label.h = 6;
-checkbox.add(label);
+checkbox.addChild(label);
 
 export class Slider extends Box {
 
@@ -590,7 +590,7 @@ slider.y = 40;
 slider.w = 8 + 4 * 7;
 slider.h = 6;
 slider.background = 0x000000ff;
-screen.root.add(slider);
+screen.root.addChild(slider);
 
 const test1 = new Box();
 test1.x = 100;
@@ -625,13 +625,13 @@ test1.onMouseDown = (trackMouse) => {
     trackMouse({ move: dragMove(screen, test1) });
   }
 };
-screen.root.add(test1);
+screen.root.addChild(test1);
 
 const b1 = new Button();
 b1.x = 3; b1.y = 15; b1.w = 20; b1.h = 10;
 b1.text = 'hmm';
-test1.add(b1)
-test1.add(textbox);
+test1.addChild(b1)
+test1.addChild(textbox);
 
 // screen.root.draw = () => {
 

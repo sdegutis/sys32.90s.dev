@@ -344,26 +344,26 @@ export class Box {
   draw?: () => void;
   layout?: () => void;
 
+  x = 0;
+  y = 0;
+  w = 0;
+  h = 0;
+
+  background = 0x00000000;
+
   screen!: Screen;
   children: Box[] = [];
   hovered = false;
   mouse = { x: 0, y: 0 };
   passthrough = false;
 
-  background = 0x00000000;
+  addChild(child: Box, pos?: number) {
+    child.screen = this.screen;
+    this.children.splice(pos ?? this.children.length, 0, child);
+  }
 
   drawCursor() {
     cursors.pointer.draw(this.screen, this.screen.mouse.x - 1, this.screen.mouse.y - 1);
-  }
-
-  x = 0;
-  y = 0;
-  w = 0;
-  h = 0;
-
-  add(child: Box, pos?: number) {
-    child.screen = this.screen;
-    this.children.splice(pos ?? this.children.length, 0, child);
   }
 
 }
