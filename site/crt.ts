@@ -193,8 +193,6 @@ export class Screen {
     if (this._clip.x2 < x2) x2 = this._clip.x2;
     if (this._clip.y2 < y2) y2 = this._clip.y2;
 
-    // if (x2 < x1 || y2 < y1) return;
-
     const r = c >> 24 & 0xff;
     const g = c >> 16 & 0xff;
     const b = c >> 8 & 0xff;
