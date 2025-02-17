@@ -140,7 +140,7 @@ export class Screen {
         if (this.needsRedraw) {
           this.needsRedraw = false;
           this.#draw(this.root);
-          this.#hovered.drawCursor();
+          this.#hovered.drawCursor(this.mouse.x, this.mouse.y);
           this.blit();
         }
         last = t;
@@ -362,8 +362,8 @@ export class Box {
     this.children.splice(pos ?? this.children.length, 0, child);
   }
 
-  drawCursor() {
-    cursors.pointer.draw(this.screen, this.screen.mouse.x - 1, this.screen.mouse.y - 1);
+  drawCursor(x: number, y: number) {
+    cursors.pointer.draw(this.screen, x - 1, y - 1);
   }
 
 }
