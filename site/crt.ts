@@ -344,6 +344,11 @@ const cursors = {
 
 };
 
+export type Property = {
+  name: string,
+  type: 'number' | 'string' | 'color' | 'boolean',
+};
+
 export class Box {
 
   onScroll?: (up: boolean) => void;
@@ -357,13 +362,18 @@ export class Box {
   draw?: () => void;
   layout?: () => void;
 
+  static props: Property[] = [
+    { name: 'x', type: 'number' },
+    { name: 'y', type: 'number' },
+    { name: 'w', type: 'number' },
+    { name: 'h', type: 'number' },
+    { name: 'background', type: 'color' },
+  ];
+
   x = 0;
   y = 0;
   w = 0;
   h = 0;
-
-  trackingArea?: { x: number, y: number, w: number, h: number };
-
   background = 0x00000000;
 
   screen!: Screen;
@@ -371,6 +381,7 @@ export class Box {
   hovered = false;
   mouse = { x: 0, y: 0 };
   passthrough = false;
+  trackingArea?: { x: number, y: number, w: number, h: number };
 
   addChild(child: Box, pos?: number) {
     child.screen = this.screen;

@@ -1,4 +1,4 @@
-import { Bitmap, Box, Screen, TileSelection, dragMove, dragResize } from "./crt.js";
+import { Bitmap, Box, Property, Screen, dragMove } from "./crt.js";
 
 const screen = new Screen(document.querySelector('canvas')!);
 screen.autoscale();
@@ -126,10 +126,15 @@ class SplitBox extends Box {
 
 class GridBox extends Box {
 
-
+  // static props: Property[] = [
+  //   ...super.props,
+  //   { name: 'id', type: 'string' },
+  // ];
 
 }
 
+
+console.log(GridBox.props)
 
 const split = new SplitBox();
 split.w = 320;
