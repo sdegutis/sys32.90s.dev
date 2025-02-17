@@ -79,20 +79,18 @@ export class Screen {
       this.mouse.x = x;
       this.mouse.y = y;
 
-      const currentHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
+      const activeHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
 
-      const notTracking = !this.#trackingMouse;
-
-      if (this.#hovered !== currentHovered) {
-        if (notTracking) this.#hovered.onMouseExit?.();
+      if (this.#hovered !== activeHovered) {
+        if (!this.#trackingMouse) this.#hovered.onMouseExit?.();
         this.#hovered.hovered = false;
-        currentHovered.hovered = true;
-        this.#hovered = currentHovered;
-        if (notTracking) this.#hovered.onMouseEnter?.();
+        activeHovered.hovered = true;
+        this.#hovered = activeHovered;
+        if (!this.#trackingMouse) this.#hovered.onMouseEnter?.();
       }
 
       this.#trackingMouse?.move();
-      if (notTracking) this.#hovered.onMouseMove?.();
+      if (!this.#trackingMouse) this.#hovered.onMouseMove?.();
 
       this.needsRedraw = true;
     }, { passive: true, signal: this.#destroyer.signal });
@@ -192,6 +190,8 @@ export class Screen {
     const g = c >> 16 & 0xff;
     const b = c >> 8 & 0xff;
     const a = c & 0xff;
+
+    // if (a === 0) return;
 
     for (y = y1; y <= y2; y++) {
       for (x = x1; x <= x2; x++) {
