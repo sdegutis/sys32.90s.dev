@@ -236,8 +236,7 @@ let tilesel: CRT.TileSelection | null = null;
 
 mapBox.onMouseDown = () => {
   if (screen.keys[' ']) {
-    const dragger = new CRT.Mover(screen, mapBox);
-    screen.trackMouse({ move: () => dragger.update() });
+    screen.trackMouse({ move: CRT.dragMove(screen, mapBox) });
   }
   else if (screen.keys['Control']) {
     tilesel = new CRT.TileSelection(mapBox, 4);
@@ -417,12 +416,10 @@ test1.drawContents = () => {
 };
 test1.onMouseDown = () => {
   if (test1.mouse.x >= test1.w - 3 && test1.mouse.y >= test1.h - 3) {
-    const dragger = new CRT.Resizer(screen, test1);
-    screen.trackMouse({ move: () => dragger.update() });
+    screen.trackMouse({ move: CRT.dragResize(screen, test1) });
   }
   else if (test1.mouse.y < 10) {
-    const dragger = new CRT.Mover(screen, test1);
-    screen.trackMouse({ move: () => dragger.update() });
+    screen.trackMouse({ move: CRT.dragMove(screen, test1) });
   }
 };
 screen.root.add(test1);
