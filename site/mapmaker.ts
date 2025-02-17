@@ -1,4 +1,4 @@
-import * as CRT from "./ui.js";
+import * as CRT from "./crt.js";
 
 const canvas = document.querySelector('canvas')!;
 canvas.width = 320;
