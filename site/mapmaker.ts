@@ -1,8 +1,8 @@
-import * as CRT from "./crt.js";
+import { Box, Screen, TileSelection, dragMove } from "./crt.js";
 
 
 
-class Button extends CRT.Box {
+class Button extends Box {
 
   text = '';
   color: number = 0xffffffff;
@@ -91,12 +91,12 @@ class RadioButton extends Button {
 const canvas = document.querySelector('canvas')!;
 canvas.width = 320;
 canvas.height = 180;
-const screen = new CRT.Screen(canvas);
+const screen = new Screen(canvas);
 screen.autoscale();
 
 screen.root.onKeyDown = k => console.log(k.toUpperCase())
 
-const menu = new CRT.Box();
+const menu = new Box();
 menu.w = 320;
 menu.h = 8;
 menu.background = 0x000000ff;
@@ -142,7 +142,7 @@ menu.add(gridButton);
 
 
 
-const toolArea = new CRT.Box();
+const toolArea = new Box();
 toolArea.y = 8;
 toolArea.w = 40;
 toolArea.h = 180 - 8;
@@ -257,7 +257,7 @@ screen.root.onScroll = (up) => {
 
 
 
-const mapArea = new CRT.Box();
+const mapArea = new Box();
 mapArea.x = 40;
 mapArea.y = 8;
 mapArea.w = 320 - 40;
@@ -277,7 +277,7 @@ mapArea.drawContents = () => {
   }
 };
 
-const mapBox = new CRT.Box();
+const mapBox = new Box();
 mapBox.w = map.width * 4;
 mapBox.h = map.height * 4;
 mapArea.add(mapBox);
@@ -288,14 +288,14 @@ mapBox.drawCursor = () => {
   // pset(mouse.x, mouse.y, '#fff');
 }
 
-let tilesel: CRT.TileSelection | null = null;
+let tilesel: TileSelection | null = null;
 
 mapBox.onMouseDown = () => {
   if (screen.keys[' ']) {
-    screen.trackMouse({ move: CRT.dragMove(screen, mapBox) });
+    screen.trackMouse({ move: dragMove(screen, mapBox) });
   }
   else if (screen.keys['Control']) {
-    tilesel = new CRT.TileSelection(mapBox, 4);
+    tilesel = new TileSelection(mapBox, 4);
 
     screen.trackMouse({
       move() {

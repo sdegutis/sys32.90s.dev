@@ -1,11 +1,11 @@
-import * as CRT from "./crt.js";
+import { Box, Screen, TileSelection, dragMove, dragResize } from "./crt.js";
 
 
-const screen = new CRT.Screen(document.querySelector('canvas')!);
+const screen = new Screen(document.querySelector('canvas')!);
 screen.autoscale();
 
 
-class Button extends CRT.Box {
+class Button extends Box {
 
   text = '';
   color: number = 0xffffffff;
@@ -90,7 +90,7 @@ class RadioButton extends Button {
 }
 
 
-class Label extends CRT.Box {
+class Label extends Box {
 
   color = 0xffffffff;
 
@@ -104,7 +104,7 @@ class Label extends CRT.Box {
 
 }
 
-class Checkbox extends CRT.Box {
+class Checkbox extends Box {
 
   checked = false;
 
@@ -124,7 +124,7 @@ class Checkbox extends CRT.Box {
 
 }
 
-class TextField extends CRT.Box {
+class TextField extends Box {
 
   text = '';
   color = 0xffffffff;
@@ -205,12 +205,12 @@ class TextField extends CRT.Box {
 
 }
 
-class TabBox extends CRT.Box {
+class TabBox extends Box {
 
   tab = -1;
-  #realChildren: CRT.Box[] = [];
+  #realChildren: Box[] = [];
 
-  addTab(box: CRT.Box) {
+  addTab(box: Box) {
     this.children = this.#realChildren;
     this.add(box);
     this.select(this.children.length - 1);
@@ -237,7 +237,7 @@ screen.root.add(tabBox);
 
 
 
-const mapArea2 = new CRT.Box();
+const mapArea2 = new Box();
 mapArea2.w = 320 - 40;
 mapArea2.h = 180 - 8;
 mapArea2.background = 0x000033ff;
@@ -247,7 +247,7 @@ mapArea2.onMouseDown = () => console.log('haha nope');
 
 
 
-const menu = new CRT.Box();
+const menu = new Box();
 menu.w = 320;
 menu.h = 8;
 menu.background = 0x000000ff;
@@ -303,7 +303,7 @@ menu.add(tabButton);
 
 
 
-const toolArea = new CRT.Box();
+const toolArea = new Box();
 toolArea.y = 8;
 toolArea.w = 40;
 toolArea.h = 180 - 8;
@@ -418,7 +418,7 @@ screen.root.onScroll = (up) => {
 
 
 
-const mapArea = new CRT.Box();
+const mapArea = new Box();
 mapArea.w = 320 - 40;
 mapArea.h = 180 - 8;
 mapArea.background = 0x222222ff;
@@ -436,7 +436,7 @@ mapArea.drawContents = () => {
   }
 };
 
-const mapBox = new CRT.Box();
+const mapBox = new Box();
 mapBox.w = map.width * 4;
 mapBox.h = map.height * 4;
 mapArea.add(mapBox);
@@ -447,14 +447,14 @@ mapBox.drawCursor = () => {
   // pset(mouse.x, mouse.y, '#fff');
 }
 
-let tilesel: CRT.TileSelection | null = null;
+let tilesel: TileSelection | null = null;
 
 mapBox.onMouseDown = () => {
   if (screen.keys[' ']) {
-    screen.trackMouse({ move: CRT.dragMove(screen, mapBox) });
+    screen.trackMouse({ move: dragMove(screen, mapBox) });
   }
   else if (screen.keys['Control']) {
-    tilesel = new CRT.TileSelection(mapBox, 4);
+    tilesel = new TileSelection(mapBox, 4);
 
     screen.trackMouse({
       move() {
@@ -571,7 +571,7 @@ label.w = 4 * 7;
 label.h = 6;
 checkbox.add(label);
 
-export class Slider extends CRT.Box {
+export class Slider extends Box {
 
   value = 0;
   min = 0;
@@ -603,7 +603,7 @@ slider.h = 6;
 slider.background = 0x000000ff;
 screen.root.add(slider);
 
-const test1 = new CRT.Box();
+const test1 = new Box();
 test1.x = 100;
 test1.clips = true;
 test1.y = 100;
@@ -631,10 +631,10 @@ test1.drawContents = () => {
 };
 test1.onMouseDown = () => {
   if (test1.mouse.x >= test1.w - 3 && test1.mouse.y >= test1.h - 3) {
-    screen.trackMouse({ move: CRT.dragResize(screen, test1) });
+    screen.trackMouse({ move: dragResize(screen, test1) });
   }
   else if (test1.mouse.y < 10) {
-    screen.trackMouse({ move: CRT.dragMove(screen, test1) });
+    screen.trackMouse({ move: dragMove(screen, test1) });
   }
 };
 screen.root.add(test1);
