@@ -13,18 +13,6 @@ class BorderBox extends Box {
 
 }
 
-class VacuumBox extends Box {
-
-  layout(): void {
-    this.children[0].x = this.x;
-    this.children[0].y = this.y;
-    this.children[0].w = this.w;
-    this.children[0].h = this.h;
-    super.layout();
-  }
-
-}
-
 class SplitBox extends Box {
 
   pos = 0;
@@ -35,33 +23,30 @@ class SplitBox extends Box {
 
   #resizer?: Box;
 
-  layout(): void {
-
+  layout = () => {
     const dw = this.dir === 'x' ? 'w' : 'h';
     const dx = this.dir;
 
     if (!this.resizable && this.#resizer) {
+      this.children.splice(1, 1);
       this.#resizer = undefined;
     }
     else if (this.resizable && !this.#resizer) {
       this.#resizer = new Box();
       this.#resizer.background = this.dividerColor;
-      this.children.splice(1, 0, this.#resizer);
-      this.#resizer.screen = this.screen;
       this.#resizer.onMouseDown = () => {
         const b = { x: 0, y: 0 };
         b[dx] = this.pos;
-
-        const move = dragMove(this.screen, b);
+        const drag = dragMove(this.screen, b);
         this.screen.trackMouse({
           move: () => {
-            move();
+            drag();
             this.pos = b[dx];
-            this.layout();
+            this.screen.layoutTree(this);
           },
         });
       };
-      // this.add(this.#resizer);
+      this.add(this.#resizer, 1);
     }
 
     const steps = [this.pos, this[dw] - this.pos];
@@ -81,9 +66,7 @@ class SplitBox extends Box {
       this.children[i][dw] = steps[i];
       x += steps[i];
     }
-
-    super.layout();
-  }
+  };
 
 }
 
@@ -93,11 +76,10 @@ class StackBox extends Box {
 
 }
 
-const v = new VacuumBox();
-v.w = 320;
-v.h = 180;
 
 const split = new SplitBox();
+split.w = 320;
+split.h = 180;
 split.pos = 10;
 split.dir = 'y';
 
@@ -110,9 +92,7 @@ split2.resizable = true;
 split2.pos = 30;
 split2.dir = 'x';
 
-screen.root.add(v);
-
-v.add(split);
+screen.root.add(split);
 
 split.add(blue);
 split.add(split2);
@@ -120,4 +100,22 @@ split.add(split2);
 split2.add(red);
 split2.add(green);
 
-screen.root.layout();
+split.resizable = true;
+
+screen.layoutTree();
+
+// setInterval(() => {
+
+//   split2.resizable = !split2.resizable
+//   screen.layout(split2);
+
+//   console.log(split2.children)
+
+// }, 2000);
+
+// setInterval(() => {
+
+//   split2.pos++;
+//   screen.layout(split2);
+
+// }, 100);

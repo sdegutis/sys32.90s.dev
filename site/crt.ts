@@ -65,7 +65,7 @@ export class Screen {
     canvas.addEventListener('mousedown', (e) => {
       this.mouse.button = e.button;
       this.focused.onUnfocus?.();
-      this.#hovered.focus();
+      this.focus(this.#hovered);
       this.#hovered.onMouseDown?.();
       this.needsRedraw = true;
     }, { passive: true, signal: this.#destroyer.signal });
@@ -77,20 +77,10 @@ export class Screen {
       if (x === this.mouse.x && y === this.mouse.y) return;
       if (x >= canvas.width || y >= canvas.height) return;
 
-      this.#allHovered.length = 0;
-
       this.mouse.x = x;
       this.mouse.y = y;
 
-      const activeHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
-
-      if (this.#hovered !== activeHovered) {
-        if (!this.#trackingMouse) this.#hovered.onMouseExit?.();
-        this.#hovered.hovered = false;
-        activeHovered.hovered = true;
-        this.#hovered = activeHovered;
-        if (!this.#trackingMouse) this.#hovered.onMouseEnter?.();
-      }
+      this.#checkUnderMouse();
 
       this.#trackingMouse?.move();
       if (!this.#trackingMouse) this.#hovered.onMouseMove?.();
@@ -137,6 +127,28 @@ export class Screen {
       }
     };
     requestAnimationFrame(update);
+  }
+
+  layoutTree(node: Box = this.root) {
+    node.layout?.();
+    for (let i = 0; i < node.children.length; i++) {
+      this.layoutTree(node.children[i]);
+    }
+    this.#checkUnderMouse();
+    this.needsRedraw = true;
+  }
+
+  #checkUnderMouse() {
+    this.#allHovered.length = 0;
+    const activeHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
+
+    if (this.#hovered !== activeHovered) {
+      if (!this.#trackingMouse) this.#hovered.onMouseExit?.();
+      this.#hovered.hovered = false;
+      activeHovered.hovered = true;
+      this.#hovered = activeHovered;
+      if (!this.#trackingMouse) this.#hovered.onMouseEnter?.();
+    }
   }
 
   destroy() {
@@ -220,6 +232,11 @@ export class Screen {
     this.font.print(this, x, y, c, text);
   }
 
+  focus(node: Box) {
+    this.focused = node;
+    node.onFocus?.();
+  }
+
   trackMouse(fns: { move: () => void, up?: () => void }) {
     fns.move();
     this.#trackingMouse = fns;
@@ -292,6 +309,7 @@ export class Box {
   onFocus?: () => void;
   onUnfocus?: () => void;
   draw?: () => void;
+  layout?: () => void;
 
   screen!: Screen;
   children: Box[] = [];
@@ -306,24 +324,13 @@ export class Box {
   w = 0;
   h = 0;
 
-  add(child: Box) {
+  add(child: Box, pos?: number) {
     child.screen = this.screen;
-    this.children.push(child);
+    this.children.splice(pos ?? this.children.length, 0, child);
   }
 
   drawCursor() {
     cursors.pointer.draw(this.screen, this.screen.mouse.x - 1, this.screen.mouse.y - 1);
-  }
-
-  focus() {
-    this.screen.focused = this;
-    this.onFocus?.();
-  }
-
-  layout() {
-    for (let i = 0; i < this.children.length; i++) {
-      this.children[i].layout();
-    }
   }
 
 }
