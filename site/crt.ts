@@ -14,7 +14,7 @@ export class Screen {
 
   pixels;
 
-  #camera = { x: 0, y: 0 };
+  #camera = { x: 0, y: 0, x1: 0, y1: 0, x2: 0, y2: 0 };
   #context;
   #imgdata;
 
@@ -35,6 +35,9 @@ export class Screen {
     for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
       this.pixels[i + 3] = 255;
     }
+
+    this.#camera.x2 = canvas.width - 1;
+    this.#camera.y2 = canvas.height - 1;
 
     this.root = new Box();
     this.root.w = canvas.width;
@@ -245,6 +248,11 @@ export class Screen {
   }
 
   #draw(node: Box) {
+    const cx1 = this.#camera.x1;
+    const cx2 = this.#camera.x2;
+    const cy1 = this.#camera.y1;
+    const cy2 = this.#camera.y2;
+
     this.#camera.x += node.x;
     this.#camera.y += node.y;
 
@@ -260,6 +268,11 @@ export class Screen {
 
     this.#camera.x -= node.x;
     this.#camera.y -= node.y;
+
+    this.#camera.x1 = cx1;
+    this.#camera.x2 = cx2;
+    this.#camera.y1 = cy1;
+    this.#camera.y2 = cy2;
   }
 
 }
@@ -282,7 +295,7 @@ export class Box {
   mouse = { x: 0, y: 0 };
   passthrough = false;
 
-  background = 0;
+  background = 0x00000000;
 
   x = 0;
   y = 0;
