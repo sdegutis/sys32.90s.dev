@@ -8,8 +8,6 @@ screen.autoscale();
 
 
 
-
-
 const tabBox = new CRT.TabBox();
 tabBox.x = 40;
 tabBox.y = 8;

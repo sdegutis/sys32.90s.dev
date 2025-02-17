@@ -120,6 +120,11 @@ export class Screen {
       }
     }, callbackOpts)
 
+    let alive = true;
+    this._destroyer.signal.addEventListener('abort', () => {
+      alive = false;
+    });
+
     let last = +document.timeline.currentTime!;
     const update = (t: number) => {
       if (t - last >= 30) {
@@ -131,7 +136,7 @@ export class Screen {
         }
         last = t;
       }
-      if (!this._destroyer.signal.aborted) {
+      if (alive) {
         requestAnimationFrame(update);
       }
     };
