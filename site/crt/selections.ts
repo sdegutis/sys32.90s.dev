@@ -38,7 +38,7 @@ export class TileSelection extends Selection {
   tx2!: number;
   ty2!: number;
 
-  update() {
+  override update() {
     super.update();
     this.tx1 = Math.floor(this.x / this.size);
     this.ty1 = Math.floor(this.y / this.size);

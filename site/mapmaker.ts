@@ -10,7 +10,7 @@ class Button extends Box {
   clicking = false;
   onClick() { }
 
-  onMouseDown(trackMouse: MouseTracker): void {
+  override onMouseDown(trackMouse: MouseTracker): void {
     this.clicking = true;
 
     const cancel = trackMouse({
@@ -27,7 +27,7 @@ class Button extends Box {
     });
   }
 
-  draw(): void {
+  override draw(): void {
     if (this.clicking) {
       this.screen.rectFill(0, 0, this.w, this.h, 0xffffff22);
     }
@@ -65,13 +65,13 @@ class RadioButton extends Button {
   selected = false;
   group?: RadioGroup;
 
-  onClick(): void {
+  override onClick(): void {
     super.onClick();
     this.group?.select(this);
     this.onSelect();
   }
 
-  draw(): void {
+  override draw(): void {
     this.drawButton();
 
     if (this.selected) {

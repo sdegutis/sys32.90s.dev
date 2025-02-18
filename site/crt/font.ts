@@ -1,4 +1,4 @@
-import { Screen } from "./screen.ts";
+import { Screen } from "./screen.js";
 
 export class Font {
 

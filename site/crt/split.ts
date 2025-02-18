@@ -32,7 +32,7 @@ class SplitBoxDivider extends Box {
     this.background = split.dividerColor;
   }
 
-  layout(): void {
+  override layout(): void {
     const dx = this.split.dir;
     const dw = dx === 'x' ? 'w' : 'h';
 
@@ -41,7 +41,7 @@ class SplitBoxDivider extends Box {
     this.trackingArea[dw] = this.split.dividerWidth + 6;
   }
 
-  draw(): void {
+  override draw(): void {
     if (this.pressed) {
       this.screen.rectFill(0, 0, this.w, this.h, this.split.dividerColorPress);
     }
@@ -50,12 +50,12 @@ class SplitBoxDivider extends Box {
     }
   }
 
-  drawCursor(x: number, y: number): void {
+  override drawCursor(x: number, y: number): void {
     const cursor = this.split.dir === 'x' ? xresize : yresize;
     cursor.bitmap.draw(this.screen, x - cursor.offset[0], y - cursor.offset[1]);
   }
 
-  onMouseDown(trackMouse: MouseTracker): void {
+  override onMouseDown(trackMouse: MouseTracker): void {
     const s = this.split;
     const dx = s.dir;
     const dw = dx === 'x' ? 'w' : 'h';
@@ -94,7 +94,7 @@ export class SplitBox extends Box {
   a = new Box(this.screen);
   b = new Box(this.screen);
   #resizer?: Box;
-  children = [this.a, this.b];
+  override children = [this.a, this.b];
 
   get resizable() { return this.#resizer !== undefined; }
   set resizable(should: boolean) {
@@ -108,7 +108,7 @@ export class SplitBox extends Box {
     }
   }
 
-  layout(): void {
+  override layout(): void {
     const dx = this.dir;
     const dw = dx === 'x' ? 'w' : 'h';
 

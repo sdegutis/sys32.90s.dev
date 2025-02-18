@@ -1,22 +1,11 @@
-import { Box, MouseTracker } from "./crt/box.js";
-import { Font } from "./crt/font.js";
+import { BorderBox, Box } from "./crt/box.js";
+import { Button } from "./crt/button.js";
+import { Label } from "./crt/label.js";
 import { makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
 import { Screen } from "./crt/screen.js";
 import { SplitBox } from "./crt/split.js";
 
 
-
-class BorderBox extends Box {
-
-  border = 0xffffff33;
-
-  draw(): void {
-    if ((this.border & 0x000000ff) > 0) {
-      this.screen.rectLine(0, 0, this.w, this.h, this.border);
-    }
-  }
-
-}
 
 {
   const canvas = document.querySelector('canvas')!;
@@ -65,82 +54,6 @@ class BorderBox extends Box {
 
 
 
-  class Label extends Box {
-
-    #text = '';
-    font = Font.crt2025;
-    padding = 1;
-    passthrough = true;
-
-    constructor(screen: Screen, text: string) {
-      super(screen);
-      this.text = text;
-    }
-
-    get text() { return this.#text; }
-    set text(s: string) {
-      this.#text = s;
-      const size = this.font.calcSize(s);
-      this.w = size.w + this.padding * 2;
-      this.h = size.h + this.padding * 2;
-    }
-
-    draw() {
-      this.screen.print(this.padding, this.padding, 0xffffffff, this.text);
-    }
-
-  }
-
-
-  class Button extends BorderBox {
-
-    padding = 1;
-    pressColor = 0x00000033;
-    hoverColor = 0x00000000;
-
-    onClick?(): void;
-
-    pressed = false;
-
-    children: Box[] = [new Label(screen, 'button')];
-
-    get child() { return this.children[0]; }
-    set child(child: Box) {
-      this.children = [child];
-      child.x = this.padding;
-      child.y = this.padding;
-      this.w = child.w + this.padding * 2;
-      this.h = child.h + this.padding * 2;
-    }
-
-    onMouseDown(trackMouse: MouseTracker): void {
-      this.pressed = true;
-      trackMouse({
-        move: () => {
-          if (!this.hovered) {
-            this.pressed = false;
-          }
-        },
-        up: () => {
-          if (this.pressed) {
-            this.onClick?.();
-          }
-          this.pressed = false;
-        },
-      });
-    }
-
-    draw(): void {
-      super.draw();
-      if (this.pressed) {
-        this.screen.rectFill(0, 0, this.w, this.h, this.pressColor);
-      }
-      else if (this.hovered) {
-        this.screen.rectFill(0, 0, this.w, this.h, this.hoverColor);
-      }
-    }
-
-  }
 
   const button = new Button(screen);
   button.x = 30;

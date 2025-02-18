@@ -13,7 +13,7 @@ class Button extends Box {
   clicking = false;
   onClick() { }
 
-  onMouseDown = (trackMouse: MouseTracker) => {
+  override onMouseDown(trackMouse: MouseTracker) {
     this.clicking = true;
 
     const cancel = trackMouse({
@@ -28,9 +28,9 @@ class Button extends Box {
         this.clicking = false;
       },
     });
-  };
+  }
 
-  draw = () => {
+  override draw() {
     if (this.clicking) {
       this.screen.rectFill(0, 0, this.w, this.h, 0xffffff22);
     }
@@ -39,7 +39,7 @@ class Button extends Box {
     }
 
     this.screen.print(2, 2, this.color, this.text);
-  };
+  }
 
 }
 
@@ -68,13 +68,13 @@ class RadioButton extends Button {
   selected = false;
   group?: RadioGroup;
 
-  onClick(): void {
+  override onClick(): void {
     super.onClick();
     this.group?.select(this);
     this.onSelect();
   }
 
-  draw = () => {
+  override draw = () => {
     this.drawButton();
 
     if (this.selected) {
@@ -92,11 +92,11 @@ class Label extends Box {
 
   color = 0xffffffff;
 
-  passthrough = true;
+  override passthrough = true;
 
   text = '';
 
-  draw = () => {
+  override draw = () => {
     this.screen.print(0, 0, this.color, this.text);
   };
 
@@ -108,14 +108,14 @@ class Checkbox extends Box {
 
   onChange() { }
 
-  draw = () => {
+  override draw = () => {
     this.screen.rectLine(0, 0, 6, 6, this.hovered ? 0xffffffff : 0x777777ff);
     if (this.checked) {
       this.screen.rectFill(2, 2, 2, 2, 0xffffffff);
     }
   };
 
-  onMouseDown = () => {
+  override onMouseDown = () => {
     this.checked = !this.checked;
     this.onChange();
   };
@@ -127,11 +127,11 @@ class TextField extends Box {
   text = '';
   color = 0xffffffff;
 
-  onScroll = (up: boolean) => {
+  override onScroll = (up: boolean) => {
     console.log('scrolling', up)
   };
 
-  onKeyDown = (key: string) => {
+  override onKeyDown = (key: string) => {
     if (key === 'Enter') {
       this.text += '\n';
     }
@@ -150,7 +150,7 @@ class TextField extends Box {
   //   });
   // }
 
-  draw = () => {
+  override draw = () => {
     this.screen.print(2, 2, this.color, this.text);
 
     if (this.screen.focused === this) {
@@ -187,11 +187,11 @@ class TextField extends Box {
     clearInterval(this.blink);
   }
 
-  onFocus = () => {
+  override onFocus = () => {
     this.restartBlinking();
   };
 
-  onUnfocus = () => {
+  override onUnfocus = () => {
     this.stopBlinking();
   };
 
@@ -568,13 +568,13 @@ export class Slider extends Box {
   min = 0;
   max = 10;
 
-  draw(): void {
+  override draw(): void {
     const p = this.value / this.max * this.w;
     console.log(p)
     this.screen.pset(p, 1, 0xfffffffff);
   }
 
-  onMouseDown(trackMouse: MouseTracker): void {
+  override onMouseDown(trackMouse: MouseTracker): void {
     trackMouse({
       move: () => {
         this.value = this.mouse.x / this.w * this.max;

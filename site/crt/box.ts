@@ -1,13 +1,6 @@
 import { Bitmap } from "./bitmap.js";
 import { Screen } from "./screen.js";
 
-const pointer = new Bitmap([0x00000099, 0xffffffff], [
-  1, 1, 1, 1, -1,
-  1, 2, 2, 1, -1,
-  1, 2, 1, 1, -1,
-  1, 1, 1, -1,
-]);
-
 export class Box {
 
   onScroll?(up: boolean): void;
@@ -41,7 +34,26 @@ export class Box {
 
 }
 
+export class BorderBox extends Box {
+
+  border = 0xffffff33;
+
+  override draw(): void {
+    if ((this.border & 0x000000ff) > 0) {
+      this.screen.rectLine(0, 0, this.w, this.h, this.border);
+    }
+  }
+
+}
+
 export type MouseTracker = (fns: {
   move: () => void;
   up?: () => void;
 }) => () => void;
+
+const pointer = new Bitmap([0x00000099, 0xffffffff], [
+  1, 1, 1, 1, -1,
+  1, 2, 2, 1, -1,
+  1, 2, 1, 1, -1,
+  1, 1, 1, -1,
+]);
