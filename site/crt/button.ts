@@ -1,10 +1,9 @@
-import { BorderBox, Box, MouseTracker } from "./box.js";
-import { make } from "./screen.js";
+import { BorderBox, MouseTracker } from "./box.js";
 
 export class Button extends BorderBox {
 
-  hoverColor = 0x00000033;
-  pressColor = 0x00000077;
+  hoverColor = 0xffffff22;
+  pressColor = 0xffffff11;
 
   onClick?(): void;
 
@@ -45,34 +44,6 @@ export class Button extends BorderBox {
     else if (this.hovered) {
       this.screen.rectFill(0, 0, this.w, this.h, this.hoverColor);
     }
-  }
-
-}
-
-export class Checkbox extends Button {
-
-  #checked = false;
-  onChange?() { }
-
-  override children = [
-    make(this.screen, Box, {
-      w: 3, h: 3,
-      background: 0xffffffff, passthrough: true,
-      visible: false,
-    })
-  ];
-
-  get checked() { return this.#checked; }
-  set checked(is: boolean) {
-    const changed = is !== this.#checked;
-    this.#checked = is;
-    if (changed) this.onChange?.();
-    this.children[0].visible = this.checked;
-  }
-
-  override onMouseDown(trackMouse: MouseTracker): void {
-    super.onMouseDown(trackMouse);
-    this.checked = !this.checked;
   }
 
 }

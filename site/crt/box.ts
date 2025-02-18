@@ -12,7 +12,12 @@ export class Box {
   onFocus?(): void;
   onUnfocus?(): void;
   draw?(): void;
+
+  /** Move/resize children. */
   layout?(): void;
+
+  /** Resize self. */
+  adjust?(): void;
 
   x = 0;
   y = 0;
@@ -32,8 +37,6 @@ export class Box {
   drawCursor(x: number, y: number) {
     pointer.draw(this.screen, x - 1, y - 1);
   }
-
-  adjust?(): void;
 
 }
 

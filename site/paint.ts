@@ -1,5 +1,6 @@
 import { Box } from "./crt/box.js";
-import { Button, Checkbox } from "./crt/button.js";
+import { Button } from "./crt/button.js";
+import { Checkbox } from "./crt/checkbox.js";
 import { Label } from "./crt/label.js";
 import { makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
 import { RadioButton, RadioGroup } from "./crt/radio.js";
@@ -32,6 +33,7 @@ radios.onChange = () => console.log('radio', radios.selected)
 
 const checkbox = make(screen, Checkbox, {
   background: 0x000000ff,
+  label: make(screen, Label, { text: 'hi' }),
   onChange: () => {
     console.log('checked', checkbox.checked)
   }
