@@ -25,13 +25,12 @@ export class Box {
   y = 0;
   w = 0;
   h = 0;
-
   background = 0x00000000;
+  passthrough = false;
 
   children: Box[] = [];
   hovered = false;
   mouse = { x: 0, y: 0 };
-  passthrough = false;
   trackingArea?: { x: number, y: number, w: number, h: number };
 
   constructor(public screen: Screen) { }

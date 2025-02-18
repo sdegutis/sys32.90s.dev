@@ -63,35 +63,6 @@ class BorderBox extends Box {
 
 
 
-  // // static props: Property[] = [
-  // //   { name: 'x', type: 'number' },
-  // //   { name: 'y', type: 'number' },
-  // //   { name: 'w', type: 'number' },
-  // //   { name: 'h', type: 'number' },
-  // //   { name: 'background', type: 'color' },
-  // // ];
-
-  // // export type Property = {
-  // //   name: string,
-  // //   type: 'number' | 'string' | 'color' | 'boolean',
-  // // };
-
-  //   class GridBox extends Box {
-
-  //     // static props: Property[] = [
-  //     //   ...super.props,
-  //     //   { name: 'id', type: 'string' },
-  //     // ];
-
-  //   }
-
-  //   // console.log(GridBox.props)
-
-
-
-
-
-
   class Label extends Box {
 
     #text = '';
