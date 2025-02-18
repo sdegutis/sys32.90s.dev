@@ -3,6 +3,12 @@ import { Font } from "./font.js";
 import { Label } from "./label.js";
 import { make } from "./screen.js";
 
+class Cursor {
+
+
+
+}
+
 export class TextField extends BorderBox {
 
   text = '';
@@ -21,10 +27,6 @@ export class TextField extends BorderBox {
     this.w = s.w + this.padding * 2;
     this.h = s.h + this.padding * 2;
   }
-
-  override onScroll = (up: boolean) => {
-    console.log('scrolling', up)
-  };
 
   override onKeyDown = (key: string) => {
     if (key === 'Enter') {
