@@ -22,7 +22,7 @@ export function makeFlowLayout(padding = 0, margin = 0) {
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
 
-      if (x + child.w >= this.w) {
+      if (x + child.w >= this.w && i > 0) {
         x = padding;
         y += h + margin;
       }
