@@ -90,37 +90,34 @@ export class SplitBox extends Box {
   dividerColor = 0x33333300;
   dividerColorHover = 0xffffff33;
   dividerColorPress = 0xffffff77;
+  resizable = false;
 
-  a = new Box(this.screen);
-  b = new Box(this.screen);
   #resizer?: Box;
-  override children = [this.a, this.b];
-
-  get resizable() { return this.#resizer !== undefined; }
-  set resizable(should: boolean) {
-    if (should) {
-      this.#resizer = new SplitBoxDivider(this.screen, this);
-      this.children = [this.a, this.b, this.#resizer];
-    }
-    else {
-      this.#resizer = undefined;
-      this.children = [this.a, this.b];
-    }
-  }
+  override children = [new Box(this.screen), new Box(this.screen)];
 
   override layout(): void {
+    if (this.resizable && !this.#resizer) {
+      this.#resizer = new SplitBoxDivider(this.screen, this);
+      this.children.push(this.#resizer);
+    }
+    else if (!this.resizable && this.#resizer) {
+      this.#resizer = undefined!;
+      this.children.pop();
+    }
+
     const dx = this.dir;
     const dw = dx === 'x' ? 'w' : 'h';
+    const [a, b] = this.children;
 
-    this.a.x = this.b.x = 0;
-    this.a.y = this.b.y = 0;
-    this.a.w = this.b.w = this.w;
-    this.a.h = this.b.h = this.h;
+    a.x = b.x = 0;
+    a.y = b.y = 0;
+    a.w = b.w = this.w;
+    a.h = b.h = this.h;
 
-    this.a[dw] = this.pos;
+    a[dw] = this.pos;
 
-    this.b[dx] = this.pos;
-    this.b[dw] = this[dw] - this.pos;
+    b[dx] = this.pos;
+    b[dw] = this[dw] - this.pos;
 
     if (this.#resizer) {
       this.#resizer.x = 0;

@@ -3,7 +3,7 @@ import { Font } from "./font.js";
 
 export class Screen {
 
-  root;
+  readonly root;
   focused: Box;
   font = Font.crt2025;
   keys: Record<string, boolean> = {};
@@ -72,7 +72,7 @@ export class Screen {
         this.#hovered.onMouseDown((fns: { move: () => void; up?: () => void; }) => {
           fns.move();
           this.#trackingMouse = fns;
-          return () => this.#trackingMouse = undefined;
+          return () => this.#trackingMouse = undefined!;
         });
       }
       this.needsRedraw = true;
@@ -98,7 +98,7 @@ export class Screen {
 
     canvas.addEventListener('mouseup', (e) => {
       this.#trackingMouse?.up?.();
-      this.#trackingMouse = undefined;
+      this.#trackingMouse = undefined!;
       this.needsRedraw = true;
     }, { passive: true, signal: this.#destroyer.signal });
 
