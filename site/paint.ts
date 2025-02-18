@@ -1,24 +1,8 @@
 import { Box, MouseTracker } from "./crt/box.js";
 import { Font } from "./crt/font.js";
+import { makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
 import { Screen } from "./crt/screen.js";
 import { SplitBox } from "./crt/split.js";
-
-class BorderBox extends Box {
-
-  border = 0xffffff33;
-
-  draw(): void {
-    this.screen.rectLine(0, 0, this.w, this.h, this.border);
-  }
-
-}
-
-const vacuumLayout = function (this: Box) {
-  this.children[0].x = 0;
-  this.children[0].y = 0;
-  this.children[0].w = this.w;
-  this.children[0].h = this.h;
-};
 
 
 
@@ -97,6 +81,16 @@ const vacuumLayout = function (this: Box) {
 
 
 
+
+  class BorderBox extends Box {
+
+    border = 0xffffff33;
+
+    draw(): void {
+      this.screen.rectLine(0, 0, this.w, this.h, this.border);
+    }
+
+  }
 
   class Label extends Box {
 
@@ -223,9 +217,8 @@ const vacuumLayout = function (this: Box) {
   button2.child = b;
 
 
-  split2.b.layout = () => {
 
-  };
+  green.layout = makeFlowLayout(3, 3);
 
   screen.layoutTree();
 
