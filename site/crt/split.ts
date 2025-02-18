@@ -3,27 +3,27 @@ import { Box, MouseTracker } from "./box.js";
 import { Screen } from "./screen.js";
 import { dragMove } from "./selections.js";
 
+const xresize = {
+  bitmap: new Bitmap([0x00000099, 0xffffffff], [
+    1, 1, 1, 1, 1, -1,
+    1, 2, 2, 2, 1, -1,
+    1, 1, 1, 1, 1, -1,
+  ]),
+  offset: [2, 1],
+};
+
+const yresize = {
+  bitmap: new Bitmap([0x00000099, 0xffffffff], [
+    1, 1, 1, -1,
+    1, 2, 1, -1,
+    1, 2, 1, -1,
+    1, 2, 1, -1,
+    1, 1, 1, -1,
+  ]),
+  offset: [1, 2],
+};
+
 class SplitBoxDivider extends Box {
-
-  static xresize = {
-    bitmap: new Bitmap([0x00000099, 0xffffffff], [
-      1, 1, 1, 1, 1, -1,
-      1, 2, 1, 2, 1, -1,
-      1, 1, 1, 1, 1, -1,
-    ]),
-    offset: [2, 1],
-  };
-
-  static yresize = {
-    bitmap: new Bitmap([0x00000099, 0xffffffff], [
-      1, 1, 1, -1,
-      1, 2, 1, -1,
-      1, 1, 1, -1,
-      1, 2, 1, -1,
-      1, 1, 1, -1,
-    ]),
-    offset: [1, 2],
-  };
 
   pressed = false;
 
@@ -51,9 +51,7 @@ class SplitBoxDivider extends Box {
   }
 
   drawCursor(x: number, y: number): void {
-    const cursor = this.split.dir === 'x' ?
-      SplitBoxDivider.xresize :
-      SplitBoxDivider.yresize;
+    const cursor = this.split.dir === 'x' ? xresize : yresize;
     cursor.bitmap.draw(this.screen, x - cursor.offset[0], y - cursor.offset[1]);
   }
 

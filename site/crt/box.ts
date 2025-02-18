@@ -1,16 +1,12 @@
 import { Bitmap } from "./bitmap.js";
 import { Screen } from "./screen.js";
 
-const cursors = {
-
-  pointer: new Bitmap([0x00000099, 0xffffffff], [
-    1, 1, 1, 1, -1,
-    1, 2, 2, 1, -1,
-    1, 2, 1, 1, -1,
-    1, 1, 1, -1,
-  ]),
-
-};
+const pointer = new Bitmap([0x00000099, 0xffffffff], [
+  1, 1, 1, 1, -1,
+  1, 2, 2, 1, -1,
+  1, 2, 1, 1, -1,
+  1, 1, 1, -1,
+]);
 
 export class Box {
 
@@ -41,7 +37,7 @@ export class Box {
   constructor(public screen: Screen) { }
 
   drawCursor(x: number, y: number) {
-    cursors.pointer.draw(this.screen, x - 1, y - 1);
+    pointer.draw(this.screen, x - 1, y - 1);
   }
 
 }

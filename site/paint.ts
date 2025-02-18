@@ -223,9 +223,9 @@ const vacuumLayout = function (this: Box) {
   button2.child = b;
 
 
-  // split2.b.layout = () => {
+  split2.b.layout = () => {
 
-  // };
+  };
 
   screen.layoutTree();
 
