@@ -2,7 +2,6 @@ import { BorderBox, MouseTracker } from "./box.js";
 
 export class Button extends BorderBox {
 
-  padding = 1;
   hoverColor = 0x00000033;
   pressColor = 0x00000077;
 

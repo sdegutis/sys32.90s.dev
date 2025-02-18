@@ -4,6 +4,7 @@ import { Label } from "./crt/label.js";
 import { centerLayout, makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
 import { make, Screen } from "./crt/screen.js";
 import { SplitBox } from "./crt/split.js";
+import { TextField } from "./crt/textfield.js";
 
 
 const canvas = document.querySelector('canvas')!;
@@ -28,7 +29,14 @@ screen.root.children = [
       make(screen, Box, { background: 0x003300ff, layout: makeFlowLayout(3, 3) },
         ...Array(20).fill(0).map((_, i) => make(screen, Button, { padding: 2, background: 0x00000033, border: 0x999999ff, onClick: () => console.log('color', i) },
           randomColorSquare(Math.floor(i / 3) + 6)
-        ))
+        )),
+        make(screen, TextField, {
+          background: 0x000000aa,
+          border: 0xffffff77,
+          color: 0xffffffff,
+          padding: 3,
+          text: 'tesin',
+        })
       ),
     ),
   )

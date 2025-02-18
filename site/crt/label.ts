@@ -5,7 +5,6 @@ export class Label extends BorderBox {
 
   text = '';
   font = Font.crt2025;
-  padding = 1;
   override passthrough = true;
 
   override adjust(): void {
