@@ -72,7 +72,7 @@ class SplitBoxDivider extends Box {
         drag();
         s.pos = b[dx];
         if (s.min && s.pos < s.min) s.pos = s.min;
-        if (s.max && s.pos > s[dw] - s.max) s.pos = this[dw] - s.max;
+        if (s.max && s.pos > s[dw] - s.max) s.pos = s[dw] - s.max;
         this.screen.layoutTree(this.split);
       },
     });
@@ -307,7 +307,6 @@ const vacuumLayout = function (this: Box) {
   // button.children.push(label);
 
 
-  screen.layoutTree();
 
   green.background = 0x222222ff;
 
@@ -339,4 +338,8 @@ const vacuumLayout = function (this: Box) {
   b.w = 3;
   b.h = 3;
   button2.child = b;
+
+
+  screen.layoutTree();
+
 }
