@@ -6,47 +6,45 @@ import { Screen } from "./crt/screen.js";
 import { SplitBox } from "./crt/split.js";
 
 
+const canvas = document.querySelector('canvas')!;
+// canvas.width = 320 * 2;
+// canvas.height = 180 * 2;
+const screen = new Screen(canvas);
+screen.autoscale();
 
-{
-  const canvas = document.querySelector('canvas')!;
-  // canvas.width = 320 * 2;
-  // canvas.height = 180 * 2;
-  const screen = new Screen(canvas);
-  screen.autoscale();
+screen.root.layout = vacuumLayout;
 
-  screen.root.layout = vacuumLayout;
+const split = new SplitBox(screen);
+split.pos = 10;
+split.min = 8;
+split.max = 18;
+split.dir = 'y';
 
-  const split = new SplitBox(screen);
-  split.pos = 10;
-  split.min = 8;
-  split.max = 18;
-  split.dir = 'y';
+const red = new BorderBox(screen); red.background = 0x330000ff; red.border = 0xffffff00;
+const green = new BorderBox(screen); green.background = 0x003300ff; green.border = 0xffffff00;
+const blue = new BorderBox(screen); blue.background = 0x000033ff; blue.border = 0xffffff00;
 
-  const red = new BorderBox(screen); red.background = 0x330000ff; red.border = 0xffffff00;
-  const green = new BorderBox(screen); green.background = 0x003300ff; green.border = 0xffffff00;
-  const blue = new BorderBox(screen); blue.background = 0x000033ff; blue.border = 0xffffff00;
+const split2 = new SplitBox(screen);
+split2.resizable = true;
+split2.pos = 30;
+split2.min = 28;
+split2.max = 38;
+split2.dir = 'x';
 
-  const split2 = new SplitBox(screen);
-  split2.resizable = true;
-  split2.pos = 30;
-  split2.min = 28;
-  split2.max = 38;
-  split2.dir = 'x';
+screen.root.children.push(split);
 
-  screen.root.children.push(split);
+split.a.layout = vacuumLayout;
+split.b.layout = vacuumLayout;
+split2.a.layout = vacuumLayout;
+split2.b.layout = vacuumLayout;
 
-  split.a.layout = vacuumLayout;
-  split.b.layout = vacuumLayout;
-  split2.a.layout = vacuumLayout;
-  split2.b.layout = vacuumLayout;
+split.a.children.push(blue);
+split.b.children.push(split2);
 
-  split.a.children.push(blue);
-  split.b.children.push(split2);
+split2.a.children.push(red);
+split2.b.children.push(green);
 
-  split2.a.children.push(red);
-  split2.b.children.push(green);
-
-  split.resizable = true;
+split.resizable = true;
 
 
 
@@ -55,57 +53,55 @@ import { SplitBox } from "./crt/split.js";
 
 
 
-  const button = new Button(screen);
-  button.x = 30;
-  button.y = 30;
-  button.background = 0x00000033;
-  button.border = 0xff000033;
-  green.children.push(button);
+const button = new Button(screen);
+button.x = 30;
+button.y = 30;
+button.background = 0x00000033;
+button.border = 0xff000033;
+green.children.push(button);
 
-  const label = new Label(screen, 'yes \\n no');
+const label = new Label(screen, 'yes \\n no');
 
-  button.child = label;
-  button.onClick = () => console.log('clicked')
+button.child = label;
+button.onClick = () => console.log('clicked')
 
-  // button.children.push(label);
-
-
-
-  green.background = 0x222222ff;
-
-  const button2 = new Button(screen);
-  button2.padding = 2;
-  button2.x = 90;
-  button2.y = 30;
-  button2.background = 0x00000033;
-  button2.border = 0x999999ff;
-  green.children.push(button2);
-
-
-  // button2.onMouseDown = (t) => {
-  //   t({
-  //     move: () => {
-
-  //     },
-  //     up: () => {
-  //       screen.pset(screen.mouse.x, screen.mouse.y, 0xffffff99)
-  //       console.log(screen.#hovered.mouse.x, screen.#hovered.mouse.y, screen.#hovered)
-
-  //     },
-  //   })
-  // };
-
-  const b = new Box(screen);
-  b.background = 0x990000ff;
-  b.passthrough = true;
-  b.w = 3;
-  b.h = 3;
-  button2.child = b;
+// button.children.push(label);
 
 
 
-  green.layout = makeFlowLayout(3, 3);
+green.background = 0x222222ff;
 
-  screen.layoutTree();
+const button2 = new Button(screen);
+button2.padding = 2;
+button2.x = 90;
+button2.y = 30;
+button2.background = 0x00000033;
+button2.border = 0x999999ff;
+green.children.push(button2);
 
-}
+
+// button2.onMouseDown = (t) => {
+//   t({
+//     move: () => {
+
+//     },
+//     up: () => {
+//       screen.pset(screen.mouse.x, screen.mouse.y, 0xffffff99)
+//       console.log(screen.#hovered.mouse.x, screen.#hovered.mouse.y, screen.#hovered)
+
+//     },
+//   })
+// };
+
+const b = new Box(screen);
+b.background = 0x990000ff;
+b.passthrough = true;
+b.w = 3;
+b.h = 3;
+button2.child = b;
+
+
+
+green.layout = makeFlowLayout(3, 3);
+
+screen.layoutTree();
