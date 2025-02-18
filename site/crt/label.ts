@@ -4,20 +4,18 @@ import { Screen } from "./screen.js";
 
 export class Label extends BorderBox {
 
-  #text = '';
+  text;
   font = Font.crt2025;
   padding = 1;
   override passthrough = true;
 
-  constructor(screen: Screen, text: string) {
+  constructor(screen: Screen, text = '') {
     super(screen);
     this.text = text;
   }
 
-  get text() { return this.#text; }
-  set text(s: string) {
-    this.#text = s;
-    const size = this.font.calcSize(s);
+  override adjust(): void {
+    const size = this.font.calcSize(this.text);
     this.w = size.w + this.padding * 2;
     this.h = size.h + this.padding * 2;
   }

@@ -20,15 +20,15 @@ split.min = 8;
 split.max = 18;
 split.dir = 'y';
 
-const red = new BorderBox(screen); red.background = 0x330000ff; red.border = 0xffffff00;
-const green = new BorderBox(screen); green.background = 0x003300ff; green.border = 0xffffff00;
-const blue = new BorderBox(screen); blue.background = 0x000033ff; blue.border = 0xffffff00;
+const red = new BorderBox(screen); red.background = 0x330000ff; red.border = 0xffffff33;
+const green = new BorderBox(screen); green.background = 0x003300ff; green.border = 0xffffff33;
+const blue = new BorderBox(screen); blue.background = 0x000033ff; blue.border = 0xffffff33;
 
 const split2 = new SplitBox(screen);
 split2.resizable = true;
 split2.pos = 30;
 split2.min = 28;
-split2.max = 38;
+split2.max = 8;
 split2.dir = 'x';
 
 screen.root.children.push(split);
@@ -65,11 +65,7 @@ red.layout = centerLayout
 red.children.push(button);
 
 
-// button.children.push(label);
 
-
-
-green.background = 0x222222ff;
 
 
 for (let i = 0; i < 20; i++) {
@@ -111,6 +107,7 @@ function randomColorSquare(size: number) {
 
 
 
+label.text = 'hello\nworld';
 
 green.layout = makeFlowLayout(3, 3);
 

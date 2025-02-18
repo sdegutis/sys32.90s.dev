@@ -14,12 +14,16 @@ export class Button extends BorderBox {
   override children: Box[] = [new Label(this.screen, 'button')];
 
   get child() { return this.children[0]; }
-  set child(child: Box) {
-    this.children = [child];
-    child.x = this.padding;
-    child.y = this.padding;
-    this.w = child.w + this.padding * 2;
-    this.h = child.h + this.padding * 2;
+  set child(child: Box) { this.children = [child]; }
+
+  override layout(): void {
+    this.child.x = this.padding;
+    this.child.y = this.padding;
+  }
+
+  override adjust(): void {
+    this.w = this.child.w + this.padding * 2;
+    this.h = this.child.h + this.padding * 2;
   }
 
   override onMouseDown(trackMouse: MouseTracker): void {

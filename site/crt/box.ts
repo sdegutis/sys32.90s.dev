@@ -32,6 +32,8 @@ export class Box {
     pointer.draw(this.screen, x - 1, y - 1);
   }
 
+  adjust?(): void;
+
 }
 
 export class BorderBox extends Box {
