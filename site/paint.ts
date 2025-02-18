@@ -124,7 +124,7 @@ class SplitBox extends Box {
   }
 
   layout(): void {
-    this.children = [this.a, this.b];
+    // this.children = [this.a, this.b];
     if (this.#resizer) this.children.push(this.#resizer);
 
     const dx = this.dir;
@@ -153,9 +153,18 @@ class SplitBox extends Box {
 
 }
 
+const vacuumLayout = function (this: Box) {
+  this.children[0].x = 0;
+  this.children[0].y = 0;
+  this.children[0].w = this.w;
+  this.children[0].h = this.h;
+};
+
+screen.root.layout = vacuumLayout;
+
 const split = new SplitBox(screen);
-split.w = 320;
-split.h = 180;
+// split.w = 320;
+// split.h = 180;
 split.pos = 10;
 split.min = 8;
 split.max = 18;
@@ -174,11 +183,16 @@ split2.dir = 'x';
 
 screen.root.children.push(split);
 
-split.a = blue;
-split.b = split2;
+split.a.layout = vacuumLayout;
+split.b.layout = vacuumLayout;
+split2.a.layout = vacuumLayout;
+split2.b.layout = vacuumLayout;
 
-split2.a = red;
-split2.b = green;
+split.a.children.push(blue);
+split.b.children.push(split2);
+
+split2.a.children.push(red);
+split2.b.children.push(green);
 
 split.resizable = true;
 
