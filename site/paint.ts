@@ -1,4 +1,4 @@
-import { Bitmap, Box, Font, Property, Screen, dragMove } from "./crt.js";
+import { Bitmap, Box, Font, MouseTracker, Property, Screen, dragMove } from "./crt.js";
 
 const screen = new Screen(document.querySelector('canvas')!);
 screen.autoscale();
@@ -200,9 +200,13 @@ class Label extends Box {
 
 class Button extends BorderBox {
 
-  #label?: Label;
   padding = 5;
 
+  pressed = false;
+
+  onClick?(): void;
+
+  #label?: Label;
   get label(): Label | undefined { return this.#label; }
   set label(l: Label | undefined) {
     this.#label = l;
@@ -215,9 +219,29 @@ class Button extends BorderBox {
     }
   }
 
+  onMouseDown(trackMouse: MouseTracker): void {
+    this.pressed = true;
+    trackMouse({
+      move: () => {
+        if (!this.hovered) {
+          this.pressed = false;
+        }
+      },
+      up: () => {
+        if (this.pressed) {
+          this.onClick?.();
+        }
+        this.pressed = false;
+      },
+    });
+  }
+
   draw(): void {
     super.draw();
-    if (this.hovered) {
+    if (this.pressed) {
+      this.screen.rectFill(0, 0, this.w, this.h, 0x00000033);
+    }
+    else if (this.hovered) {
       this.screen.rectFill(0, 0, this.w, this.h, 0xffffff33);
     }
   }
@@ -239,6 +263,7 @@ const label = new Label(screen);
 label.text = 'yes\nno\nhmm this';
 
 button.label = label;
+button.onClick = () => console.log('clicked')
 
 // button.children.push(label);
 
