@@ -11,7 +11,9 @@ class BorderBox extends Box {
   border = 0xffffff33;
 
   draw(): void {
-    this.screen.rectLine(0, 0, this.w, this.h, this.border);
+    if ((this.border & 0x000000ff) > 0) {
+      this.screen.rectLine(0, 0, this.w, this.h, this.border);
+    }
   }
 
 }
