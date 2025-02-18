@@ -140,15 +140,19 @@ const vacuumLayout = function (this: Box) {
   this.children[0].w = this.w;
   this.children[0].h = this.h;
 };
+
+
+
 {
-  const screen = new Screen(document.querySelector('canvas')!);
+  const canvas = document.querySelector('canvas')!;
+  // canvas.width = 320 * 2;
+  // canvas.height = 180 * 2;
+  const screen = new Screen(canvas);
   screen.autoscale();
 
   screen.root.layout = vacuumLayout;
 
   const split = new SplitBox(screen);
-  // split.w = 320;
-  // split.h = 180;
   split.pos = 10;
   split.min = 8;
   split.max = 18;
@@ -244,7 +248,7 @@ const vacuumLayout = function (this: Box) {
 
   class Button extends BorderBox {
 
-    padding = 5;
+    padding = 1;
     pressColor = 0x00000033;
     hoverColor = 0x00000000;
 
