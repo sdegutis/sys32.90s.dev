@@ -1,4 +1,17 @@
-import { Bitmap, Box, Font, MouseTracker, Property, Screen, dragMove } from "./crt.js";
+import { Bitmap, Box, Font, MouseTracker, Screen, dragMove } from "./crt.js";
+
+// static props: Property[] = [
+//   { name: 'x', type: 'number' },
+//   { name: 'y', type: 'number' },
+//   { name: 'w', type: 'number' },
+//   { name: 'h', type: 'number' },
+//   { name: 'background', type: 'color' },
+// ];
+
+// export type Property = {
+//   name: string,
+//   type: 'number' | 'string' | 'color' | 'boolean',
+// };
 
 const screen = new Screen(document.querySelector('canvas')!);
 screen.autoscale();
@@ -93,8 +106,8 @@ class SplitBox extends Box {
   dividerColor = 0x33333300;
   dividerColorHover = 0xffffff33;
 
-  a = new Box(this.screen, 0x000000ff);
-  b = new Box(this.screen, 0x000000ff);
+  a = new Box(this.screen);
+  b = new Box(this.screen);
   #resizer?: Box;
   children = [this.a, this.b];
 
@@ -148,9 +161,9 @@ split.min = 8;
 split.max = 18;
 split.dir = 'y';
 
-const red = new BorderBox(screen, 0x330000ff); red.border = 0xffffff00;
-const green = new BorderBox(screen, 0x003300ff); green.border = 0xffffff00;
-const blue = new BorderBox(screen, 0x000033ff); blue.border = 0xffffff00;
+const red = new BorderBox(screen); red.background = 0x330000ff; red.border = 0xffffff00;
+const green = new BorderBox(screen); green.background = 0x003300ff; green.border = 0xffffff00;
+const blue = new BorderBox(screen); blue.background = 0x000033ff; blue.border = 0xffffff00;
 
 const split2 = new SplitBox(screen);
 split2.resizable = true;
@@ -199,6 +212,11 @@ class Label extends Box {
   padding = 1;
   passthrough = true;
 
+  constructor(screen: Screen, text: string) {
+    super(screen);
+    this.text = text;
+  }
+
   get text() { return this.#text; }
   set text(s: string) {
     this.#text = s;
@@ -217,12 +235,14 @@ class Label extends Box {
 class Button extends BorderBox {
 
   padding = 5;
-
-  pressed = false;
+  pressColor = 0x00000033;
+  hoverColor = 0x00000000;
 
   onClick?(): void;
 
-  children: Box[] = [new Label(screen)];
+  pressed = false;
+
+  children: Box[] = [new Label(screen, 'button')];
 
   get child() { return this.children[0]; }
   set child(child: Box) {
@@ -253,10 +273,10 @@ class Button extends BorderBox {
   draw(): void {
     super.draw();
     if (this.pressed) {
-      this.screen.rectFill(0, 0, this.w, this.h, 0x00000033);
+      this.screen.rectFill(0, 0, this.w, this.h, this.pressColor);
     }
     else if (this.hovered) {
-      this.screen.rectFill(0, 0, this.w, this.h, 0xffffff33);
+      this.screen.rectFill(0, 0, this.w, this.h, this.hoverColor);
     }
   }
 
@@ -269,8 +289,7 @@ button.background = 0x00000033;
 button.border = 0xff000033;
 green.children.push(button);
 
-const label = new Label(screen);
-label.text = 'yes \\n no';
+const label = new Label(screen, 'yes \\n no');
 
 button.child = label;
 button.onClick = () => console.log('clicked')
@@ -279,3 +298,34 @@ button.onClick = () => console.log('clicked')
 
 
 screen.layoutTree();
+
+green.background = 0x222222ff;
+
+const button2 = new Button(screen);
+button2.padding = 2;
+button2.x = 90;
+button2.y = 30;
+button2.background = 0x00000033;
+button2.border = 0x999999ff;
+green.children.push(button2);
+
+
+// button2.onMouseDown = (t) => {
+//   t({
+//     move: () => {
+
+//     },
+//     up: () => {
+//       screen.pset(screen.mouse.x, screen.mouse.y, 0xffffff99)
+//       console.log(screen.#hovered.mouse.x, screen.#hovered.mouse.y, screen.#hovered)
+
+//     },
+//   })
+// };
+
+const b = new Box(screen);
+b.background = 0x990000ff;
+b.passthrough = true;
+b.w = 3;
+b.h = 3;
+button2.child = b;

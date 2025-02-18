@@ -306,7 +306,7 @@ export class Screen {
     this.#clip.x2 = Math.min(cx2, (this.#clip.cx + node.w - 1));
     this.#clip.y2 = Math.min(cy2, (this.#clip.cy + node.h - 1));
 
-    if ((node.background & 0xff) > 0) {
+    if ((node.background & 0x000000ff) > 0) {
       node.screen.rectFill(0, 0, node.w, node.h, node.background);
     }
 
@@ -343,11 +343,6 @@ const cursors = {
 
 };
 
-export type Property = {
-  name: string,
-  type: 'number' | 'string' | 'color' | 'boolean',
-};
-
 export class Box {
 
   onScroll?(up: boolean): void;
@@ -361,18 +356,12 @@ export class Box {
   draw?(): void;
   layout?(): void;
 
-  static props: Property[] = [
-    { name: 'x', type: 'number' },
-    { name: 'y', type: 'number' },
-    { name: 'w', type: 'number' },
-    { name: 'h', type: 'number' },
-    { name: 'background', type: 'color' },
-  ];
-
   x = 0;
   y = 0;
   w = 0;
   h = 0;
+
+  background = 0x00000000;
 
   children: Box[] = [];
   hovered = false;
@@ -380,10 +369,7 @@ export class Box {
   passthrough = false;
   trackingArea?: { x: number, y: number, w: number, h: number };
 
-  constructor(
-    public screen: Screen,
-    public background = 0x00000000,
-  ) { }
+  constructor(public screen: Screen) { }
 
   drawCursor(x: number, y: number) {
     cursors.pointer.draw(this.screen, x - 1, y - 1);
