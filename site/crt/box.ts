@@ -20,6 +20,7 @@ export class Box {
   h = 0;
   background = 0x00000000;
   passthrough = false;
+  visible = true;
 
   children: Box[] = [];
   hovered = false;

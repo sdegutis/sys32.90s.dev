@@ -258,7 +258,7 @@ export class Screen {
   }
 
   #hover(node: Box, x: number, y: number): Box | null {
-    if (node.passthrough) return null;
+    if (node.passthrough || !node.visible) return null;
 
     let tx = 0;
     let ty = 0;
@@ -290,6 +290,8 @@ export class Screen {
   }
 
   #draw(node: Box) {
+    if (!node.visible) return;
+
     const cx1 = this.#clip.x1;
     const cx2 = this.#clip.x2;
     const cy1 = this.#clip.y1;
@@ -332,7 +334,7 @@ export function make<T extends Box>(
   ...children: Box[]
 ): T {
   const t = new ctor(screen);
+  if (children.length > 0) t.children = children;
   Object.assign(t, config);
-  t.children = children;
   return t;
 }

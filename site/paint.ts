@@ -1,5 +1,5 @@
 import { Box } from "./crt/box.js";
-import { Button } from "./crt/button.js";
+import { Button, Checkbox } from "./crt/button.js";
 import { Label } from "./crt/label.js";
 import { centerLayout, makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
 import { RadioButton, RadioGroup } from "./crt/radio.js";
@@ -30,7 +30,12 @@ radios.onChange = () => console.log('radio', radios.selected)
 
 
 
-
+const checkbox = make(screen, Checkbox, {
+  background: 0x000000ff,
+  onChange: () => {
+    console.log('checked', checkbox.checked)
+  }
+});
 
 
 const tf = make(screen, TextField, {
@@ -56,7 +61,8 @@ const testpaint = make(screen, Box, { background: 0x003300ff, layout: makeFlowLa
   },
     randomColorSquare(Math.floor(i / 3) + 6)
   )),
-  tf
+  tf,
+  checkbox,
 );
 
 const split2 = make(screen, SplitBox, { pos: 30, min: 28, max: 8, dir: 'x', resizable: true },
@@ -103,7 +109,7 @@ screen.root.children = [
 function randomColorSquare(size: number) {
   const color = (Math.random() * 0xffffff00) | 0x000000ff;
   size = 3;
-  return make(screen, Box, { background: 0x111111ff, passthrough: true, w: size, h: size });
+  return make(screen, Box, { background: color, passthrough: true, w: size, h: size });
 }
 
 
