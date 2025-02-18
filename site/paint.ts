@@ -17,17 +17,23 @@ screen.root.layout = vacuumLayout;
 
 
 
+const tf = make(screen, TextField, {
+  background: 0x000000aa,
+  border: 0xffffff77,
+  color: 0xffffffff,
+  padding: 3,
+  length: 3,
+  text: 'tesin',
+});
+
+tf.onChange = () => console.log('onchange', tf.text)
+tf.onEnter = () => console.log('onemter', tf.text)
+
 const testpaint = make(screen, Box, { background: 0x003300ff, layout: makeFlowLayout(3, 3) },
   ...Array(20).fill(0).map((_, i) => make(screen, Button, { padding: 2, background: 0x00000033, border: 0x999999ff, onClick: () => console.log('color', i) },
     randomColorSquare(Math.floor(i / 3) + 6)
   )),
-  make(screen, TextField, {
-    background: 0x000000aa,
-    border: 0xffffff77,
-    color: 0xffffffff,
-    padding: 3,
-    text: 'tesin',
-  })
+  tf
 );
 
 const split2 = make(screen, SplitBox, { pos: 30, min: 28, max: 8, dir: 'x', resizable: true },

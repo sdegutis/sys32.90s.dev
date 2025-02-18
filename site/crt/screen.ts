@@ -325,7 +325,12 @@ export class Screen {
 
 }
 
-export function make<T extends typeof Box>(screen: Screen, ctor: T, config: Partial<InstanceType<T>>, ...children: Box[]) {
+export function make<T extends Box>(
+  screen: Screen,
+  ctor: { new(screen: Screen): T },
+  config: Partial<T>,
+  ...children: Box[]
+): T {
   const t = new ctor(screen);
   Object.assign(t, config);
   t.children = children;

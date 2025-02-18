@@ -8,7 +8,10 @@ export class TextField extends BorderBox {
   font = Font.crt2025;
   color = 0x000000ff;
 
+  #cursor = 0;
+
   onEnter?(): void;
+  onChange?(): void;
 
   override adjust(): void {
     const s = this.font.calcSize(' '.repeat(this.length));
@@ -26,30 +29,28 @@ export class TextField extends BorderBox {
     }
     else if (key === 'Backspace') {
       this.text = this.text.slice(0, -1);
+      this.onChange?.();
     }
-    else {
+    else if (key.length === 1) {
       this.text += key;
+      this.onChange?.();
     }
     this.#restartBlinking();
   };
 
   override draw = () => {
-    this.screen.print(2, 2, this.color, this.text);
+    super.draw();
+
+    // const vs = this.text.slice(this.#cursor, this.#cursor + this.length);
+    // console.log(vs);
+
+    this.screen.print(this.padding, this.padding, this.color, this.text);
 
     if (this.screen.focused === this) {
-      this.screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
-
       if (this.#blinkShow) {
-        let cx = 0;
-        let cy = 0;
-
-        for (let i = 0; i < this.text.length; i++) {
-          const ch = this.text[i];
-          if (ch === '\n') { cy++; cx = 0; continue; }
-          cx++;
-        }
-
-        this.screen.print((cx * 4) + 2, (cy * 6) + 2, 0x77aaffff, '_');
+        let cx = this.padding + (this.font.width + 1) * this.text.length;
+        let cy = this.padding;
+        this.screen.print(cx, cy, 0x77aaffff, '_',);
       }
     }
   };

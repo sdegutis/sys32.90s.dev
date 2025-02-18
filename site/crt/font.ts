@@ -33,7 +33,7 @@ export class Font {
 
   chars: Record<string, boolean[][]> = {};
 
-  constructor(private w: number, private h: number, perRow: number, map: string, bits: string) {
+  constructor(public width: number, public height: number, perRow: number, map: string, bits: string) {
     bits = bits.replace(/\|?\n/g, '');
 
     for (let i = 0; i < map.length; i++) {
@@ -42,13 +42,13 @@ export class Font {
       const grid: boolean[][] = [];
       this.chars[ch] = grid;
 
-      for (let y = 0; y < h; y++) {
+      for (let y = 0; y < height; y++) {
         const row: boolean[] = [];
         grid.push(row);
 
-        for (let x = 0; x < w; x++) {
-          const rw = w + 3;
-          const py = (Math.floor(i / perRow) * rw * perRow * (h + 1)) + y * rw * perRow;
+        for (let x = 0; x < width; x++) {
+          const rw = width + 3;
+          const py = (Math.floor(i / perRow) * rw * perRow * (height + 1)) + y * rw * perRow;
           const px = (i % perRow) * rw + 2 + x;
           row.push(bits[px + py] !== ' ');
         }
@@ -73,8 +73,8 @@ export class Font {
     }
 
     return {
-      w: w * (this.w + 1) - 1,
-      h: h * (this.h + 2) - 2,
+      w: w * (this.width + 1) - 1,
+      h: h * (this.height + 2) - 2,
     };
   }
 
