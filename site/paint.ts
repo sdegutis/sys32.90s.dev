@@ -1,7 +1,7 @@
 import { BorderBox, Box } from "./crt/box.js";
 import { Button } from "./crt/button.js";
 import { Label } from "./crt/label.js";
-import { makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
+import { centerLayout, makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
 import { Screen } from "./crt/screen.js";
 import { SplitBox } from "./crt/split.js";
 
@@ -53,17 +53,17 @@ split.resizable = true;
 
 
 
+const label = new Label(screen, 'yes \\n no');
 const button = new Button(screen);
 button.x = 30;
 button.y = 30;
 button.background = 0x00000033;
 button.border = 0xff000033;
-green.children.push(button);
-
-const label = new Label(screen, 'yes \\n no');
-
 button.child = label;
 button.onClick = () => console.log('clicked')
+red.layout = centerLayout
+red.children.push(button);
+
 
 // button.children.push(label);
 
