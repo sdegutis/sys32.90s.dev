@@ -18,7 +18,7 @@ screen.root.layout = vacuumLayout;
 
 
 const split2 = make(screen, SplitBox, { pos: 30, min: 28, max: 8, dir: 'x', resizable: true },
-  make(screen, Box, { background: 0x330000ff, layout: centerLayout },
+  make(screen, Box, { background: 0x330000ff, layout: makeFlowLayout(3, 3) },
     make(screen, Button, {
       background: 0x00000033, border: 0xff000033, onClick: () => {
         import('./uitest.js').then((mod) => {
@@ -27,8 +27,18 @@ const split2 = make(screen, SplitBox, { pos: 30, min: 28, max: 8, dir: 'x', resi
         });
       }
     },
-      make(screen, Label, { text: 'hello\nworld' })
-    )
+      make(screen, Label, { text: 'ui test' })
+    ),
+    make(screen, Button, {
+      background: 0x00000033, border: 0xff000033, onClick: () => {
+        import('./mapmaker.js').then((mod) => {
+          split2.children[1] = mod.default(screen);
+          screen.layoutTree(split2);
+        });
+      }
+    },
+      make(screen, Label, { text: 'mapmaker' })
+    ),
   ),
   make(screen, Box, { background: 0x003300ff, layout: makeFlowLayout(3, 3) },
     ...Array(20).fill(0).map((_, i) => make(screen, Button, { padding: 2, background: 0x00000033, border: 0x999999ff, onClick: () => console.log('color', i) },
