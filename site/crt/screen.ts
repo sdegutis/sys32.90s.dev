@@ -152,10 +152,10 @@ export class Screen {
   }
 
   #adjustTree(node: Box) {
-    node.adjust?.();
     for (let i = 0; i < node.children.length; i++) {
       this.#adjustTree(node.children[i]);
     }
+    node.adjust?.();
   }
 
   #checkUnderMouse() {

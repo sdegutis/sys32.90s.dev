@@ -1,6 +1,4 @@
 import { BorderBox, MouseTracker } from "./box.js";
-import { Label } from "./label.js";
-import { make } from "./screen.js";
 
 export class Button extends BorderBox {
 
@@ -11,10 +9,6 @@ export class Button extends BorderBox {
   onClick?(): void;
 
   #pressed = false;
-
-  override children = [
-    make(this.screen, Label, { text: 'button' })
-  ];
 
   override layout(): void {
     this.children[0].x = this.padding;

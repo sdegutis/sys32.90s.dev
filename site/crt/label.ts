@@ -1,6 +1,5 @@
 import { BorderBox } from "./box.js";
 import { Font } from "./font.js";
-import { Screen } from "./screen.js";
 
 export class Label extends BorderBox {
 
