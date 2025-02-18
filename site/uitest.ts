@@ -1,4 +1,4 @@
-import { Box, MouseTracker, Screen, TileSelection, dragMove, dragResize } from "./crt.js";
+import { Box, MouseTracker, Screen, TileSelection, dragMove, dragResize } from "./crt/crt.js";
 
 
 const screen = new Screen(document.querySelector('canvas')!);

@@ -1,4 +1,4 @@
-import { Box, MouseTracker, Screen, TileSelection, dragMove } from "./crt.js";
+import { Box, MouseTracker, Screen, TileSelection, dragMove } from "./crt/crt.js";
 
 
 
