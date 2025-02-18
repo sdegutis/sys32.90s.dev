@@ -11,11 +11,19 @@ export function makeFlowLayout(padding = 0, margin = 0) {
   return function (this: Box) {
     let x = padding;
     let y = padding;
+    let h = 0;
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
+
+      if (x + child.w >= this.w) {
+        x = padding;
+        y += h + margin;
+      }
+
       child.x = x;
       child.y = y;
       x += child.w + margin;
+      if (child.h > h) h = child.h;
     }
   };
 }

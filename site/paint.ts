@@ -71,13 +71,17 @@ button.onClick = () => console.log('clicked')
 
 green.background = 0x222222ff;
 
-const button2 = new Button(screen);
-button2.padding = 2;
-button2.x = 90;
-button2.y = 30;
-button2.background = 0x00000033;
-button2.border = 0x999999ff;
-green.children.push(button2);
+
+for (let i = 0; i < 20; i++) {
+  const b = new Button(screen);
+  b.padding = 2;
+  b.x = 90;
+  b.y = 30;
+  b.background = 0x00000033;
+  b.border = 0x999999ff;
+  b.child = randomColorSquare(Math.floor(i / 3) + 6);
+  green.children.push(b);
+}
 
 
 // button2.onMouseDown = (t) => {
@@ -93,12 +97,18 @@ green.children.push(button2);
 //   })
 // };
 
-const b = new Box(screen);
-b.background = 0x990000ff;
-b.passthrough = true;
-b.w = 3;
-b.h = 3;
-button2.child = b;
+function randomColorSquare(size: number) {
+  const color = (Math.random() * 0xffffff00) | 0x000000ff;
+  size = 3;
+  // const size = Math.floor(Math.random() * 5 + 3);
+  const b = new Box(screen);
+  b.background = color;
+  b.passthrough = true;
+  b.w = size;
+  b.h = size;
+  return b;
+}
+
 
 
 
