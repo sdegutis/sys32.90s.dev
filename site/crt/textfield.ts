@@ -1,5 +1,7 @@
 import { BorderBox } from "./box.js";
 import { Font } from "./font.js";
+import { Label } from "./label.js";
+import { make } from "./screen.js";
 
 export class TextField extends BorderBox {
 
@@ -8,6 +10,7 @@ export class TextField extends BorderBox {
   font = Font.crt2025;
   color = 0x000000ff;
 
+  #label = make(this.screen, Label, {});
   #cursor = 0;
 
   onEnter?(): void;
@@ -44,12 +47,14 @@ export class TextField extends BorderBox {
     // const vs = this.text.slice(this.#cursor, this.#cursor + this.length);
     // console.log(vs);
 
-    this.screen.print(this.padding, this.padding, this.color, this.text);
+    const o = this.padding;
+
+    this.screen.print(o, o, this.color, this.text);
 
     if (this.screen.focused === this) {
       if (this.#blinkShow) {
-        let cx = this.padding + (this.font.width + 1) * this.text.length;
-        let cy = this.padding;
+        let cx = o + (this.font.width + 1) * this.text.length;
+        let cy = o;
         this.screen.print(cx, cy, 0x77aaffff, '_',);
       }
     }

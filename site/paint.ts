@@ -2,6 +2,7 @@ import { Box } from "./crt/box.js";
 import { Button } from "./crt/button.js";
 import { Label } from "./crt/label.js";
 import { centerLayout, makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
+import { RadioButton, RadioGroup } from "./crt/radio.js";
 import { make, Screen } from "./crt/screen.js";
 import { SplitBox } from "./crt/split.js";
 import { TextField } from "./crt/textfield.js";
@@ -17,20 +18,42 @@ screen.root.layout = vacuumLayout;
 
 
 
+
+
+
+
+
+const radios = new RadioGroup();
+radios.onChange = () => console.log('radio', radios.selected)
+
+
+
+
+
+
+
+
 const tf = make(screen, TextField, {
   background: 0x000000aa,
   border: 0xffffff77,
   color: 0xffffffff,
   padding: 3,
   length: 3,
-  text: 'tesin',
+  text: 'n',
 });
+
+tf.onFocus = () => {
+  radios.select(undefined);
+}
 
 tf.onChange = () => console.log('onchange', tf.text)
 tf.onEnter = () => console.log('onemter', tf.text)
 
 const testpaint = make(screen, Box, { background: 0x003300ff, layout: makeFlowLayout(3, 3) },
-  ...Array(20).fill(0).map((_, i) => make(screen, Button, { padding: 2, background: 0x00000033, border: 0x999999ff, onClick: () => console.log('color', i) },
+  ...Array(20).fill(0).map((_, i) => make(screen, RadioButton, {
+    group: radios, padding: 2, background: 0x000000ff, border: 0x333333ff,
+
+  },
     randomColorSquare(Math.floor(i / 3) + 6)
   )),
   tf
@@ -80,7 +103,7 @@ screen.root.children = [
 function randomColorSquare(size: number) {
   const color = (Math.random() * 0xffffff00) | 0x000000ff;
   size = 3;
-  return make(screen, Box, { background: color, passthrough: true, w: size, h: size });
+  return make(screen, Box, { background: 0x111111ff, passthrough: true, w: size, h: size });
 }
 
 
