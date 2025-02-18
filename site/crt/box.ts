@@ -28,16 +28,6 @@ export class Box {
 
   constructor(public screen: Screen) { }
 
-  configure(config: Partial<this>) {
-    for (const key in config) {
-      let val = config[key]!;
-      if (typeof val === 'function') {
-        val = val.bind(this);
-      }
-      this[key] = val;
-    }
-  }
-
   drawCursor(x: number, y: number) {
     pointer.draw(this.screen, x - 1, y - 1);
   }

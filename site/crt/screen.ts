@@ -319,4 +319,11 @@ export class Screen {
     this.#clip.y2 = cy2;
   }
 
+  make<T extends typeof Box>(ctor: T, config: Partial<InstanceType<T>>, ...children: Box[]) {
+    const t = new ctor(this);
+    Object.assign(t, config);
+    t.children = children;
+    return t;
+  }
+
 }
