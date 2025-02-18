@@ -139,12 +139,16 @@ export class Screen {
 
   layoutTree(node: Box = this.root) {
     this.#adjustTree(node);
-    node.layout?.();
-    for (let i = 0; i < node.children.length; i++) {
-      this.layoutTree(node.children[i]);
-    }
+    this.#layoutTree(node);
     this.#checkUnderMouse();
     this.needsRedraw = true;
+  }
+
+  #layoutTree(node: Box) {
+    node.layout?.();
+    for (let i = 0; i < node.children.length; i++) {
+      this.#layoutTree(node.children[i]);
+    }
   }
 
   #adjustTree(node: Box) {
