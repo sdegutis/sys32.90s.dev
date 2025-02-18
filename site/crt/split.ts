@@ -89,7 +89,7 @@ export class SplitBox extends Box {
   dividerWidth = 1;
   dividerColor = 0x33333300;
   dividerColorHover = 0xffffff33;
-  dividerColorPress = 0xffffff77;
+  dividerColorPress = 0x1177ffcc;
   resizable = false;
 
   #resizer?: Box;
