@@ -6,6 +6,16 @@ import { SplitBox } from "./crt/split.js";
 
 
 
+class BorderBox extends Box {
+
+  border = 0xffffff33;
+
+  draw(): void {
+    this.screen.rectLine(0, 0, this.w, this.h, this.border);
+  }
+
+}
+
 {
   const canvas = document.querySelector('canvas')!;
   // canvas.width = 320 * 2;
@@ -81,16 +91,6 @@ import { SplitBox } from "./crt/split.js";
 
 
 
-
-  class BorderBox extends Box {
-
-    border = 0xffffff33;
-
-    draw(): void {
-      this.screen.rectLine(0, 0, this.w, this.h, this.border);
-    }
-
-  }
 
   class Label extends Box {
 
