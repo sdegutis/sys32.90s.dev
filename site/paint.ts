@@ -1,4 +1,8 @@
-import { Bitmap, Box, Font, MouseTracker, Screen, dragMove } from "./crt.js";
+import { Bitmap } from "./crt/bitmap.js";
+import { Box, MouseTracker } from "./crt/box.js";
+import { Font } from "./crt/font.js";
+import { Screen } from "./crt/screen.js";
+import { dragMove } from "./crt/selections.js";
 
 class BorderBox extends Box {
 
