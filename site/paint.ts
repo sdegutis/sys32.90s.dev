@@ -32,6 +32,8 @@ class SplitBoxDivider extends Box {
     offset: [1, 2],
   };
 
+  pressed = false;
+
   constructor(screen: Screen, public split: SplitBox) {
     super(screen);
     this.background = split.dividerColor;
@@ -47,7 +49,10 @@ class SplitBoxDivider extends Box {
   }
 
   draw(): void {
-    if (this.hovered) {
+    if (this.pressed) {
+      this.screen.rectFill(0, 0, this.w, this.h, this.split.dividerColorPress);
+    }
+    else if (this.hovered) {
       this.screen.rectFill(0, 0, this.w, this.h, this.split.dividerColorHover);
     }
   }
@@ -66,6 +71,9 @@ class SplitBoxDivider extends Box {
 
     const b = { x: 0, y: 0 };
     b[dx] = s.pos;
+
+    this.pressed = true;
+
     const drag = dragMove(this.screen, b);
     trackMouse({
       move: () => {
@@ -75,6 +83,7 @@ class SplitBoxDivider extends Box {
         if (s.max && s.pos > s[dw] - s.max) s.pos = s[dw] - s.max;
         this.screen.layoutTree(this.split);
       },
+      up: () => this.pressed = false,
     });
   }
 
@@ -89,6 +98,7 @@ class SplitBox extends Box {
   dividerWidth = 1;
   dividerColor = 0x33333300;
   dividerColorHover = 0xffffff33;
+  dividerColorPress = 0xffffff77;
 
   a = new Box(this.screen);
   b = new Box(this.screen);
