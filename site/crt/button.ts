@@ -7,7 +7,7 @@ export class Button extends BorderBox {
 
   onClick?(): void;
 
-  #pressed = false;
+  pressed = false;
 
   override layout(): void {
     this.children[0].x = this.padding;
@@ -20,25 +20,25 @@ export class Button extends BorderBox {
   }
 
   override onMouseDown(trackMouse: MouseTracker): void {
-    this.#pressed = true;
+    this.pressed = true;
     trackMouse({
       move: () => {
         if (!this.hovered) {
-          this.#pressed = false;
+          this.pressed = false;
         }
       },
       up: () => {
-        if (this.#pressed) {
+        if (this.pressed) {
           this.onClick?.();
         }
-        this.#pressed = false;
+        this.pressed = false;
       },
     });
   }
 
   override draw(): void {
     super.draw();
-    if (this.#pressed) {
+    if (this.pressed) {
       this.screen.rectFill(0, 0, this.w, this.h, this.pressColor);
     }
     else if (this.hovered) {

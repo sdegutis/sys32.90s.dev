@@ -32,8 +32,7 @@ radios.onChange = () => console.log('radio', radios.selected)
 
 
 const checkbox = make(screen, Checkbox, {
-  background: 0x000000ff,
-  label: make(screen, Label, { text: 'hi' }),
+  text: 'hello world',
   onChange: () => {
     console.log('checked', checkbox.checked)
   }
@@ -59,7 +58,7 @@ tf.onFocus = () => {
 tf.onChange = () => console.log('onchange', tf.text)
 tf.onEnter = () => console.log('onemter', tf.text)
 
-const testpaint = make(screen, Box, { background: 0x003300ff, layout: makeFlowLayout(3, 3) },
+const testpaint = make(screen, Box, { background: 0x003300ff, layout: makeFlowLayout(3, 2) },
   ...Array(20).fill(0).map((_, i) => make(screen, RadioButton, {
     group: radios, padding: 2, background: 0x000000ff, border: 0x333333ff,
 
