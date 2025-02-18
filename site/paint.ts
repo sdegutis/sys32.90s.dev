@@ -13,16 +13,7 @@ class BorderBox extends Box {
 
 }
 
-class SplitBox extends Box {
-
-  pos = 10;
-  min = 0;
-  max = 0;
-  dir: 'x' | 'y' = 'y';
-  resizable = false;
-  dividerWidth = 1;
-  dividerColor = 0x333333ff;
-  dividerColorHover = 0xffffff33;
+class SplitBoxDivider extends Box {
 
   static xresize = {
     bitmap: new Bitmap([0x00000099, 0xffffffff], [
@@ -44,81 +35,106 @@ class SplitBox extends Box {
     offset: [1, 2],
   };
 
-  #resizer?: Box;
+  constructor(screen: Screen, public split: SplitBox) {
+    super(screen);
+    this.background = split.dividerColor;
+  }
 
   layout(): void {
+    const dx = this.split.dir;
+    const dw = dx === 'x' ? 'w' : 'h';
+
+    this.trackingArea = { x: 0, y: 0, w: this.w, h: this.h };
+    this.trackingArea[dx] = -3;
+    this.trackingArea[dw] = this.split.dividerWidth + 6;
+  }
+
+  draw(): void {
+    if (this.hovered) {
+      screen.rectFill(0, 0, this.w, this.h, this.split.dividerColorHover);
+    }
+  }
+
+  drawCursor(x: number, y: number): void {
+    const cursor = this.split.dir === 'x' ?
+      SplitBoxDivider.xresize :
+      SplitBoxDivider.yresize;
+    cursor.bitmap.draw(screen, x - cursor.offset[0], y - cursor.offset[1]);
+  }
+
+  onMouseDown(trackMouse: MouseTracker): void {
+    const s = this.split;
+    const dx = s.dir;
+    const dw = dx === 'x' ? 'w' : 'h';
+
+    const b = { x: 0, y: 0 };
+    b[dx] = s.pos;
+    const drag = dragMove(this.screen, b);
+    trackMouse({
+      move: () => {
+        drag();
+        s.pos = b[dx];
+        if (s.min && s.pos < s.min) s.pos = s.min;
+        if (s.max && s.pos > s[dw] - s.max) s.pos = this[dw] - s.max;
+        this.screen.layoutTree(this.split);
+      },
+    });
+  }
+
+}
+
+class SplitBox extends Box {
+
+  pos = 10;
+  min = 0;
+  max = 0;
+  dir: 'x' | 'y' = 'y';
+  dividerWidth = 1;
+  dividerColor = 0x33333300;
+  dividerColorHover = 0xffffff33;
+
+  a = new Box(this.screen, 0x000000ff);
+  b = new Box(this.screen, 0x000000ff);
+  #resizer?: Box;
+  children = [this.a, this.b];
+
+  get resizable() { return this.#resizer !== undefined; }
+  set resizable(should: boolean) {
+    if (should) {
+      this.#resizer = new SplitBoxDivider(screen, this);
+      this.children = [this.a, this.b, this.#resizer];
+    }
+    else {
+      this.#resizer = undefined;
+      this.children = [this.a, this.b];
+    }
+  }
+
+  layout(): void {
+    this.children = [this.a, this.b];
+    if (this.#resizer) this.children.push(this.#resizer);
+
     const dx = this.dir;
     const dw = dx === 'x' ? 'w' : 'h';
 
-    if (!this.resizable && this.#resizer) {
-      this.children.splice(2, 1);
-      this.#resizer = undefined;
-    }
-    else if (this.resizable && !this.#resizer) {
-      const cursor = this.dir === 'x' ? SplitBox.xresize : SplitBox.yresize;
+    this.a.x = this.b.x = 0;
+    this.a.y = this.b.y = 0;
+    this.a.w = this.b.w = this.w;
+    this.a.h = this.b.h = this.h;
 
-      this.#resizer = new Box(screen);
-      this.#resizer.background = this.dividerColor;
+    this.a[dw] = this.pos;
 
-      this.#resizer.draw = () => {
-        if (this.#resizer?.hovered) {
-          screen.rectFill(0, 0, this.#resizer.w, this.#resizer.h, this.dividerColorHover);
-        }
-      };
-
-      this.#resizer.drawCursor = (x, y) => {
-        cursor.bitmap.draw(screen, x - cursor.offset[0], y - cursor.offset[1]);
-      };
-
-      this.#resizer.onMouseDown = (trackMouse) => {
-        const b = { x: 0, y: 0 };
-        b[dx] = this.pos;
-        const drag = dragMove(this.screen, b);
-        trackMouse({
-          move: () => {
-            drag();
-            this.pos = b[dx];
-            if (this.min && this.pos < this.min) this.pos = this.min;
-            if (this.max && this.pos > this[dw] - this.max) this.pos = this[dw] - this.max;
-            this.screen.layoutTree(this);
-          },
-        });
-      };
-      this.children.push(this.#resizer);
-    }
-
-    const steps = [this.pos, this[dw] - this.pos];
-    if (this.resizable) {
-      steps[1] -= this.dividerWidth;
-      steps.splice(1, 0, this.dividerWidth);
-    }
+    this.b[dx] = this.pos;
+    this.b[dw] = this[dw] - this.pos;
 
     if (this.#resizer) {
-      this.children.splice(2, 1);
-      this.children.splice(1, 0, this.#resizer);
-    }
+      this.#resizer.x = 0;
+      this.#resizer.y = 0;
+      this.#resizer.w = this.w;
+      this.#resizer.h = this.h;
 
-    let x = 0;
-    for (let i = 0; i < this.children.length; i++) {
-      this.children[i].x = 0;
-      this.children[i].y = 0;
-      this.children[i].w = this.w;
-      this.children[i].h = this.h;
-
-      this.children[i][dx] = x;
-      this.children[i][dw] = steps[i];
-      x += steps[i];
-    }
-
-    if (this.#resizer) {
-      this.children.splice(1, 1);
-      this.children.push(this.#resizer);
-    }
-
-    if (this.#resizer) {
-      this.#resizer.trackingArea = { x: 0, y: 0, w: this.w, h: this.h };
-      this.#resizer.trackingArea[dx] = -3;
-      this.#resizer.trackingArea[dw] = this.dividerWidth + 6;
+      this.#resizer[dx] = this.pos;
+      this.#resizer[dw] = this.dividerWidth;
     }
   }
 
@@ -132,9 +148,9 @@ split.min = 8;
 split.max = 18;
 split.dir = 'y';
 
-const red = new BorderBox(screen); red.background = 0x330000ff; //red.border = 0xffffff00;
-const green = new BorderBox(screen); green.background = 0x003300ff; //green.border = 0xffffff00;
-const blue = new BorderBox(screen); blue.background = 0x000033ff; //blue.border = 0xffffff00;
+const red = new BorderBox(screen, 0x330000ff); red.border = 0xffffff00;
+const green = new BorderBox(screen, 0x003300ff); green.border = 0xffffff00;
+const blue = new BorderBox(screen, 0x000033ff); blue.border = 0xffffff00;
 
 const split2 = new SplitBox(screen);
 split2.resizable = true;
@@ -145,11 +161,11 @@ split2.dir = 'x';
 
 screen.root.children.push(split);
 
-split.children.push(blue);
-split.children.push(split2);
+split.a = blue;
+split.b = split2;
 
-split2.children.push(red);
-split2.children.push(green);
+split2.a = red;
+split2.b = green;
 
 split.resizable = true;
 
@@ -206,17 +222,15 @@ class Button extends BorderBox {
 
   onClick?(): void;
 
-  #label?: Label;
-  get label(): Label | undefined { return this.#label; }
-  set label(l: Label | undefined) {
-    this.#label = l;
-    this.children = l ? [l] : [];
-    if (l) {
-      l.x = this.padding;
-      l.y = this.padding;
-      this.w = l.w + this.padding * 2;
-      this.h = l.h + this.padding * 2;
-    }
+  children: Box[] = [new Label(screen)];
+
+  get child() { return this.children[0]; }
+  set child(child: Box) {
+    this.children = [child];
+    child.x = this.padding;
+    child.y = this.padding;
+    this.w = child.w + this.padding * 2;
+    this.h = child.h + this.padding * 2;
   }
 
   onMouseDown(trackMouse: MouseTracker): void {
@@ -251,18 +265,14 @@ class Button extends BorderBox {
 const button = new Button(screen);
 button.x = 30;
 button.y = 30;
-button.w = 30;
-button.h = 10;
 button.background = 0x00000033;
 button.border = 0xff000033;
 green.children.push(button);
 
 const label = new Label(screen);
-// label.w = 30;
-// label.h = 10;
-label.text = 'yes\nno\nhmm this';
+label.text = 'yes \\n no';
 
-button.label = label;
+button.child = label;
 button.onClick = () => console.log('clicked')
 
 // button.children.push(label);

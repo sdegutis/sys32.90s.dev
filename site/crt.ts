@@ -373,7 +373,6 @@ export class Box {
   y = 0;
   w = 0;
   h = 0;
-  background = 0x00000000;
 
   children: Box[] = [];
   hovered = false;
@@ -381,7 +380,10 @@ export class Box {
   passthrough = false;
   trackingArea?: { x: number, y: number, w: number, h: number };
 
-  constructor(public screen: Screen) { }
+  constructor(
+    public screen: Screen,
+    public background = 0x00000000,
+  ) { }
 
   drawCursor(x: number, y: number) {
     cursors.pointer.draw(this.screen, x - 1, y - 1);
@@ -392,7 +394,7 @@ export class Box {
 export class Font {
 
   static crt2025 = new Font(3, 4, 16,
-    `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^`,
+    `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`,
     `
 | xxx | xx  | xxx | xx  | xxx | xxx | xxx | x x | xxx | xxx | x x | x   | xxx | xxx | xxx | xxx |
 | x x | xxx | x   | x x | xx  | xx  | x   | xxx |  x  |  x  | xx  | x   | xxx | x x | x x | x x |
@@ -414,10 +416,10 @@ export class Font {
 | x   |  x  | xxx | x x | xx  | x   |  x  |  x  | x   |     | xx  | xxx |  x  | xx  |  xx |     |
 |     | x   |  x  |     |     | xx  | xx  |     |     | xxx | xxx |     |  x  |  xx | xx  |     |
 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
-|  x  |  xx | xx  |  x  |     |     |     |     |     |     |     |     |     |     |     |     |
-| x   | x x |  xx | x x |     |     |     |     |     |     |     |     |     |     |     |     |
-|  x  | x   |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
-| x   |  xx |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
+|  x  |  xx | xx  |  x  | x   |     |     |     |     |     |     |     |     |     |     |     |
+| x   | x x |  xx | x x |  x  |     |     |     |     |     |     |     |     |     |     |     |
+|  x  | x   |     |     |  x  |     |     |     |     |     |     |     |     |     |     |     |
+| x   |  xx |     |     |   x |     |     |     |     |     |     |     |     |     |     |     |
   `);
 
   chars: Record<string, boolean[][]> = {};
