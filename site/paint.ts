@@ -1,7 +1,7 @@
 import { Box } from "./crt/box.js";
 import { Button, Checkbox } from "./crt/button.js";
 import { Label } from "./crt/label.js";
-import { centerLayout, makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
+import { makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
 import { RadioButton, RadioGroup } from "./crt/radio.js";
 import { make, Screen } from "./crt/screen.js";
 import { SplitBox } from "./crt/split.js";
@@ -49,6 +49,9 @@ const tf = make(screen, TextField, {
 
 tf.onFocus = () => {
   radios.select(undefined);
+  checkbox.checked = !checkbox.checked;
+  console.log('asdf')
+  // screen.needsRedraw = true;
 }
 
 tf.onChange = () => console.log('onchange', tf.text)

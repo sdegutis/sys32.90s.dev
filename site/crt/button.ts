@@ -51,7 +51,7 @@ export class Button extends BorderBox {
 
 export class Checkbox extends Button {
 
-  checked = false;
+  #checked = false;
   onChange?() { }
 
   override children = [
@@ -62,11 +62,17 @@ export class Checkbox extends Button {
     })
   ];
 
+  get checked() { return this.#checked; }
+  set checked(is: boolean) {
+    const changed = is !== this.#checked;
+    this.#checked = is;
+    if (changed) this.onChange?.();
+    this.children[0].visible = this.checked;
+  }
+
   override onMouseDown(trackMouse: MouseTracker): void {
     super.onMouseDown(trackMouse);
     this.checked = !this.checked;
-    this.children[0].visible = this.checked;
-    this.onChange?.();
   }
 
 }
