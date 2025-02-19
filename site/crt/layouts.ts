@@ -29,6 +29,7 @@ export function makeFlowLayout(padding = 0, margin = 0) {
       if (x + child.w > this.w && i > 0) {
         x = padding;
         y += h + margin;
+        h = 0;
       }
 
       child.x = x;
