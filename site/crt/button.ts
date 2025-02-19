@@ -8,6 +8,7 @@ export class Button extends BorderBox {
   onClick?(): void;
 
   pressed = false;
+  hovered = false;
 
   override layout(): void {
     const c = this.children[0];
@@ -27,17 +28,16 @@ export class Button extends BorderBox {
 
   override onMouseDown(trackMouse: MouseTracker): void {
     this.pressed = true;
-    trackMouse({
+    const cancel = trackMouse({
       move: () => {
         if (!this.hovered) {
           this.pressed = false;
+          cancel();
         }
       },
       up: () => {
-        if (this.pressed) {
-          this.onClick?.();
-        }
         this.pressed = false;
+        this.onClick?.();
       },
     });
   }
@@ -50,6 +50,16 @@ export class Button extends BorderBox {
     else if (this.hovered) {
       this.screen.rectFill(0, 0, this.w, this.h, this.hoverColor);
     }
+  }
+
+  override onMouseEnter(): void {
+    super.onMouseEnter?.();
+    this.hovered = true;
+  }
+
+  override onMouseExit(): void {
+    super.onMouseExit?.();
+    this.hovered = false;
   }
 
 }

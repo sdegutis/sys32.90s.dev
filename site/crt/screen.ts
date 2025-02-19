@@ -175,11 +175,11 @@ export class Screen {
     const activeHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
 
     if (this.#hovered !== activeHovered) {
-      if (!this.#trackingMouse) this.#hovered.onMouseExit?.();
-      this.#hovered.hovered = false;
-      activeHovered.hovered = true;
+      this.#hovered.onMouseExit?.();
+      // this.#hovered.hovered = false;
+      // activeHovered.hovered = true;
       this.#hovered = activeHovered;
-      if (!this.#trackingMouse) this.#hovered.onMouseEnter?.();
+      this.#hovered.onMouseEnter?.();
     }
   }
 

@@ -26,6 +26,7 @@ const yresize = {
 class SplitBoxDivider extends Box {
 
   pressed = false;
+  #hovered = false;
 
   constructor(screen: Screen, public split: SplitBox) {
     super(screen);
@@ -45,7 +46,7 @@ class SplitBoxDivider extends Box {
     if (this.pressed) {
       this.screen.rectFill(0, 0, this.w, this.h, this.split.dividerColorPress);
     }
-    else if (this.hovered) {
+    else if (this.#hovered) {
       this.screen.rectFill(0, 0, this.w, this.h, this.split.dividerColorHover);
     }
   }
@@ -76,6 +77,16 @@ class SplitBoxDivider extends Box {
       },
       up: () => this.pressed = false,
     });
+  }
+
+  override onMouseEnter(): void {
+    super.onMouseEnter?.();
+    this.#hovered = true;
+  }
+
+  override onMouseExit(): void {
+    super.onMouseExit?.();
+    this.#hovered = false;
   }
 
 }

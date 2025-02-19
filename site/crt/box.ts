@@ -29,7 +29,7 @@ export class Box {
   focused = false;
 
   children: Box[] = [];
-  hovered = false;
+  // hovered = false;
   mouse = { x: 0, y: 0 };
   trackingArea?: { x: number, y: number, w: number, h: number };
 

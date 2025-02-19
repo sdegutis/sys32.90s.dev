@@ -1,16 +1,24 @@
-import { BorderBox, Box } from "./box.js";
+import { BorderBox, Box, MouseTracker } from "./box.js";
 import { Button } from "./button.js";
 import { Label } from "./label.js";
 import { makeFlowLayout } from "./layouts.js";
 import { build } from "./screen.js";
 
-export class Checkbox extends Button {
+export class Checkbox extends Box {
 
-  #checked = false;
   onChange?() { }
 
-  override border = 0x00000000;
-  override padding = 0;
+  get padding() { return this.#label.padding; }
+  set padding(n: number) {
+    if (n < 1) n = 1;
+    this.#label.padding = n;
+  }
+
+  get border() { return this.#button.border; }
+  set border(n: number) { this.#button.border = n; }
+
+  get check() { return this.#checkmark.background; }
+  set check(n: number) { this.#checkmark.background = n; }
 
   #checkmark = build(this.screen, Box, {
     w: 2, h: 2,
@@ -19,10 +27,13 @@ export class Checkbox extends Button {
     visible: false,
   });
 
-  #fakebutton = build(this.screen, BorderBox, {
+  #button = build(this.screen, Button, {
     w: 6, h: 6,
-    passthrough: true,
+    padding: 1,
     children: [this.#checkmark],
+    onClick: () => {
+      this.checked = !this.checked;
+    },
   });
 
   #layout = makeFlowLayout(0, 0);
@@ -35,49 +46,49 @@ export class Checkbox extends Button {
   get text() { return this.#label.text; }
   set text(s: string) { this.#label.text = s; }
 
-  override children = [this.#fakebutton, this.#label];
-
-  // override draw(): void {
-  //   if (this.pressed) {
-  //     this.screen.rectFill(0, 0, this.#fakebutton.w, this.h, this.pressColor);
-  //   }
-  //   else if (this.hovered) {
-  //     this.screen.rectFill(0, 0, this.#fakebutton.w, this.h, this.hoverColor);
-  //   }
-  // }
+  override children = [this.#button, this.#label];
 
   override layout(): void {
-    super.layout();
     this.#layout();
-
     this.#checkmark.x = 2;
     this.#checkmark.y = 2;
-
-    this.#fakebutton.x = this.padding;
-    this.#fakebutton.y = this.padding;
-
-    this.#label.x += 1 + this.padding;
-    this.#label.y = this.padding;
+    this.#label.y--;
   }
 
   override adjust(): void {
-    super.adjust();
+    this.#button.padding = 0;
+    this.screen.layoutTree(this.#label);
+    this.screen.layoutTree(this.#button);
+    this.#button.padding = this.padding;
+
+    this.w = this.#button.w + this.padding * 2;
+    this.h = Math.max(this.#button.h, this.#label.h) - 2;
+
+    this.screen.layoutTree(this.#button);
+
     if (this.text.length > 0) {
       this.w += this.#label.w + 1;
     }
   }
 
-  get checked() { return this.#checked; }
+  get checked() { return this.#checkmark.visible; }
   set checked(is: boolean) {
-    if (is !== this.#checked) {
-      this.#checked = is;
+    if (is !== this.#checkmark.visible) {
+      this.#checkmark.visible = is;
       this.onChange?.();
-      this.#checkmark.visible = this.checked;
     }
   }
 
-  override onClick(): void {
-    this.checked = !this.checked;
+  override onMouseEnter(): void {
+    this.#button.onMouseEnter();
+  }
+
+  override onMouseExit(): void {
+    this.#button.onMouseExit();
+  }
+
+  override onMouseDown(trackMouse: MouseTracker): void {
+    this.#button.onMouseDown(trackMouse);
   }
 
 }

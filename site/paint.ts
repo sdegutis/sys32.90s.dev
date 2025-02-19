@@ -1,5 +1,6 @@
 import { Box } from "./crt/box.js";
 import { Button } from "./crt/button.js";
+import { Checkbox } from "./crt/checkbox.js";
 import { Label } from "./crt/label.js";
 import { makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
 import { makeBuilder, Screen } from "./crt/screen.js";
@@ -7,11 +8,28 @@ import { SplitBox } from "./crt/split.js";
 
 
 const canvas = document.querySelector('canvas')!;
-// canvas.width = 320 * 2;
-// canvas.height = 180 * 2;
 const screen = new Screen(canvas);
 screen.autoscale();
 screen.root.layout = vacuumLayout;
+
+class MyCheckbox extends Checkbox {
+
+  constructor(screen: Screen) {
+    super(screen);
+    this.text = 'hey'
+    // this.children = []
+  }
+
+  override adjust(): void {
+    this.w = 30;
+    this.h = 5;
+  }
+
+  override draw(): void {
+    screen.rectFill(0, 0, this.w, this.h, this.checked ? 0x009900ff : 0x000099ff)
+  }
+
+}
 
 const b = makeBuilder(screen);
 
@@ -44,9 +62,17 @@ screen.root.children = [
         b(Button, { border: 0, padding: 0, onClick: () => { console.log('grid') } }, b(Label, { text: 'grid' })),
       ),
       b(Box, { background: 0x333333ff, layout: makeFlowLayout(10, 2) },
-        b(Button, { border: 0, background: 0x00000033 }, b(Label, { text: 'hey' })),
-        b(Button, { border: 0, background: 0x00000033 }, b(Label, { text: 'hey' })),
-        b(Button, { border: 0, background: 0x00000033 }, b(Label, { text: 'hey' })),
+        b(Checkbox, { border: 0x990000ff, check: 0x009900ff }),
+        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, text: 'a' }),
+        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 0 }),
+        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 1 }),
+        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 2 }),
+        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 3 }),
+        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 0, text: 'a' }),
+        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 1, text: 'ab' }),
+        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 2, text: 'abc' }),
+        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 3, text: 'abc' }),
+        b(MyCheckbox, {}),
       ),
     ),
 
