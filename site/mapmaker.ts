@@ -1,4 +1,4 @@
-import { Box, MouseTracker, Screen, TileSelection, dragMove } from "./crt/crt.js";
+import { Box, Screen, TileSelection, dragMove } from "./crt/crt.js";
 
 
 export default (screen: Screen) => {
@@ -17,10 +17,10 @@ export default (screen: Screen) => {
     clicking = false;
     onClick() { }
 
-    override onMouseDown(trackMouse: MouseTracker): void {
+    override onMouseDown(): void {
       this.clicking = true;
 
-      const cancel = trackMouse({
+      const cancel = screen.trackMouse({
         move: () => {
           if (!this.hovered) {
             cancel();
@@ -295,14 +295,14 @@ export default (screen: Screen) => {
 
   let tilesel: TileSelection | null = null;
 
-  mapBox.onMouseDown = (trackMouse) => {
+  mapBox.onMouseDown = () => {
     if (screen.keys[' ']) {
-      trackMouse({ move: dragMove(screen, mapBox) });
+      screen.trackMouse({ move: dragMove(screen, mapBox) });
     }
     else if (screen.keys['Control']) {
       tilesel = new TileSelection(mapBox, 4);
 
-      trackMouse({
+      screen.trackMouse({
         move() {
           tilesel!.update();
 
@@ -321,7 +321,7 @@ export default (screen: Screen) => {
       });
     }
     else if (screen.keys['Alt']) {
-      trackMouse({
+      screen.trackMouse({
         move() {
           const x = Math.floor(mapBox.mouse.x / 4);
           const y = Math.floor(mapBox.mouse.y / 4);
@@ -334,7 +334,7 @@ export default (screen: Screen) => {
       });
     }
     else {
-      trackMouse({
+      screen.trackMouse({
         move() {
           const x = Math.floor(mapBox.mouse.x / 4);
           const y = Math.floor(mapBox.mouse.y / 4);

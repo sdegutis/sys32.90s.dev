@@ -1,4 +1,4 @@
-import { BorderBox, MouseTracker } from "./box.js";
+import { BorderBox } from "./box.js";
 
 export class Button extends BorderBox {
 
@@ -26,9 +26,9 @@ export class Button extends BorderBox {
     }
   }
 
-  override onMouseDown(trackMouse: MouseTracker): void {
+  override onMouseDown(): void {
     this.pressed = true;
-    const cancel = trackMouse({
+    const cancel = this.screen.trackMouse({
       move: () => {
         if (!this.hovered) {
           this.pressed = false;

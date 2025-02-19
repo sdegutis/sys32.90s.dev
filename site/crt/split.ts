@@ -1,5 +1,5 @@
 import { Bitmap } from "./bitmap.js";
-import { Box, MouseTracker } from "./box.js";
+import { Box } from "./box.js";
 import { Screen } from "./screen.js";
 import { dragMove } from "./selections.js";
 
@@ -56,7 +56,7 @@ class SplitBoxDivider extends Box {
     cursor.bitmap.draw(this.screen, x - cursor.offset[0], y - cursor.offset[1]);
   }
 
-  override onMouseDown(trackMouse: MouseTracker): void {
+  override onMouseDown(): void {
     const s = this.split;
     const dx = s.dir;
     const dw = dx === 'x' ? 'w' : 'h';
@@ -67,7 +67,7 @@ class SplitBoxDivider extends Box {
     this.pressed = true;
 
     const drag = dragMove(this.screen, b);
-    trackMouse({
+    this.screen.trackMouse({
       move: () => {
         drag();
         s.pos = b[dx];

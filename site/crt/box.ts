@@ -5,7 +5,7 @@ export class Box {
 
   onScroll?(up: boolean): void;
   onKeyDown?(key: string): void;
-  onMouseDown?(trackMouse: MouseTracker): void;
+  onMouseDown?(): void;
   onMouseMove?(): void;
   onMouseEnter?(): void;
   onMouseExit?(): void;
@@ -58,11 +58,6 @@ export class BorderBox extends Box {
   }
 
 }
-
-export type MouseTracker = (fns: {
-  move: () => void;
-  up?: () => void;
-}) => () => void;
 
 const pointer = new Bitmap([0x000000cc, 0xffffffff], [
   1, 1, 1, 1, -1,

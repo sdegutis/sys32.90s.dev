@@ -58,13 +58,7 @@ export class Screen {
       this.focused.focused = false;
       this.focused.onBlur?.();
       this.focus(this.#hovered);
-      if (this.#hovered.onMouseDown) {
-        this.#hovered.onMouseDown((fns: { move: () => void; up?: () => void; }) => {
-          fns.move();
-          this.#trackingMouse = fns;
-          return () => this.#trackingMouse = undefined!;
-        });
-      }
+      this.#hovered.onMouseDown?.();
       this.needsRedraw = true;
     }, { passive: true, signal: this.#destroyer.signal });
 
@@ -125,6 +119,12 @@ export class Screen {
       }
     };
     requestAnimationFrame(update);
+  }
+
+  trackMouse(fns: { move: () => void; up?: () => void; }) {
+    fns.move();
+    this.#trackingMouse = fns;
+    return () => this.#trackingMouse = undefined!;
   }
 
   resize(w: number, h: number) {
@@ -359,10 +359,5 @@ export function makeBuilder(screen: Screen) {
     ctor: { new(screen: Screen): T },
     config: Partial<T>,
     ...children: Box[]
-  ): T => {
-    const t = new ctor(screen);
-    if (children.length > 0) t.children = children;
-    Object.assign(t, config);
-    return t;
-  };
+  ): T => build(screen, ctor, config, ...children);
 }

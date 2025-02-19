@@ -1,4 +1,4 @@
-import { Box, MouseTracker, Screen, TileSelection, dragMove, dragResize } from "./crt/crt.js";
+import { Box, Screen, TileSelection, dragMove, dragResize } from "./crt/crt.js";
 
 export default uitest;
 
@@ -20,10 +20,10 @@ export function uitest(screen: Screen) {
     clicking = false;
     onClick() { }
 
-    override onMouseDown(trackMouse: MouseTracker) {
+    override onMouseDown() {
       this.clicking = true;
 
-      const cancel = trackMouse({
+      const cancel = screen.trackMouse({
         move: () => {
           if (!this.hovered) {
             cancel();
@@ -156,7 +156,7 @@ export function uitest(screen: Screen) {
     };
 
     // onMouseDown(): void {
-    //   this.trackMouse({
+    //   this.screen.trackMouse({
     //     move: () => console.log(this.mouse)
     //   });
     // }
@@ -455,14 +455,14 @@ export function uitest(screen: Screen) {
 
   let tilesel: TileSelection | null = null;
 
-  mapBox.onMouseDown = (trackMouse) => {
+  mapBox.onMouseDown = () => {
     if (screen.keys[' ']) {
-      trackMouse({ move: dragMove(screen, mapBox) });
+      screen.trackMouse({ move: dragMove(screen, mapBox) });
     }
     else if (screen.keys['Control']) {
       tilesel = new TileSelection(mapBox, 4);
 
-      trackMouse({
+      screen.trackMouse({
         move() {
           tilesel!.update();
 
@@ -481,7 +481,7 @@ export function uitest(screen: Screen) {
       });
     }
     else if (screen.keys['Alt']) {
-      trackMouse({
+      screen.trackMouse({
         move() {
           const x = Math.floor(mapBox.mouse.x / 4);
           const y = Math.floor(mapBox.mouse.y / 4);
@@ -494,7 +494,7 @@ export function uitest(screen: Screen) {
       });
     }
     else {
-      trackMouse({
+      screen.trackMouse({
         move() {
           const x = Math.floor(mapBox.mouse.x / 4);
           const y = Math.floor(mapBox.mouse.y / 4);
@@ -589,8 +589,8 @@ export function uitest(screen: Screen) {
       this.screen.pset(p, 1, 0xfffffffff);
     }
 
-    override onMouseDown(trackMouse: MouseTracker): void {
-      trackMouse({
+    override onMouseDown(): void {
+      screen.trackMouse({
         move: () => {
           this.value = this.mouse.x / this.w * this.max;
         }
@@ -632,12 +632,12 @@ export function uitest(screen: Screen) {
 
     screen.pset(test1.w - 3, test1.h - 3, 0xffffffff)
   };
-  test1.onMouseDown = (trackMouse) => {
+  test1.onMouseDown = () => {
     if (test1.mouse.x >= test1.w - 3 && test1.mouse.y >= test1.h - 3) {
-      trackMouse({ move: dragResize(screen, test1) });
+      screen.trackMouse({ move: dragResize(screen, test1) });
     }
     else if (test1.mouse.y < 10) {
-      trackMouse({ move: dragMove(screen, test1) });
+      screen.trackMouse({ move: dragMove(screen, test1) });
     }
   };
   screenroot.children.push(test1);

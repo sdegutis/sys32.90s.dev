@@ -49,7 +49,7 @@ export function demo(screen: Screen) {
     b(Group, {
       onMouseEnter() { this.firstChild!.onMouseEnter!() },
       onMouseExit() { this.firstChild!.onMouseExit!() },
-      onMouseDown(t) { this.firstChild!.onMouseDown!(t) },
+      onMouseDown() { this.firstChild!.onMouseDown!() },
     },
       b(Checkbox, { padding: 2, size: 2, onChange() { console.log('foo', this.checked) } }),
       b(Label, { text: 'foo' }),
@@ -58,7 +58,7 @@ export function demo(screen: Screen) {
     b(Group, {
       onMouseEnter() { this.lastChild!.onMouseEnter!() },
       onMouseExit() { this.lastChild!.onMouseExit!() },
-      onMouseDown(t) { this.lastChild!.onMouseDown!(t) },
+      onMouseDown() { this.lastChild!.onMouseDown!() },
     },
       b(Label, { text: 'bar' }),
       b(Checkbox, { padding: 2, size: 2, onChange() { console.log('bar', this.checked) } }),

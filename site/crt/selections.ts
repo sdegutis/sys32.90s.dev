@@ -1,4 +1,4 @@
-import { Box, MouseTracker } from "./box.js";
+import { Box } from "./box.js";
 import { Screen } from "./screen.js";
 
 export class Selection {
