@@ -16,13 +16,13 @@ screen.root.layout = vacuumLayout;
 
 const b = makeBuilder(screen);
 
-const area = b(Box, { background: 0x333333ff });
-const one = () => { area.children[0] = mapmaker(screen); screen.layoutTree() }
-const two = () => { area.children[0] = mapmaker2(screen); screen.layoutTree() }
+const area = b(Box, { background: 0x333333ff, layout: vacuumLayout });
+const one = () => { area.children = [mapmaker(screen)]; screen.layoutTree() }
+const two = () => { area.children = [mapmaker2(screen)]; screen.layoutTree() }
 
 screen.root.children = [
   b(Box, { layout: vacuumLayout },
-    b(SplitBox, { pos: 30, dir: 'y' },
+    b(SplitBox, { vacuum: 'a', dir: 'y' },
       b(Group, { background: 0x222222ff },
         b(Button, { onClick: one }, b(Label, { text: 'one' })),
         b(Button, { onClick: two }, b(Label, { text: 'two' })),
