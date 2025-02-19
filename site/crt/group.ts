@@ -3,7 +3,6 @@ import { Box } from "./box.js";
 export class Group extends Box {
 
   dir: 'x' | 'y' = 'x';
-  padding = 0;
 
   override adjust(): void {
     const dw = this.dir === 'x' ? 'w' : 'h';

@@ -7,6 +7,10 @@ export default (screen: Screen) => {
 
   class Button extends Box {
 
+    hovered = false;
+    override onMouseEnter(): void { this.hovered = true; }
+    override onMouseExit(): void { this.hovered = false; }
+
     text = '';
     color: number = 0xffffffff;
 
@@ -273,6 +277,12 @@ export default (screen: Screen) => {
   };
 
   const mapBox = new Box(screen);
+
+
+  let hovered = false;
+  mapBox.onMouseEnter = () => hovered = true;
+  mapBox.onMouseExit = () => hovered = false;
+
   mapBox.w = map.width * 4;
   mapBox.h = map.height * 4;
   mapArea.children.push(mapBox);
@@ -354,7 +364,7 @@ export default (screen: Screen) => {
       }
     }
 
-    if (mapBox.hovered) {
+    if (hovered) {
       const tx = Math.floor(mapBox.mouse.x / 4);
       const ty = Math.floor(mapBox.mouse.y / 4);
       screen.rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);

@@ -10,6 +10,10 @@ export function uitest(screen: Screen) {
 
   class Button extends Box {
 
+    hovered = false;
+    override onMouseEnter(): void { this.hovered = true; }
+    override onMouseExit(): void { this.hovered = false; }
+
     text = '';
     color: number = 0xffffffff;
 
@@ -106,6 +110,10 @@ export function uitest(screen: Screen) {
   }
 
   class Checkbox extends Box {
+
+    hovered = false;
+    override onMouseEnter(): void { this.hovered = true; }
+    override onMouseExit(): void { this.hovered = false; }
 
     checked = false;
 
@@ -435,6 +443,10 @@ export function uitest(screen: Screen) {
   mapBox.h = map.height * 4;
   mapArea.children.push(mapBox);
 
+  let hovered = false;
+  mapBox.onMouseEnter = () => hovered = true;
+  mapBox.onMouseExit = () => hovered = false;
+
   mapBox.drawCursor = () => {
     // rectFill(mouse.x, mouse.y - 2, 1, 5, '#0007');
     // rectFill(mouse.x - 2, mouse.y, 5, 1, '#0007');
@@ -512,7 +524,7 @@ export function uitest(screen: Screen) {
       }
     }
 
-    if (mapBox.hovered) {
+    if (hovered) {
       const tx = Math.floor(mapBox.mouse.x / 4);
       const ty = Math.floor(mapBox.mouse.y / 4);
       screen.rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);
