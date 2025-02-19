@@ -1,4 +1,6 @@
-import { Box, System, TileSelection, dragMove } from "./crt/crt.js";
+import { Box } from "./crt/box.js";
+import { TileSelection, dragMove } from "./crt/selections.js";
+import { System } from "./crt/system.js";
 
 
 export default (screen: System) => {
