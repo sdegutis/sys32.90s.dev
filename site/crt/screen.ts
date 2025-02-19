@@ -66,7 +66,8 @@ export class Screen {
 
     canvas.addEventListener('mousedown', (e) => {
       this.mouse.button = e.button;
-      this.focused.onUnfocus?.();
+      this.focused.focused = false;
+      this.focused.onBlur?.();
       this.focus(this.#hovered);
       if (this.#hovered.onMouseDown) {
         this.#hovered.onMouseDown((fns: { move: () => void; up?: () => void; }) => {
@@ -254,6 +255,7 @@ export class Screen {
 
   focus(node: Box) {
     this.focused = node;
+    this.focused.focused = true;
     node.onFocus?.();
   }
 

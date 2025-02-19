@@ -10,7 +10,7 @@ export class Box {
   onMouseEnter?(): void;
   onMouseExit?(): void;
   onFocus?(): void;
-  onUnfocus?(): void;
+  onBlur?(): void;
   draw?(): void;
 
   /** Move/resize children. */
@@ -26,6 +26,7 @@ export class Box {
   background = 0x00000000;
   passthrough = false;
   visible = true;
+  focused = false;
 
   children: Box[] = [];
   hovered = false;

@@ -194,7 +194,7 @@ export function uitest(screen: Screen) {
       this.restartBlinking();
     };
 
-    override onUnfocus = () => {
+    override onBlur = () => {
       this.stopBlinking();
     };
 

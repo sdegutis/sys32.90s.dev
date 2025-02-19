@@ -8,22 +8,36 @@ export class TextField extends BorderBox {
   onEnter?(): void;
   onChange?(): void;
 
+  #text = '';
   length = 10;
   font = Font.crt2025;
   color = 0x000000ff;
 
-  #text = make(this.screen, Label, { text: 'hi', padding: 0, border: 0x00000000 });
+  #field = make(this.screen, Label, { text: '', padding: 0, border: 0x00000000 });
   #cursor = make(this.screen, Label, { text: '_', padding: 0, border: 0x00000000, color: 0x1177ffff });
 
-  override children = [this.#text, this.#cursor];
+  override children = [this.#field, this.#cursor];
 
-  get text() { return this.#text.text; }
-  set text(s: string) { this.#text.text = s; }
+  get text() { return this.#text; }
+  set text(s: string) {
+    this.#text = s;
+    this.showText();
+  }
+
+  showText() {
+    if (this.focused) {
+      this.#field.text = this.text.slice(-this.length + 1);
+    }
+    else {
+      this.#field.text = this.text.slice(0, this.length);
+    }
+    this.screen.layoutTree(this);
+  }
 
   override layout(): void {
-    this.#text.x = this.padding;
-    this.#text.y = this.padding;
-    this.#cursor.x = this.padding;
+    this.#field.x = this.padding;
+    this.#field.y = this.padding;
+    this.#cursor.x = this.padding + (this.#cursor.w + 1) * this.#field.text.length;
     this.#cursor.y = this.padding;
   }
 
@@ -38,11 +52,11 @@ export class TextField extends BorderBox {
       this.onEnter?.();
     }
     else if (key === 'Backspace') {
-      // this.text = this.text.slice(0, -1);
+      this.text = this.text.slice(0, -1);
       this.onChange?.();
     }
     else if (key.length === 1) {
-      // this.text += key;
+      this.text += key;
       this.onChange?.();
     }
     this.#restartBlinking();
@@ -66,10 +80,12 @@ export class TextField extends BorderBox {
 
   override onFocus(): void {
     this.#restartBlinking();
+    this.showText();
   }
 
-  override onUnfocus(): void {
+  override onBlur(): void {
     this.#stopBlinking();
+    this.showText();
   }
 
 }
