@@ -1,4 +1,4 @@
-import { BorderBox, Box, MouseTracker } from "./box.js";
+import { Box, MouseTracker } from "./box.js";
 import { Button } from "./button.js";
 import { Label } from "./label.js";
 import { makeFlowLayout } from "./layouts.js";

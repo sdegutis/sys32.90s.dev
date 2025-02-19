@@ -41,22 +41,22 @@ function dragBox(track: MouseTracker, box: Box) {
   track({ move });
 }
 
-class Panel extends SplitBox {
-
-  override background = 0x00000077;
-  override dir = 'y' as const;
-  override pos = 4;
-
-  titlebar = build(screen, Box, {
-    background: 0x00000077,
-    onMouseDown: track => dragBox(track, this),
-  });
-  body = build(screen, Box, {});
-  override children = [this.titlebar, this.body];
-
-}
 
 const b = makeBuilder(screen);
+
+const panel = b(SplitBox, {
+  x: 30, y: 50, w: 40, h: 50, pos: 4, dir: 'y', background: 0x00000077,
+},
+  build(screen, Box, {
+    background: 0x00000077,
+    onMouseDown: track => dragBox(track, panel),
+  }),
+  build(screen, Box, { layout: makeFlowLayout(3, 2) },
+    build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 0 })),
+    build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 0 })),
+    build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 0 })),
+  ),
+);
 
 screen.root.children = [
   b(SplitBox, { pos: 320 / 2, dir: 'x' },
@@ -102,7 +102,7 @@ screen.root.children = [
     ),
 
   ),
-  b(Panel, { x: 30, y: 50, w: 40, h: 50 }),
+  panel,
 
 ];
 
