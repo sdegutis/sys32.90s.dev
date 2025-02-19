@@ -22,11 +22,11 @@ class ColorButton extends RadioButton {
   override draw(): void {
     this.sys.rectFill(this.padding, this.padding, this.size, this.size, this.color);
 
-    if (this.hovered) {
-      this.sys.rectLine(0, 0, this.w, this.h, this.border);
-    }
-    else if (this.checked) {
+    if (this.checked) {
       this.sys.rectLine(0, 0, this.w, this.h, this.checkColor);
+    }
+    else if (this.hovered) {
+      this.sys.rectLine(0, 0, this.w, this.h, this.border);
     }
   }
 
@@ -65,7 +65,7 @@ export default (screen: System) => {
   });
 
   const screenroot = b(SplitBox, { vacuum: 'a', dir: 'x' },
-    b(Group, { background: 0x333333ff, dir: 'y' },
+    b(Group, { background: 0x333333ff, dir: 'y', padding: -1 },
       gridButton,
       b(Box, { h: 3 }),
       ...COLORS.map((col, i) => b(ColorButton, {
