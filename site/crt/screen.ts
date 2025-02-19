@@ -15,11 +15,11 @@ export class Screen {
   #hovered: Box;
   #trackingMouse?: { move: () => void, up?: () => void };
 
-  pixels;
+  pixels!: Uint8ClampedArray;
 
   #clip = { cx: 0, cy: 0, x1: 0, y1: 0, x2: 0, y2: 0 };
   #context;
-  #imgdata;
+  #imgdata!: ImageData;
 
   #destroyer = new AbortController();
 
@@ -32,22 +32,11 @@ export class Screen {
     canvas.focus();
 
     this.#context = canvas.getContext('2d')!;
-
-    this.pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
-    this.#imgdata = new ImageData(this.pixels, canvas.width, canvas.height);
-    for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
-      this.pixels[i + 3] = 255;
-    }
-
-    this.#clip.x2 = canvas.width - 1;
-    this.#clip.y2 = canvas.height - 1;
-
     this.root = new Box(this);
-    this.root.w = canvas.width;
-    this.root.h = canvas.height;
-
     this.focused = this.root;
     this.#hovered = this.root;
+
+    this.resize(canvas.width, canvas.height);
 
     canvas.addEventListener('keydown', (e) => {
       this.keys[e.key] = true;
@@ -138,6 +127,28 @@ export class Screen {
     requestAnimationFrame(update);
   }
 
+  resize(w: number, h: number) {
+    const canvas = this.canvas;
+
+    canvas.width = w;
+    canvas.height = h;
+
+    this.pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
+    this.#imgdata = new ImageData(this.pixels, canvas.width, canvas.height);
+    for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
+      this.pixels[i + 3] = 255;
+    }
+
+    this.#clip.x2 = canvas.width - 1;
+    this.#clip.y2 = canvas.height - 1;
+
+    this.root.w = canvas.width;
+    this.root.h = canvas.height;
+
+    this.layoutTree();
+    this.#autoscale();
+  }
+
   layoutTree(node: Box = this.root) {
     this.#adjustTree(node);
     this.#layoutTree(node);
@@ -176,16 +187,18 @@ export class Screen {
     this.#destroyer.abort();
   }
 
+  #autoscale() {
+    const rect = this.canvas.parentElement!.getBoundingClientRect();
+    let w = this.canvas.width;
+    let h = this.canvas.height;
+    let s = 1;
+    while ((w += this.canvas.width) <= rect.width &&
+      (h += this.canvas.height) <= rect.height) s++;
+    this.scale(s);
+  }
+
   autoscale() {
-    const observer = new ResizeObserver(() => {
-      const rect = this.canvas.parentElement!.getBoundingClientRect();
-      let w = this.canvas.width;
-      let h = this.canvas.height;
-      let s = 1;
-      while ((w += this.canvas.width) <= rect.width &&
-        (h += this.canvas.height) <= rect.height) s++;
-      this.scale(s);
-    });
+    const observer = new ResizeObserver(() => this.#autoscale());
     observer.observe(this.canvas.parentElement!);
     return observer;
   }

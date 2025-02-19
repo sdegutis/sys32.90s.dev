@@ -28,14 +28,25 @@ screen.root.children = [
     ),
     b(SplitBox, { pos: 8, dir: 'y', },
       b(Box, { background: 0x002244ff, layout: makeFlowLayout(0, 1) },
-        b(Button, { border: 0, padding: 0, onClick: () => { console.log('save') } }, b(Label, { text: 'save' })),
-        b(Button, { border: 0, padding: 0, onClick: () => { console.log('load') } }, b(Label, { text: 'load' })),
+        b(Button, {
+          border: 0, padding: 0, onClick: () => {
+            screen.resize(320 * 1, 180 * 1);
+
+          }
+        }, b(Label, { text: 'save' })),
+        b(Button, {
+          border: 0, padding: 0, onClick: () => {
+
+            screen.resize(320 * 2, 180 * 2);
+
+          }
+        }, b(Label, { text: 'load' })),
         b(Button, { border: 0, padding: 0, onClick: () => { console.log('grid') } }, b(Label, { text: 'grid' })),
       ),
-      b(Box, { background: 0x333333ff, },
-        b(Button, {},
-          b(Label, { text: 'hey' })
-        ),
+      b(Box, { background: 0x333333ff, layout: makeFlowLayout(10, 2) },
+        b(Button, { border: 0, background: 0x00000033 }, b(Label, { text: 'hey' })),
+        b(Button, { border: 0, background: 0x00000033 }, b(Label, { text: 'hey' })),
+        b(Button, { border: 0, background: 0x00000033 }, b(Label, { text: 'hey' })),
       ),
     ),
 

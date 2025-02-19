@@ -69,7 +69,7 @@ export type MouseTracker = (fns: {
   up?: () => void;
 }) => () => void;
 
-const pointer = new Bitmap([0x00000099, 0xffffffff], [
+const pointer = new Bitmap([0x000000cc, 0xffffffff], [
   1, 1, 1, 1, -1,
   1, 2, 2, 1, -1,
   1, 2, 1, 1, -1,
