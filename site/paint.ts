@@ -18,16 +18,20 @@ class MyCheckbox extends Checkbox {
     super(screen);
     this.text = 'hey'
     // this.children = []
+
+    this.checkmark.w = this.checkmark.h = 2;
+    this.label.padding = 2;
+
   }
 
-  override adjust(): void {
-    this.w = 30;
-    this.h = 5;
-  }
+  // override adjust(): void {
+  //   this.w = 30;
+  //   this.h = 5;
+  // }
 
-  override draw(): void {
-    screen.rectFill(0, 0, this.w, this.h, this.checked ? 0x009900ff : 0x000099ff)
-  }
+  // override draw(): void {
+  //   screen.rectFill(0, 0, this.w, this.h, this.checked ? 0x009900ff : 0x000099ff)
+  // }
 
 }
 
