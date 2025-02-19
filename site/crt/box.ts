@@ -44,12 +44,21 @@ export class Box {
 export class BorderBox extends Box {
 
   border = 0xffffff33;
+  rounded = false;
 
   padding = 2;
 
   override draw(): void {
     if ((this.border & 0x000000ff) > 0) {
-      this.screen.rectLine(0, 0, this.w, this.h, this.border);
+      if (this.rounded) {
+        this.screen.rectFill(1, 0, this.w - 2, 1, this.border);
+        this.screen.rectFill(1, this.h - 1, this.w - 2, 1, this.border);
+        this.screen.rectFill(0, 1, 1, this.h - 2, this.border);
+        this.screen.rectFill(this.w - 1, 1, 1, this.h - 2, this.border);
+      }
+      else {
+        this.screen.rectLine(0, 0, this.w, this.h, this.border);
+      }
     }
   }
 
