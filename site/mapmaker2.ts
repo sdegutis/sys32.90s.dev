@@ -46,7 +46,6 @@ export default (screen: System) => {
   const toolGroup = new RadioGroup();
   toolGroup.onChange = () => {
     const i = toolGroup.buttons.indexOf(toolGroup.selected!);
-    console.log(i)
     currentTool = i;
   }
 
@@ -94,7 +93,6 @@ export default (screen: System) => {
       currentTool++;
       if (currentTool === 16) currentTool = 0;
     }
-    console.log(currentTool, toolGroup.buttons[currentTool])
     toolGroup.select(toolGroup.buttons[currentTool]);
   };
 
