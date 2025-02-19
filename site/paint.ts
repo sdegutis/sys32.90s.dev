@@ -15,14 +15,11 @@ screen.root.layout = vacuumLayout;
 
 const b = makeBuilder(screen);
 
-// textfield.onChange = () => console.log('onChange', [textfield.text])
-// textfield.onEnter = () => console.log('onEnter', [textfield.text])
-
 screen.root.children = [
   b(SplitBox, { pos: 320 / 2, dir: 'x' },
 
     b(SplitBox, { pos: 8, dir: 'y', },
-      b(Box, { background: 0x222222ff, layout: makeFlowLayout(0, 1) },
+      b(Box, { background: 0x002244ff, layout: makeFlowLayout(0, 1) },
         b(Button, { border: 0, padding: 0, onClick: () => { console.log('save1') } }, b(Label, { text: 'save' })),
         b(Button, { border: 0, padding: 0, onClick: () => { console.log('load1') } }, b(Label, { text: 'load' })),
         b(Button, { border: 0, padding: 0, onClick: () => { console.log('grid1') } }, b(Label, { text: 'grid' })),
@@ -30,7 +27,7 @@ screen.root.children = [
       b(Box, { background: 0x444444ff }),
     ),
     b(SplitBox, { pos: 8, dir: 'y', },
-      b(Box, { background: 0x222222ff, layout: makeFlowLayout(0, 1) },
+      b(Box, { background: 0x002244ff, layout: makeFlowLayout(0, 1) },
         b(Button, { border: 0, padding: 0, onClick: () => { console.log('save') } }, b(Label, { text: 'save' })),
         b(Button, { border: 0, padding: 0, onClick: () => { console.log('load') } }, b(Label, { text: 'load' })),
         b(Button, { border: 0, padding: 0, onClick: () => { console.log('grid') } }, b(Label, { text: 'grid' })),
