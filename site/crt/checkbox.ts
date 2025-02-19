@@ -2,7 +2,7 @@ import { BorderBox, Box } from "./box.js";
 import { Button } from "./button.js";
 import { Label } from "./label.js";
 import { makeFlowLayout } from "./layouts.js";
-import { make } from "./screen.js";
+import { build } from "./screen.js";
 
 export class Checkbox extends Button {
 
@@ -12,14 +12,14 @@ export class Checkbox extends Button {
   override border = 0x00000000;
   override padding = 0;
 
-  #checkmark = make(this.screen, Box, {
+  #checkmark = build(this.screen, Box, {
     w: 2, h: 2,
     background: 0xffffffff,
     passthrough: true,
     visible: false,
   });
 
-  #fakebutton = make(this.screen, BorderBox, {
+  #fakebutton = build(this.screen, BorderBox, {
     w: 6, h: 6,
     passthrough: true,
     children: [this.#checkmark],
@@ -27,7 +27,7 @@ export class Checkbox extends Button {
 
   #layout = makeFlowLayout(0, 0);
 
-  #label = make(this.screen, Label, {
+  #label = build(this.screen, Label, {
     text: '',
     padding: 1,
   });

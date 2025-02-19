@@ -329,7 +329,7 @@ export class Screen {
 
 }
 
-export function make<T extends Box>(
+export function build<T extends Box>(
   screen: Screen,
   ctor: { new(screen: Screen): T },
   config: Partial<T>,
