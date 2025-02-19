@@ -1,6 +1,7 @@
 import { Box, MouseTracker } from "./crt/box.js";
 import { Button } from "./crt/button.js";
 import { Checkbox } from "./crt/checkbox.js";
+import { Group } from "./crt/group.js";
 import { Label } from "./crt/label.js";
 import { makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
 import { build, makeBuilder, Screen } from "./crt/screen.js";
@@ -53,8 +54,8 @@ const panel = b(SplitBox, {
   }),
   build(screen, Box, { layout: makeFlowLayout(3, 2) },
     build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 0 })),
-    build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 0 })),
-    build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 0 })),
+    build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 1 })),
+    build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 2 })),
   ),
 );
 
@@ -98,6 +99,16 @@ screen.root.children = [
         b(Checkbox, { border: 0x990000ff, background: 0x000099ff, check: 0x009900ff, padding: 2, text: 'abc' }),
         b(Checkbox, { border: 0x990000ff, background: 0x000099ff, check: 0x009900ff, padding: 3, text: 'abc' }),
         b(MyCheckbox, { background: 0x000099ff }),
+        b(Group, { background: 0x003300ff, dir: 'x' },
+          build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 0 })),
+          build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 1 })),
+          build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 2 })),
+        ),
+        b(Group, { background: 0x003300ff, dir: 'y' },
+          build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 0 })),
+          build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 1 })),
+          build(screen, Button, {}, build(screen, Label, { text: 'hey', padding: 2 })),
+        ),
       ),
     ),
 
