@@ -13,6 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,
+    "verbatimModuleSyntax": true,
     // "downlevelIteration": true,
     "exactOptionalPropertyTypes": true,
     "esModuleInterop": true,

@@ -1,33 +1,36 @@
-import { Box } from "./box.js";
 import { Button } from "./button.js";
 import { Group } from "./group.js";
 import { Label } from "./label.js";
-import { build, makeBuilder, System } from "./system.js";
+import { makeBuilder, System } from "./system.js";
 
 export class Checkbox extends Button {
 
   onChange?() { }
 
-  get check() { return this.checkmark.background; }
-  set check(n: number) { this.checkmark.background = n; }
+  checkColor = 0xffffffff;
+  size = 2;
+  #checked = false;
 
-  get size() { return this.checkmark.w; }
-  set size(n: number) { this.checkmark.w = this.checkmark.h = n; }
-
-  checkmark = build(this.sys, Box, {
-    w: 2, h: 2,
-    background: 0xffffffff,
-    passthrough: true,
-    visible: false,
-  });
-
-  override children = [this.checkmark];
-
-  get checked() { return this.checkmark.visible; }
+  get checked() { return this.#checked; }
   set checked(is: boolean) {
-    if (is !== this.checkmark.visible) {
-      this.checkmark.visible = is;
+    if (is !== this.#checked) {
+      this.#checked = is;
       this.onChange?.();
+    }
+  }
+
+  override adjust(): void {
+    this.w = this.h = this.padding * 2 + this.size;
+  }
+
+  override draw(): void {
+    super.draw();
+    this.drawCheck();
+  }
+
+  drawCheck() {
+    if (this.checked) {
+      this.sys.rectFill(this.padding, this.padding, this.size, this.size, this.checkColor);
     }
   }
 
@@ -42,16 +45,35 @@ export function demo(screen: System) {
   const b = makeBuilder(screen);
   return b(Group, { padding: 3 },
 
-    b(Checkbox, {}),
+    b(Checkbox, { checked: true, }),
 
-    b(Checkbox, { padding: 2 }),
+    b(Checkbox, { checked: true, padding: 0 }),
+    b(Checkbox, { checked: true, padding: 1 }),
+    b(Checkbox, { checked: true, padding: 2 }),
+    b(Checkbox, { checked: true, padding: 3 }),
+    b(Checkbox, { checked: true, padding: 4 }),
+    b(Checkbox, { checked: true, padding: 5 }),
+
+    b(Checkbox, { checked: true, size: 0, padding: 2, checkColor: 0x990000ff }),
+    b(Checkbox, { checked: true, size: 1, padding: 2, checkColor: 0x990000ff }),
+    b(Checkbox, { checked: true, size: 2, padding: 2, checkColor: 0x990000ff }),
+    b(Checkbox, { checked: true, size: 3, padding: 2, checkColor: 0x990000ff }),
+    b(Checkbox, { checked: true, size: 4, padding: 2, checkColor: 0x990000ff }),
+    b(Checkbox, { checked: true, size: 5, padding: 2, checkColor: 0x990000ff }),
+
+    b(Checkbox, { checked: true, size: 0 }),
+    b(Checkbox, { checked: true, size: 1 }),
+    b(Checkbox, { checked: true, size: 2 }),
+    b(Checkbox, { checked: true, size: 3 }),
+    b(Checkbox, { checked: true, size: 4 }),
+    b(Checkbox, { checked: true, size: 5 }),
 
     b(Group, {
       onMouseEnter() { this.firstChild!.onMouseEnter!() },
       onMouseExit() { this.firstChild!.onMouseExit!() },
       onMouseDown() { this.firstChild!.onMouseDown!() },
     },
-      b(Checkbox, { padding: 2, size: 2, onChange() { console.log('foo', this.checked) } }),
+      b(Checkbox, { checked: true, padding: 2, size: 2, onChange() { console.log('foo', this.checked) } }),
       b(Label, { text: 'foo' }),
     ),
 
@@ -61,7 +83,7 @@ export function demo(screen: System) {
       onMouseDown() { this.lastChild!.onMouseDown!() },
     },
       b(Label, { text: 'bar' }),
-      b(Checkbox, { padding: 2, size: 2, onChange() { console.log('bar', this.checked) } }),
+      b(Checkbox, { checked: true, padding: 2, size: 2, onChange() { console.log('bar', this.checked) } }),
     ),
 
   );
