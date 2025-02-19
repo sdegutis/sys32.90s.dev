@@ -1,4 +1,4 @@
-import { Box } from "./box.js";
+import { Box, MouseTracker } from "./box.js";
 import { Screen } from "./screen.js";
 
 export class Selection {
@@ -72,4 +72,9 @@ export function dragResize(screen: Screen, el: { w: number, h: number }) {
     el.w = startElPos.w + diffx - offx;
     el.h = startElPos.h + diffy - offy;
   };
+}
+
+export function dragBox(track: MouseTracker, box: Box) {
+  const move = dragMove(box.screen, box);
+  track({ move });
 }

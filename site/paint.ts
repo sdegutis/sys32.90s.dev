@@ -3,7 +3,8 @@ import { Button } from "./crt/button.js";
 import { Checkbox } from "./crt/checkbox.js";
 import { Label } from "./crt/label.js";
 import { makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
-import { makeBuilder, Screen } from "./crt/screen.js";
+import { build, makeBuilder, Screen } from "./crt/screen.js";
+import { dragBox } from "./crt/selections.js";
 import { SplitBox } from "./crt/split.js";
 
 
@@ -32,6 +33,21 @@ class MyCheckbox extends Checkbox {
   // override draw(): void {
   //   screen.rectFill(0, 0, this.w, this.h, this.checked ? 0x009900ff : 0x000099ff)
   // }
+
+}
+
+class Panel extends SplitBox {
+
+  override background = 0x00000077;
+  override dir = 'y' as const;
+  override pos = 4;
+
+  titlebar = build(screen, Box, {
+    background: 0x00000077,
+    onMouseDown: track => dragBox(track, this),
+  });
+  body = build(screen, Box, {});
+  override children = [this.titlebar, this.body];
 
 }
 
@@ -81,6 +97,8 @@ screen.root.children = [
     ),
 
   ),
+  b(Panel, { x: 30, y: 50, w: 40, h: 50 }),
+
 ];
 
 screen.layoutTree();
