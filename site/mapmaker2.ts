@@ -44,6 +44,12 @@ export default (screen: System) => {
   let currentTool = 5;
 
   const toolGroup = new RadioGroup();
+  toolGroup.onChange = () => {
+    const i = toolGroup.buttons.indexOf(toolGroup.selected!);
+    console.log(i)
+    currentTool = i;
+  }
+
 
   const mapArea = b(Box, {
     background: 0x222222ff,
@@ -64,7 +70,6 @@ export default (screen: System) => {
       gridButton,
       b(Box, { h: 3 }),
       ...COLORS.map((col, i) => b(ColorButton, {
-        onChange() { currentTool = i },
         group: toolGroup,
         color: col,
         size: 4,
@@ -89,6 +94,7 @@ export default (screen: System) => {
       currentTool++;
       if (currentTool === 16) currentTool = 0;
     }
+    console.log(currentTool, toolGroup.buttons[currentTool])
     toolGroup.select(toolGroup.buttons[currentTool]);
   };
 
