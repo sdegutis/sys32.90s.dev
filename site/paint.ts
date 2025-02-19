@@ -19,7 +19,7 @@ class MyCheckbox extends Checkbox {
     this.text = 'hey'
     // this.children = []
 
-    this.checkmark.w = this.checkmark.h = 2;
+    this.checkmark.w = this.checkmark.h = 3;
     this.label.padding = 2;
 
   }
@@ -66,17 +66,17 @@ screen.root.children = [
         b(Button, { border: 0, padding: 0, onClick: () => { console.log('grid') } }, b(Label, { text: 'grid' })),
       ),
       b(Box, { background: 0x333333ff, layout: makeFlowLayout(10, 2) },
-        b(Checkbox, { border: 0x990000ff, check: 0x009900ff }),
-        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, text: 'a' }),
-        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 0 }),
-        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 1 }),
-        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 2 }),
-        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 3 }),
-        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 0, text: 'a' }),
-        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 1, text: 'ab' }),
-        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 2, text: 'abc' }),
-        b(Checkbox, { border: 0x990000ff, check: 0x009900ff, padding: 3, text: 'abc' }),
-        b(MyCheckbox, {}),
+        b(Checkbox, { border: 0x990000ff, background: 0x000099ff, check: 0x009900ff }),
+        b(Checkbox, { border: 0x990000ff, background: 0x000099ff, check: 0x009900ff, text: 'a' }),
+        b(Checkbox, { border: 0x990000ff, background: 0x000099ff, check: 0x009900ff, padding: 0 }),
+        b(Checkbox, { border: 0x990000ff, background: 0x000099ff, check: 0x009900ff, padding: 1 }),
+        b(Checkbox, { border: 0x990000ff, background: 0x000099ff, check: 0x009900ff, padding: 2 }),
+        b(Checkbox, { border: 0x990000ff, background: 0x000099ff, check: 0x009900ff, padding: 3 }),
+        b(Checkbox, { border: 0x990000ff, background: 0x000099ff, check: 0x009900ff, padding: 0, text: 'a' }),
+        b(Checkbox, { border: 0x990000ff, background: 0x000099ff, check: 0x009900ff, padding: 1, text: 'ab' }),
+        b(Checkbox, { border: 0x990000ff, background: 0x000099ff, check: 0x009900ff, padding: 2, text: 'abc' }),
+        b(Checkbox, { border: 0x990000ff, background: 0x000099ff, check: 0x009900ff, padding: 3, text: 'abc' }),
+        b(MyCheckbox, { background: 0x000099ff }),
       ),
     ),
 
