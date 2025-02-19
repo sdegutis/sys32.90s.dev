@@ -11,10 +11,15 @@ export class TextField extends BorderBox {
   #text = '';
   length = 10;
   font = Font.crt2025;
-  color = 0x000000ff;
 
   #field = make(this.screen, Label, { text: '', padding: 0, border: 0x00000000 });
   #cursor = make(this.screen, Label, { text: '_', padding: 0, border: 0x00000000, color: 0x1177ffff });
+
+  get color() { return this.#field.color; }
+  set color(c: number) { this.#field.color = c; }
+
+  get cursorColor() { return this.#cursor.color; }
+  set cursorColor(c: number) { this.#cursor.color = c; }
 
   override children = [this.#field, this.#cursor];
 

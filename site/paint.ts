@@ -13,9 +13,10 @@ screen.root.layout = vacuumLayout;
 
 
 const textfield = make(screen, TextField, {
-  background: 0x000000aa,
-  border: 0xffffff77,
-  color: 0xffffffff,
+  background: 0x000099ff,
+  border: 0xffff00ff,
+  color: 0xffff00ff,
+  cursorColor: 0xff0000ff,
   padding: 3,
   length: 10,
   text: 'abc',
