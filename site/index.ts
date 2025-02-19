@@ -42,49 +42,13 @@ function makeWindow(title: string, content: Box) {
 
 const area = b(Box, { background: 0x333333ff, layout: centerLayout },
 
-  b(Group, { padding: 3, background: 0xffffff33 },
+  b(Group, { gap: 2, background: 0xffffff33 },
 
     b(Label, { text: 'hello', background: 0x00000077, padding: 3 }),
 
     b(Button, { onClick: () => { console.log('button') } },
       b(Label, { text: 'hello', background: 0x00000077, padding: 3 })
     ),
-
-    checkboxes(sys),
-
-  )
-
-);
-
-function one() {
-  const a = makeWindow('mapmaker', mapmaker(sys));
-
-  a.x = x;
-  a.y = x;
-  x += 30;
-
-  sys.root.children.push(a);
-  sys.layoutTree();
-}
-
-sys.root.children = [
-  b(Box, { layout: vacuumLayout },
-    b(SplitBox, { vacuum: 'a', dir: 'y' },
-      b(Group, { background: 0x222222ff },
-        b(Button, { onClick: one, padding: 1 }, b(Label, { text: 'one' })),
-      ),
-      area,
-    )
-  )
-];
-
-one();
-
-sys.layoutTree();
-
-function checkboxes(sys: System) {
-  const b = makeBuilder(sys);
-  return b(Group, { gap: 2 },
 
     b(Checkbox, { checked: true, }),
 
@@ -129,5 +93,33 @@ function checkboxes(sys: System) {
       b(Checkbox, { checked: true, padding: 2, size: 2, onChange() { console.log('bar', this.checked) } }),
     ),
 
-  );
+
+  )
+
+);
+
+function newMapmaker() {
+  const a = makeWindow('mapmaker', mapmaker(sys));
+
+  a.x = x;
+  a.y = x;
+  x += 30;
+
+  sys.root.children.push(a);
+  sys.layoutTree();
 }
+
+sys.root.children = [
+  b(Box, { layout: vacuumLayout },
+    b(SplitBox, { vacuum: 'a', dir: 'y' },
+      b(Group, { background: 0x222222ff },
+        b(Button, { onClick: newMapmaker, padding: 1 }, b(Label, { text: 'one' })),
+      ),
+      area,
+    )
+  )
+];
+
+newMapmaker();
+
+sys.layoutTree();
