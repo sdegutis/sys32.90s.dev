@@ -49,7 +49,7 @@ export class BorderBox extends Box {
 
   border = 0xffffff33;
 
-  override padding = 2;
+  override padding = 1;
 
   override draw(): void {
     if ((this.border & 0x000000ff) > 0) {
