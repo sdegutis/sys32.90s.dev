@@ -73,8 +73,3 @@ export function dragResize(screen: Screen, el: { w: number, h: number }) {
     el.h = startElPos.h + diffy - offy;
   };
 }
-
-export function dragBox(track: MouseTracker, box: Box) {
-  const move = dragMove(box.screen, box);
-  track({ move });
-}

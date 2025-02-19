@@ -1,10 +1,10 @@
-import { Box } from "./crt/box.js";
+import { Box, MouseTracker } from "./crt/box.js";
 import { Button } from "./crt/button.js";
 import { Checkbox } from "./crt/checkbox.js";
 import { Label } from "./crt/label.js";
 import { makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
 import { build, makeBuilder, Screen } from "./crt/screen.js";
-import { dragBox } from "./crt/selections.js";
+import { dragMove } from "./crt/selections.js";
 import { SplitBox } from "./crt/split.js";
 
 
@@ -34,6 +34,11 @@ class MyCheckbox extends Checkbox {
   //   screen.rectFill(0, 0, this.w, this.h, this.checked ? 0x009900ff : 0x000099ff)
   // }
 
+}
+
+function dragBox(track: MouseTracker, box: Box) {
+  const move = dragMove(box.screen, box);
+  track({ move });
 }
 
 class Panel extends SplitBox {
