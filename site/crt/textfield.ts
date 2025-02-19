@@ -5,6 +5,8 @@ import { build } from "./system.js";
 
 export class TextField extends Box {
 
+  padding = 0;
+
   onEnter?(): void;
   onChange?(): void;
 

@@ -3,6 +3,8 @@ import { Font } from "./font.js";
 
 export class Label extends Box {
 
+  padding = 0;
+
   text = '';
   font = Font.crt2025;
   color = 0xffffffff;

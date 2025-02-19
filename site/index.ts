@@ -27,11 +27,11 @@ function makeWindow(title: string, content: Box) {
   },
     b(Label, { text: title })
   );
-  const contentView = b(Box, { layout: vacuumLayout, padding: 2 },
+  const contentView = b(Box, { layout: vacuumLayout },
     content
   );
-  const win = b(Box, { w: 100, h: 100, padding: 2, background: 0x00000099, layout: vacuumLayout },
-    b(SplitBox, { dir: 'y', vacuum: 'a', padding: 2 },
+  const win = b(Box, { w: 100, h: 100, background: 0x00000099, layout: vacuumLayout },
+    b(SplitBox, { dir: 'y', vacuum: 'a' },
       titlebar,
       contentView
     )

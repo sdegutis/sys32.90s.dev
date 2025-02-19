@@ -2,6 +2,8 @@ import { Box } from "./box.js";
 
 export class Button extends Box {
 
+  padding = 0;
+
   hoverColor = 0xffffff22;
   pressColor = 0xffffff11;
 

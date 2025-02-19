@@ -65,7 +65,7 @@ export default (sys: System) => {
   });
 
   const root = b(SplitBox, { vacuum: 'a', dir: 'x' },
-    b(Group, { background: 0x333333ff, dir: 'y', padding: -1 },
+    b(Group, { background: 0x333333ff, dir: 'y' },
       gridButton,
       b(Box, { h: 3 }),
       ...COLORS.map((col, i) => b(ColorButton, {

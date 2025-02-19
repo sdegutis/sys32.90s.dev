@@ -23,7 +23,6 @@ export class Box {
   passthrough = false;
   visible = true;
   focused = false;
-  padding = 0;
 
   children: Box[] = [];
   mouse = { x: 0, y: 0 };
