@@ -1,9 +1,9 @@
-import { BorderBox } from "./box.js";
+import { Box } from "./box.js";
 import { Font } from "./font.js";
 import { Label } from "./label.js";
 import { build } from "./system.js";
 
-export class TextField extends BorderBox {
+export class TextField extends Box {
 
   onEnter?(): void;
   onChange?(): void;
@@ -12,8 +12,8 @@ export class TextField extends BorderBox {
   length = 10;
   font = Font.crt2025;
 
-  #field = build(this.sys, Label, { text: '', padding: 0, border: 0x00000000 });
-  #cursor = build(this.sys, Label, { text: '_', padding: 0, border: 0x00000000, color: 0x1177ffff });
+  #field = build(this.sys, Label, { text: '', padding: 0 });
+  #cursor = build(this.sys, Label, { text: '_', padding: 0, color: 0x1177ffff });
 
   get color() { return this.#field.color; }
   set color(c: number) { this.#field.color = c; }

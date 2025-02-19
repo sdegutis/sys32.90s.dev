@@ -1,7 +1,7 @@
-import { BorderBox } from "./box.js";
+import { Box } from "./box.js";
 import { Font } from "./font.js";
 
-export class Label extends BorderBox {
+export class Label extends Box {
 
   text = '';
   font = Font.crt2025;

@@ -12,11 +12,7 @@ export class Box {
   onFocus?(): void;
   onBlur?(): void;
   draw?(): void;
-
-  /** Move/resize children. */
   layout?(): void;
-
-  /** Resize self. */
   adjust?(): void;
 
   x = 0;
@@ -30,7 +26,6 @@ export class Box {
   padding = 0;
 
   children: Box[] = [];
-  // hovered = false;
   mouse = { x: 0, y: 0 };
   trackingArea?: { x: number, y: number, w: number, h: number };
 
@@ -41,20 +36,6 @@ export class Box {
 
   drawCursor(x: number, y: number) {
     pointer.draw(this.sys, x - 1, y - 1);
-  }
-
-}
-
-export class BorderBox extends Box {
-
-  border = 0xffffff33;
-
-  override padding = 1;
-
-  override draw(): void {
-    if ((this.border & 0x000000ff) > 0) {
-      this.sys.rectLine(0, 0, this.w, this.h, this.border);
-    }
   }
 
 }

@@ -3,6 +3,7 @@ import { Box } from "./box.js";
 export class Group extends Box {
 
   dir: 'x' | 'y' = 'x';
+  gap = 0;
 
   override adjust(): void {
     const dw = this.dir === 'x' ? 'w' : 'h';
@@ -12,7 +13,7 @@ export class Group extends Box {
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
       this[dw] += child[dw];
-      if (i > 0) this[dw] += this.padding;
+      if (i > 0) this[dw] += this.gap;
       if (this[dh] < child[dh]) this[dh] = child[dh];
     }
   }
@@ -27,7 +28,7 @@ export class Group extends Box {
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
       child[dx] = x;
-      x += child[dw] + this.padding;
+      x += child[dw] + this.gap;
       child[dy] = Math.round((this[dh] - child[dh]) / 2);
     }
   }

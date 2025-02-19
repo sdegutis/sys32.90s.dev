@@ -1,6 +1,6 @@
-import { BorderBox } from "./box.js";
+import { Box } from "./box.js";
 
-export class Button extends BorderBox {
+export class Button extends Box {
 
   hoverColor = 0xffffff22;
   pressColor = 0xffffff11;
@@ -43,7 +43,7 @@ export class Button extends BorderBox {
   }
 
   override draw(): void {
-    super.draw();
+    super.draw?.();
     if (this.pressed) {
       this.sys.rectFill(0, 0, this.w, this.h, this.pressColor);
     }

@@ -26,7 +26,7 @@ class ColorButton extends RadioButton {
       this.sys.rectLine(0, 0, this.w, this.h, this.checkColor);
     }
     else if (this.hovered) {
-      this.sys.rectLine(0, 0, this.w, this.h, this.border);
+      this.sys.rectLine(0, 0, this.w, this.h, 0xffffff77);
     }
   }
 
