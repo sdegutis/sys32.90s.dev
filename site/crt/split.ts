@@ -102,9 +102,19 @@ export class SplitBox extends Box {
   dividerColorHover = 0xffffff33;
   dividerColorPress = 0x1177ffcc;
   resizable = false;
+  vacuum: 'a' | 'b' | undefined;
 
   #resizer?: Box;
   override children = [new Box(this.sys), new Box(this.sys)];
+
+  override adjust(): void {
+    if (this.vacuum) {
+      const pane = this.children[this.vacuum === 'a' ? 0 : 1];
+      const dx = this.dir;
+      const dw = dx === 'x' ? 'w' : 'h';
+      this.pos = (this.vacuum === 'a' ? pane[dw] : this[dw] - pane[dw]);
+    }
+  }
 
   override layout(): void {
     if (this.resizable && !this.#resizer) {
