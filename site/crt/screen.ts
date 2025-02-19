@@ -340,3 +340,16 @@ export function make<T extends Box>(
   Object.assign(t, config);
   return t;
 }
+
+export function makeBuilder(screen: Screen) {
+  return <T extends Box>(
+    ctor: { new(screen: Screen): T },
+    config: Partial<T>,
+    ...children: Box[]
+  ): T => {
+    const t = new ctor(screen);
+    if (children.length > 0) t.children = children;
+    Object.assign(t, config);
+    return t;
+  };
+}
