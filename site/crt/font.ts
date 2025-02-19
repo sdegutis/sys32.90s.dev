@@ -78,7 +78,7 @@ export class Font {
     };
   }
 
-  print(screen: System, x: number, y: number, c: number, text: string) {
+  print(sys: System, x: number, y: number, c: number, text: string) {
     text = text.toLowerCase();
 
     let posx = 0;
@@ -101,7 +101,7 @@ export class Font {
           const py = y + (posy * 6) + yy;
 
           if (map[yy][xx]) {
-            screen.pset(px, py, c);
+            sys.pset(px, py, c);
           }
         }
       }

@@ -48,27 +48,27 @@ export class TileSelection extends Selection {
 
 }
 
-export function dragMove(screen: System, el: { x: number, y: number }) {
-  const startMouse = { x: screen.mouse.x, y: screen.mouse.y };
+export function dragMove(sys: System, el: { x: number, y: number }) {
+  const startMouse = { x: sys.mouse.x, y: sys.mouse.y };
   const startElPos = { x: el.x, y: el.y };
   return () => {
     const offx = startMouse.x - startElPos.x;
     const offy = startMouse.y - startElPos.y;
-    const diffx = screen.mouse.x - startElPos.x;
-    const diffy = screen.mouse.y - startElPos.y;
+    const diffx = sys.mouse.x - startElPos.x;
+    const diffy = sys.mouse.y - startElPos.y;
     el.x = startElPos.x + diffx - offx;
     el.y = startElPos.y + diffy - offy;
   };
 }
 
-export function dragResize(screen: System, el: { w: number, h: number }) {
-  const startMouse = { x: screen.mouse.x, y: screen.mouse.y };
+export function dragResize(sys: System, el: { w: number, h: number }) {
+  const startMouse = { x: sys.mouse.x, y: sys.mouse.y };
   const startElPos = { w: el.w, h: el.h };
   return () => {
     const offx = startMouse.x - startElPos.w;
     const offy = startMouse.y - startElPos.h;
-    const diffx = screen.mouse.x - startElPos.w;
-    const diffy = screen.mouse.y - startElPos.h;
+    const diffx = sys.mouse.x - startElPos.w;
+    const diffy = sys.mouse.y - startElPos.h;
     el.w = startElPos.w + diffx - offx;
     el.h = startElPos.h + diffy - offy;
   };

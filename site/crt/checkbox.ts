@@ -41,8 +41,8 @@ export class Checkbox extends Button {
 
 }
 
-export function demo(screen: System) {
-  const b = makeBuilder(screen);
+export function demo(sys: System) {
+  const b = makeBuilder(sys);
   return b(Group, { padding: 3 },
 
     b(Checkbox, { checked: true, }),

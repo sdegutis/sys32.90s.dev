@@ -6,32 +6,30 @@ import { vacuumLayout } from "./crt/layouts.js";
 import { SplitBox } from "./crt/split.js";
 import { makeBuilder, System } from "./crt/system.js";
 import mapmaker from "./mapmaker.js";
-import mapmaker2 from "./mapmaker2.js";
 
 
 const canvas = document.querySelector('canvas')!;
-const screen = new System(canvas);
-screen.autoscale();
-screen.root.layout = vacuumLayout;
+const sys = new System(canvas);
+sys.resize(320 * 2, 180 * 2);
+sys.autoscale();
+sys.root.layout = vacuumLayout;
 
-const b = makeBuilder(screen);
+const b = makeBuilder(sys);
 
 const area = b(Box, { background: 0x333333ff, layout: vacuumLayout });
-const one = () => { area.children = [mapmaker(screen)]; screen.layoutTree() }
-const two = () => { area.children = [mapmaker2(screen)]; screen.layoutTree() }
+const one = () => { area.children = [mapmaker(sys)]; sys.layoutTree() }
 
-screen.root.children = [
+sys.root.children = [
   b(Box, { layout: vacuumLayout },
     b(SplitBox, { vacuum: 'a', dir: 'y' },
       b(Group, { background: 0x222222ff },
         b(Button, { onClick: one }, b(Label, { text: 'one' })),
-        b(Button, { onClick: two }, b(Label, { text: 'two' })),
       ),
       area,
     )
   )
 ];
 
-two();
+one();
 
-screen.layoutTree();
+sys.layoutTree();

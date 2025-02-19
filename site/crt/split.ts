@@ -28,8 +28,8 @@ class SplitBoxDivider extends Box {
   pressed = false;
   #hovered = false;
 
-  constructor(screen: System, public split: SplitBox) {
-    super(screen);
+  constructor(sys: System, public split: SplitBox) {
+    super(sys);
     this.background = split.dividerColor;
   }
 

@@ -343,21 +343,21 @@ export class System {
 }
 
 export function build<T extends Box>(
-  screen: System,
-  ctor: { new(screen: System): T },
+  sys: System,
+  ctor: { new(sys: System): T },
   config: Partial<T>,
   ...children: Box[]
 ): T {
-  const t = new ctor(screen);
+  const t = new ctor(sys);
   if (children.length > 0) t.children = children;
   Object.assign(t, config);
   return t;
 }
 
-export function makeBuilder(screen: System) {
+export function makeBuilder(sys: System) {
   return <T extends Box>(
-    ctor: { new(screen: System): T },
+    ctor: { new(sys: System): T },
     config: Partial<T>,
     ...children: Box[]
-  ): T => build(screen, ctor, config, ...children);
+  ): T => build(sys, ctor, config, ...children);
 }
