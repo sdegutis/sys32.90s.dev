@@ -1,7 +1,7 @@
-import { Box, Screen, TileSelection, dragMove } from "./crt/crt.js";
+import { Box, System, TileSelection, dragMove } from "./crt/crt.js";
 
 
-export default (screen: Screen) => {
+export default (screen: System) => {
 
   const screenroot = new Box(screen);
 
@@ -36,13 +36,13 @@ export default (screen: Screen) => {
 
     override draw(): void {
       if (this.clicking) {
-        this.screen.rectFill(0, 0, this.w, this.h, 0xffffff22);
+        this.sys.rectFill(0, 0, this.w, this.h, 0xffffff22);
       }
       else if (this.hovered) {
-        this.screen.rectFill(0, 0, this.w, this.h, 0xffffff11);
+        this.sys.rectFill(0, 0, this.w, this.h, 0xffffff11);
       }
 
-      this.screen.print(2, 2, this.color, this.text);
+      this.sys.print(2, 2, this.color, this.text);
     }
 
   }
@@ -82,10 +82,10 @@ export default (screen: Screen) => {
       this.drawButton();
 
       if (this.selected) {
-        this.screen.rectLine(0, 0, this.w, this.h, 0xffffff77);
+        this.sys.rectLine(0, 0, this.w, this.h, 0xffffff77);
       }
       else if (this.hovered) {
-        this.screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
+        this.sys.rectLine(0, 0, this.w, this.h, 0xffffff33);
       }
     }
 

@@ -1,7 +1,7 @@
 import { BorderBox } from "./box.js";
 import { Font } from "./font.js";
 import { Label } from "./label.js";
-import { build } from "./screen.js";
+import { build } from "./system.js";
 
 export class TextField extends BorderBox {
 
@@ -12,8 +12,8 @@ export class TextField extends BorderBox {
   length = 10;
   font = Font.crt2025;
 
-  #field = build(this.screen, Label, { text: '', padding: 0, border: 0x00000000 });
-  #cursor = build(this.screen, Label, { text: '_', padding: 0, border: 0x00000000, color: 0x1177ffff });
+  #field = build(this.sys, Label, { text: '', padding: 0, border: 0x00000000 });
+  #cursor = build(this.sys, Label, { text: '_', padding: 0, border: 0x00000000, color: 0x1177ffff });
 
   get color() { return this.#field.color; }
   set color(c: number) { this.#field.color = c; }
@@ -36,7 +36,7 @@ export class TextField extends BorderBox {
     else {
       this.#field.text = this.text.slice(0, this.length);
     }
-    this.screen.layoutTree(this);
+    this.sys.layoutTree(this);
   }
 
   override layout(): void {
@@ -53,13 +53,13 @@ export class TextField extends BorderBox {
   }
 
   override onKeyDown(key: string): void {
-    if (key === 'v' && this.screen.keys['Control']) {
+    if (key === 'v' && this.sys.keys['Control']) {
       navigator.clipboard.readText().then(s => {
         this.text += s;
         this.onChange?.();
       });
     }
-    else if (key === 'c' && this.screen.keys['Control']) {
+    else if (key === 'c' && this.sys.keys['Control']) {
       navigator.clipboard.writeText(this.text);
     }
     else if (key === 'Enter') {
@@ -83,7 +83,7 @@ export class TextField extends BorderBox {
     this.#cursor.visible = true;
     this.#blink = setInterval(() => {
       this.#cursor.visible = !this.#cursor.visible;
-      this.screen.needsRedraw = true;
+      this.sys.needsRedraw = true;
     }, 500);
   }
 

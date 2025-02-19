@@ -1,11 +1,11 @@
 import { Box } from "./crt/box.js";
 import { demo } from "./crt/checkbox.js";
 import { centerLayout, vacuumLayout } from "./crt/layouts.js";
-import { makeBuilder, Screen } from "./crt/screen.js";
+import { makeBuilder, System } from "./crt/system.js";
 
 
 const canvas = document.querySelector('canvas')!;
-const screen = new Screen(canvas);
+const screen = new System(canvas);
 screen.autoscale();
 screen.root.layout = vacuumLayout;
 

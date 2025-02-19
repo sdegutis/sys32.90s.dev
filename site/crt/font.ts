@@ -1,4 +1,4 @@
-import { Screen } from "./screen.js";
+import { System } from "./system.js";
 
 export class Font {
 
@@ -78,7 +78,7 @@ export class Font {
     };
   }
 
-  print(screen: Screen, x: number, y: number, c: number, text: string) {
+  print(screen: System, x: number, y: number, c: number, text: string) {
     text = text.toLowerCase();
 
     let posx = 0;

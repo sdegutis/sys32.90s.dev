@@ -1,8 +1,8 @@
-import { Box, Screen, TileSelection, dragMove, dragResize } from "./crt/crt.js";
+import { Box, System, TileSelection, dragMove, dragResize } from "./crt/crt.js";
 
 export default uitest;
 
-export function uitest(screen: Screen) {
+export function uitest(screen: System) {
 
   const screenroot = new Box(screen);
 
@@ -39,13 +39,13 @@ export function uitest(screen: Screen) {
 
     override draw() {
       if (this.clicking) {
-        this.screen.rectFill(0, 0, this.w, this.h, 0xffffff22);
+        this.sys.rectFill(0, 0, this.w, this.h, 0xffffff22);
       }
       else if (this.hovered) {
-        this.screen.rectFill(0, 0, this.w, this.h, 0xffffff11);
+        this.sys.rectFill(0, 0, this.w, this.h, 0xffffff11);
       }
 
-      this.screen.print(2, 2, this.color, this.text);
+      this.sys.print(2, 2, this.color, this.text);
     }
 
   }
@@ -85,10 +85,10 @@ export function uitest(screen: Screen) {
       this.drawButton();
 
       if (this.selected) {
-        this.screen.rectLine(0, 0, this.w, this.h, 0xffffff77);
+        this.sys.rectLine(0, 0, this.w, this.h, 0xffffff77);
       }
       else if (this.hovered) {
-        this.screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
+        this.sys.rectLine(0, 0, this.w, this.h, 0xffffff33);
       }
     };
 
@@ -104,7 +104,7 @@ export function uitest(screen: Screen) {
     text = '';
 
     override draw = () => {
-      this.screen.print(0, 0, this.color, this.text);
+      this.sys.print(0, 0, this.color, this.text);
     };
 
   }
@@ -120,9 +120,9 @@ export function uitest(screen: Screen) {
     onChange() { }
 
     override draw = () => {
-      this.screen.rectLine(0, 0, 6, 6, this.hovered ? 0xffffffff : 0x777777ff);
+      this.sys.rectLine(0, 0, 6, 6, this.hovered ? 0xffffffff : 0x777777ff);
       if (this.checked) {
-        this.screen.rectFill(2, 2, 2, 2, 0xffffffff);
+        this.sys.rectFill(2, 2, 2, 2, 0xffffffff);
       }
     };
 
@@ -156,16 +156,16 @@ export function uitest(screen: Screen) {
     };
 
     // onMouseDown(): void {
-    //   this.screen.trackMouse({
+    //   this.sys.trackMouse({
     //     move: () => console.log(this.mouse)
     //   });
     // }
 
     override draw = () => {
-      this.screen.print(2, 2, this.color, this.text);
+      this.sys.print(2, 2, this.color, this.text);
 
-      if (this.screen.focused === this) {
-        this.screen.rectLine(0, 0, this.w, this.h, 0xffffff33);
+      if (this.sys.focused === this) {
+        this.sys.rectLine(0, 0, this.w, this.h, 0xffffff33);
 
         if (this.blinkShow) {
           let cx = 0;
@@ -177,7 +177,7 @@ export function uitest(screen: Screen) {
             cx++;
           }
 
-          this.screen.print((cx * 4) + 2, (cy * 6) + 2, 0x77aaffff, '_');
+          this.sys.print((cx * 4) + 2, (cy * 6) + 2, 0x77aaffff, '_');
         }
       }
     };
@@ -190,7 +190,7 @@ export function uitest(screen: Screen) {
       this.blinkShow = true;
       this.blink = setInterval(() => {
         this.blinkShow = !this.blinkShow;
-        this.screen.needsRedraw = true;
+        this.sys.needsRedraw = true;
       }, 500);
     }
 
@@ -586,7 +586,7 @@ export function uitest(screen: Screen) {
     override draw(): void {
       const p = this.value / this.max * this.w;
       console.log(p)
-      this.screen.pset(p, 1, 0xfffffffff);
+      this.sys.pset(p, 1, 0xfffffffff);
     }
 
     override onMouseDown(): void {

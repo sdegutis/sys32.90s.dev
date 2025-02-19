@@ -1,5 +1,5 @@
 import { Box } from "./box.js";
-import { Screen } from "./screen.js";
+import { System } from "./system.js";
 
 export class Selection {
 
@@ -48,7 +48,7 @@ export class TileSelection extends Selection {
 
 }
 
-export function dragMove(screen: Screen, el: { x: number, y: number }) {
+export function dragMove(screen: System, el: { x: number, y: number }) {
   const startMouse = { x: screen.mouse.x, y: screen.mouse.y };
   const startElPos = { x: el.x, y: el.y };
   return () => {
@@ -61,7 +61,7 @@ export function dragMove(screen: Screen, el: { x: number, y: number }) {
   };
 }
 
-export function dragResize(screen: Screen, el: { w: number, h: number }) {
+export function dragResize(screen: System, el: { w: number, h: number }) {
   const startMouse = { x: screen.mouse.x, y: screen.mouse.y };
   const startElPos = { w: el.w, h: el.h };
   return () => {

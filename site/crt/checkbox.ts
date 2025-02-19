@@ -2,7 +2,7 @@ import { Box } from "./box.js";
 import { Button } from "./button.js";
 import { Group } from "./group.js";
 import { Label } from "./label.js";
-import { build, makeBuilder, Screen } from "./screen.js";
+import { build, makeBuilder, System } from "./system.js";
 
 export class Checkbox extends Button {
 
@@ -14,7 +14,7 @@ export class Checkbox extends Button {
   get size() { return this.checkmark.w; }
   set size(n: number) { this.checkmark.w = this.checkmark.h = n; }
 
-  checkmark = build(this.screen, Box, {
+  checkmark = build(this.sys, Box, {
     w: 2, h: 2,
     background: 0xffffffff,
     passthrough: true,
@@ -38,7 +38,7 @@ export class Checkbox extends Button {
 
 }
 
-export function demo(screen: Screen) {
+export function demo(screen: System) {
   const b = makeBuilder(screen);
   return b(Group, { padding: 3 },
 

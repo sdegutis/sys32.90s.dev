@@ -44,10 +44,10 @@ export class RadioButton extends Button {
     super.draw();
 
     if (this.selected) {
-      this.screen.rectLine(0, 0, this.w, this.h, this.borderSelected);
+      this.sys.rectLine(0, 0, this.w, this.h, this.borderSelected);
     }
     else if (this.hovered) {
-      this.screen.rectLine(0, 0, this.w, this.h, this.borderHovered);
+      this.sys.rectLine(0, 0, this.w, this.h, this.borderHovered);
     }
   }
 

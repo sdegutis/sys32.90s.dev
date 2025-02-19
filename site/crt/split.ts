@@ -1,6 +1,6 @@
 import { Bitmap } from "./bitmap.js";
 import { Box } from "./box.js";
-import { Screen } from "./screen.js";
+import { System } from "./system.js";
 import { dragMove } from "./selections.js";
 
 const xresize = {
@@ -28,7 +28,7 @@ class SplitBoxDivider extends Box {
   pressed = false;
   #hovered = false;
 
-  constructor(screen: Screen, public split: SplitBox) {
+  constructor(screen: System, public split: SplitBox) {
     super(screen);
     this.background = split.dividerColor;
   }
@@ -44,16 +44,16 @@ class SplitBoxDivider extends Box {
 
   override draw(): void {
     if (this.pressed) {
-      this.screen.rectFill(0, 0, this.w, this.h, this.split.dividerColorPress);
+      this.sys.rectFill(0, 0, this.w, this.h, this.split.dividerColorPress);
     }
     else if (this.#hovered) {
-      this.screen.rectFill(0, 0, this.w, this.h, this.split.dividerColorHover);
+      this.sys.rectFill(0, 0, this.w, this.h, this.split.dividerColorHover);
     }
   }
 
   override drawCursor(x: number, y: number): void {
     const cursor = this.split.dir === 'x' ? xresize : yresize;
-    cursor.bitmap.draw(this.screen, x - cursor.offset[0], y - cursor.offset[1]);
+    cursor.bitmap.draw(this.sys, x - cursor.offset[0], y - cursor.offset[1]);
   }
 
   override onMouseDown(): void {
@@ -66,14 +66,14 @@ class SplitBoxDivider extends Box {
 
     this.pressed = true;
 
-    const drag = dragMove(this.screen, b);
-    this.screen.trackMouse({
+    const drag = dragMove(this.sys, b);
+    this.sys.trackMouse({
       move: () => {
         drag();
         s.pos = b[dx];
         if (s.min && s.pos < s.min) s.pos = s.min;
         if (s.max && s.pos > s[dw] - s.max) s.pos = s[dw] - s.max;
-        this.screen.layoutTree(this.split);
+        this.sys.layoutTree(this.split);
       },
       up: () => this.pressed = false,
     });
@@ -104,11 +104,11 @@ export class SplitBox extends Box {
   resizable = false;
 
   #resizer?: Box;
-  override children = [new Box(this.screen), new Box(this.screen)];
+  override children = [new Box(this.sys), new Box(this.sys)];
 
   override layout(): void {
     if (this.resizable && !this.#resizer) {
-      this.#resizer = new SplitBoxDivider(this.screen, this);
+      this.#resizer = new SplitBoxDivider(this.sys, this);
       this.children.push(this.#resizer);
     }
     else if (!this.resizable && this.#resizer) {

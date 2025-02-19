@@ -1,5 +1,5 @@
 import { Bitmap } from "./bitmap.js";
-import { Screen } from "./screen.js";
+import { System } from "./system.js";
 
 export class Box {
 
@@ -34,13 +34,13 @@ export class Box {
   mouse = { x: 0, y: 0 };
   trackingArea?: { x: number, y: number, w: number, h: number };
 
-  constructor(public screen: Screen) { }
+  constructor(public sys: System) { }
 
   get firstChild() { return this.children[0]; }
   get lastChild() { return this.children[this.children.length - 1]; }
 
   drawCursor(x: number, y: number) {
-    pointer.draw(this.screen, x - 1, y - 1);
+    pointer.draw(this.sys, x - 1, y - 1);
   }
 
 }
@@ -53,7 +53,7 @@ export class BorderBox extends Box {
 
   override draw(): void {
     if ((this.border & 0x000000ff) > 0) {
-      this.screen.rectLine(0, 0, this.w, this.h, this.border);
+      this.sys.rectLine(0, 0, this.w, this.h, this.border);
     }
   }
 

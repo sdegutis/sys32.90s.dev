@@ -28,7 +28,7 @@ export class Button extends BorderBox {
 
   override onMouseDown(): void {
     this.pressed = true;
-    const cancel = this.screen.trackMouse({
+    const cancel = this.sys.trackMouse({
       move: () => {
         if (!this.hovered) {
           this.pressed = false;
@@ -45,10 +45,10 @@ export class Button extends BorderBox {
   override draw(): void {
     super.draw();
     if (this.pressed) {
-      this.screen.rectFill(0, 0, this.w, this.h, this.pressColor);
+      this.sys.rectFill(0, 0, this.w, this.h, this.pressColor);
     }
     else if (this.hovered) {
-      this.screen.rectFill(0, 0, this.w, this.h, this.hoverColor);
+      this.sys.rectFill(0, 0, this.w, this.h, this.hoverColor);
     }
   }
 

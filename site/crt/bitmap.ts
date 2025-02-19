@@ -1,10 +1,10 @@
-import { Screen } from "./screen.js";
+import { System } from "./system.js";
 
 export class Bitmap {
 
   constructor(public colors: number[], public steps: number[]) { }
 
-  draw(screen: Screen, px: number, py: number) {
+  draw(screen: System, px: number, py: number) {
     let x = 0;
     let y = 0;
     for (let i = 0; i < this.steps.length; i++) {

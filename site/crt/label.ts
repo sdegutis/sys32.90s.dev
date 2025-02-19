@@ -15,7 +15,7 @@ export class Label extends BorderBox {
   }
 
   override draw() {
-    this.screen.print(this.padding, this.padding, this.color, this.text);
+    this.sys.print(this.padding, this.padding, this.color, this.text);
   }
 
 }

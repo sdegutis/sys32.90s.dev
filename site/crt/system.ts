@@ -1,7 +1,7 @@
 import { Box } from "./box.js";
 import { Font } from "./font.js";
 
-export class Screen {
+export class System {
 
   readonly root;
   focused: Box;
@@ -322,7 +322,7 @@ export class Screen {
     this.#clip.y2 = Math.min(cy2, (this.#clip.cy + node.h - 1));
 
     if ((node.background & 0x000000ff) > 0) {
-      node.screen.rectFill(0, 0, node.w, node.h, node.background);
+      node.sys.rectFill(0, 0, node.w, node.h, node.background);
     }
 
     node.draw?.();
@@ -343,8 +343,8 @@ export class Screen {
 }
 
 export function build<T extends Box>(
-  screen: Screen,
-  ctor: { new(screen: Screen): T },
+  screen: System,
+  ctor: { new(screen: System): T },
   config: Partial<T>,
   ...children: Box[]
 ): T {
@@ -354,9 +354,9 @@ export function build<T extends Box>(
   return t;
 }
 
-export function makeBuilder(screen: Screen) {
+export function makeBuilder(screen: System) {
   return <T extends Box>(
-    ctor: { new(screen: Screen): T },
+    ctor: { new(screen: System): T },
     config: Partial<T>,
     ...children: Box[]
   ): T => build(screen, ctor, config, ...children);
