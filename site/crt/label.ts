@@ -5,6 +5,7 @@ export class Label extends BorderBox {
 
   text = '';
   font = Font.crt2025;
+  color = 0xffffffff;
   override passthrough = true;
 
   override adjust(): void {
@@ -14,7 +15,7 @@ export class Label extends BorderBox {
   }
 
   override draw() {
-    this.screen.print(this.padding, this.padding, 0xffffffff, this.text);
+    this.screen.print(this.padding, this.padding, this.color, this.text);
   }
 
 }

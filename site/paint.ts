@@ -16,9 +16,9 @@ const textfield = make(screen, TextField, {
   background: 0x000000aa,
   border: 0xffffff77,
   color: 0xffffffff,
-  padding: 3,
-  length: 3,
-  text: '',
+  padding: 2,
+  length: 10,
+  text: 'abc',
 });
 
 // textfield.onChange = () => console.log('onChange', textfield.text)

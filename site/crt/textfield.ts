@@ -3,24 +3,29 @@ import { Font } from "./font.js";
 import { Label } from "./label.js";
 import { make } from "./screen.js";
 
-class Cursor {
-
-
-
-}
-
 export class TextField extends BorderBox {
 
-  text = '';
+  onEnter?(): void;
+  onChange?(): void;
+
   length = 10;
   font = Font.crt2025;
   color = 0x000000ff;
 
-  #label = make(this.screen, Label, {});
-  #cursor = 0;
+  #text = make(this.screen, Label, { text: 'hi', padding: 0, border: 0x00000000 });
+  #cursor = make(this.screen, Label, { text: '_', padding: 0, border: 0x00000000, color: 0x1177ffff });
 
-  onEnter?(): void;
-  onChange?(): void;
+  override children = [this.#text, this.#cursor];
+
+  get text() { return this.#text.text; }
+  set text(s: string) { this.#text.text = s; }
+
+  override layout(): void {
+    this.#text.x = this.padding;
+    this.#text.y = this.padding;
+    this.#cursor.x = this.padding;
+    this.#cursor.y = this.padding;
+  }
 
   override adjust(): void {
     const s = this.font.calcSize(' '.repeat(this.length));
@@ -28,62 +33,43 @@ export class TextField extends BorderBox {
     this.h = s.h + this.padding * 2;
   }
 
-  override onKeyDown = (key: string) => {
+  override onKeyDown(key: string): void {
     if (key === 'Enter') {
       this.onEnter?.();
     }
     else if (key === 'Backspace') {
-      this.text = this.text.slice(0, -1);
+      // this.text = this.text.slice(0, -1);
       this.onChange?.();
     }
     else if (key.length === 1) {
-      this.text += key;
+      // this.text += key;
       this.onChange?.();
     }
     this.#restartBlinking();
   };
 
-  override draw = () => {
-    super.draw();
-
-    // const vs = this.text.slice(this.#cursor, this.#cursor + this.length);
-    // console.log(vs);
-
-    const o = this.padding;
-
-    this.screen.print(o, o, this.color, this.text);
-
-    if (this.screen.focused === this) {
-      if (this.#blinkShow) {
-        let cx = o + (this.font.width + 1) * this.text.length;
-        let cy = o;
-        this.screen.print(cx, cy, 0x77aaffff, '_',);
-      }
-    }
-  };
-
   #blink?: number;
-  #blinkShow = false;
 
   #restartBlinking() {
     this.#stopBlinking();
-    this.#blinkShow = true;
+    this.#cursor.visible = true;
     this.#blink = setInterval(() => {
-      this.#blinkShow = !this.#blinkShow;
+      this.#cursor.visible = !this.#cursor.visible;
       this.screen.needsRedraw = true;
     }, 500);
   }
 
   #stopBlinking() {
+    this.#cursor.visible = false;
     clearInterval(this.#blink);
   }
 
-  override onFocus = () => {
+  override onFocus(): void {
     this.#restartBlinking();
-  };
+  }
 
-  override onUnfocus = () => {
+  override onUnfocus(): void {
     this.#stopBlinking();
-  };
+  }
 
 }
