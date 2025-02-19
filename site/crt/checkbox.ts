@@ -22,9 +22,8 @@ export class Checkbox extends Button {
   #fakebutton = make(this.screen, BorderBox, {
     w: 6, h: 6,
     passthrough: true,
-  },
-    this.#checkmark
-  );
+    children: [this.#checkmark],
+  });
 
   #layout = makeFlowLayout(0, 0);
 
@@ -38,26 +37,34 @@ export class Checkbox extends Button {
 
   override children = [this.#fakebutton, this.#label];
 
-  override draw(): void {
-    if (this.pressed) {
-      this.screen.rectFill(0, 0, this.#fakebutton.w, this.h, this.pressColor);
-    }
-    else if (this.hovered) {
-      this.screen.rectFill(0, 0, this.#fakebutton.w, this.h, this.hoverColor);
-    }
-  }
+  // override draw(): void {
+  //   if (this.pressed) {
+  //     this.screen.rectFill(0, 0, this.#fakebutton.w, this.h, this.pressColor);
+  //   }
+  //   else if (this.hovered) {
+  //     this.screen.rectFill(0, 0, this.#fakebutton.w, this.h, this.hoverColor);
+  //   }
+  // }
 
   override layout(): void {
     super.layout();
     this.#layout();
+
     this.#checkmark.x = 2;
     this.#checkmark.y = 2;
-    this.#label.x += 1;
+
+    this.#fakebutton.x = this.padding;
+    this.#fakebutton.y = this.padding;
+
+    this.#label.x += 1 + this.padding;
+    this.#label.y = this.padding;
   }
 
   override adjust(): void {
     super.adjust();
-    this.w += this.#label.w + 1;
+    if (this.text.length > 0) {
+      this.w += this.#label.w + 1;
+    }
   }
 
   get checked() { return this.#checked; }

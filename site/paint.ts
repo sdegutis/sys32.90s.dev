@@ -1,5 +1,6 @@
 import { Box } from "./crt/box.js";
-import { centerLayout, vacuumLayout } from "./crt/layouts.js";
+import { Checkbox } from "./crt/checkbox.js";
+import { centerLayout, makeFlowLayout, vacuumLayout } from "./crt/layouts.js";
 import { make, Screen } from "./crt/screen.js";
 import { TextField } from "./crt/textfield.js";
 
@@ -12,17 +13,21 @@ screen.autoscale();
 screen.root.layout = vacuumLayout;
 
 
-const textfield = make(screen, TextField, { length: 10 });
 
-textfield.onChange = () => console.log('onChange', [textfield.text])
-textfield.onEnter = () => console.log('onEnter', [textfield.text])
+// textfield.onChange = () => console.log('onChange', [textfield.text])
+// textfield.onEnter = () => console.log('onEnter', [textfield.text])
 
 screen.root.children = [
-  make(screen, Box, { background: 0x222222ff, layout: centerLayout },
-    textfield
+  make(screen, Box, { background: 0x777777ff, layout: makeFlowLayout(50, 10), },
+    make(screen, Checkbox, { text: '', background: 0x222222ff, padding: 0 }),
+    make(screen, Checkbox, { text: 'i', background: 0x222222ff, padding: 0 }),
+    make(screen, Checkbox, { text: 'hi', background: 0x222222ff, padding: 0 }),
+    make(screen, Checkbox, { text: 'hello', background: 0x222222ff, padding: 0 }),
+    make(screen, Checkbox, { text: '', background: 0x222222ff, padding: 2 }),
+    make(screen, Checkbox, { text: 'i', background: 0x222222ff, padding: 2 }),
+    make(screen, Checkbox, { text: 'hi', background: 0x222222ff, padding: 2 }),
+    make(screen, Checkbox, { text: 'hello', background: 0x222222ff, padding: 2 }),
   )
 ];
-
-screen.focus(textfield)
 
 screen.layoutTree();
