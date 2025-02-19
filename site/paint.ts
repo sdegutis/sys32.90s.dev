@@ -12,15 +12,7 @@ screen.autoscale();
 screen.root.layout = vacuumLayout;
 
 
-const textfield = make(screen, TextField, {
-  // background: 0x000099ff,
-  // border: 0xffff00ff,
-  // color: 0xffff00ff,
-  // cursorColor: 0xff0000ff,
-  padding: 3,
-  length: 10,
-  text: 'abc',
-});
+const textfield = make(screen, TextField, { length: 10 });
 
 textfield.onChange = () => console.log('onChange', [textfield.text])
 textfield.onEnter = () => console.log('onEnter', [textfield.text])

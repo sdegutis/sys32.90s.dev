@@ -53,7 +53,16 @@ export class TextField extends BorderBox {
   }
 
   override onKeyDown(key: string): void {
-    if (key === 'Enter') {
+    if (key === 'v' && this.screen.keys['Control']) {
+      navigator.clipboard.readText().then(s => {
+        this.text += s;
+        this.onChange?.();
+      });
+    }
+    else if (key === 'c' && this.screen.keys['Control']) {
+      navigator.clipboard.writeText(this.text);
+    }
+    else if (key === 'Enter') {
       this.onEnter?.();
     }
     else if (key === 'Backspace') {
