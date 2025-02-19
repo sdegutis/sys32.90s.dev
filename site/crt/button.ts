@@ -10,13 +10,19 @@ export class Button extends BorderBox {
   pressed = false;
 
   override layout(): void {
-    this.children[0].x = this.padding;
-    this.children[0].y = this.padding;
+    const c = this.children[0];
+    if (c) {
+      c.x = this.padding;
+      c.y = this.padding;
+    }
   }
 
   override adjust(): void {
-    this.w = this.children[0].w + this.padding * 2;
-    this.h = this.children[0].h + this.padding * 2;
+    const c = this.children[0];
+    if (c) {
+      this.w = c.w + this.padding * 2;
+      this.h = c.h + this.padding * 2;
+    }
   }
 
   override onMouseDown(trackMouse: MouseTracker): void {

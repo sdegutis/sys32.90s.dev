@@ -2,16 +2,20 @@ import { Box } from "./box.js";
 
 export function vacuumLayout(this: Box) {
   const c = this.children[0];
-  c.x = 0;
-  c.y = 0;
-  c.w = this.w;
-  c.h = this.h;
+  if (c) {
+    c.x = 0;
+    c.y = 0;
+    c.w = this.w;
+    c.h = this.h;
+  }
 };
 
 export function centerLayout(this: Box) {
   const c = this.children[0];
-  c.x = Math.round(this.w / 2 - c.w / 2);
-  c.y = Math.round(this.h / 2 - c.h / 2);
+  if (c) {
+    c.x = Math.round(this.w / 2 - c.w / 2);
+    c.y = Math.round(this.h / 2 - c.h / 2);
+  }
 };
 
 export function makeFlowLayout(padding = 0, margin = 0) {
