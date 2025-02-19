@@ -35,6 +35,9 @@ export class Box {
 
   constructor(public screen: Screen) { }
 
+  get firstChild() { return this.children[0]; }
+  get lastChild() { return this.children[this.children.length - 1]; }
+
   drawCursor(x: number, y: number) {
     pointer.draw(this.screen, x - 1, y - 1);
   }

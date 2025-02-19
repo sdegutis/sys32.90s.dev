@@ -29,7 +29,7 @@ export class Group extends Box {
       const child = this.children[i];
       child[dx] = x;
       x += child[dw] + this.padding;
-      child[dy] = (this[dh] - child[dh]) / 2;
+      child[dy] = Math.round((this[dh] - child[dh]) / 2);
     }
   }
 
