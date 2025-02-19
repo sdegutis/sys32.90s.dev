@@ -27,6 +27,7 @@ export class Box {
   passthrough = false;
   visible = true;
   focused = false;
+  padding = 0;
 
   children: Box[] = [];
   // hovered = false;
@@ -48,7 +49,7 @@ export class BorderBox extends Box {
 
   border = 0xffffff33;
 
-  padding = 2;
+  override padding = 2;
 
   override draw(): void {
     if ((this.border & 0x000000ff) > 0) {
