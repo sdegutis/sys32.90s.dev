@@ -25,6 +25,8 @@ export class System {
 
   #destroyer = new AbortController();
 
+  #ticks = new Set<(delta: number) => void>();
+
   constructor(public canvas: HTMLCanvasElement) {
     canvas.style.imageRendering = 'pixelated';
     canvas.style.backgroundColor = '#000';
@@ -107,7 +109,12 @@ export class System {
 
     let last = +document.timeline.currentTime!;
     const update = (t: number) => {
-      if (t - last >= 30) {
+      const delta = t - last;
+      if (delta >= 30) {
+        for (const fn of this.#ticks) {
+          fn(delta);
+        }
+
         if (this.needsRedraw) {
           this.needsRedraw = false;
 
@@ -125,6 +132,11 @@ export class System {
       }
     };
     requestAnimationFrame(update);
+  }
+
+  onTick(fn: (delta: number) => void) {
+    this.#ticks.add(fn);
+    return () => this.#ticks.delete(fn);
   }
 
   trackMouse(fns: { move: () => void; up?: () => void; }) {
