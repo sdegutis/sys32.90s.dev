@@ -5,21 +5,21 @@ import { dragMove } from "./selections.js";
 import { System } from "./system.js";
 
 const xresize: Cursor = {
-  bitmap: new Bitmap([0x00000099, 0xffffffff], [
-    1, 1, 1, 1, 1, -1,
-    1, 2, 2, 2, 1, -1,
-    1, 1, 1, 1, 1, -1,
+  bitmap: new Bitmap([0x00000099, 0xffffffff], 5, [
+    1, 1, 1, 1, 1,
+    1, 2, 2, 2, 1,
+    1, 1, 1, 1, 1,
   ]),
   offset: [2, 1],
 };
 
 const yresize: Cursor = {
-  bitmap: new Bitmap([0x00000099, 0xffffffff], [
-    1, 1, 1, -1,
-    1, 2, 1, -1,
-    1, 2, 1, -1,
-    1, 2, 1, -1,
-    1, 1, 1, -1,
+  bitmap: new Bitmap([0x00000099, 0xffffffff], 3, [
+    1, 1, 1,
+    1, 2, 1,
+    1, 2, 1,
+    1, 2, 1,
+    1, 1, 1,
   ]),
   offset: [1, 2],
 };

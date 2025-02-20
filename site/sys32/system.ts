@@ -379,11 +379,11 @@ export function makeBuilder(sys: System) {
 }
 
 const pointer: Cursor = {
-  bitmap: new Bitmap([0x000000cc, 0xffffffff], [
-    1, 1, 1, 1, -1,
-    1, 2, 2, 1, -1,
-    1, 2, 1, 1, -1,
-    1, 1, 1, -1,
+  bitmap: new Bitmap([0x000000cc, 0xffffffff], 4, [
+    1, 1, 1, 1,
+    1, 2, 2, 1,
+    1, 2, 1, 1,
+    1, 1, 1, 0,
   ]),
   offset: [1, 1],
 };

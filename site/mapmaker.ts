@@ -162,7 +162,7 @@ export default (sys: System) => {
   mapArea.children.push(mapBox);
 
   mapBox.mouse.cursor = {
-    bitmap: new Bitmap([], []),
+    bitmap: new Bitmap([], 0, []),
     offset: [0, 0],
   }
 

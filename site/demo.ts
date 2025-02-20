@@ -1,6 +1,8 @@
+import { Bitmap } from "./sys32/bitmap.js";
 import { Button } from "./sys32/button.js";
 import { Checkbox } from "./sys32/checkbox.js";
 import { Group } from "./sys32/group.js";
+import { ImageBox } from "./sys32/image.js";
 import { Label, wrapButton } from "./sys32/label.js";
 import { RadioButton, RadioGroup } from "./sys32/radio.js";
 import { makeBuilder, type System } from "./sys32/system.js";
@@ -62,6 +64,33 @@ export function demo(sys: System) {
       b(Checkbox, { checked: true, padding: 3 }),
       b(Checkbox, { checked: true, padding: 4 }),
       b(Checkbox, { checked: true, padding: 5 }),
+    ),
+
+    b(Group, { dir: 'y', gap: 1 },
+      b(ImageBox, {
+        image: new Bitmap([0x00000099, 0xffffffff], 3, [
+          1, 1, 1,
+          1, 2, 1,
+          1, 2, 1,
+          1, 2, 1,
+          1, 1, 1,
+        ])
+      }),
+      b(ImageBox, {
+        image: new Bitmap([0x00000099, 0xffffffff], 5, [
+          1, 1, 1, 1, 1,
+          1, 2, 2, 2, 1,
+          1, 1, 1, 1, 1,
+        ])
+      }),
+      b(ImageBox, {
+        image: new Bitmap([0x000000cc, 0xffffffff], 4, [
+          1, 1, 1, 1,
+          1, 2, 2, 1,
+          1, 2, 1, 1,
+          1, 1, 1, 0,
+        ])
+      }),
     ),
 
     b(Group, { dir: 'y', gap: 1 },
