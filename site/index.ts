@@ -37,19 +37,18 @@ const adjImage = new Bitmap([0xffffff22], 3, [0, 0, 1, 0, 0, 1, 1, 1, 1,]);
 
 function makeWindow(title: string, content: Box) {
 
-  const titlebar = b(Spaced, { padding: 1, onMouseDown: () => { sys.trackMouse({ move: dragMove(sys, win) }); }, },
-    b(Label, { text: title, color: 0xffffff33 }),
-    b(Group, { gap: 2 },
-      b(Button, {}, b(ImageBox, { image: minImage })),
-      b(Button, {}, b(ImageBox, { image: maxImage })),
-      b(Button, { onClick: () => { closeWindow(win) } }, b(ImageBox, { image: axeImage })),
-    )
-  );
-
-  const contentView = b(Group, { layout: makeVacuumLayout(1) }, content);
-
   const win = b(Box, { w: 100, h: 100, background: 0x000000aa, layout: makeVacuumLayout(1) },
-    b(Paned, { dir: 'y', vacuum: 'a' }, titlebar, contentView,),
+    b(Paned, { dir: 'y', vacuum: 'a' },
+      b(Spaced, { padding: 1, onMouseDown: () => { sys.trackMouse({ move: dragMove(sys, win) }); }, },
+        b(Label, { text: title, color: 0xffffff33 }),
+        b(Group, { gap: 2 },
+          b(Button, {}, b(ImageBox, { image: minImage })),
+          b(Button, {}, b(ImageBox, { image: maxImage })),
+          b(Button, { onClick: () => { closeWindow(win); } }, b(ImageBox, { image: axeImage }))
+        )
+      ),
+      b(Group, { layout: makeVacuumLayout(1) }, content),
+    ),
     b(ImageBox, {
       passthrough: false,
       image: adjImage,
