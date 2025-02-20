@@ -1,9 +1,9 @@
-import { Box } from "../core/box.js";
+import { View } from "../core/view.js";
 import { Font } from "../core/font.js";
 import { build } from "../util/build.js";
 import { Label } from "./label.js";
 
-export class TextField extends Box {
+export class TextField extends View {
 
   padding = 0;
 

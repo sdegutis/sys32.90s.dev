@@ -1,11 +1,11 @@
-import { Box } from "../core/box.js";
+import { View } from "../core/view.js";
 import { System } from "../core/system.js";
 
-export function build<T extends Box>(
+export function build<T extends View>(
   sys: System,
   ctor: { new(sys: System): T },
   config: Partial<T>,
-  ...children: Box[]
+  ...children: View[]
 ): T {
   const t = new ctor(sys);
   if (children.length > 0) t.children = children;
@@ -14,9 +14,9 @@ export function build<T extends Box>(
 }
 
 export function makeBuilder(sys: System) {
-  return <T extends Box>(
+  return <T extends View>(
     ctor: { new(sys: System): T },
     config: Partial<T>,
-    ...children: Box[]
+    ...children: View[]
   ): T => build(sys, ctor, config, ...children);
 }

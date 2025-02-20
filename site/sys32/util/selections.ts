@@ -1,4 +1,4 @@
-import { Box } from "../core/box.js";
+import { View } from "../core/view.js";
 import { System } from "../core/system.js";
 
 export class Selection {
@@ -12,17 +12,17 @@ export class Selection {
   w!: number;
   h!: number;
 
-  constructor(public box: Box) {
-    this.x1 = this.box.mouse.x;
-    this.y1 = this.box.mouse.y;
-    this.ox = this.box.sys.mouse.x - this.x1;
-    this.oy = this.box.sys.mouse.y - this.y1;
+  constructor(public view: View) {
+    this.x1 = this.view.mouse.x;
+    this.y1 = this.view.mouse.y;
+    this.ox = this.view.sys.mouse.x - this.x1;
+    this.oy = this.view.sys.mouse.y - this.y1;
     this.update();
   }
 
   update() {
-    const x2 = this.box.sys.mouse.x - this.ox;
-    const y2 = this.box.sys.mouse.y - this.oy;
+    const x2 = this.view.sys.mouse.x - this.ox;
+    const y2 = this.view.sys.mouse.y - this.oy;
     this.x = this.x1 < x2 ? this.x1 : x2;
     this.y = this.y1 < y2 ? this.y1 : y2;
     this.w = (this.x1 < x2 ? x2 - this.x1 : this.x1 - x2) + 1;
@@ -33,8 +33,8 @@ export class Selection {
 
 export class TileSelection extends Selection {
 
-  constructor(box: Box, public size: number) {
-    super(box);
+  constructor(view: View, public size: number) {
+    super(view);
   }
 
   tx1!: number;
@@ -52,26 +52,26 @@ export class TileSelection extends Selection {
 
 }
 
-export function dragMove(sys: System, box: { x: number, y: number }) {
-  const startPos = { x: box.x, y: box.y };
+export function dragMove(sys: System, view: { x: number, y: number }) {
+  const startPos = { x: view.x, y: view.y };
   const offx = sys.mouse.x - startPos.x;
   const offy = sys.mouse.y - startPos.y;
   return () => {
     const diffx = sys.mouse.x - startPos.x;
     const diffy = sys.mouse.y - startPos.y;
-    box.x = startPos.x + diffx - offx;
-    box.y = startPos.y + diffy - offy;
+    view.x = startPos.x + diffx - offx;
+    view.y = startPos.y + diffy - offy;
   };
 }
 
-export function dragResize(sys: System, box: { w: number, h: number }) {
-  const startSize = { w: box.w, h: box.h };
+export function dragResize(sys: System, view: { w: number, h: number }) {
+  const startSize = { w: view.w, h: view.h };
   const offx = sys.mouse.x - startSize.w;
   const offy = sys.mouse.y - startSize.h;
   return () => {
     const diffx = sys.mouse.x - startSize.w;
     const diffy = sys.mouse.y - startSize.h;
-    box.w = startSize.w + diffx - offx;
-    box.h = startSize.h + diffy - offy;
+    view.w = startSize.w + diffx - offx;
+    view.h = startSize.h + diffy - offy;
   };
 }

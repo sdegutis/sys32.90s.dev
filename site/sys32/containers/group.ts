@@ -1,6 +1,6 @@
-import { Box } from "../core/box.js";
+import { View } from "../core/view.js";
 
-export class Group extends Box {
+export class Group extends View {
 
   padding = 0;
   gap = 0;
@@ -39,7 +39,7 @@ export class Group extends Box {
 
 }
 
-export class Spaced extends Box {
+export class Spaced extends View {
 
   padding = 0;
   dir: 'x' | 'y' = 'x';

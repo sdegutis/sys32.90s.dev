@@ -1,5 +1,5 @@
 import { Bitmap } from "../core/bitmap.js";
-import { Box } from "../core/box.js";
+import { View } from "../core/view.js";
 import { dragMove } from "../util/selections.js";
 import { Cursor, System } from "../core/system.js";
 
@@ -23,12 +23,12 @@ const yresize: Cursor = {
   offset: [1, 2],
 };
 
-class SplitBoxDivider extends Box {
+class SplitDivider extends View {
 
   pressed = false;
   #hovered = false;
 
-  constructor(sys: System, public split: SplitBox) {
+  constructor(sys: System, public split: Split) {
     super(sys);
     this.background = split.dividerColor;
     this.mouse.cursor = this.split.dir === 'x' ? xresize : yresize;
@@ -87,7 +87,7 @@ class SplitBoxDivider extends Box {
 
 }
 
-export class SplitBox extends Box {
+export class Split extends View {
 
   pos = 10;
   min = 0;
@@ -99,12 +99,12 @@ export class SplitBox extends Box {
   dividerColorPress = 0x1177ffcc;
   resizable = false;
 
-  #resizer?: Box;
-  override children = [new Box(this.sys), new Box(this.sys)];
+  #resizer?: View;
+  override children = [new View(this.sys), new View(this.sys)];
 
   override layout(): void {
     if (this.resizable && !this.#resizer) {
-      this.#resizer = new SplitBoxDivider(this.sys, this);
+      this.#resizer = new SplitDivider(this.sys, this);
       this.children.push(this.#resizer);
     }
     else if (!this.resizable && this.#resizer) {

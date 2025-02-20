@@ -1,6 +1,6 @@
-import { Box } from "../core/box.js";
+import { View } from "../core/view.js";
 
-export class Button extends Box {
+export class Button extends View {
 
   padding = 0;
 

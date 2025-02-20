@@ -1,7 +1,7 @@
-import { Box } from "../core/box.js";
+import { View } from "../core/view.js";
 
 export function makeVacuumLayout(padding = 0) {
-  return function (this: Box) {
+  return function (this: View) {
     const c = this.children[0];
     if (c) {
       c.x = padding;
@@ -12,7 +12,7 @@ export function makeVacuumLayout(padding = 0) {
   };
 };
 
-export function centerLayout(this: Box) {
+export function centerLayout(this: View) {
   const c = this.children[0];
   if (c) {
     c.x = Math.round(this.w / 2 - c.w / 2);
@@ -21,7 +21,7 @@ export function centerLayout(this: Box) {
 };
 
 // export function makeFlowLayout(padding = 0, gap = 0) {
-//   return function (this: Box) {
+//   return function (this: View) {
 //     let x = padding;
 //     let y = padding;
 //     let h = 0;

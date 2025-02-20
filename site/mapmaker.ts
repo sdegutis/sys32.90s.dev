@@ -5,7 +5,7 @@ import { Button } from "./sys32/controls/button.js";
 import { Label } from "./sys32/controls/label.js";
 import { RadioButton, RadioGroup } from "./sys32/controls/radio.js";
 import { Bitmap } from "./sys32/core/bitmap.js";
-import { Box } from "./sys32/core/box.js";
+import { View } from "./sys32/core/view.js";
 import { System } from "./sys32/core/system.js";
 import { makeBuilder } from "./sys32/util/build.js";
 import { TileSelection, dragMove } from "./sys32/util/selections.js";
@@ -52,7 +52,7 @@ export default (sys: System) => {
   }
 
 
-  const mapArea = b(Box, {
+  const mapArea = b(View, {
     background: 0x222222ff,
     draw: () => {
       sys.rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
@@ -69,7 +69,7 @@ export default (sys: System) => {
   const root = b(Paned, { vacuum: 'a', dir: 'x' },
     b(Group, { background: 0x333333ff, dir: 'y' },
       gridButton,
-      b(Box, { h: 3 }),
+      b(View, { h: 3 }),
       ...COLORS.map((col, i) => b(ColorButton, {
         group: toolGroup,
         color: col,
@@ -78,7 +78,7 @@ export default (sys: System) => {
         w: 6, h: 6,
       })),
     ),
-    b(Box, { background: 0x333344ff, layout: makeVacuumLayout() },
+    b(View, { background: 0x333344ff, layout: makeVacuumLayout() },
       mapArea
     )
   );
@@ -151,18 +151,18 @@ export default (sys: System) => {
 
 
 
-  const mapBox = new Box(sys);
+  const mapView = new View(sys);
 
 
   let hovered = false;
-  mapBox.onMouseEnter = () => hovered = true;
-  mapBox.onMouseExit = () => hovered = false;
+  mapView.onMouseEnter = () => hovered = true;
+  mapView.onMouseExit = () => hovered = false;
 
-  mapBox.w = map.width * 4;
-  mapBox.h = map.height * 4;
-  mapArea.children.push(mapBox);
+  mapView.w = map.width * 4;
+  mapView.h = map.height * 4;
+  mapArea.children.push(mapView);
 
-  mapBox.mouse.cursor = {
+  mapView.mouse.cursor = {
     bitmap: new Bitmap([], 0, []),
     offset: [0, 0],
   }
@@ -173,12 +173,12 @@ export default (sys: System) => {
 
   let tilesel: TileSelection | null = null;
 
-  mapBox.onMouseDown = () => {
+  mapView.onMouseDown = () => {
     if (sys.keys[' ']) {
-      sys.trackMouse({ move: dragMove(sys, mapBox) });
+      sys.trackMouse({ move: dragMove(sys, mapView) });
     }
     else if (sys.keys['Control']) {
-      tilesel = new TileSelection(mapBox, 4);
+      tilesel = new TileSelection(mapView, 4);
 
       sys.trackMouse({
         move() {
@@ -204,8 +204,8 @@ export default (sys: System) => {
     else if (sys.keys['Alt']) {
       sys.trackMouse({
         move() {
-          const x = Math.floor(mapBox.mouse.x / 4);
-          const y = Math.floor(mapBox.mouse.y / 4);
+          const x = Math.floor(mapView.mouse.x / 4);
+          const y = Math.floor(mapView.mouse.y / 4);
           map.useTool(x + 0, y + 0);
           map.useTool(x + 1, y + 0);
           map.useTool(x - 1, y + 0);
@@ -217,15 +217,15 @@ export default (sys: System) => {
     else {
       sys.trackMouse({
         move() {
-          const x = Math.floor(mapBox.mouse.x / 4);
-          const y = Math.floor(mapBox.mouse.y / 4);
+          const x = Math.floor(mapView.mouse.x / 4);
+          const y = Math.floor(mapView.mouse.y / 4);
           map.useTool(x, y);
         },
       });
     }
   };
 
-  mapBox.draw = () => {
+  mapView.draw = () => {
     // for (let i = 0; i < 300; i++)
     for (let y = 0; y < map.height; y++) {
       for (let x = 0; x < map.width; x++) {
@@ -246,8 +246,8 @@ export default (sys: System) => {
     }
 
     if (hovered) {
-      const tx = Math.floor(mapBox.mouse.x / 4);
-      const ty = Math.floor(mapBox.mouse.y / 4);
+      const tx = Math.floor(mapView.mouse.x / 4);
+      const ty = Math.floor(mapView.mouse.y / 4);
       sys.rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);
 
       if (sys.keys['Alt']) {

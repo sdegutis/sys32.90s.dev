@@ -1,7 +1,7 @@
 import { Group } from "./sys32/containers/group.js";
 import { Button } from "./sys32/controls/button.js";
 import { Checkbox } from "./sys32/controls/checkbox.js";
-import { ImageBox } from "./sys32/controls/image.js";
+import { ImageView } from "./sys32/controls/image.js";
 import { Label, wrapButton } from "./sys32/controls/label.js";
 import { RadioButton, RadioGroup } from "./sys32/controls/radio.js";
 import { TextField } from "./sys32/controls/textfield.js";
@@ -18,15 +18,15 @@ export function demo(sys: System) {
   return b(Group, { padding: 1, gap: 2, background: 0xffffff33 },
 
     b(Group, { dir: 'y', gap: 1 },
-      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'aaa' })),
-      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'bbb' })),
-      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'ccc' })),
+      b(Group, { gap: 1, ...wrapButton(view => view.firstChild) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'aaa' })),
+      b(Group, { gap: 1, ...wrapButton(view => view.firstChild) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'bbb' })),
+      b(Group, { gap: 1, ...wrapButton(view => view.firstChild) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'ccc' })),
     ),
 
     b(Group, { dir: 'y', gap: 1 },
-      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'aaa' })),
-      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'bbb' })),
-      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'ccc' })),
+      b(Group, { gap: 1, ...wrapButton(view => view.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'aaa' })),
+      b(Group, { gap: 1, ...wrapButton(view => view.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'bbb' })),
+      b(Group, { gap: 1, ...wrapButton(view => view.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'ccc' })),
     ),
 
     b(Group, { dir: 'y', gap: 1 },
@@ -68,7 +68,7 @@ export function demo(sys: System) {
     ),
 
     b(Group, { dir: 'y', gap: 1 },
-      b(ImageBox, {
+      b(ImageView, {
         image: new Bitmap([0x00000099, 0xffffffff], 3, [
           1, 1, 1,
           1, 2, 1,
@@ -77,14 +77,14 @@ export function demo(sys: System) {
           1, 1, 1,
         ])
       }),
-      b(ImageBox, {
+      b(ImageView, {
         image: new Bitmap([0x00000099, 0xffffffff], 5, [
           1, 1, 1, 1, 1,
           1, 2, 2, 2, 1,
           1, 1, 1, 1, 1,
         ])
       }),
-      b(ImageBox, {
+      b(ImageView, {
         background: 0x00000033,
         padding: 1,
         image: new Bitmap([0xffffffff], 4, [
@@ -115,12 +115,12 @@ export function demo(sys: System) {
     ),
 
     b(Group, { dir: 'y', gap: 1 },
-      b(Group, { gap: 2, ...wrapButton(box => box.firstChild), },
+      b(Group, { gap: 2, ...wrapButton(view => view.firstChild), },
         b(Checkbox, { checked: true, padding: 2, size: 2, onChange() { console.log('foo', this.checked) } }),
         b(Label, { text: 'foo' }),
       ),
 
-      b(Group, { gap: 2, ...wrapButton(box => box.lastChild), },
+      b(Group, { gap: 2, ...wrapButton(view => view.lastChild), },
         b(Label, { text: 'bar' }),
         b(Checkbox, { checked: true, padding: 2, size: 2, onChange() { console.log('bar', this.checked) } }),
       ),

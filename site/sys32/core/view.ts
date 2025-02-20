@@ -6,7 +6,7 @@ type Mouse = {
   cursor: Cursor | undefined;
 };
 
-export class Box {
+export class View {
 
   onScroll?(up: boolean): void;
   onKeyDown?(key: string): void;
@@ -29,7 +29,7 @@ export class Box {
   visible = true;
   focused = false;
 
-  children: Box[] = [];
+  children: View[] = [];
   mouse: Mouse = { x: 0, y: 0, cursor: undefined };
 
   trackingArea?: { x: number, y: number, w: number, h: number };

@@ -1,19 +1,19 @@
 import { Bitmap } from "./bitmap.js";
-import { Box } from "./box.js";
+import { View } from "./view.js";
 import { Font } from "./font.js";
 
 export class System {
 
   readonly root;
-  focused: Box;
+  focused: View;
   font = Font.crt2025;
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0, button: 0 };
 
   needsRedraw = true;
 
-  #allHovered: Box[] = [];
-  #hovered: Box;
+  #allHovered: View[] = [];
+  #hovered: View;
   #trackingMouse?: { move: () => void, up?: () => void };
 
   pixels!: Uint8ClampedArray;
@@ -35,7 +35,7 @@ export class System {
     canvas.focus();
 
     this.#context = canvas.getContext('2d')!;
-    this.root = new Box(this);
+    this.root = new View(this);
     this.focused = this.root;
     this.#hovered = this.root;
 
@@ -92,9 +92,9 @@ export class System {
     canvas.addEventListener('wheel', (e) => {
       let i = this.#allHovered.length;
       while (i--) {
-        const box = this.#allHovered[i];
-        if (box.onScroll) {
-          box.onScroll(e.deltaY < 0);
+        const view = this.#allHovered[i];
+        if (view.onScroll) {
+          view.onScroll(e.deltaY < 0);
           this.needsRedraw = true;
           return;
         }
@@ -166,21 +166,21 @@ export class System {
     this.#autoscale();
   }
 
-  layoutTree(node: Box = this.root) {
+  layoutTree(node: View = this.root) {
     this.#adjustTree(node);
     this.#layoutTree(node, node.w, node.h);
     this.#checkUnderMouse();
     this.needsRedraw = true;
   }
 
-  #layoutTree(node: Box, w: number, h: number) {
+  #layoutTree(node: View, w: number, h: number) {
     node.layout?.(w, h);
     for (let i = 0; i < node.children.length; i++) {
       this.#layoutTree(node.children[i], node.w, node.h);
     }
   }
 
-  #adjustTree(node: Box) {
+  #adjustTree(node: View) {
     for (let i = 0; i < node.children.length; i++) {
       this.#adjustTree(node.children[i]);
     }
@@ -277,13 +277,13 @@ export class System {
     }
   }
 
-  focus(node: Box) {
+  focus(node: View) {
     this.focused = node;
     this.focused.focused = true;
     node.onFocus?.();
   }
 
-  #hover(node: Box, x: number, y: number): Box | null {
+  #hover(node: View, x: number, y: number): View | null {
     if (node.passthrough || !node.visible) return null;
 
     let tx = 0;
@@ -315,7 +315,7 @@ export class System {
     return node;
   }
 
-  #draw(node: Box) {
+  #draw(node: View) {
     if (!node.visible) return;
 
     const cx1 = this.#clip.x1;

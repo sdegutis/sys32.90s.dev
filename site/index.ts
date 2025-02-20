@@ -4,10 +4,10 @@ import { Group, Spaced } from "./sys32/containers/group.js";
 import { centerLayout, makeVacuumLayout } from "./sys32/containers/layouts.js";
 import { Paned } from "./sys32/containers/paned.js";
 import { Button } from "./sys32/controls/button.js";
-import { ImageBox } from "./sys32/controls/image.js";
+import { ImageView } from "./sys32/controls/image.js";
 import { Label } from "./sys32/controls/label.js";
 import { Bitmap } from "./sys32/core/bitmap.js";
-import { Box } from "./sys32/core/box.js";
+import { View } from "./sys32/core/view.js";
 import { System } from "./sys32/core/system.js";
 import { makeBuilder } from "./sys32/util/build.js";
 import { dragMove, dragResize } from "./sys32/util/selections.js";
@@ -37,7 +37,7 @@ function newMapmaker() {
   sys.layoutTree();
 }
 
-function closeWindow(win: Box) {
+function closeWindow(win: View) {
   const i = sys.root.children.indexOf(win);
   sys.root.children.splice(i, 1);
 }
@@ -47,21 +47,21 @@ const maxImage = new Bitmap([0xffffff33], 3, [1, 1, 1, 1, 0, 1, 1, 1, 1,]);
 const axeImage = new Bitmap([0x990000ff], 3, [1, 0, 1, 0, 1, 0, 1, 0, 1,]);
 const adjImage = new Bitmap([0xffffff22], 3, [0, 0, 1, 0, 0, 1, 1, 1, 1,]);
 
-function makeWindow(title: string, content: Box) {
+function makeWindow(title: string, content: View) {
 
-  const win = b(Box, { w: 100, h: 100, background: 0x000000aa, layout: makeVacuumLayout(1) },
+  const win = b(View, { w: 100, h: 100, background: 0x000000aa, layout: makeVacuumLayout(1) },
     b(Paned, { dir: 'y', vacuum: 'a' },
       b(Spaced, { padding: 1, onMouseDown: () => { sys.trackMouse({ move: dragMove(sys, win) }); }, },
         b(Label, { text: title, color: 0xffffff33 }),
         b(Group, { gap: 2 },
-          b(Button, {}, b(ImageBox, { image: minImage })),
-          b(Button, {}, b(ImageBox, { image: maxImage })),
-          b(Button, { onClick: () => { closeWindow(win); } }, b(ImageBox, { image: axeImage }))
+          b(Button, {}, b(ImageView, { image: minImage })),
+          b(Button, {}, b(ImageView, { image: maxImage })),
+          b(Button, { onClick: () => { closeWindow(win); } }, b(ImageView, { image: axeImage }))
         )
       ),
       b(Group, { layout: makeVacuumLayout(1) }, content),
     ),
-    b(ImageBox, {
+    b(ImageView, {
       passthrough: false,
       image: adjImage,
       layout: function (w, h) { this.x = w - this.w!; this.y = h - this.h!; },
@@ -78,7 +78,7 @@ function makeWindow(title: string, content: Box) {
 
 sys.root.children.push(
   b(Paned, { vacuum: 'b', dir: 'y' },
-    b(Box, { background: 0x333333ff, layout: centerLayout },
+    b(View, { background: 0x333333ff, layout: centerLayout },
       demo(sys)
     ),
     b(Group, { background: 0x222222ff },

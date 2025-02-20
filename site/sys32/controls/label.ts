@@ -1,7 +1,7 @@
-import { Box } from "../core/box.js";
+import { View } from "../core/view.js";
 import { Font } from "../core/font.js";
 
-export class Label extends Box {
+export class Label extends View {
 
   padding = 0;
 
@@ -22,10 +22,10 @@ export class Label extends Box {
 
 }
 
-export function wrapButton(findButton: (box: Box) => Box) {
+export function wrapButton(findButton: (view: View) => View) {
   return {
-    onMouseEnter(this: Box) { findButton(this).onMouseEnter?.() },
-    onMouseExit(this: Box) { findButton(this).onMouseExit?.() },
-    onMouseDown(this: Box) { findButton(this).onMouseDown?.() },
+    onMouseEnter(this: View) { findButton(this).onMouseEnter?.() },
+    onMouseExit(this: View) { findButton(this).onMouseExit?.() },
+    onMouseDown(this: View) { findButton(this).onMouseDown?.() },
   };
 }

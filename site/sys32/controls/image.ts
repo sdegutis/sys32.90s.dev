@@ -1,7 +1,7 @@
 import { Bitmap } from "../core/bitmap.js";
-import { Box } from "../core/box.js";
+import { View } from "../core/view.js";
 
-export class ImageBox extends Box {
+export class ImageView extends View {
 
   image?: Bitmap;
   padding = 0;
