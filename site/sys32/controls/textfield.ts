@@ -23,8 +23,6 @@ export class TextField extends View {
   get cursorColor() { return this.#cursor.color; }
   set cursorColor(c: number) { this.#cursor.color = c; }
 
-  override children = [this.#field, this.#cursor];
-
   get text() { return this.#text; }
   set text(s: string) {
     this.#text = s;
@@ -42,6 +40,7 @@ export class TextField extends View {
   }
 
   override layout(): void {
+    this.children = [this.#field, this.#cursor];
     this.#field.x = this.padding;
     this.#field.y = this.padding;
     this.#cursor.x = this.padding + (this.#cursor.w + 1) * this.#field.text.length;
