@@ -1,4 +1,4 @@
-import { Bitmap } from "./bitmap.js";
+import { Cursor } from "./cursor.js";
 import { System } from "./system.js";
 
 export class Box {
@@ -14,6 +14,7 @@ export class Box {
   draw?(): void;
   layout?(w: number, h: number): void;
   adjust?(): void;
+  cursor?: Cursor;
 
   x = 0;
   y = 0;
@@ -33,15 +34,4 @@ export class Box {
   get firstChild() { return this.children[0]; }
   get lastChild() { return this.children[this.children.length - 1]; }
 
-  drawCursor(x: number, y: number) {
-    pointer.draw(this.sys, x - 1, y - 1);
-  }
-
 }
-
-const pointer = new Bitmap([0x000000cc, 0xffffffff], [
-  1, 1, 1, 1, -1,
-  1, 2, 2, 1, -1,
-  1, 2, 1, 1, -1,
-  1, 1, 1, -1,
-]);

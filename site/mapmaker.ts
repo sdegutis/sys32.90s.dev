@@ -1,3 +1,4 @@
+import { Bitmap } from "./sys32/bitmap.js";
 import { Box } from "./sys32/box.js";
 import { Button } from "./sys32/button.js";
 import { Group } from "./sys32/group.js";
@@ -160,11 +161,14 @@ export default (sys: System) => {
   mapBox.h = map.height * 4;
   mapArea.children.push(mapBox);
 
-  mapBox.drawCursor = () => {
-    // sys.rectFill(sys.mouse.x, sys.mouse.y - 2, 1, 5, 0x00000077);
-    // sys.rectFill(sys.mouse.x - 2, sys.mouse.y, 5, 1, 0x00000077);
-    // sys.pset(sys.mouse.x, sys.mouse.y, 0xffffffff);
+  mapBox.cursor = {
+    image: new Bitmap([], []),
+    hotspot: [0, 0],
   }
+
+  // sys.rectFill(sys.mouse.x, sys.mouse.y - 2, 1, 5, 0x00000077);
+  // sys.rectFill(sys.mouse.x - 2, sys.mouse.y, 5, 1, 0x00000077);
+  // sys.pset(sys.mouse.x, sys.mouse.y, 0xffffffff);
 
   let tilesel: TileSelection | null = null;
 

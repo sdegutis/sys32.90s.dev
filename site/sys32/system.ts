@@ -1,4 +1,6 @@
+import { Bitmap } from "./bitmap.js";
 import { Box } from "./box.js";
+import { Cursor } from "./cursor.js";
 import { Font } from "./font.js";
 
 export class System {
@@ -108,8 +110,12 @@ export class System {
       if (t - last >= 30) {
         if (this.needsRedraw) {
           this.needsRedraw = false;
+
           this.#draw(this.root);
-          this.#hovered.drawCursor(this.mouse.x, this.mouse.y);
+
+          const cursor = this.#hovered.cursor ?? pointer;
+          cursor.image.draw(this, this.mouse.x - cursor.hotspot[0], this.mouse.y - cursor.hotspot[1]);
+
           this.blit();
         }
         last = t;
@@ -359,3 +365,13 @@ export function makeBuilder(sys: System) {
     ...children: Box[]
   ): T => build(sys, ctor, config, ...children);
 }
+
+const pointer: Cursor = {
+  image: new Bitmap([0x000000cc, 0xffffffff], [
+    1, 1, 1, 1, -1,
+    1, 2, 2, 1, -1,
+    1, 2, 1, 1, -1,
+    1, 1, 1, -1,
+  ]),
+  hotspot: [1, 1],
+};

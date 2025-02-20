@@ -1,26 +1,27 @@
 import { Bitmap } from "./bitmap.js";
 import { Box } from "./box.js";
-import { System } from "./system.js";
+import { Cursor } from "./cursor.js";
 import { dragMove } from "./selections.js";
+import { System } from "./system.js";
 
-const xresize = {
-  bitmap: new Bitmap([0x00000099, 0xffffffff], [
+const xresize: Cursor = {
+  image: new Bitmap([0x00000099, 0xffffffff], [
     1, 1, 1, 1, 1, -1,
     1, 2, 2, 2, 1, -1,
     1, 1, 1, 1, 1, -1,
   ]),
-  offset: [2, 1],
+  hotspot: [2, 1],
 };
 
-const yresize = {
-  bitmap: new Bitmap([0x00000099, 0xffffffff], [
+const yresize: Cursor = {
+  image: new Bitmap([0x00000099, 0xffffffff], [
     1, 1, 1, -1,
     1, 2, 1, -1,
     1, 2, 1, -1,
     1, 2, 1, -1,
     1, 1, 1, -1,
   ]),
-  offset: [1, 2],
+  hotspot: [1, 2],
 };
 
 class SplitBoxDivider extends Box {
@@ -31,6 +32,7 @@ class SplitBoxDivider extends Box {
   constructor(sys: System, public split: SplitBox) {
     super(sys);
     this.background = split.dividerColor;
+    this.cursor = this.split.dir === 'x' ? xresize : yresize;
   }
 
   override layout(): void {
@@ -49,11 +51,6 @@ class SplitBoxDivider extends Box {
     else if (this.#hovered) {
       this.sys.rectFill(0, 0, this.w, this.h, this.split.dividerColorHover);
     }
-  }
-
-  override drawCursor(x: number, y: number): void {
-    const cursor = this.split.dir === 'x' ? xresize : yresize;
-    cursor.bitmap.draw(this.sys, x - cursor.offset[0], y - cursor.offset[1]);
   }
 
   override onMouseDown(): void {
