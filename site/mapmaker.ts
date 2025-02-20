@@ -161,9 +161,9 @@ export default (sys: System) => {
   mapArea.children.push(mapBox);
 
   mapBox.drawCursor = () => {
-    // rectFill(mouse.x, mouse.y - 2, 1, 5, '#0007');
-    // rectFill(mouse.x - 2, mouse.y, 5, 1, '#0007');
-    // pset(mouse.x, mouse.y, '#fff');
+    // sys.rectFill(sys.mouse.x, sys.mouse.y - 2, 1, 5, 0x00000077);
+    // sys.rectFill(sys.mouse.x - 2, sys.mouse.y, 5, 1, 0x00000077);
+    // sys.pset(sys.mouse.x, sys.mouse.y, 0xffffffff);
   }
 
   let tilesel: TileSelection | null = null;
