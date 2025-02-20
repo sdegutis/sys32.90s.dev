@@ -179,7 +179,10 @@ export default (sys: System) => {
         move() {
           tilesel!.update();
 
-          const { tx1, tx2, ty1, ty2 } = tilesel!;
+          const tx1 = Math.max(tilesel!.tx1, 0);
+          const ty1 = Math.max(tilesel!.ty1, 0);
+          const tx2 = Math.min(tilesel!.tx2, map.width);
+          const ty2 = Math.min(tilesel!.ty2, map.height);
 
           for (let y = ty1; y < ty2; y++) {
             for (let x = tx1; x < tx2; x++) {
