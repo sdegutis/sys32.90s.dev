@@ -4,6 +4,7 @@ import { Group } from "./sys32/group.js";
 import { Label, wrapButton } from "./sys32/label.js";
 import { RadioButton, RadioGroup } from "./sys32/radio.js";
 import { makeBuilder, type System } from "./sys32/system.js";
+import { TextField } from "./sys32/textfield.js";
 
 export function demo(sys: System) {
   const b = makeBuilder(sys);
@@ -23,6 +24,13 @@ export function demo(sys: System) {
       b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'aaa' })),
       b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'bbb' })),
       b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'ccc' })),
+    ),
+
+    b(Group, { dir: 'y', gap: 1 },
+      b(TextField, { text: 'hi', background: 0x000000ff, padding: 0, length: 4 }),
+      b(TextField, { text: 'hi', background: 0x000000ff, padding: 1, length: 4 }),
+      b(TextField, { text: 'hi', background: 0x000000ff, padding: 2, length: 4 }),
+      b(TextField, { text: 'hi', background: 0x000099ff, padding: 2, length: 4, cursorColor: 0xff000099, color: 0xffff00ff }),
     ),
 
     b(Group, { dir: 'y', gap: 1 },

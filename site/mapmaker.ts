@@ -161,9 +161,9 @@ export default (sys: System) => {
   mapBox.h = map.height * 4;
   mapArea.children.push(mapBox);
 
-  mapBox.cursor = {
-    image: new Bitmap([], []),
-    hotspot: [0, 0],
+  mapBox.mouse.cursor = {
+    bitmap: new Bitmap([], []),
+    offset: [0, 0],
   }
 
   // sys.rectFill(sys.mouse.x, sys.mouse.y - 2, 1, 5, 0x00000077);

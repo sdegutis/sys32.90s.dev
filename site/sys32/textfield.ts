@@ -15,7 +15,7 @@ export class TextField extends Box {
   font = Font.crt2025;
 
   #field = build(this.sys, Label, { text: '', padding: 0 });
-  #cursor = build(this.sys, Label, { text: '_', padding: 0, color: 0x1177ffff });
+  #cursor = build(this.sys, Label, { visible: false, text: '_', padding: 0, color: 0x1177ffff });
 
   get color() { return this.#field.color; }
   set color(c: number) { this.#field.color = c; }

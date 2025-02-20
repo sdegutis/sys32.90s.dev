@@ -1,6 +1,12 @@
 import { Cursor } from "./cursor.js";
 import { System } from "./system.js";
 
+type Mouse = {
+  x: number;
+  y: number;
+  cursor: Cursor | undefined;
+};
+
 export class Box {
 
   onScroll?(up: boolean): void;
@@ -14,7 +20,6 @@ export class Box {
   draw?(): void;
   layout?(): void;
   adjust?(): void;
-  cursor?: Cursor;
 
   x = 0;
   y = 0;
@@ -26,7 +31,8 @@ export class Box {
   focused = false;
 
   children: Box[] = [];
-  mouse = { x: 0, y: 0 };
+  mouse: Mouse = { x: 0, y: 0, cursor: undefined };
+
   trackingArea?: { x: number, y: number, w: number, h: number };
 
   constructor(public sys: System) { }

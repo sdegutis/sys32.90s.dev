@@ -113,8 +113,8 @@ export class System {
 
           this.#draw(this.root);
 
-          const cursor = this.#hovered.cursor ?? pointer;
-          cursor.image.draw(this, this.mouse.x - cursor.hotspot[0], this.mouse.y - cursor.hotspot[1]);
+          const cursor = this.#hovered.mouse.cursor ?? pointer;
+          cursor.bitmap.draw(this, this.mouse.x - cursor.offset[0], this.mouse.y - cursor.offset[1]);
 
           this.blit();
         }
@@ -367,11 +367,11 @@ export function makeBuilder(sys: System) {
 }
 
 const pointer: Cursor = {
-  image: new Bitmap([0x000000cc, 0xffffffff], [
+  bitmap: new Bitmap([0x000000cc, 0xffffffff], [
     1, 1, 1, 1, -1,
     1, 2, 2, 1, -1,
     1, 2, 1, 1, -1,
     1, 1, 1, -1,
   ]),
-  hotspot: [1, 1],
+  offset: [1, 1],
 };

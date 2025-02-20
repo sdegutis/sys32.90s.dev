@@ -5,23 +5,23 @@ import { dragMove } from "./selections.js";
 import { System } from "./system.js";
 
 const xresize: Cursor = {
-  image: new Bitmap([0x00000099, 0xffffffff], [
+  bitmap: new Bitmap([0x00000099, 0xffffffff], [
     1, 1, 1, 1, 1, -1,
     1, 2, 2, 2, 1, -1,
     1, 1, 1, 1, 1, -1,
   ]),
-  hotspot: [2, 1],
+  offset: [2, 1],
 };
 
 const yresize: Cursor = {
-  image: new Bitmap([0x00000099, 0xffffffff], [
+  bitmap: new Bitmap([0x00000099, 0xffffffff], [
     1, 1, 1, -1,
     1, 2, 1, -1,
     1, 2, 1, -1,
     1, 2, 1, -1,
     1, 1, 1, -1,
   ]),
-  hotspot: [1, 2],
+  offset: [1, 2],
 };
 
 class SplitBoxDivider extends Box {
@@ -32,7 +32,7 @@ class SplitBoxDivider extends Box {
   constructor(sys: System, public split: SplitBox) {
     super(sys);
     this.background = split.dividerColor;
-    this.cursor = this.split.dir === 'x' ? xresize : yresize;
+    this.mouse.cursor = this.split.dir === 'x' ? xresize : yresize;
   }
 
   override layout(): void {
