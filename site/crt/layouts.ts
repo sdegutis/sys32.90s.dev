@@ -1,13 +1,15 @@
 import { Box } from "./box.js";
 
-export function vacuumLayout(this: Box) {
-  const c = this.children[0];
-  if (c) {
-    c.x = 0;
-    c.y = 0;
-    c.w = this.w;
-    c.h = this.h;
-  }
+export function makeVacuumLayout(padding = 0) {
+  return function (this: Box) {
+    const c = this.children[0];
+    if (c) {
+      c.x = padding;
+      c.y = padding;
+      c.w = this.w - padding * 2;
+      c.h = this.h - padding * 2;
+    }
+  };
 };
 
 export function centerLayout(this: Box) {

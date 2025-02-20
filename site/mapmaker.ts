@@ -2,7 +2,7 @@ import { Box } from "./crt/box.js";
 import { Button } from "./crt/button.js";
 import { Group } from "./crt/group.js";
 import { Label } from "./crt/label.js";
-import { vacuumLayout } from "./crt/layouts.js";
+import { makeVacuumLayout } from "./crt/layouts.js";
 import { RadioButton, RadioGroup } from "./crt/radio.js";
 import { TileSelection, dragMove } from "./crt/selections.js";
 import { SplitBox } from "./crt/split.js";
@@ -76,7 +76,7 @@ export default (sys: System) => {
         w: 6, h: 6,
       })),
     ),
-    b(Box, { background: 0x333344ff, layout: vacuumLayout },
+    b(Box, { background: 0x333344ff, layout: makeVacuumLayout() },
       mapArea
     )
   );

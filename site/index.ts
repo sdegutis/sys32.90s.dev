@@ -3,38 +3,55 @@ import { Button } from "./crt/button.js";
 import { Checkbox } from "./crt/checkbox.js";
 import { Group } from "./crt/group.js";
 import { Label } from "./crt/label.js";
-import { centerLayout, vacuumLayout } from "./crt/layouts.js";
+import { centerLayout, makeVacuumLayout } from "./crt/layouts.js";
 import { RadioButton, RadioGroup } from "./crt/radio.js";
-import { dragMove } from "./crt/selections.js";
+import { dragMove, dragResize } from "./crt/selections.js";
 import { SplitBox } from "./crt/split.js";
 import { makeBuilder, System } from "./crt/system.js";
 import mapmaker from "./mapmaker.js";
 
 
+
+
+
 const canvas = document.querySelector('canvas')!;
 const sys = new System(canvas);
-// sys.resize(320 * 2, 180 * 2);
+sys.resize(320 * 2, 180 * 2);
 sys.autoscale();
-sys.root.layout = vacuumLayout;
+sys.root.layout = makeVacuumLayout();
 
 const b = makeBuilder(sys);
 
 let x = 10;
 
 function makeWindow(title: string, content: Box) {
-  const titlebar = b(Box, {
-    h: 10, background: 0x00000033,
-    onMouseDown: () => sys.trackMouse({ move: dragMove(sys, win) }),
+  const titlebar = b(Group, {
+    background: 0xff000033,
+    padding: 1,
+    onMouseDown: () => {
+      if (sys.keys['Control']) {
+        const resize = dragResize(sys, win);
+        sys.trackMouse({
+          move: () => {
+            resize();
+            sys.layoutTree(win);
+          }
+        });
+      }
+      else {
+        sys.trackMouse({ move: dragMove(sys, win) });
+      }
+    },
   },
     b(Label, { text: title })
   );
-  const contentView = b(Box, { layout: vacuumLayout },
+  const contentView = b(Group, { layout: makeVacuumLayout(3) },
     content
   );
-  const win = b(Box, { w: 100, h: 100, background: 0x00000099, layout: vacuumLayout },
+  const win = b(Box, { w: 100, h: 100, background: 0x0000ff33, layout: makeVacuumLayout(1) },
     b(SplitBox, { dir: 'y', vacuum: 'a' },
       titlebar,
-      contentView
+      content,
     )
   );
 
@@ -120,7 +137,7 @@ function newMapmaker() {
 }
 
 sys.root.children = [
-  b(Box, { layout: vacuumLayout },
+  b(Box, { layout: makeVacuumLayout() },
     b(SplitBox, { vacuum: 'a', dir: 'y' },
       b(Group, { background: 0x222222ff },
         b(Button, { onClick: newMapmaker, padding: 1 }, b(Label, { text: 'one' })),
@@ -130,6 +147,6 @@ sys.root.children = [
   )
 ];
 
-// newMapmaker();
+newMapmaker();
 
 sys.layoutTree();
