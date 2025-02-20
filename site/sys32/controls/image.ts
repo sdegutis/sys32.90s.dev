@@ -1,5 +1,5 @@
-import { Bitmap } from "./bitmap.js";
-import { Box } from "./box.js";
+import { Bitmap } from "../core/bitmap.js";
+import { Box } from "../core/box.js";
 
 export class ImageBox extends Box {
 

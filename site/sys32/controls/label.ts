@@ -1,5 +1,5 @@
-import { Box } from "./box.js";
-import { Font } from "./font.js";
+import { Box } from "../core/box.js";
+import { Font } from "../core/font.js";
 
 export class Label extends Box {
 

@@ -1,12 +1,12 @@
-import { Bitmap } from "./sys32/bitmap.js";
-import { Button } from "./sys32/button.js";
-import { Checkbox } from "./sys32/checkbox.js";
-import { Group } from "./sys32/group.js";
-import { ImageBox } from "./sys32/image.js";
-import { Label, wrapButton } from "./sys32/label.js";
-import { RadioButton, RadioGroup } from "./sys32/radio.js";
-import { makeBuilder, type System } from "./sys32/system.js";
-import { TextField } from "./sys32/textfield.js";
+import { Group } from "./sys32/containers/group.js";
+import { Button } from "./sys32/controls/button.js";
+import { Checkbox } from "./sys32/controls/checkbox.js";
+import { ImageBox } from "./sys32/controls/image.js";
+import { Label, wrapButton } from "./sys32/controls/label.js";
+import { RadioButton, RadioGroup } from "./sys32/controls/radio.js";
+import { TextField } from "./sys32/controls/textfield.js";
+import { Bitmap } from "./sys32/core/bitmap.js";
+import { System, makeBuilder } from "./sys32/core/system.js";
 
 export function demo(sys: System) {
   const b = makeBuilder(sys);
