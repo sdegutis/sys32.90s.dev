@@ -26,7 +26,11 @@ export class System {
 
   #ticks = new Set<(delta: number) => void>();
 
-  constructor(public canvas: HTMLCanvasElement) {
+  canvas: HTMLCanvasElement;
+
+  constructor(canvas: HTMLCanvasElement) {
+    this.canvas = canvas;
+
     canvas.style.imageRendering = 'pixelated';
     canvas.style.backgroundColor = '#000';
     canvas.style.outline = 'none';

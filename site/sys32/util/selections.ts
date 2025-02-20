@@ -1,7 +1,9 @@
-import { View } from "../core/view.js";
 import { System } from "../core/system.js";
+import { View } from "../core/view.js";
 
 export class Selection {
+
+  view: View;
 
   ox: number;
   oy: number;
@@ -12,7 +14,8 @@ export class Selection {
   w!: number;
   h!: number;
 
-  constructor(public view: View) {
+  constructor(view: View) {
+    this.view = view;
     this.x1 = this.view.mouse.x;
     this.y1 = this.view.mouse.y;
     this.ox = this.view.sys.mouse.x - this.x1;
@@ -33,8 +36,11 @@ export class Selection {
 
 export class TileSelection extends Selection {
 
-  constructor(view: View, public size: number) {
+  size: number;
+
+  constructor(view: View, size: number) {
     super(view);
+    this.size = size;
   }
 
   tx1!: number;

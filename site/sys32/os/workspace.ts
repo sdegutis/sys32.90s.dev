@@ -8,10 +8,13 @@ import { makeBuilder } from "../util/build.js";
 
 export class Workspace {
 
+  sys: System;
   desktop;
   taskbar;
 
-  constructor(public sys: System) {
+  constructor(sys: System) {
+    this.sys = sys;
+
     const b = makeBuilder(sys);
     this.desktop = b(View, { background: 0x333333ff });
     this.taskbar = b(Spaced, { background: 0x000000ff },

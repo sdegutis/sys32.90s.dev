@@ -103,13 +103,15 @@ export default (sys: System) => {
 
   class Map {
 
+    width: number;
+    height: number;
+
     terrain: number[] = [];
     units: number[] = [];
 
-    constructor(
-      public width: number,
-      public height: number,
-    ) {
+    constructor(w: number, h: number) {
+      this.width = w;
+      this.height = h;
       this.terrain = Array(this.width * this.height).fill(3);
       this.units = Array(this.width * this.height).fill(0);
     }

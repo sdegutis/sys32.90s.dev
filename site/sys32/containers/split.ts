@@ -27,9 +27,11 @@ class SplitDivider extends View {
 
   pressed = false;
   #hovered = false;
+  split: Split;
 
-  constructor(sys: System, public split: Split) {
+  constructor(sys: System, split: Split) {
     super(sys);
+    this.split = split;
     this.background = split.dividerColor;
     this.mouse.cursor = this.split.dir === 'x' ? xresize : yresize;
   }

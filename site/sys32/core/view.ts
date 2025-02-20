@@ -34,7 +34,11 @@ export class View {
 
   trackingArea?: { x: number, y: number, w: number, h: number };
 
-  constructor(public sys: System) { }
+  sys: System;
+
+  constructor(sys: System) {
+    this.sys = sys;
+  }
 
   get firstChild(): View | undefined { return this.children[0]; }
   get lastChild(): View | undefined { return this.children[this.children.length - 1]; }

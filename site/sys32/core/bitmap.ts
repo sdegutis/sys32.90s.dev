@@ -2,8 +2,15 @@ import { System } from "./system.js";
 
 export class Bitmap {
 
+  w: number;
   h: number;
-  constructor(public colors: number[], public w: number, public pixels: number[]) {
+  pixels: number[];
+  colors: number[];
+
+  constructor(colors: number[], w: number, pixels: number[]) {
+    this.pixels = pixels;
+    this.colors = colors;
+    this.w = w;
     this.h = this.pixels.length / w;
   }
 

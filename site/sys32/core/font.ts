@@ -32,8 +32,13 @@ export class Font {
   `);
 
   chars: Record<string, boolean[][]> = {};
+  width: number;
+  height: number;
 
-  constructor(public width: number, public height: number, perRow: number, map: string, bits: string) {
+  constructor(width: number, height: number, perRow: number, map: string, bits: string) {
+    this.width = width;
+    this.height = height;
+
     bits = bits.replace(/\|?\n/g, '');
 
     for (let i = 0; i < map.length; i++) {

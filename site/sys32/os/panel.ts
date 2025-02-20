@@ -18,8 +18,11 @@ const adjImage = new Bitmap([0xffffff11], 3, [0, 0, 1, 0, 0, 1, 1, 1, 1,]);
 export class Panel {
 
   #window;
+  ws: Workspace;
 
-  constructor(public ws: Workspace, title: string, content: View, background = 0x000000aa) {
+  constructor(ws: Workspace, title: string, content: View, background = 0x000000aa) {
+    this.ws = ws;
+
     const sys = ws.sys;
     const b = makeBuilder(sys);
 
