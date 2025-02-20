@@ -2,6 +2,8 @@ import { Box } from "./box.js";
 
 export class Group extends Box {
 
+  padding = 0;
+
   dir: 'x' | 'y' = 'x';
   gap = 0;
 
@@ -16,6 +18,9 @@ export class Group extends Box {
       if (i > 0) this[dw] += this.gap;
       if (this[dh] < child[dh]) this[dh] = child[dh];
     }
+
+    this[dw] += this.padding * 2;
+    this[dh] += this.padding * 2;
   }
 
   override layout(): void {
@@ -24,7 +29,7 @@ export class Group extends Box {
     const dx = this.dir === 'x' ? 'x' : 'y';
     const dy = this.dir === 'x' ? 'y' : 'x';
 
-    let x = 0;
+    let x = this.padding;
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
       child[dx] = x;

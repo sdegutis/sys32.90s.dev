@@ -4,6 +4,7 @@ import { Checkbox } from "./crt/checkbox.js";
 import { Group } from "./crt/group.js";
 import { Label } from "./crt/label.js";
 import { centerLayout, vacuumLayout } from "./crt/layouts.js";
+import { RadioButton, RadioGroup } from "./crt/radio.js";
 import { dragMove } from "./crt/selections.js";
 import { SplitBox } from "./crt/split.js";
 import { makeBuilder, System } from "./crt/system.js";
@@ -12,7 +13,7 @@ import mapmaker from "./mapmaker.js";
 
 const canvas = document.querySelector('canvas')!;
 const sys = new System(canvas);
-sys.resize(320 * 2, 180 * 2);
+// sys.resize(320 * 2, 180 * 2);
 sys.autoscale();
 sys.root.layout = vacuumLayout;
 
@@ -40,11 +41,20 @@ function makeWindow(title: string, content: Box) {
   return win;
 }
 
+const group = new RadioGroup();
+
 const area = b(Box, { background: 0x333333ff, layout: centerLayout },
 
-  b(Group, { gap: 2, background: 0xffffff33 },
+  b(Group, { padding: 1, gap: 2, background: 0xffffff33 },
+
+    b(RadioButton, { group, size: 4, padding: 1 }),
+    b(RadioButton, { group, size: 4, padding: 1 }),
+    b(RadioButton, { group, size: 4, padding: 1 }),
 
     b(Label, { text: 'hello', background: 0x00000077, padding: 3 }),
+
+    b(Checkbox, { checked: true, padding: 0, size: 4 }),
+    b(Checkbox, { checked: true, padding: 1, size: 4 }),
 
     b(Button, { onClick: () => { console.log('button') } },
       b(Label, { text: 'hello', background: 0x00000077, padding: 3 })
@@ -120,6 +130,6 @@ sys.root.children = [
   )
 ];
 
-newMapmaker();
+// newMapmaker();
 
 sys.layoutTree();
