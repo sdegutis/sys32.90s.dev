@@ -31,7 +31,7 @@ function makeWindow(title: string, content: Box) {
     onMouseDown: () => { sys.trackMouse({ move: dragMove(sys, win) }); },
   },
     b(Label, { text: title, color: 0xffffff33 }),
-    b(Group, { gap: 1 },
+    b(Group, { gap: 2 },
       b(Button, {
         onClick: () => {
           const i = sys.root.children.indexOf(win);
