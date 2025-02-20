@@ -68,14 +68,23 @@ function makeWindow(title: string, content: Box) {
 
 const group = new RadioGroup();
 
+function makeButton(findButton: (box: Box) => Box) {
+  return {
+    onMouseEnter(this: Box) { findButton(this).onMouseEnter!() },
+    onMouseExit(this: Box) { findButton(this).onMouseExit!() },
+    onMouseDown(this: Box) { findButton(this).onMouseDown!() },
+  };
+}
+
+
 const area = b(Box, { background: 0x333333ff, layout: centerLayout },
 
   b(Group, { padding: 1, gap: 2, background: 0xffffff33 },
 
     b(Group, { dir: 'y', gap: 1 },
-      b(RadioButton, { group, size: 4, padding: 1 }),
-      b(RadioButton, { group, size: 4, padding: 1 }),
-      b(RadioButton, { group, size: 4, padding: 1 }),
+      b(Group, { gap: 1, ...makeButton(box => box.firstChild) }, b(RadioButton, { group, size: 4, padding: 1 }), b(Label, { text: 'aaa' })),
+      b(Group, { gap: 1, ...makeButton(box => box.firstChild) }, b(RadioButton, { group, size: 4, padding: 1 }), b(Label, { text: 'bbb' })),
+      b(Group, { gap: 1, ...makeButton(box => box.firstChild) }, b(RadioButton, { group, size: 4, padding: 1 }), b(Label, { text: 'ccc' })),
     ),
 
     b(Group, { dir: 'y', gap: 1 },
