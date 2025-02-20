@@ -36,7 +36,7 @@ export class View {
 
   constructor(public sys: System) { }
 
-  get firstChild() { return this.children[0]; }
-  get lastChild() { return this.children[this.children.length - 1]; }
+  get firstChild(): View | undefined { return this.children[0]; }
+  get lastChild(): View | undefined { return this.children[this.children.length - 1]; }
 
 }

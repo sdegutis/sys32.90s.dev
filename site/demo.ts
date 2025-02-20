@@ -18,15 +18,15 @@ export function demo(sys: System) {
   return b(Group, { padding: 1, gap: 2, background: 0xffffff33 },
 
     b(Group, { dir: 'y', gap: 1 },
-      b(Group, { gap: 1, ...wrapButton(view => view.firstChild) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'aaa' })),
-      b(Group, { gap: 1, ...wrapButton(view => view.firstChild) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'bbb' })),
-      b(Group, { gap: 1, ...wrapButton(view => view.firstChild) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'ccc' })),
+      b(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'aaa' })),
+      b(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'bbb' })),
+      b(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'ccc' })),
     ),
 
     b(Group, { dir: 'y', gap: 1 },
-      b(Group, { gap: 1, ...wrapButton(view => view.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'aaa' })),
-      b(Group, { gap: 1, ...wrapButton(view => view.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'bbb' })),
-      b(Group, { gap: 1, ...wrapButton(view => view.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'ccc' })),
+      b(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'aaa' })),
+      b(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'bbb' })),
+      b(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'ccc' })),
     ),
 
     b(Group, { dir: 'y', gap: 1 },
@@ -115,12 +115,12 @@ export function demo(sys: System) {
     ),
 
     b(Group, { dir: 'y', gap: 1 },
-      b(Group, { gap: 2, ...wrapButton(view => view.firstChild), },
+      b(Group, { gap: 2, ...wrapButton(view => view.firstChild!), },
         b(Checkbox, { checked: true, padding: 2, size: 2, onChange() { console.log('foo', this.checked) } }),
         b(Label, { text: 'foo' }),
       ),
 
-      b(Group, { gap: 2, ...wrapButton(view => view.lastChild), },
+      b(Group, { gap: 2, ...wrapButton(view => view.lastChild!), },
         b(Label, { text: 'bar' }),
         b(Checkbox, { checked: true, padding: 2, size: 2, onChange() { console.log('bar', this.checked) } }),
       ),
