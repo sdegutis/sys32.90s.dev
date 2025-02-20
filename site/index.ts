@@ -2,7 +2,7 @@ import { demo } from "./demo.js";
 import mapmaker from "./mapmaker.js";
 import { Box } from "./sys32/box.js";
 import { Button } from "./sys32/button.js";
-import { Group } from "./sys32/group.js";
+import { Group, Spaced } from "./sys32/group.js";
 import { Label } from "./sys32/label.js";
 import { centerLayout, makeVacuumLayout } from "./sys32/layouts.js";
 import { Paned } from "./sys32/paned.js";
@@ -24,7 +24,7 @@ const b = makeBuilder(sys);
 let x = 10;
 
 function makeWindow(title: string, content: Box) {
-  const titlebar = b(Group, {
+  const titlebar = b(Spaced, {
     padding: 1,
     onMouseDown: () => {
       if (sys.keys['Control']) {
@@ -42,7 +42,6 @@ function makeWindow(title: string, content: Box) {
     },
   },
     b(Label, { text: title, color: 0xffffff33 }),
-    b(Box, { w: 3 }),
     b(Button, {
       onClick: () => {
         const i = sys.root.children.indexOf(win);
