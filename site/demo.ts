@@ -84,11 +84,13 @@ export function demo(sys: System) {
         ])
       }),
       b(ImageBox, {
-        image: new Bitmap([0x000000cc, 0xffffffff], 4, [
-          1, 1, 1, 1,
-          1, 2, 2, 1,
-          1, 2, 1, 1,
-          1, 1, 1, 0,
+        background: 0x00000033,
+        padding: 1,
+        image: new Bitmap([0xffffffff], 4, [
+          1, 0, 0, 1,
+          0, 1, 1, 0,
+          0, 1, 1, 0,
+          1, 0, 0, 1,
         ])
       }),
     ),
