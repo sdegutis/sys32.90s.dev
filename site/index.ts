@@ -28,23 +28,10 @@ let x = 10;
 function makeWindow(title: string, content: Box) {
   const titlebar = b(Spaced, {
     padding: 1,
-    onMouseDown: () => {
-      if (sys.keys['Control']) {
-        const resize = dragResize(sys, win);
-        sys.trackMouse({
-          move: () => {
-            resize();
-            sys.layoutTree(win);
-          }
-        });
-      }
-      else {
-        sys.trackMouse({ move: dragMove(sys, win) });
-      }
-    },
+    onMouseDown: () => { sys.trackMouse({ move: dragMove(sys, win) }); },
   },
     b(Label, { text: title, color: 0xffffff33 }),
-    b(Group, {},
+    b(Group, { gap: 1 },
       b(Button, {
         onClick: () => {
           const i = sys.root.children.indexOf(win);
@@ -53,12 +40,11 @@ function makeWindow(title: string, content: Box) {
       },
         b(ImageBox, {
           background: 0x00000033,
-          padding: 1,
-          image: new Bitmap([0xffffffff], 4, [
-            0, 0, 0, 0,
-            0, 0, 0, 0,
-            0, 0, 0, 0,
-            1, 1, 1, 1,
+          padding: 0,
+          image: new Bitmap([0xffffffff], 3, [
+            0, 0, 0,
+            0, 0, 0,
+            1, 1, 1,
           ])
         })
       ),
@@ -70,12 +56,11 @@ function makeWindow(title: string, content: Box) {
       },
         b(ImageBox, {
           background: 0x00000033,
-          padding: 1,
-          image: new Bitmap([0xffffffff], 4, [
-            1, 1, 1, 1,
-            1, 0, 0, 1,
-            1, 0, 0, 1,
-            1, 1, 1, 1,
+          padding: 0,
+          image: new Bitmap([0xffffffff], 3, [
+            1, 1, 1,
+            1, 0, 1,
+            1, 1, 1,
           ])
         })
       ),
@@ -86,13 +71,12 @@ function makeWindow(title: string, content: Box) {
         }
       },
         b(ImageBox, {
-          background: 0xff000033,
-          padding: 1,
-          image: new Bitmap([0xffffffff], 4, [
-            1, 0, 0, 1,
-            0, 1, 1, 0,
-            0, 1, 1, 0,
-            1, 0, 0, 1,
+          background: 0x00000033,
+          padding: 0,
+          image: new Bitmap([0x990000ff], 3, [
+            1, 0, 1,
+            0, 1, 0,
+            1, 0, 1,
           ])
         })
       ),
@@ -105,7 +89,29 @@ function makeWindow(title: string, content: Box) {
     b(Paned, { dir: 'y', vacuum: 'a' },
       titlebar,
       contentView,
-    )
+    ),
+    b(ImageBox, {
+      passthrough: false,
+      image: new Bitmap([0xffffff33], 3, [
+        0, 0, 1,
+        0, 1, 0,
+        1, 0, 1,
+      ]),
+      // background: 0x0000ffff,
+      w: 10, h: 10, layout: function (w, h) {
+        this.x = w - this.w!;
+        this.y = h - this.h!;
+      },
+      onMouseDown: () => {
+        const resize = dragResize(sys, win);
+        sys.trackMouse({
+          move: () => {
+            resize();
+            sys.layoutTree(win);
+          }
+        });
+      },
+    }),
   );
 
   return win;

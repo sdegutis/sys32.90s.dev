@@ -18,7 +18,7 @@ export class Box {
   onFocus?(): void;
   onBlur?(): void;
   draw?(): void;
-  layout?(): void;
+  layout?(w: number, h: number): void;
   adjust?(): void;
 
   x = 0;
