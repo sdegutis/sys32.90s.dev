@@ -20,7 +20,7 @@ export function centerLayout(this: Box) {
   }
 };
 
-export function makeFlowLayout(padding = 0, margin = 0) {
+export function makeFlowLayout(padding = 0, gap = 0) {
   return function (this: Box) {
     let x = padding;
     let y = padding;
@@ -30,13 +30,13 @@ export function makeFlowLayout(padding = 0, margin = 0) {
 
       if (x + child.w > this.w && i > 0) {
         x = padding;
-        y += h + margin;
+        y += h + gap;
         h = 0;
       }
 
       child.x = x;
       child.y = y;
-      x += child.w + margin;
+      x += child.w + gap;
       if (child.h > h) h = child.h;
     }
   };
