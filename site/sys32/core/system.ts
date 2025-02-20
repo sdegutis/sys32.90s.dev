@@ -278,10 +278,6 @@ export class System {
     }
   }
 
-  print(x: number, y: number, c: number, text: string) {
-    this.font.print(this, x, y, c, text);
-  }
-
   focus(node: Box) {
     this.focused = node;
     this.focused.focused = true;

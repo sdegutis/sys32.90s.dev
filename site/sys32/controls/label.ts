@@ -17,7 +17,7 @@ export class Label extends Box {
   }
 
   override draw() {
-    this.sys.print(this.padding, this.padding, this.color, this.text);
+    this.sys.font.print(this.sys, this.padding, this.padding, this.color, this.text);
   }
 
 }
