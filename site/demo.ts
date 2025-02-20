@@ -110,7 +110,7 @@ export function demo(sys: System) {
       b(Checkbox, { checked: true, size: 2 }),
       b(Checkbox, { checked: true, size: 3 }),
       b(Checkbox, { checked: true, size: 4 }),
-      b(Checkbox, { checked: true, size: 5 }),
+      b(Checkbox, { checked: true, size: 5, mouse: { x: 0, y: 0, cursor: { bitmap: new Bitmap([0x0000ffff], 3, [1, 1, 1, 1, 0, 1, 1, 1, 1,]), offset: [0, 0] } } }),
     ),
 
     b(Group, { dir: 'y', gap: 1 },
