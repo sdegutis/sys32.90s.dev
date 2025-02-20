@@ -1,6 +1,6 @@
 import { Bitmap } from "../core/bitmap.js";
 import { Box } from "../core/box.js";
-import { dragMove } from "../core/selections.js";
+import { dragMove } from "../util/selections.js";
 import { Cursor, System } from "../core/system.js";
 
 const xresize: Cursor = {

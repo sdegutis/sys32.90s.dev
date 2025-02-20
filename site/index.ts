@@ -8,8 +8,8 @@ import { ImageBox } from "./sys32/controls/image.js";
 import { Label } from "./sys32/controls/label.js";
 import { Bitmap } from "./sys32/core/bitmap.js";
 import { Box } from "./sys32/core/box.js";
-import { dragMove, dragResize } from "./sys32/core/selections.js";
 import { System, makeBuilder } from "./sys32/core/system.js";
+import { dragMove, dragResize } from "./sys32/util/selections.js";
 
 
 

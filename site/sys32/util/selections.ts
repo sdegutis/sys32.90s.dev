@@ -1,5 +1,5 @@
-import { Box } from "./box.js";
-import { System } from "./system.js";
+import { Box } from "../core/box.js";
+import { System } from "../core/system.js";
 
 export class Selection {
 

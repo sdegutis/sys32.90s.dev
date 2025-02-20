@@ -6,7 +6,7 @@ import { Label } from "./sys32/controls/label.js";
 import { RadioButton, RadioGroup } from "./sys32/controls/radio.js";
 import { Bitmap } from "./sys32/core/bitmap.js";
 import { Box } from "./sys32/core/box.js";
-import { TileSelection, dragMove } from "./sys32/core/selections.js";
+import { TileSelection, dragMove } from "./sys32/util/selections.js";
 import { System, makeBuilder } from "./sys32/core/system.js";
 
 const COLORS = [
