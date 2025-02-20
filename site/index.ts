@@ -25,6 +25,17 @@ const b = makeBuilder(sys);
 
 let x = 10;
 
+function newMapmaker() {
+  const win = makeWindow('mapmaker', mapmaker(sys));
+
+  win.x = x;
+  win.y = x;
+  x += 30;
+
+  sys.root.children.push(win);
+  sys.layoutTree();
+}
+
 function closeWindow(win: Box) {
   const i = sys.root.children.indexOf(win);
   sys.root.children.splice(i, 1);
@@ -63,17 +74,6 @@ function makeWindow(title: string, content: Box) {
   return win;
 }
 
-
-function newMapmaker() {
-  const win = makeWindow('mapmaker', mapmaker(sys));
-
-  win.x = x;
-  win.y = x;
-  x += 30;
-
-  sys.root.children.push(win);
-  sys.layoutTree();
-}
 
 sys.root.children.push(
   b(Paned, { vacuum: 'b', dir: 'y' },
