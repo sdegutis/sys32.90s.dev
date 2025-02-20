@@ -1,6 +1,5 @@
 import { Bitmap } from "./bitmap.js";
 import { Box } from "./box.js";
-import { Cursor } from "./cursor.js";
 import { Font } from "./font.js";
 
 export class System {
@@ -383,3 +382,8 @@ const pointer: Cursor = {
   ]),
   offset: [1, 1],
 };
+
+export interface Cursor {
+  bitmap: Bitmap,
+  offset: [number, number],
+}

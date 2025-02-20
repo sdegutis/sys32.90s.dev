@@ -1,5 +1,4 @@
-import { Cursor } from "./cursor.js";
-import { System } from "./system.js";
+import { Cursor, System } from "./system.js";
 
 type Mouse = {
   x: number;
