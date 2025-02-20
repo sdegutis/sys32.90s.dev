@@ -42,12 +42,21 @@ function makeWindow(title: string, content: Box) {
       }
     },
   },
-    b(Label, { text: title, color: 0xffffff33 })
+    b(Label, { text: title, color: 0xffffff33 }),
+    b(Box, { w: 3 }),
+    b(Button, {
+      onClick: () => {
+        const i = sys.root.children.indexOf(win);
+        sys.root.children.splice(i, 1);
+      }
+    },
+      b(Label, { text: 'x' })
+    )
   );
   const contentView = b(Group, { layout: makeVacuumLayout(1) },
     content
   );
-  const win = b(Box, { w: 100, h: 100, background: 0x00000077, layout: makeVacuumLayout(1) },
+  const win = b(Box, { w: 100, h: 100, background: 0x000000aa, layout: makeVacuumLayout(1) },
     b(SplitBox, { dir: 'y', vacuum: 'a' },
       titlebar,
       contentView,
@@ -125,13 +134,13 @@ const area = b(Box, { background: 0x333333ff, layout: centerLayout },
 );
 
 function newMapmaker() {
-  const a = makeWindow('mapmaker', mapmaker(sys));
+  const win = makeWindow('mapmaker', mapmaker(sys));
 
-  a.x = x;
-  a.y = x;
+  win.x = x;
+  win.y = x;
   x += 30;
 
-  sys.root.children.push(a);
+  sys.root.children.push(win);
   sys.layoutTree();
 }
 
