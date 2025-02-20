@@ -165,11 +165,11 @@ function newMapmaker() {
 
 sys.root.children = [
   b(Box, { layout: makeVacuumLayout() },
-    b(SplitBox, { vacuum: 'a', dir: 'y' },
+    b(SplitBox, { vacuum: 'b', dir: 'y' },
+      area,
       b(Group, { background: 0x222222ff },
         b(Button, { onClick: newMapmaker, padding: 2 }, b(Label, { text: 'one' })),
       ),
-      area,
     )
   )
 ];
