@@ -6,7 +6,8 @@ import { Label, wrapButton } from "./sys32/controls/label.js";
 import { RadioButton, RadioGroup } from "./sys32/controls/radio.js";
 import { TextField } from "./sys32/controls/textfield.js";
 import { Bitmap } from "./sys32/core/bitmap.js";
-import { System, makeBuilder } from "./sys32/core/system.js";
+import { System } from "./sys32/core/system.js";
+import { makeBuilder } from "./sys32/util/build.js";
 
 export function demo(sys: System) {
   const b = makeBuilder(sys);

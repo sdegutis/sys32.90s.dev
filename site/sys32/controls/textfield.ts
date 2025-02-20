@@ -1,6 +1,6 @@
 import { Box } from "../core/box.js";
 import { Font } from "../core/font.js";
-import { build } from "../core/system.js";
+import { build } from "../util/build.js";
 import { Label } from "./label.js";
 
 export class TextField extends Box {
