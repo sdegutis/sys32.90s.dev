@@ -176,8 +176,6 @@ export class System {
 
     if (this.#hovered !== activeHovered) {
       this.#hovered.onMouseExit?.();
-      // this.#hovered.hovered = false;
-      // activeHovered.hovered = true;
       this.#hovered = activeHovered;
       this.#hovered.onMouseEnter?.();
     }
