@@ -84,16 +84,6 @@ sys.root.children.push(
     ),
     b(Group, { background: 0x222222ff },
       b(Button, { onClick: newMapmaker, padding: 2 }, b(Label, { text: 'one' })),
-      b(Button, {
-        onClick: () => {
-          const n = num++;
-          const cancel = sys.onTick(() => {
-            console.log('in here', n)
-          })
-
-          setTimeout(cancel, 3000);
-        }, padding: 2
-      }, b(Label, { text: 'start' })),
     ),
   )
 )
@@ -101,5 +91,3 @@ sys.root.children.push(
 newMapmaker();
 
 sys.layoutTree();
-
-let num = 0;
