@@ -97,8 +97,7 @@ function makeWindow(title: string, content: Box) {
         0, 1, 0,
         1, 0, 1,
       ]),
-      // background: 0x0000ffff,
-      w: 10, h: 10, layout: function (w, h) {
+      layout: function (w, h) {
         this.x = w - this.w!;
         this.y = h - this.h!;
       },
