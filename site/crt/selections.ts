@@ -49,11 +49,10 @@ export class TileSelection extends Selection {
 }
 
 export function dragMove(sys: System, el: { x: number, y: number }) {
-  const startMouse = { x: sys.mouse.x, y: sys.mouse.y };
   const startElPos = { x: el.x, y: el.y };
+  const offx = sys.mouse.x - startElPos.x;
+  const offy = sys.mouse.y - startElPos.y;
   return () => {
-    const offx = startMouse.x - startElPos.x;
-    const offy = startMouse.y - startElPos.y;
     const diffx = sys.mouse.x - startElPos.x;
     const diffy = sys.mouse.y - startElPos.y;
     el.x = startElPos.x + diffx - offx;
@@ -62,11 +61,10 @@ export function dragMove(sys: System, el: { x: number, y: number }) {
 }
 
 export function dragResize(sys: System, el: { w: number, h: number }) {
-  const startMouse = { x: sys.mouse.x, y: sys.mouse.y };
   const startElPos = { w: el.w, h: el.h };
+  const offx = sys.mouse.x - startElPos.w;
+  const offy = sys.mouse.y - startElPos.h;
   return () => {
-    const offx = startMouse.x - startElPos.w;
-    const offy = startMouse.y - startElPos.h;
     const diffx = sys.mouse.x - startElPos.w;
     const diffy = sys.mouse.y - startElPos.h;
     el.w = startElPos.w + diffx - offx;
