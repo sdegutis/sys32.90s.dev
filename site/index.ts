@@ -66,12 +66,6 @@ function makeWindow(title: string, content: Box) {
 }
 
 
-const area = b(Box, { background: 0x333333ff, layout: centerLayout },
-
-  demo(sys)
-
-);
-
 function newMapmaker() {
   const win = makeWindow('mapmaker', mapmaker(sys));
 
@@ -83,16 +77,16 @@ function newMapmaker() {
   sys.layoutTree();
 }
 
-sys.root.children = [
-  b(Box, { layout: makeVacuumLayout() },
-    b(SplitBox, { vacuum: 'b', dir: 'y' },
-      area,
-      b(Group, { background: 0x222222ff },
-        b(Button, { onClick: newMapmaker, padding: 2 }, b(Label, { text: 'one' })),
-      ),
-    )
+sys.root.children.push(
+  b(SplitBox, { vacuum: 'b', dir: 'y' },
+    b(Box, { background: 0x333333ff, layout: centerLayout },
+      demo(sys)
+    ),
+    b(Group, { background: 0x222222ff },
+      b(Button, { onClick: newMapmaker, padding: 2 }, b(Label, { text: 'one' })),
+    ),
   )
-];
+)
 
 newMapmaker();
 
