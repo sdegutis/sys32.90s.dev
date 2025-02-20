@@ -21,3 +21,11 @@ export class Label extends Box {
   }
 
 }
+
+export function wrapButton(findButton: (box: Box) => Box) {
+  return {
+    onMouseEnter(this: Box) { findButton(this).onMouseEnter?.() },
+    onMouseExit(this: Box) { findButton(this).onMouseExit?.() },
+    onMouseDown(this: Box) { findButton(this).onMouseDown?.() },
+  };
+}

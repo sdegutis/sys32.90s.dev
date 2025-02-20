@@ -2,7 +2,7 @@ import { Box } from "./crt/box.js";
 import { Button } from "./crt/button.js";
 import { Checkbox } from "./crt/checkbox.js";
 import { Group } from "./crt/group.js";
-import { Label } from "./crt/label.js";
+import { Label, wrapButton } from "./crt/label.js";
 import { centerLayout, makeVacuumLayout } from "./crt/layouts.js";
 import { RadioButton, RadioGroup } from "./crt/radio.js";
 import { dragMove, dragResize } from "./crt/selections.js";
@@ -69,14 +69,6 @@ function makeWindow(title: string, content: Box) {
 const group1 = new RadioGroup();
 const group2 = new RadioGroup();
 
-function wrapButton(findButton: (box: Box) => Box) {
-  return {
-    onMouseEnter(this: Box) { findButton(this).onMouseEnter!() },
-    onMouseExit(this: Box) { findButton(this).onMouseExit!() },
-    onMouseDown(this: Box) { findButton(this).onMouseDown!() },
-  };
-}
-
 
 const area = b(Box, { background: 0x333333ff, layout: centerLayout },
 
@@ -100,9 +92,17 @@ const area = b(Box, { background: 0x333333ff, layout: centerLayout },
     ),
 
     b(Group, { dir: 'y', gap: 1 },
-      b(Label, { text: 'hello', background: 0x00000077, padding: 3 }),
-      b(Button, { onClick: () => { console.log('button') } },
-        b(Label, { text: 'hello', background: 0x00000077, padding: 3 })
+      b(Group, { dir: 'y', gap: 1 },
+        b(Label, { text: 'hello', background: 0x00000077, padding: 3 }),
+        b(Button, { onClick: () => { console.log('button') } },
+          b(Label, { text: 'hello', background: 0x00000077, padding: 3 })
+        ),
+      ),
+      b(Group, { dir: 'y', gap: 1 },
+        b(Label, { text: 'hello', background: 0x00000077, padding: 3 }),
+        b(Button, { onClick: () => { console.log('button') } },
+          b(Label, { text: 'hello', background: 0x00000077, padding: 3 })
+        ),
       ),
     ),
 
