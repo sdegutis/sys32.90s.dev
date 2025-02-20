@@ -148,7 +148,7 @@ sys.root.children = [
   b(Box, { layout: makeVacuumLayout() },
     b(SplitBox, { vacuum: 'a', dir: 'y' },
       b(Group, { background: 0x222222ff },
-        b(Button, { onClick: newMapmaker, padding: 1 }, b(Label, { text: 'one' })),
+        b(Button, { onClick: newMapmaker, padding: 2 }, b(Label, { text: 'one' })),
       ),
       area,
     )
