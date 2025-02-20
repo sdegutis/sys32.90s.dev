@@ -25,84 +25,38 @@ const b = makeBuilder(sys);
 
 let x = 10;
 
+function closeWindow(win: Box) {
+  const i = sys.root.children.indexOf(win);
+  sys.root.children.splice(i, 1);
+}
+
+const minImage = new Bitmap([0xffffff33], 3, [0, 0, 0, 0, 0, 0, 1, 1, 1,]);
+const maxImage = new Bitmap([0xffffff33], 3, [1, 1, 1, 1, 0, 1, 1, 1, 1,]);
+const axeImage = new Bitmap([0x990000ff], 3, [1, 0, 1, 0, 1, 0, 1, 0, 1,]);
+const adjImage = new Bitmap([0xffffff22], 3, [0, 0, 1, 0, 0, 1, 1, 1, 1,]);
+
 function makeWindow(title: string, content: Box) {
-  const titlebar = b(Spaced, {
-    padding: 1,
-    onMouseDown: () => { sys.trackMouse({ move: dragMove(sys, win) }); },
-  },
+
+  const titlebar = b(Spaced, { padding: 1, onMouseDown: () => { sys.trackMouse({ move: dragMove(sys, win) }); }, },
     b(Label, { text: title, color: 0xffffff33 }),
     b(Group, { gap: 2 },
-      b(Button, {
-        onClick: () => {
-          const i = sys.root.children.indexOf(win);
-          sys.root.children.splice(i, 1);
-        }
-      },
-        b(ImageBox, {
-          image: new Bitmap([0xffffff33], 3, [
-            0, 0, 0,
-            0, 0, 0,
-            1, 1, 1,
-          ])
-        })
-      ),
-      b(Button, {
-        onClick: () => {
-          const i = sys.root.children.indexOf(win);
-          sys.root.children.splice(i, 1);
-        }
-      },
-        b(ImageBox, {
-          image: new Bitmap([0xffffff33], 3, [
-            1, 1, 1,
-            1, 0, 1,
-            1, 1, 1,
-          ])
-        })
-      ),
-      b(Button, {
-        onClick: () => {
-          const i = sys.root.children.indexOf(win);
-          sys.root.children.splice(i, 1);
-        }
-      },
-        b(ImageBox, {
-          image: new Bitmap([0x990000ff], 3, [
-            1, 0, 1,
-            0, 1, 0,
-            1, 0, 1,
-          ])
-        })
-      ),
+      b(Button, {}, b(ImageBox, { image: minImage })),
+      b(Button, {}, b(ImageBox, { image: maxImage })),
+      b(Button, { onClick: () => { closeWindow(win) } }, b(ImageBox, { image: axeImage })),
     )
   );
-  const contentView = b(Group, { layout: makeVacuumLayout(1) },
-    content
-  );
+
+  const contentView = b(Group, { layout: makeVacuumLayout(1) }, content);
+
   const win = b(Box, { w: 100, h: 100, background: 0x000000aa, layout: makeVacuumLayout(1) },
-    b(Paned, { dir: 'y', vacuum: 'a' },
-      titlebar,
-      contentView,
-    ),
+    b(Paned, { dir: 'y', vacuum: 'a' }, titlebar, contentView,),
     b(ImageBox, {
       passthrough: false,
-      image: new Bitmap([0xffffff22], 3, [
-        0, 0, 1,
-        0, 0, 1,
-        1, 1, 1,
-      ]),
-      layout: function (w, h) {
-        this.x = w - this.w!;
-        this.y = h - this.h!;
-      },
+      image: adjImage,
+      layout: function (w, h) { this.x = w - this.w!; this.y = h - this.h!; },
       onMouseDown: () => {
         const resize = dragResize(sys, win);
-        sys.trackMouse({
-          move: () => {
-            resize();
-            sys.layoutTree(win);
-          }
-        });
+        sys.trackMouse({ move: () => { resize(); sys.layoutTree(win); } });
       },
     }),
   );
