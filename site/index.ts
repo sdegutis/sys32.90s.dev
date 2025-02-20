@@ -39,9 +39,7 @@ function makeWindow(title: string, content: Box) {
         }
       },
         b(ImageBox, {
-          background: 0x00000033,
-          padding: 0,
-          image: new Bitmap([0xffffffff], 3, [
+          image: new Bitmap([0xffffff33], 3, [
             0, 0, 0,
             0, 0, 0,
             1, 1, 1,
@@ -55,9 +53,7 @@ function makeWindow(title: string, content: Box) {
         }
       },
         b(ImageBox, {
-          background: 0x00000033,
-          padding: 0,
-          image: new Bitmap([0xffffffff], 3, [
+          image: new Bitmap([0xffffff33], 3, [
             1, 1, 1,
             1, 0, 1,
             1, 1, 1,
@@ -71,8 +67,6 @@ function makeWindow(title: string, content: Box) {
         }
       },
         b(ImageBox, {
-          background: 0x00000033,
-          padding: 0,
           image: new Bitmap([0x990000ff], 3, [
             1, 0, 1,
             0, 1, 0,
@@ -92,10 +86,10 @@ function makeWindow(title: string, content: Box) {
     ),
     b(ImageBox, {
       passthrough: false,
-      image: new Bitmap([0xffffff33], 3, [
+      image: new Bitmap([0xffffff22], 3, [
         0, 0, 1,
-        0, 1, 0,
-        1, 0, 1,
+        0, 0, 1,
+        1, 1, 1,
       ]),
       layout: function (w, h) {
         this.x = w - this.w!;
