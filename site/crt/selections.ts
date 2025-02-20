@@ -3,6 +3,8 @@ import { System } from "./system.js";
 
 export class Selection {
 
+  ox: number;
+  oy: number;
   x1: number;
   y1: number;
   x!: number;
@@ -13,12 +15,14 @@ export class Selection {
   constructor(public box: Box) {
     this.x1 = this.box.mouse.x;
     this.y1 = this.box.mouse.y;
+    this.ox = this.box.sys.mouse.x - this.x1;
+    this.oy = this.box.sys.mouse.y - this.y1;
     this.update();
   }
 
   update() {
-    const x2 = this.box.mouse.x;
-    const y2 = this.box.mouse.y;
+    const x2 = this.box.sys.mouse.x - this.ox;
+    const y2 = this.box.sys.mouse.y - this.oy;
     this.x = this.x1 < x2 ? this.x1 : x2;
     this.y = this.y1 < y2 ? this.y1 : y2;
     this.w = (this.x1 < x2 ? x2 - this.x1 : this.x1 - x2) + 1;
