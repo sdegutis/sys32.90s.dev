@@ -103,7 +103,7 @@ export class SplitBox extends Box {
   #resizer?: Box;
   override children = [new Box(this.sys), new Box(this.sys)];
 
-  override layout(w: number, h: number): void {
+  override layout(): void {
     if (this.resizable && !this.#resizer) {
       this.#resizer = new SplitBoxDivider(this.sys, this);
       this.children.push(this.#resizer);

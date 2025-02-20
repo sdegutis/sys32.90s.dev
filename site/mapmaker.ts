@@ -4,9 +4,9 @@ import { Button } from "./sys32/button.js";
 import { Group } from "./sys32/group.js";
 import { Label } from "./sys32/label.js";
 import { makeVacuumLayout } from "./sys32/layouts.js";
+import { Paned } from "./sys32/paned.js";
 import { RadioButton, RadioGroup } from "./sys32/radio.js";
 import { TileSelection, dragMove } from "./sys32/selections.js";
-import { SplitBox } from "./sys32/split.js";
 import { System, makeBuilder } from "./sys32/system.js";
 
 const COLORS = [
@@ -65,7 +65,7 @@ export default (sys: System) => {
     }
   });
 
-  const root = b(SplitBox, { vacuum: 'a', dir: 'x' },
+  const root = b(Paned, { vacuum: 'a', dir: 'x' },
     b(Group, { background: 0x333333ff, dir: 'y' },
       gridButton,
       b(Box, { h: 3 }),

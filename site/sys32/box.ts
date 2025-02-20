@@ -12,7 +12,7 @@ export class Box {
   onFocus?(): void;
   onBlur?(): void;
   draw?(): void;
-  layout?(w: number, h: number): void;
+  layout?(): void;
   adjust?(): void;
   cursor?: Cursor;
 
