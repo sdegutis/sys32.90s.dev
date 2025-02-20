@@ -1,22 +1,18 @@
-import { View } from "../core/view.js";
 import { System } from "../core/system.js";
 
-export function build<T extends View>(
+export function build<T extends {}>(
   sys: System,
   ctor: { new(sys: System): T },
   config: Partial<T>,
-  ...children: View[]
+  ...children: any[]
 ): T {
-  const t = new ctor(sys);
-  if (children.length > 0) t.children = children;
-  Object.assign(t, config);
-  return t;
+  return Object.assign(new ctor(sys), { children }, config);
 }
 
 export function makeBuilder(sys: System) {
-  return <T extends View>(
+  return <T extends {}>(
     ctor: { new(sys: System): T },
     config: Partial<T>,
-    ...children: View[]
-  ): T => build(sys, ctor, config, ...children);
+    ...children: any[]
+  ): T => Object.assign(new ctor(sys), { children }, config);
 }
