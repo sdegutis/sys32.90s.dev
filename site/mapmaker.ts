@@ -1,12 +1,12 @@
-import { Box } from "./crt/box.js";
-import { Button } from "./crt/button.js";
-import { Group } from "./crt/group.js";
-import { Label } from "./crt/label.js";
-import { makeVacuumLayout } from "./crt/layouts.js";
-import { RadioButton, RadioGroup } from "./crt/radio.js";
-import { TileSelection, dragMove } from "./crt/selections.js";
-import { SplitBox } from "./crt/split.js";
-import { System, makeBuilder } from "./crt/system.js";
+import { Box } from "./sys32/box.js";
+import { Button } from "./sys32/button.js";
+import { Group } from "./sys32/group.js";
+import { Label } from "./sys32/label.js";
+import { makeVacuumLayout } from "./sys32/layouts.js";
+import { RadioButton, RadioGroup } from "./sys32/radio.js";
+import { TileSelection, dragMove } from "./sys32/selections.js";
+import { SplitBox } from "./sys32/split.js";
+import { System, makeBuilder } from "./sys32/system.js";
 
 const COLORS = [
   0x000000ff, 0x1D2B53ff, 0x7E2553ff, 0x008751ff,
