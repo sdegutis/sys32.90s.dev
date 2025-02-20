@@ -68,7 +68,7 @@ function makeWindow(title: string, content: Box) {
 
 const group = new RadioGroup();
 
-function makeButton(findButton: (box: Box) => Box) {
+function wrapButton(findButton: (box: Box) => Box) {
   return {
     onMouseEnter(this: Box) { findButton(this).onMouseEnter!() },
     onMouseExit(this: Box) { findButton(this).onMouseExit!() },
@@ -82,9 +82,9 @@ const area = b(Box, { background: 0x333333ff, layout: centerLayout },
   b(Group, { padding: 1, gap: 2, background: 0xffffff33 },
 
     b(Group, { dir: 'y', gap: 1 },
-      b(Group, { gap: 1, ...makeButton(box => box.firstChild) }, b(RadioButton, { group, size: 4, padding: 1 }), b(Label, { text: 'aaa' })),
-      b(Group, { gap: 1, ...makeButton(box => box.firstChild) }, b(RadioButton, { group, size: 4, padding: 1 }), b(Label, { text: 'bbb' })),
-      b(Group, { gap: 1, ...makeButton(box => box.firstChild) }, b(RadioButton, { group, size: 4, padding: 1 }), b(Label, { text: 'ccc' })),
+      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group, size: 2, padding: 0 }), b(Label, { text: 'aaa' })),
+      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group, size: 2, padding: 0 }), b(Label, { text: 'bbb' })),
+      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group, size: 2, padding: 0 }), b(Label, { text: 'ccc' })),
     ),
 
     b(Group, { dir: 'y', gap: 1 },
@@ -129,22 +129,12 @@ const area = b(Box, { background: 0x333333ff, layout: centerLayout },
     ),
 
     b(Group, { dir: 'y', gap: 1 },
-      b(Group, {
-        gap: 2,
-        onMouseEnter() { this.firstChild!.onMouseEnter!() },
-        onMouseExit() { this.firstChild!.onMouseExit!() },
-        onMouseDown() { this.firstChild!.onMouseDown!() },
-      },
+      b(Group, { gap: 2, ...wrapButton(box => box.firstChild), },
         b(Checkbox, { checked: true, padding: 2, size: 2, onChange() { console.log('foo', this.checked) } }),
         b(Label, { text: 'foo' }),
       ),
 
-      b(Group, {
-        gap: 2,
-        onMouseEnter() { this.lastChild!.onMouseEnter!() },
-        onMouseExit() { this.lastChild!.onMouseExit!() },
-        onMouseDown() { this.lastChild!.onMouseDown!() },
-      },
+      b(Group, { gap: 2, ...wrapButton(box => box.lastChild), },
         b(Label, { text: 'bar' }),
         b(Checkbox, { checked: true, padding: 2, size: 2, onChange() { console.log('bar', this.checked) } }),
       ),
