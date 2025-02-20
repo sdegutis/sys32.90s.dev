@@ -1,8 +1,10 @@
 import { demo } from "./demo.js";
 import mapmaker from "./mapmaker.js";
+import { Bitmap } from "./sys32/bitmap.js";
 import { Box } from "./sys32/box.js";
 import { Button } from "./sys32/button.js";
 import { Group, Spaced } from "./sys32/group.js";
+import { ImageBox } from "./sys32/image.js";
 import { Label } from "./sys32/label.js";
 import { centerLayout, makeVacuumLayout } from "./sys32/layouts.js";
 import { Paned } from "./sys32/paned.js";
@@ -42,13 +44,58 @@ function makeWindow(title: string, content: Box) {
     },
   },
     b(Label, { text: title, color: 0xffffff33 }),
-    b(Button, {
-      onClick: () => {
-        const i = sys.root.children.indexOf(win);
-        sys.root.children.splice(i, 1);
-      }
-    },
-      b(Label, { text: 'x' })
+    b(Group, {},
+      b(Button, {
+        onClick: () => {
+          const i = sys.root.children.indexOf(win);
+          sys.root.children.splice(i, 1);
+        }
+      },
+        b(ImageBox, {
+          background: 0x00000033,
+          padding: 1,
+          image: new Bitmap([0xffffffff], 4, [
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            1, 1, 1, 1,
+          ])
+        })
+      ),
+      b(Button, {
+        onClick: () => {
+          const i = sys.root.children.indexOf(win);
+          sys.root.children.splice(i, 1);
+        }
+      },
+        b(ImageBox, {
+          background: 0x00000033,
+          padding: 1,
+          image: new Bitmap([0xffffffff], 4, [
+            1, 1, 1, 1,
+            1, 0, 0, 1,
+            1, 0, 0, 1,
+            1, 1, 1, 1,
+          ])
+        })
+      ),
+      b(Button, {
+        onClick: () => {
+          const i = sys.root.children.indexOf(win);
+          sys.root.children.splice(i, 1);
+        }
+      },
+        b(ImageBox, {
+          background: 0xff000033,
+          padding: 1,
+          image: new Bitmap([0xffffffff], 4, [
+            1, 0, 0, 1,
+            0, 1, 1, 0,
+            0, 1, 1, 0,
+            1, 0, 0, 1,
+          ])
+        })
+      ),
     )
   );
   const contentView = b(Group, { layout: makeVacuumLayout(1) },

@@ -5,6 +5,7 @@ export class ImageBox extends Box {
 
   image?: Bitmap;
   padding = 0;
+  override passthrough = true;
 
   override adjust(): void {
     this.w = (this.image?.w ?? 0) + this.padding * 2;
