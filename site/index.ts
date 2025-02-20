@@ -16,7 +16,7 @@ import mapmaker from "./mapmaker.js";
 
 const canvas = document.querySelector('canvas')!;
 const sys = new System(canvas);
-sys.resize(320 * 2, 180 * 2);
+// sys.resize(320 * 2, 180 * 2);
 sys.autoscale();
 sys.root.layout = makeVacuumLayout();
 
@@ -26,7 +26,6 @@ let x = 10;
 
 function makeWindow(title: string, content: Box) {
   const titlebar = b(Group, {
-    background: 0xff000033,
     padding: 1,
     onMouseDown: () => {
       if (sys.keys['Control']) {
@@ -43,15 +42,15 @@ function makeWindow(title: string, content: Box) {
       }
     },
   },
-    b(Label, { text: title })
+    b(Label, { text: title, color: 0xffffff33 })
   );
-  const contentView = b(Group, { layout: makeVacuumLayout(3) },
+  const contentView = b(Group, { layout: makeVacuumLayout(1) },
     content
   );
-  const win = b(Box, { w: 100, h: 100, background: 0x0000ff33, layout: makeVacuumLayout(1) },
+  const win = b(Box, { w: 100, h: 100, background: 0x00000077, layout: makeVacuumLayout(1) },
     b(SplitBox, { dir: 'y', vacuum: 'a' },
       titlebar,
-      content,
+      contentView,
     )
   );
 
