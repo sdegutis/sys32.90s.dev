@@ -1,13 +1,13 @@
+import { demo } from "./demo.js";
+import mapmaker from "./mapmaker.js";
 import { Box } from "./sys32/box.js";
 import { Button } from "./sys32/button.js";
 import { Group } from "./sys32/group.js";
 import { Label } from "./sys32/label.js";
 import { centerLayout, makeVacuumLayout } from "./sys32/layouts.js";
+import { Paned } from "./sys32/paned.js";
 import { dragMove, dragResize } from "./sys32/selections.js";
-import { SplitBox } from "./sys32/split.js";
 import { makeBuilder, System } from "./sys32/system.js";
-import { demo } from "./demo.js";
-import mapmaker from "./mapmaker.js";
 
 
 
@@ -56,7 +56,7 @@ function makeWindow(title: string, content: Box) {
     content
   );
   const win = b(Box, { w: 100, h: 100, background: 0x000000aa, layout: makeVacuumLayout(1) },
-    b(SplitBox, { dir: 'y', vacuum: 'a' },
+    b(Paned, { dir: 'y', vacuum: 'a' },
       titlebar,
       contentView,
     )
@@ -78,7 +78,7 @@ function newMapmaker() {
 }
 
 sys.root.children.push(
-  b(SplitBox, { vacuum: 'b', dir: 'y' },
+  b(Paned, { vacuum: 'b', dir: 'y' },
     b(Box, { background: 0x333333ff, layout: centerLayout },
       demo(sys)
     ),
@@ -88,6 +88,6 @@ sys.root.children.push(
   )
 )
 
-newMapmaker();
+// newMapmaker();
 
 sys.layoutTree();
