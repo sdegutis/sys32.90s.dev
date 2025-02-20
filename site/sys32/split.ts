@@ -104,6 +104,8 @@ export class SplitBox extends Box {
   resizable = false;
   vacuum: 'a' | 'b' | undefined;
 
+  #vacuuming?: number;
+
   #resizer?: Box;
   override children = [new Box(this.sys), new Box(this.sys)];
 
@@ -112,11 +114,11 @@ export class SplitBox extends Box {
       const pane = this.children[this.vacuum === 'a' ? 0 : 1];
       const dx = this.dir;
       const dw = dx === 'x' ? 'w' : 'h';
-      this.pos = (this.vacuum === 'a' ? pane[dw] : this[dw] - pane[dw]);
+      this.#vacuuming = pane[dw];
     }
   }
 
-  override layout(): void {
+  override layout(w: number, h: number): void {
     if (this.resizable && !this.#resizer) {
       this.#resizer = new SplitBoxDivider(this.sys, this);
       this.children.push(this.#resizer);
@@ -134,6 +136,12 @@ export class SplitBox extends Box {
     a.y = b.y = 0;
     a.w = b.w = this.w;
     a.h = b.h = this.h;
+
+    if (this.#vacuuming !== undefined) {
+      const container = { w, h };
+      const v = this.#vacuuming;
+      this.pos = (this.vacuum === 'a' ? v : container[dw] - v);
+    }
 
     a[dw] = this.pos;
 

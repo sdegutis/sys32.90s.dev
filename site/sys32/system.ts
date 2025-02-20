@@ -151,15 +151,15 @@ export class System {
 
   layoutTree(node: Box = this.root) {
     this.#adjustTree(node);
-    this.#layoutTree(node);
+    this.#layoutTree(node, node.w, node.h);
     this.#checkUnderMouse();
     this.needsRedraw = true;
   }
 
-  #layoutTree(node: Box) {
-    node.layout?.();
+  #layoutTree(node: Box, w: number, h: number) {
+    node.layout?.(w, h);
     for (let i = 0; i < node.children.length; i++) {
-      this.#layoutTree(node.children[i]);
+      this.#layoutTree(node.children[i], node.w, node.h);
     }
   }
 
