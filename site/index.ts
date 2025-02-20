@@ -66,7 +66,8 @@ function makeWindow(title: string, content: Box) {
   return win;
 }
 
-const group = new RadioGroup();
+const group1 = new RadioGroup();
+const group2 = new RadioGroup();
 
 function wrapButton(findButton: (box: Box) => Box) {
   return {
@@ -82,9 +83,15 @@ const area = b(Box, { background: 0x333333ff, layout: centerLayout },
   b(Group, { padding: 1, gap: 2, background: 0xffffff33 },
 
     b(Group, { dir: 'y', gap: 1 },
-      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group, size: 2, padding: 0 }), b(Label, { text: 'aaa' })),
-      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group, size: 2, padding: 0 }), b(Label, { text: 'bbb' })),
-      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group, size: 2, padding: 0 }), b(Label, { text: 'ccc' })),
+      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'aaa' })),
+      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'bbb' })),
+      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'ccc' })),
+    ),
+
+    b(Group, { dir: 'y', gap: 1 },
+      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'aaa' })),
+      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'bbb' })),
+      b(Group, { gap: 1, ...wrapButton(box => box.firstChild) }, b(RadioButton, { group: group2, size: 2, padding: 0 }), b(Label, { text: 'ccc' })),
     ),
 
     b(Group, { dir: 'y', gap: 1 },
