@@ -38,8 +38,11 @@ export class TextField extends View {
     this.sys.layoutTree(this);
   }
 
-  override layout(): void {
+  override init(): void {
     this.children = [this.#field, this.#cursor];
+  }
+
+  override layout(): void {
     this.#field.x = this.padding;
     this.#field.y = this.padding;
     this.#cursor.x = this.padding + (this.#cursor.w + 1) * this.#field.text.length;

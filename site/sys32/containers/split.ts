@@ -102,7 +102,15 @@ export class Split extends View {
   resizable = false;
 
   #resizer?: View;
-  override children = [this.panel.make(View), this.panel.make(View)];
+
+  override init(): void {
+    if (this.children.length == 0) {
+      this.children = [
+        this.panel.make(View),
+        this.panel.make(View),
+      ];
+    }
+  }
 
   override layout(): void {
     if (this.resizable && !this.#resizer) {

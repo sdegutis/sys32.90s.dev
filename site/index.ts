@@ -1,8 +1,10 @@
 import demo from "./apps/demo.js";
+import mapmaker from "./apps/mapmaker.js";
+import { Split } from "./sys32/containers/split.js";
 import { Panel } from "./sys32/core/panel.js";
 import { System } from "./sys32/core/system.js";
 import { View } from "./sys32/core/view.js";
-import { makeVacuumLayout } from "./sys32/util/layouts.js";
+import { centerLayout, makeVacuumLayout } from "./sys32/util/layouts.js";
 
 
 
@@ -141,11 +143,14 @@ sys.root.view.children = [sub.view];
 
 sub.view.children.push(
   sub.make(View, { layout: makeVacuumLayout(0), background: 0x000033ff },
-    demo(sub)
+    sub.make(Split, { pos: 30, dir: 'x', resizable: true },
+      sub.make(View, { layout: centerLayout, background: 0x003333ff }, demo(sub)),
+      mapmaker(sub),
+    )
   )
 );
 
-sys.layoutTree()
+sys.layoutTree();
 
 // const ws = new Workspace(sys);
 
