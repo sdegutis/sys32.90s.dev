@@ -35,8 +35,9 @@ export class Panel extends View {
     const $ = this.sys.make.bind(this.sys);
     this.children = [
 
-      $(Paned, { dir: 'y', vacuum: 'a' },
-        $(Spaced, { padding: 1, onMouseDown: () => { this.sys.trackMouse({ move: dragMove(this.sys, this) }); }, },
+      $(Paned, { gap: 2, dir: 'y', vacuum: 'a' },
+
+        $(Spaced, { onMouseDown: () => { this.sys.trackMouse({ move: dragMove(this.sys, this) }); }, },
           $(Label, { text: this.title, color: 0xffffff33 }),
           $(Group, { gap: 2 },
             $(Button, { onClick: () => this.minimize() }, $(ImageView, { image: minImage })),

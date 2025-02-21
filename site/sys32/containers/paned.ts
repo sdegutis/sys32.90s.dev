@@ -2,6 +2,7 @@ import { View } from "../core/view.js";
 
 export class Paned extends View {
 
+  gap = 0;
   dir: 'x' | 'y' = 'x';
   vacuum: 'a' | 'b' = 'a';
 
@@ -20,8 +21,8 @@ export class Paned extends View {
 
     const pos = (this.vacuum === 'a' ? v : this[dw] - v);
     a[dw] = pos;
-    b[dx] = pos;
-    b[dw] = this[dw] - pos;
+    b[dx] = pos + this.gap;
+    b[dw] = this[dw] - pos - this.gap;
   }
 
 }
