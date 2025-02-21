@@ -161,7 +161,7 @@ export default (sys: System) => {
 
   mapView.w = map.width * 4;
   mapView.h = map.height * 4;
-  mapArea.children.push(mapView);
+  mapArea.addChild(mapView);
 
   mapView.mouse.cursor = {
     bitmap: new Bitmap([], 0, []),

@@ -30,19 +30,40 @@ export class View {
   visible = true;
   focused = false;
 
-  children: View[] = [];
+  #children: View[] = [];
+  get children(): ReadonlyArray<View> { return this.#children; }
+  get firstChild(): View | undefined { return this.children[0]; }
+  get lastChild(): View | undefined { return this.children[this.children.length - 1]; }
+
   mouse: Mouse = { x: 0, y: 0, cursor: undefined };
 
   trackingArea?: { x: number, y: number, w: number, h: number };
 
-  root!: View;
+  parent!: View;
   sys: System;
 
   constructor(sys: System) {
     this.sys = sys;
   }
 
-  get firstChild(): View | undefined { return this.children[0]; }
-  get lastChild(): View | undefined { return this.children[this.children.length - 1]; }
+  set children(children: View[]) {
+    this.#children = children;
+    for (const child of children) {
+      child.parent = this;
+    }
+  }
+
+  addChild(child: View, pos?: number) {
+    const i = pos ?? this.#children.length;
+    this.#children.splice(i, 0, child);
+    child.parent = this;
+  }
+
+  removeChild(child: View) {
+    const i = this.#children.indexOf(child);
+    if (i === -1) return;
+    this.#children.splice(i, 1);
+    child.parent = undefined!;
+  }
 
 }

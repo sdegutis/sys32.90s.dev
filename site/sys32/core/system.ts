@@ -28,7 +28,6 @@ export class System {
     canvas.focus();
 
     this.root = this.make(View, { background: 0x00000000 });
-    this.root.root = this.root;
     this.focused = this.root;
     this.#hovered = this.root;
 

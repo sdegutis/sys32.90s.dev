@@ -69,7 +69,7 @@ sys.root.background = 0x330000ff;
 const $ = sys.make.bind(sys);
 
 
-sys.root.children.push($(Panel, {
+sys.root.addChild($(Panel, {
   title: 'demo',
   x: 70, y: 90, w: 400, h: 300,
   content: $(View, { layout: centerLayout, background: 0x22222299 },
@@ -78,14 +78,14 @@ sys.root.children.push($(Panel, {
 }));
 
 
-sys.root.children.push($(Panel, {
+sys.root.addChild($(Panel, {
   title: 'mapmaker',
   x: 30, y: 10, w: 400, h: 300,
   content: mapmaker(sys)
 }));
 
 
-sys.root.children.push($(Panel, {
+sys.root.addChild($(Panel, {
   title: 'both',
   x: 90, y: 110, w: 400, h: 300,
   content: $(View, { layout: makeVacuumLayout(), background: 0x000033ff },

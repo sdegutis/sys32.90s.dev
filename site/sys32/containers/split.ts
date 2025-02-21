@@ -104,22 +104,19 @@ export class Split extends View {
   #resizer?: View;
 
   override init(): void {
-    if (this.children.length == 0) {
-      this.children = [
-        this.sys.make(View),
-        this.sys.make(View),
-      ];
+    while (this.children.length < 2) {
+      this.addChild(this.sys.make(View));
     }
   }
 
   override layout(): void {
     if (this.resizable && !this.#resizer) {
       this.#resizer = new SplitDivider(this);
-      this.children.push(this.#resizer);
+      this.addChild(this.#resizer);
     }
     else if (!this.resizable && this.#resizer) {
       this.#resizer = undefined!;
-      this.children.pop();
+      this.removeChild(this.#resizer);
     }
 
     const dx = this.dir;
