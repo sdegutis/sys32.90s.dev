@@ -1,4 +1,4 @@
-import { System } from "./system.js";
+import { CRT } from "./crt.js";
 
 export class Font {
 
@@ -83,7 +83,7 @@ export class Font {
     };
   }
 
-  print(sys: System, x: number, y: number, c: number, text: string) {
+  print(crt: CRT, x: number, y: number, c: number, text: string) {
     text = text.toLowerCase();
 
     let posx = 0;
@@ -106,7 +106,7 @@ export class Font {
           const py = y + (posy * 6) + yy;
 
           if (map[yy][xx]) {
-            sys.crt.pset(px, py, c);
+            crt.pset(px, py, c);
           }
         }
       }

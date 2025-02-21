@@ -1,7 +1,7 @@
 import { Bitmap } from "./bitmap.js";
-import { View } from "./view.js";
-import { Font } from "./font.js";
 import { CRT } from "./crt.js";
+import { Font } from "./font.js";
+import { View } from "./view.js";
 
 export class System {
 
@@ -118,7 +118,7 @@ export class System {
           this.#draw(this.root);
 
           const cursor = this.#hovered.mouse.cursor ?? pointer;
-          cursor.bitmap.draw(this, this.mouse.x - cursor.offset[0], this.mouse.y - cursor.offset[1]);
+          cursor.bitmap.draw(this.crt, this.mouse.x - cursor.offset[0], this.mouse.y - cursor.offset[1]);
 
           this.crt.blit();
         }

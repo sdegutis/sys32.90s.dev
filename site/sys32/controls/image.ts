@@ -14,7 +14,7 @@ export class ImageView extends View {
 
   override draw(): void {
     super.draw?.();
-    this.image?.draw(this.sys, this.padding, this.padding);
+    this.image?.draw(this.sys.crt, this.padding, this.padding);
   }
 
 }

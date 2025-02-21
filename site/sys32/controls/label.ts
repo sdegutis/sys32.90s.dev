@@ -1,5 +1,5 @@
-import { View } from "../core/view.js";
 import { Font } from "../core/font.js";
+import { View } from "../core/view.js";
 
 export class Label extends View {
 
@@ -17,7 +17,7 @@ export class Label extends View {
   }
 
   override draw() {
-    this.sys.font.print(this.sys, this.padding, this.padding, this.color, this.text);
+    this.sys.font.print(this.sys.crt, this.padding, this.padding, this.color, this.text);
   }
 
 }
