@@ -1,11 +1,10 @@
 export class CRT {
 
-  #canvas: HTMLCanvasElement;
-
   pixels!: Uint8ClampedArray;
   clip = { cx: 0, cy: 0, x1: 0, y1: 0, x2: 0, y2: 0 };
 
-  #context;
+  #canvas: HTMLCanvasElement;
+  #context: CanvasRenderingContext2D;
   #imgdata!: ImageData;
 
   constructor(canvas: HTMLCanvasElement) {
