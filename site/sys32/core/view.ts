@@ -9,6 +9,7 @@ type Mouse = {
 
 export class View {
 
+  // init?(): void;
   onScroll?(up: boolean): void;
   onKeyDown?(key: string): void;
   onMouseDown?(): void;
@@ -35,12 +36,16 @@ export class View {
 
   trackingArea?: { x: number, y: number, w: number, h: number };
 
-  panel!: Panel;
   sys: System;
+  panel: Panel;
 
-  constructor(sys: System) {
+  constructor(panel: Panel) {
+    this.sys = panel.sys;
+    this.panel = panel;
+  }
+
+  config(sys: System, config: Partial<typeof this>) {
     this.sys = sys;
-    this.panel = this.sys.root;
   }
 
   get firstChild(): View | undefined { return this.children[0]; }

@@ -6,7 +6,7 @@ import { View } from "./view.js";
 
 export class System {
 
-  readonly root = new Panel(this);
+  readonly root: Panel;
   focused: View;
   font = Font.crt2025;
   keys: Record<string, boolean> = {};
@@ -28,8 +28,9 @@ export class System {
     canvas.tabIndex = 0;
     canvas.focus();
 
-    this.focused = this.root;
-    this.#hovered = this.root;
+    this.root = new Panel(this, 'root');
+    this.focused = this.root.view;
+    this.#hovered = this.root.view;
 
     this.resize(canvas.width, canvas.height);
 
@@ -68,6 +69,7 @@ export class System {
       this.mouse.y = y;
 
       this.#checkUnderMouse();
+      console.log(this.#hovered.panel)
 
       this.#trackingMouse?.move();
       if (!this.#trackingMouse) this.#hovered.onMouseMove?.();
@@ -109,7 +111,7 @@ export class System {
         if (this.needsRedraw) {
           this.needsRedraw = false;
 
-          this.#draw(this.root);
+          this.#draw(this.root.view);
 
           const cursor = this.#hovered.mouse.cursor ?? pointer;
           cursor.bitmap.draw(this.crt, this.mouse.x - cursor.offset[0], this.mouse.y - cursor.offset[1]);
@@ -125,10 +127,6 @@ export class System {
     requestAnimationFrame(update);
   }
 
-  makePanel() {
-    return new Panel(this);
-  }
-
   onTick(fn: (delta: number) => void) {
     this.#ticks.add(fn);
     return () => this.#ticks.delete(fn);
@@ -141,15 +139,15 @@ export class System {
   }
 
   resize(w: number, h: number) {
-    this.root.w = w;
-    this.root.h = h;
+    this.root.view.w = w;
+    this.root.view.h = h;
     this.mouse.x = 0;
     this.mouse.y = 0;
     this.crt.resize(w, h);
     this.layoutTree();
   }
 
-  layoutTree(node: View = this.root) {
+  layoutTree(node: View = this.root.view) {
     this.#adjustTree(node);
     this.#layoutTree(node, node.w, node.h);
     this.#checkUnderMouse();
@@ -172,7 +170,7 @@ export class System {
 
   #checkUnderMouse() {
     this.#allHovered.length = 0;
-    const activeHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
+    const activeHovered = this.#hover(this.root.view, this.mouse.x, this.mouse.y)!;
 
     if (this.#hovered !== activeHovered) {
       this.#hovered.onMouseExit?.();

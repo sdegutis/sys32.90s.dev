@@ -1,8 +1,8 @@
 import demo from "./apps/demo.js";
-import mapmaker from "./apps/mapmaker.js";
 import { Panel } from "./sys32/core/panel.js";
 import { System } from "./sys32/core/system.js";
-import { centerLayout, makeVacuumLayout } from "./sys32/util/layouts.js";
+import { View } from "./sys32/core/view.js";
+import { makeVacuumLayout } from "./sys32/util/layouts.js";
 
 
 
@@ -131,10 +131,19 @@ const canvas = document.querySelector('canvas')!;
 const sys = new System(canvas);
 sys.resize(320 * 2, 180 * 2);
 sys.crt.autoscale();
-sys.root.layout = makeVacuumLayout(1);
-sys.root.background = 0x330000ff
+sys.root.view.layout = makeVacuumLayout(10);
+sys.root.view.background = 0x330000ff
 
-sys.root.children.push(mapmaker(sys.root));
+const sub = new Panel(sys, 'sub');
+
+sub.view = sub.make(View, { layout: makeVacuumLayout(20), background: 0x003300ff })
+sys.root.view.children = [sub.view];
+
+sub.view.children.push(
+  sub.make(View, { layout: makeVacuumLayout(0), background: 0x000033ff },
+    demo(sub)
+  )
+);
 
 sys.layoutTree()
 

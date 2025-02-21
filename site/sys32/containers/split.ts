@@ -1,5 +1,5 @@
 import { Bitmap } from "../core/bitmap.js";
-import { Cursor, System } from "../core/system.js";
+import { Cursor } from "../core/system.js";
 import { View } from "../core/view.js";
 import { dragMove } from "../util/selections.js";
 
@@ -29,8 +29,8 @@ class SplitDivider extends View {
   #hovered = false;
   split: Split;
 
-  constructor(sys: System, split: Split) {
-    super(sys);
+  constructor(split: Split) {
+    super(split.panel);
     this.split = split;
     this.background = split.dividerColor;
     this.mouse.cursor = this.split.dir === 'x' ? xresize : yresize;
@@ -106,7 +106,7 @@ export class Split extends View {
 
   override layout(): void {
     if (this.resizable && !this.#resizer) {
-      this.#resizer = new SplitDivider(this.sys, this);
+      this.#resizer = new SplitDivider(this);
       this.children.push(this.#resizer);
     }
     else if (!this.resizable && this.#resizer) {
