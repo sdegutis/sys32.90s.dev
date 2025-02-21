@@ -1,3 +1,4 @@
+import { Panel } from "../containers/panel.js";
 import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
 import { Font } from "./font.js";
@@ -125,6 +126,13 @@ export class System {
     requestAnimationFrame(update);
   }
 
+  panelFor(node: View): Panel | undefined {
+    while (node && !(node instanceof Panel)) {
+      node = node.parent;
+    }
+    return node;
+  }
+
   make<T extends View>(
     ctor: { new(sys: System): T },
     config?: Partial<T>,
@@ -196,6 +204,13 @@ export class System {
     this.focused = node;
     this.focused.focused = true;
     node.onFocus?.();
+
+    const panel = this.panelFor(this.#hovered);
+    if (panel) {
+      const parent = panel.parent;
+      parent.removeChild(panel);
+      parent.addChild(panel);
+    }
   }
 
   #hover(node: View, x: number, y: number): View | null {
