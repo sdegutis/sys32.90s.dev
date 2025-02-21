@@ -44,21 +44,31 @@ class ClockView extends Group {
 }
 
 
-// let i = 0;
+let i = 1;
 
 const desktop = $(View, { background: 0x333333ff });
 const taskbar = $(Spaced, { background: 0x000000ff },
   $(Group, { background: 0x222222ff },
     $(Button, {
       padding: 2, onClick() {
-        // i = (i + 1) % 2;
-        // sys.resize(320 * (i + 1), 180 * (i + 1));
+        i = (i + 1) % 2;
+        sys.resize(320 * (i + 1), 180 * (i + 1));
       }
     }, $(Label, { text: 'one' }))
   ),
   $(Group, { background: 0x222222ff },
     $(ClockView)
-  )
+  ),
+  $(Group, {},
+    $(ClockView, { padding: 2 }),
+    $(Button, {
+      background: 0x222222ff,
+      padding: 2, onClick() {
+        i = (i + 1) % 2;
+        sys.resize(320 * (i + 1), 180 * (i + 1));
+      }
+    }, $(Label, { text: 'resize' }))
+  ),
 );
 
 sys.root.children = [
