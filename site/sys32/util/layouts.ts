@@ -2,7 +2,7 @@ import { View } from "../core/view.js";
 
 export function makeVacuumLayout(padding = 0) {
   return function (this: View) {
-    const c = this.children[0];
+    const c = this.firstChild;
     if (c) {
       c.x = padding;
       c.y = padding;
@@ -13,7 +13,7 @@ export function makeVacuumLayout(padding = 0) {
 };
 
 export function centerLayout(this: View) {
-  const c = this.children[0];
+  const c = this.firstChild;
   if (c) {
     c.x = Math.round(this.w / 2 - c.w / 2);
     c.y = Math.round(this.h / 2 - c.h / 2);

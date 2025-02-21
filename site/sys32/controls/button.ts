@@ -13,7 +13,7 @@ export class Button extends View {
   hovered = false;
 
   override layout(): void {
-    const c = this.children[0];
+    const c = this.firstChild;
     if (c) {
       c.x = this.padding;
       c.y = this.padding;
@@ -21,7 +21,7 @@ export class Button extends View {
   }
 
   override adjust(): void {
-    const c = this.children[0];
+    const c = this.firstChild;
     if (c) {
       this.w = c.w + this.padding * 2;
       this.h = c.h + this.padding * 2;
