@@ -1,11 +1,12 @@
 import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
 import { Font } from "./font.js";
+import { Panel } from "./panel.js";
 import { View } from "./view.js";
 
 export class System {
 
-  readonly root = new View(this);
+  readonly root = new Panel(this);
   focused: View;
   font = Font.crt2025;
   keys: Record<string, boolean> = {};
@@ -122,6 +123,10 @@ export class System {
       }
     };
     requestAnimationFrame(update);
+  }
+
+  makePanel() {
+    return new Panel(this);
   }
 
   onTick(fn: (delta: number) => void) {

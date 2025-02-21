@@ -1,7 +1,7 @@
 import { Bitmap } from "../core/bitmap.js";
+import { Cursor, System } from "../core/system.js";
 import { View } from "../core/view.js";
 import { dragMove } from "../util/selections.js";
-import { Cursor, System } from "../core/system.js";
 
 const xresize: Cursor = {
   bitmap: new Bitmap([0x00000099, 0xffffffff], 5, [
@@ -102,7 +102,7 @@ export class Split extends View {
   resizable = false;
 
   #resizer?: View;
-  override children = [new View(this.sys), new View(this.sys)];
+  override children = [this.panel.make(View), this.panel.make(View)];
 
   override layout(): void {
     if (this.resizable && !this.#resizer) {

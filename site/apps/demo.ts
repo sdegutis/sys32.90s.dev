@@ -6,11 +6,10 @@ import { Label } from "../sys32/controls/label.js";
 import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
-import { System } from "../sys32/core/system.js";
-import { makeBuilder } from "../sys32/util/build.js";
+import { Panel } from "../sys32/core/panel.js";
 
-export default function demo(sys: System) {
-  const b = makeBuilder(sys);
+export default function demo(panel: Panel) {
+  const b = panel.make.bind(panel);
 
   const group1 = new RadioGroup();
   const group2 = new RadioGroup();

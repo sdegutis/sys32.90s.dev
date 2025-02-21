@@ -1,6 +1,5 @@
-import { View } from "../core/view.js";
 import { Font } from "../core/font.js";
-import { build } from "../util/build.js";
+import { View } from "../core/view.js";
 import { Label } from "./label.js";
 
 export class TextField extends View {
@@ -14,8 +13,8 @@ export class TextField extends View {
   length = 10;
   font = Font.crt2025;
 
-  #field = build(this.sys, Label, { text: '', padding: 0 });
-  #cursor = build(this.sys, Label, { visible: false, text: '_', padding: 0, color: 0x1177ffff });
+  #field = this.panel.make(Label, { text: '', padding: 0 });
+  #cursor = this.panel.make(Label, { visible: false, text: '_', padding: 0, color: 0x1177ffff });
 
   get color() { return this.#field.color; }
   set color(c: number) { this.#field.color = c; }
@@ -26,10 +25,10 @@ export class TextField extends View {
   get text() { return this.#text; }
   set text(s: string) {
     this.#text = s;
-    this.showText();
+    this.#showText();
   }
 
-  showText() {
+  #showText() {
     if (this.focused) {
       this.#field.text = this.text.slice(-this.length + 1);
     }
@@ -95,12 +94,12 @@ export class TextField extends View {
 
   override onFocus(): void {
     this.#restartBlinking();
-    this.showText();
+    this.#showText();
   }
 
   override onBlur(): void {
     this.#stopBlinking();
-    this.showText();
+    this.#showText();
   }
 
 }

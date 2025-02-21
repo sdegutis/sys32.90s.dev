@@ -1,13 +1,12 @@
 import { Group } from "../sys32/containers/group.js";
-import { makeVacuumLayout } from "../sys32/util/layouts.js";
 import { Paned } from "../sys32/containers/paned.js";
 import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
+import { Panel } from "../sys32/core/panel.js";
 import { View } from "../sys32/core/view.js";
-import { System } from "../sys32/core/system.js";
-import { makeBuilder } from "../sys32/util/build.js";
+import { makeVacuumLayout } from "../sys32/util/layouts.js";
 import { TileSelection, dragMove } from "../sys32/util/selections.js";
 
 const COLORS = [
@@ -34,9 +33,11 @@ class ColorButton extends RadioButton {
 
 }
 
-export default (sys: System) => {
+export default (panel: Panel) => {
 
-  const b = makeBuilder(sys);
+  const sys = panel.sys;
+
+  const b = panel.make.bind(panel);
 
   let showGrid = true;
   const gridButton = b(Button, {
@@ -153,7 +154,7 @@ export default (sys: System) => {
 
 
 
-  const mapView = new View(sys);
+  const mapView = panel.make(View);
 
 
   let hovered = false;

@@ -1,3 +1,4 @@
+import { Panel } from "./panel.js";
 import { Cursor, System } from "./system.js";
 
 type Mouse = {
@@ -34,10 +35,12 @@ export class View {
 
   trackingArea?: { x: number, y: number, w: number, h: number };
 
+  panel!: Panel;
   sys: System;
 
   constructor(sys: System) {
     this.sys = sys;
+    this.panel = this.sys.root;
   }
 
   get firstChild(): View | undefined { return this.children[0]; }
