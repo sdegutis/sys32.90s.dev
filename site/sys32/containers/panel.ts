@@ -23,6 +23,8 @@ export class Panel extends View {
   content = this.sys.make(View);
   bare = false;
 
+  #lastPos?: { x: number, y: number, w: number, h: number };
+
   override init(): void {
     if (this.bare) {
       this.layout = makeVacuumLayout();
@@ -61,7 +63,7 @@ export class Panel extends View {
   }
 
   close() {
-
+    this.parent.removeChild(this);
   }
 
   minimize() {
@@ -69,10 +71,21 @@ export class Panel extends View {
   }
 
   maximize() {
-    // this.window.x = this.window.y = 0;
-    // this.window.w = this.ws.desktop.w;
-    // this.window.h = this.ws.desktop.h;
-    // this.ws.sys.layoutTree(this.window);
+    if (this.#lastPos) {
+      this.x = this.#lastPos.x;
+      this.y = this.#lastPos.y;
+      this.w = this.#lastPos.w;
+      this.h = this.#lastPos.h;
+      this.#lastPos = undefined!;
+    }
+    else {
+      this.#lastPos = { x: this.x, y: this.y, w: this.w, h: this.h };
+      this.x = this.y = 0;
+      this.w = this.parent.w;
+      this.h = this.parent.h;
+    }
+
+    this.sys.layoutTree(this);
   }
 
   show() {
