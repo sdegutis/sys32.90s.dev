@@ -7,6 +7,8 @@ export class CRT {
   #context: CanvasRenderingContext2D;
   #imgdata!: ImageData;
 
+  #autoscaling = false;
+
   constructor(canvas: HTMLCanvasElement) {
     this.#canvas = canvas;
     this.#context = canvas.getContext('2d')!;
@@ -26,7 +28,9 @@ export class CRT {
     this.clip.x2 = w - 1;
     this.clip.y2 = h - 1;
 
-    this.#autoscale();
+    if (this.#autoscaling) {
+      this.#autoscale();
+    }
   }
 
   #autoscale() {
@@ -42,9 +46,16 @@ export class CRT {
   }
 
   autoscale() {
+    if (this.#autoscaling) return;
+    this.#autoscaling = true;
+
     const observer = new ResizeObserver(() => this.#autoscale());
     observer.observe(this.#canvas.parentElement!);
-    return observer;
+    const done = () => {
+      this.#autoscaling = false;
+      observer.disconnect();
+    };
+    return done;
   }
 
   scale(scale: number) {
