@@ -10,6 +10,11 @@ export class CRT {
   #autoscaling = false;
 
   constructor(canvas: HTMLCanvasElement) {
+    canvas.style.imageRendering = 'pixelated';
+    canvas.style.backgroundColor = '#000';
+    canvas.style.outline = 'none';
+    canvas.style.cursor = 'none';
+
     this.#canvas = canvas;
     this.#context = canvas.getContext('2d')!;
     this.resize(canvas.width, canvas.height);

@@ -24,10 +24,6 @@ export class System {
   constructor(canvas: HTMLCanvasElement) {
     this.crt = new CRT(canvas);
 
-    canvas.style.imageRendering = 'pixelated';
-    canvas.style.backgroundColor = '#000';
-    canvas.style.outline = 'none';
-    canvas.style.cursor = 'none';
     canvas.tabIndex = 0;
     canvas.focus();
 
