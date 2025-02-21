@@ -14,13 +14,13 @@ const maxImage = new Bitmap([0xffffff33], 3, [1, 1, 1, 1, 0, 1, 1, 1, 1,]);
 const axeImage = new Bitmap([0x990000ff], 3, [1, 0, 1, 0, 1, 0, 1, 0, 1,]);
 const adjImage = new Bitmap([0xffffff11], 3, [0, 0, 1, 0, 0, 1, 1, 1, 1,]);
 
-export class PanelView extends View {
+export class Panel extends View {
 
   override background = 0x000000aa;
   override layout = makeVacuumLayout(2);
 
   title = '';
-  content = this.panel.make(View);
+  content = this.sys.make(View);
   bare = false;
 
   override init(): void {
@@ -30,16 +30,16 @@ export class PanelView extends View {
       return;
     }
 
-    const $ = this.panel.make.bind(this.panel);
+    const $ = this.sys.make.bind(this.sys);
     this.children = [
 
       $(Paned, { dir: 'y', vacuum: 'a' },
         $(Spaced, { padding: 1, onMouseDown: () => { this.sys.trackMouse({ move: dragMove(this.sys, this) }); }, },
           $(Label, { text: this.title, color: 0xffffff33 }),
           $(Group, { gap: 2 },
-            $(Button, { onClick: () => this.panel.minimize() }, $(ImageView, { image: minImage })),
-            $(Button, { onClick: () => this.panel.maximize() }, $(ImageView, { image: maxImage })),
-            $(Button, { onClick: () => this.panel.close() }, $(ImageView, { image: axeImage }))
+            $(Button, { onClick: () => this.minimize() }, $(ImageView, { image: minImage })),
+            $(Button, { onClick: () => this.maximize() }, $(ImageView, { image: maxImage })),
+            $(Button, { onClick: () => this.close() }, $(ImageView, { image: axeImage }))
           )
         ),
 
@@ -58,6 +58,29 @@ export class PanelView extends View {
       }),
 
     ];
+  }
+
+  close() {
+
+  }
+
+  minimize() {
+
+  }
+
+  maximize() {
+    // this.window.x = this.window.y = 0;
+    // this.window.w = this.ws.desktop.w;
+    // this.window.h = this.ws.desktop.h;
+    // this.ws.sys.layoutTree(this.window);
+  }
+
+  show() {
+    this.visible = true;
+  }
+
+  hide() {
+    this.visible = false;
   }
 
 }

@@ -1,8 +1,7 @@
 import demo from "./apps/demo.js";
 import mapmaker from "./apps/mapmaker.js";
-import { PanelView } from "./sys32/containers/panelview.js";
+import { Panel } from "./sys32/containers/panel.js";
 import { Split } from "./sys32/containers/split.js";
-import { Panel } from "./sys32/core/panel.js";
 import { System } from "./sys32/core/system.js";
 import { View } from "./sys32/core/view.js";
 import { centerLayout, makeVacuumLayout } from "./sys32/util/layouts.js";
@@ -64,38 +63,40 @@ const sys = new System(canvas);
 sys.resize(320 * 2, 180 * 2);
 sys.crt.autoscale();
 // sys.root.view.layout = makeVacuumLayout(10);
-sys.root.view.content.background = 0x330000ff;
+sys.root.background = 0x330000ff;
 
 
-sys.root.view.content.children.push(new Panel(sys, {
+const $ = sys.make.bind(sys);
+
+
+sys.root.children.push($(Panel, {
   title: 'demo',
   x: 70, y: 90, w: 400, h: 300,
-}, (panel) => {
-  return panel.make(View, { layout: centerLayout, background: 0x22222299 },
-    demo(panel)
-  );
-}).view);
+  content: $(View, { layout: centerLayout, background: 0x22222299 },
+    demo(sys)
+  )
+}));
 
-sys.root.view.content.children.push(new Panel(sys, {
+
+sys.root.children.push($(Panel, {
   title: 'mapmaker',
   x: 30, y: 10, w: 400, h: 300,
-}, (panel) => {
-  return mapmaker(panel);
-}).view);
+  content: mapmaker(sys)
+}));
 
-sys.root.view.content.children.push(new Panel(sys, {
+
+sys.root.children.push($(Panel, {
   title: 'both',
   x: 90, y: 110, w: 400, h: 300,
-}, (panel) => {
-  return panel.make(View, { layout: makeVacuumLayout(), background: 0x000033ff },
-    panel.make(Split, { pos: 200, dir: 'x', resizable: true },
-      panel.make(View, { layout: centerLayout, background: 0x003333ff },
-        demo(panel)
+  content: $(View, { layout: makeVacuumLayout(), background: 0x000033ff },
+    $(Split, { pos: 200, dir: 'x', resizable: true },
+      $(View, { layout: centerLayout, background: 0x003333ff },
+        demo(sys)
       ),
-      mapmaker(panel)
+      mapmaker(sys)
     )
-  );
-}).view);
+  )
+}));
 
 
 sys.layoutTree();

@@ -13,8 +13,8 @@ export class TextField extends View {
   length = 10;
   font = Font.crt2025;
 
-  #field = this.panel.make(Label, { text: '', padding: 0 });
-  #cursor = this.panel.make(Label, { visible: false, text: '_', padding: 0, color: 0x1177ffff });
+  #field = this.sys.make(Label, { text: '', padding: 0 });
+  #cursor = this.sys.make(Label, { visible: false, text: '_', padding: 0, color: 0x1177ffff });
 
   get color() { return this.#field.color; }
   set color(c: number) { this.#field.color = c; }

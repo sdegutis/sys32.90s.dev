@@ -4,7 +4,7 @@ import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
-import { Panel } from "../sys32/core/panel.js";
+import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { makeVacuumLayout } from "../sys32/util/layouts.js";
 import { TileSelection, dragMove } from "../sys32/util/selections.js";
@@ -33,16 +33,14 @@ class ColorButton extends RadioButton {
 
 }
 
-export default (panel: Panel) => {
+export default (sys: System) => {
 
-  const sys = panel.sys;
-
-  const b = panel.make.bind(panel);
+  const $ = sys.make.bind(sys);
 
   let showGrid = true;
-  const gridButton = b(Button, {
+  const gridButton = $(Button, {
     onClick: () => showGrid = !showGrid,
-  }, b(Label, { text: 'grid' }));
+  }, $(Label, { text: 'grid' }));
 
   let currentTool = 5;
 
@@ -53,7 +51,7 @@ export default (panel: Panel) => {
   }
 
 
-  const mapArea = b(View, {
+  const mapArea = $(View, {
     background: 0x222222ff,
     draw: () => {
       sys.crt.rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
@@ -67,11 +65,11 @@ export default (panel: Panel) => {
     }
   });
 
-  const root = b(Paned, { vacuum: 'a', dir: 'x' },
-    b(Group, { background: 0x333333ff, dir: 'y' },
+  const root = $(Paned, { vacuum: 'a', dir: 'x' },
+    $(Group, { background: 0x333333ff, dir: 'y' },
       gridButton,
-      b(View, { h: 3 }),
-      ...COLORS.map((col, i) => b(ColorButton, {
+      $(View, { h: 3 }),
+      ...COLORS.map((col, i) => $(ColorButton, {
         group: toolGroup,
         color: col,
         size: 4,
@@ -79,7 +77,7 @@ export default (panel: Panel) => {
         w: 6, h: 6,
       })),
     ),
-    b(View, { background: 0x333344ff, layout: makeVacuumLayout() },
+    $(View, { background: 0x333344ff, layout: makeVacuumLayout() },
       mapArea
     )
   );
@@ -154,7 +152,7 @@ export default (panel: Panel) => {
 
 
 
-  const mapView = panel.make(View);
+  const mapView = $(View);
 
 
   let hovered = false;

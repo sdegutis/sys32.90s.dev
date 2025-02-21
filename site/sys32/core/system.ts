@@ -1,12 +1,11 @@
 import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
 import { Font } from "./font.js";
-import { Panel } from "./panel.js";
 import { View } from "./view.js";
 
 export class System {
 
-  readonly root: Panel;
+  readonly root: View;
   focused: View;
   font = Font.crt2025;
   keys: Record<string, boolean> = {};
@@ -28,9 +27,10 @@ export class System {
     canvas.tabIndex = 0;
     canvas.focus();
 
-    this.root = new Panel(this, { title: 'root', bare: true, background: 0x00000000 });
-    this.focused = this.root.view;
-    this.#hovered = this.root.view;
+    this.root = this.make(View, { background: 0x00000000 });
+    this.root.root = this.root;
+    this.focused = this.root;
+    this.#hovered = this.root;
 
     this.resize(canvas.width, canvas.height);
 
@@ -110,7 +110,7 @@ export class System {
         if (this.needsRedraw) {
           this.needsRedraw = false;
 
-          this.#draw(this.root.view);
+          this.#draw(this.root);
 
           const cursor = this.#hovered.mouse.cursor ?? pointer;
           cursor.bitmap.draw(this.crt, this.mouse.x - cursor.offset[0], this.mouse.y - cursor.offset[1]);
@@ -126,6 +126,17 @@ export class System {
     requestAnimationFrame(update);
   }
 
+  make<T extends View>(
+    ctor: { new(sys: System): T },
+    config?: Partial<T>,
+    ...children: any[]
+  ): T {
+    const view = new ctor(this);
+    Object.assign(view, { children }, config);
+    view.init?.();
+    return view;
+  }
+
   onTick(fn: (delta: number) => void) {
     this.#ticks.add(fn);
     return () => this.#ticks.delete(fn);
@@ -138,15 +149,15 @@ export class System {
   }
 
   resize(w: number, h: number) {
-    this.root.view.w = w;
-    this.root.view.h = h;
+    this.root.w = w;
+    this.root.h = h;
     this.mouse.x = 0;
     this.mouse.y = 0;
     this.crt.resize(w, h);
     this.layoutTree();
   }
 
-  layoutTree(node: View = this.root.view) {
+  layoutTree(node: View = this.root) {
     this.#adjustTree(node);
     this.#layoutTree(node, node.w, node.h);
     this.#checkUnderMouse();
@@ -169,7 +180,7 @@ export class System {
 
   #checkUnderMouse() {
     this.#allHovered.length = 0;
-    const activeHovered = this.#hover(this.root.view, this.mouse.x, this.mouse.y)!;
+    const activeHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
 
     if (this.#hovered !== activeHovered) {
       this.#hovered.onMouseExit?.();

@@ -30,7 +30,7 @@ class SplitDivider extends View {
   split: Split;
 
   constructor(split: Split) {
-    super(split.panel);
+    super(split.sys);
     this.split = split;
     this.background = split.dividerColor;
     this.mouse.cursor = this.split.dir === 'x' ? xresize : yresize;
@@ -106,8 +106,8 @@ export class Split extends View {
   override init(): void {
     if (this.children.length == 0) {
       this.children = [
-        this.panel.make(View),
-        this.panel.make(View),
+        this.sys.make(View),
+        this.sys.make(View),
       ];
     }
   }
