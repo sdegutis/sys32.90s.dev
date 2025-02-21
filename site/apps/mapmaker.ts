@@ -1,5 +1,5 @@
 import { Group } from "../sys32/containers/group.js";
-import { makeVacuumLayout } from "../sys32/containers/layouts.js";
+import { makeVacuumLayout } from "../sys32/util/layouts.js";
 import { Paned } from "../sys32/containers/paned.js";
 import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";

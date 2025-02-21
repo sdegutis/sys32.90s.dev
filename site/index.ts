@@ -1,7 +1,7 @@
 import demo from "./apps/demo.js";
 import mapmaker from "./apps/mapmaker.js";
 import { Group } from "./sys32/containers/group.js";
-import { centerLayout, makeVacuumLayout } from "./sys32/containers/layouts.js";
+import { centerLayout, makeVacuumLayout } from "./sys32/util/layouts.js";
 import { Paned } from "./sys32/containers/paned.js";
 import { Spaced } from "./sys32/containers/spaced.js";
 import { Button } from "./sys32/controls/button.js";
