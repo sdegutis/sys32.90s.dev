@@ -10,6 +10,8 @@ export class System {
   font = Font.crt2025;
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0, button: 0 };
+  crt;
+  #ticks = new Set<(delta: number) => void>();
 
   needsRedraw = true;
 
@@ -18,10 +20,6 @@ export class System {
   #trackingMouse?: { move: () => void, up?: () => void };
 
   #destroyer = new AbortController();
-
-  #ticks = new Set<(delta: number) => void>();
-
-  crt;
 
   constructor(canvas: HTMLCanvasElement) {
     this.crt = new CRT(canvas);
