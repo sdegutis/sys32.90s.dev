@@ -65,3 +65,11 @@ export class Button extends View {
   }
 
 }
+
+export function wrapButton(findButton: (view: View) => View) {
+  return {
+    onMouseEnter(this: View) { findButton(this).onMouseEnter?.() },
+    onMouseExit(this: View) { findButton(this).onMouseExit?.() },
+    onMouseDown(this: View) { findButton(this).onMouseDown?.() },
+  };
+}
