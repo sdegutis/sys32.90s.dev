@@ -6,13 +6,14 @@ import { Button } from "../controls/button.js";
 import { Label } from "../controls/label.js";
 import { System } from "../core/system.js";
 import { View } from "../core/view.js";
-import { makeVacuumLayout } from "../util/layouts.js";
+import { makeFlowLayout, makeVacuumLayout } from "../util/layouts.js";
 
 export class Workspace {
 
   sys: System;
   desktop: View;
   #taskbar: View;
+  #panels: View;
 
   constructor(sys: System) {
     this.sys = sys;
@@ -24,22 +25,19 @@ export class Workspace {
     sys.root.layout = makeVacuumLayout();
 
     this.desktop = $(View, { background: 0x333333ff });
+    this.#panels = $(Group, { background: 0x222222ff });
 
     this.#taskbar = $(Spaced, { background: 0x000000ff },
-      $(Group, { background: 0x222222ff },
-        $(Button, { padding: 2, }, $(Label, { text: 'one' }))
-      ),
-      $(Group, { background: 0x222222ff },
-        $(Button, { padding: 2, }, $(Label, { text: 'one' }))
-      ),
+      this.#panels,
       $(Group, {},
         $(Clock, { padding: 2 }),
         $(Button, {
           background: 0x222222ff,
-          padding: 2, onClick() {
+          padding: 2,
+          onClick: () => {
             big = !big;
             sys.resize(320 * (+big + 1), 180 * (+big + 1));
-          }
+          },
         }, $(Label, { text: 'resize' }))
       ),
     );
@@ -59,6 +57,19 @@ export class Workspace {
     const panel = $(Panel, config)
     this.desktop.addChild(panel);
     return panel;
+  }
+
+
+  addProgram(title: string, launch: (ws: Workspace) => void) {
+    const $ = this.sys.make.bind(this.sys);
+    this.#panels.addChild($(Button, {
+      padding: 2,
+      onClick: () => {
+        launch(this);
+        this.sys.layoutTree();
+      },
+    }, $(Label, { text: title })));
+    this.sys.layoutTree();
   }
 
 }
