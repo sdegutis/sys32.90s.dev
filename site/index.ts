@@ -27,14 +27,23 @@ const $ = sys.make.bind(sys);
 class ClockView extends Group {
 
   #label = $(Label);
+  #timer?: number;
 
   override init(): void {
     this.children = [this.#label];
     this.#updateTime();
-    setInterval((() => {
+  }
+
+  override adopted(): void {
+    this.#timer = setInterval((() => {
       this.#updateTime();
       sys.layoutTree();
     }), 1000);
+  }
+
+  override abandoned(): void {
+    clearInterval(this.#timer);
+    this.#timer = undefined!;
   }
 
   #updateTime() {

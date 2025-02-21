@@ -20,6 +20,8 @@ export class View {
   draw?(): void;
   layout?(w: number, h: number): void;
   adjust?(): void;
+  adopted?(): void;
+  abandoned?(): void;
 
   x = 0;
   y = 0;
@@ -50,6 +52,7 @@ export class View {
     this.#children = children;
     for (const child of children) {
       child.parent = this;
+      child.adopted?.();
     }
   }
 
@@ -57,6 +60,7 @@ export class View {
     const i = pos ?? this.#children.length;
     this.#children.splice(i, 0, child);
     child.parent = this;
+    child.adopted?.();
   }
 
   removeChild(child: View) {
@@ -64,6 +68,7 @@ export class View {
     if (i === -1) return;
     this.#children.splice(i, 1);
     child.parent = undefined!;
+    child.abandoned?.();
   }
 
 }
