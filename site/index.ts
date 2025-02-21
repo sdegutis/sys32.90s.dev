@@ -69,7 +69,7 @@ sys.root.view.content.background = 0x330000ff;
 
 sys.root.view.content.children.push(new Panel(sys, {
   title: 'demo',
-  x: 30, y: 10, w: 400, h: 300,
+  x: 70, y: 90, w: 400, h: 300,
 }, (panel) => {
   return panel.make(View, { layout: centerLayout, background: 0x22222299 },
     demo(panel)
@@ -85,11 +85,13 @@ sys.root.view.content.children.push(new Panel(sys, {
 
 sys.root.view.content.children.push(new Panel(sys, {
   title: 'both',
-  x: 30, y: 10, w: 400, h: 300,
+  x: 90, y: 110, w: 400, h: 300,
 }, (panel) => {
-  return panel.make(View, { layout: makeVacuumLayout(3), background: 0x000033ff },
+  return panel.make(View, { layout: makeVacuumLayout(), background: 0x000033ff },
     panel.make(Split, { pos: 200, dir: 'x', resizable: true },
-      panel.make(View, { layout: centerLayout, background: 0x003333ff }, demo(panel)),
+      panel.make(View, { layout: centerLayout, background: 0x003333ff },
+        demo(panel)
+      ),
       mapmaker(panel)
     )
   );
