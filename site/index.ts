@@ -66,46 +66,42 @@ sys.crt.autoscale();
 // sys.root.view.layout = makeVacuumLayout(10);
 sys.root.view.content.background = 0x330000ff;
 
-const sub = new Panel(sys, {
-  title: 'sub',
+
+sys.root.view.content.children.push(new Panel(sys, {
+  title: 'demo',
   x: 30, y: 10, w: 400, h: 300,
-  background: 0x003300ff
-});
+  // background: 0x003300ff,
+}, (panel) => {
+  return panel.make(View, { layout: centerLayout, background: 0x000033ff },
+    demo(panel)
+  );
+}).view);
 
-sys.root.view.content.children = [sub.view];
+sys.root.view.content.children.push(new Panel(sys, {
+  title: 'mapmaker',
+  x: 30, y: 10, w: 400, h: 300,
+  // background: 0x003300ff,
+}, (panel) => {
+  return panel.make(View, { layout: makeVacuumLayout(), background: 0x000033ff },
+    mapmaker(panel)
+  );
+}).view);
 
-// sys.root.view.children = [sub.view];
-
-// sub.view = sub.make(View, { layout: makeVacuumLayout(20), background: 0x003300ff })
-// sys.root.view.children = [sub.view];
-
-// sub.view.children.push(
-//   sub.make(View, { layout: makeVacuumLayout(0), background: 0x000033ff },
-//     sub.make(Split, { pos: 30, dir: 'x', resizable: true },
-//       sub.make(View, { layout: centerLayout, background: 0x003333ff }, demo(sub)),
-//       mapmaker(sub),
-//     )
-//   )
-// );
-
-
-
-
-// const win1 = sub.make(PanelView, {
-//   title: 'win1', background: 0x003300ff,
-//   x: 30, y: 30, w: 40, h: 50,
-//   layout: makeVacuumLayout(3)
-// },
-//   sub.make(View, { background: 0x000099ff })
-// );
-
-
-// sub.view.children = [win1];
+sys.root.view.content.children.push(new Panel(sys, {
+  title: 'both',
+  x: 30, y: 10, w: 400, h: 300,
+  // background: 0x003300ff,
+}, (panel) => {
+  return panel.make(View, { layout: makeVacuumLayout(0), background: 0x000033ff },
+    panel.make(Split, { pos: 200, dir: 'x', resizable: true },
+      panel.make(View, { layout: centerLayout, background: 0x003333ff }, demo(panel)),
+      mapmaker(panel)
+    )
+  );
+}).view);
 
 
 sys.layoutTree();
-
-// const ws = new Workspace(sys);
 
 // const win = new Panel(ws, 'mapmaker', mapmaker(sys));
 // win.window.x = 100;

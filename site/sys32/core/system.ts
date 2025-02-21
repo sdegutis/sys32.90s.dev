@@ -69,7 +69,6 @@ export class System {
       this.mouse.y = y;
 
       this.#checkUnderMouse();
-      console.log(this.#hovered.panel.view.title)
 
       this.#trackingMouse?.move();
       if (!this.#trackingMouse) this.#hovered.onMouseMove?.();

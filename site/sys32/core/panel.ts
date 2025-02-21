@@ -7,8 +7,9 @@ export class Panel {
   sys: System;
   view: PanelView;
 
-  constructor(sys: System, config: Partial<PanelView>) {
+  constructor(sys: System, config: Partial<PanelView>, makeContent?: (panel: Panel) => View) {
     this.sys = sys;
+    if (makeContent) config.content = makeContent(this);
     this.view = this.make(PanelView, config);
   }
 
