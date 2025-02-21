@@ -10,10 +10,25 @@ import { Group } from "./group.js";
 import { Paned } from "./paned.js";
 import { Spaced } from "./spaced.js";
 
-const minImage = new Bitmap([0xffffff33], 3, [0, 0, 0, 0, 0, 0, 1, 1, 1,]);
-const maxImage = new Bitmap([0xffffff33], 3, [1, 1, 1, 1, 0, 1, 1, 1, 1,]);
-const axeImage = new Bitmap([0x990000ff], 3, [1, 0, 1, 0, 1, 0, 1, 0, 1,]);
-const adjImage = new Bitmap([0xffffff11], 3, [0, 0, 1, 0, 0, 1, 1, 1, 1,]);
+const minImage = new Bitmap([0xffffff33], 4, [
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  1, 1, 1, 1,]);
+const maxImage = new Bitmap([0xffffff33], 4, [
+  1, 1, 1, 1,
+  1, 0, 0, 1,
+  1, 0, 0, 1,
+  1, 1, 1, 1,]);
+const axeImage = new Bitmap([0x990000ff], 4, [
+  1, 0, 0, 1,
+  0, 1, 1, 0,
+  0, 1, 1, 0,
+  1, 0, 0, 1,]);
+const adjImage = new Bitmap([0xffffff11], 3, [
+  0, 0, 1,
+  0, 0, 1,
+  1, 1, 1,]);
 
 const adjCursor: Cursor = {
   bitmap: new Bitmap([0x000000cc, 0xffffffff], 5, [
@@ -55,18 +70,18 @@ export class Panel extends View {
       $(Paned, { dir: 'y', vacuum: 'a' },
 
         $(Spaced, {
-          padding: pad,
+          padding: 0,
           onMouseDown: () => {
             const move = dragMove(this.sys, this);
             this.#lastPos = undefined!;
             this.sys.trackMouse({ move });
           },
         },
-          $(Label, { text: this.title, color: 0xffffff33 }),
-          $(Group, { gap: 2 },
-            $(Button, { onClick: () => this.minimize() }, $(ImageView, { image: minImage })),
-            $(Button, { onClick: () => this.maximize() }, $(ImageView, { image: maxImage })),
-            $(Button, { onClick: () => this.close() }, $(ImageView, { image: axeImage }))
+          $(Label, { padding: pad, text: this.title, color: 0xffffff33 }),
+          $(Group, { gap: 0 },
+            $(Button, { onClick: () => this.minimize() }, $(ImageView, { padding: 2, image: minImage })),
+            $(Button, { onClick: () => this.maximize() }, $(ImageView, { padding: 2, image: maxImage })),
+            $(Button, { onClick: () => this.close() }, $(ImageView, { padding: 2, image: axeImage }))
           )
         ),
 
