@@ -14,7 +14,7 @@ export default function demo(panel: Panel) {
   const group1 = new RadioGroup();
   const group2 = new RadioGroup();
 
-  return b(Group, { padding: 1, gap: 2, background: 0xffffff33 },
+  return b(Group, { padding: 1, gap: 2, background: 0x0000ff33 },
 
     b(Group, { dir: 'y', gap: 1 },
       b(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, b(RadioButton, { group: group1, size: 2, padding: 2 }), b(Label, { text: 'aaa' })),
