@@ -5,12 +5,13 @@ import { View } from "./view.js";
 
 export class System {
 
-  readonly root;
+  readonly root = new View(this);
   focused: View;
   font = Font.crt2025;
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0, button: 0 };
-  crt;
+  crt: CRT;
+
   #ticks = new Set<(delta: number) => void>();
 
   needsRedraw = true;
@@ -23,11 +24,9 @@ export class System {
 
   constructor(canvas: HTMLCanvasElement) {
     this.crt = new CRT(canvas);
-
     canvas.tabIndex = 0;
     canvas.focus();
 
-    this.root = new View(this);
     this.focused = this.root;
     this.#hovered = this.root;
 
