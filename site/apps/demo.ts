@@ -1,15 +1,15 @@
-import { Group } from "./sys32/containers/group.js";
-import { Button } from "./sys32/controls/button.js";
-import { Checkbox } from "./sys32/controls/checkbox.js";
-import { ImageView } from "./sys32/controls/image.js";
-import { Label, wrapButton } from "./sys32/controls/label.js";
-import { RadioButton, RadioGroup } from "./sys32/controls/radio.js";
-import { TextField } from "./sys32/controls/textfield.js";
-import { Bitmap } from "./sys32/core/bitmap.js";
-import { System } from "./sys32/core/system.js";
-import { makeBuilder } from "./sys32/util/build.js";
+import { Group } from "../sys32/containers/group.js";
+import { Button } from "../sys32/controls/button.js";
+import { Checkbox } from "../sys32/controls/checkbox.js";
+import { ImageView } from "../sys32/controls/image.js";
+import { Label, wrapButton } from "../sys32/controls/label.js";
+import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
+import { TextField } from "../sys32/controls/textfield.js";
+import { Bitmap } from "../sys32/core/bitmap.js";
+import { System } from "../sys32/core/system.js";
+import { makeBuilder } from "../sys32/util/build.js";
 
-export function demo(sys: System) {
+export default function demo(sys: System) {
   const b = makeBuilder(sys);
 
   const group1 = new RadioGroup();

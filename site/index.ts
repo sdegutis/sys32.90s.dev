@@ -1,5 +1,5 @@
-import { demo } from "./demo.js";
-import mapmaker from "./mapmaker.js";
+import demo from "./apps/demo.js";
+import mapmaker from "./apps/mapmaker.js";
 import { Group } from "./sys32/containers/group.js";
 import { centerLayout, makeVacuumLayout } from "./sys32/containers/layouts.js";
 import { Paned } from "./sys32/containers/paned.js";

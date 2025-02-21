@@ -1,14 +1,14 @@
-import { Group } from "./sys32/containers/group.js";
-import { makeVacuumLayout } from "./sys32/containers/layouts.js";
-import { Paned } from "./sys32/containers/paned.js";
-import { Button } from "./sys32/controls/button.js";
-import { Label } from "./sys32/controls/label.js";
-import { RadioButton, RadioGroup } from "./sys32/controls/radio.js";
-import { Bitmap } from "./sys32/core/bitmap.js";
-import { View } from "./sys32/core/view.js";
-import { System } from "./sys32/core/system.js";
-import { makeBuilder } from "./sys32/util/build.js";
-import { TileSelection, dragMove } from "./sys32/util/selections.js";
+import { Group } from "../sys32/containers/group.js";
+import { makeVacuumLayout } from "../sys32/containers/layouts.js";
+import { Paned } from "../sys32/containers/paned.js";
+import { Button } from "../sys32/controls/button.js";
+import { Label } from "../sys32/controls/label.js";
+import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
+import { Bitmap } from "../sys32/core/bitmap.js";
+import { View } from "../sys32/core/view.js";
+import { System } from "../sys32/core/system.js";
+import { makeBuilder } from "../sys32/util/build.js";
+import { TileSelection, dragMove } from "../sys32/util/selections.js";
 
 const COLORS = [
   0x000000ff, 0x1D2B53ff, 0x7E2553ff, 0x008751ff,
