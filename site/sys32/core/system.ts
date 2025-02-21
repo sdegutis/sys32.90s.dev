@@ -28,7 +28,7 @@ export class System {
     canvas.tabIndex = 0;
     canvas.focus();
 
-    this.root = new Panel(this, 'root');
+    this.root = new Panel(this, { title: 'root', bare: true, background: 0x00000000 });
     this.focused = this.root.view;
     this.#hovered = this.root.view;
 
@@ -69,6 +69,7 @@ export class System {
       this.mouse.y = y;
 
       this.#checkUnderMouse();
+      console.log(this.#hovered.panel.view.title)
 
       this.#trackingMouse?.move();
       if (!this.#trackingMouse) this.#hovered.onMouseMove?.();

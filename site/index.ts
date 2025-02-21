@@ -1,81 +1,11 @@
 import demo from "./apps/demo.js";
 import mapmaker from "./apps/mapmaker.js";
+import { PanelView } from "./sys32/containers/panelview.js";
 import { Split } from "./sys32/containers/split.js";
 import { Panel } from "./sys32/core/panel.js";
 import { System } from "./sys32/core/system.js";
 import { View } from "./sys32/core/view.js";
 import { centerLayout, makeVacuumLayout } from "./sys32/util/layouts.js";
-
-
-
-
-
-// const minImage = new Bitmap([0xffffff33], 3, [0, 0, 0, 0, 0, 0, 1, 1, 1,]);
-// const maxImage = new Bitmap([0xffffff33], 3, [1, 1, 1, 1, 0, 1, 1, 1, 1,]);
-// const axeImage = new Bitmap([0x990000ff], 3, [1, 0, 1, 0, 1, 0, 1, 0, 1,]);
-// const adjImage = new Bitmap([0xffffff11], 3, [0, 0, 1, 0, 0, 1, 1, 1, 1,]);
-
-// export class Panel {
-
-//   window;
-//   ws: Workspace;
-
-//   constructor(ws: Workspace, title: string, content: View, background = 0x000000aa) {
-//     this.ws = ws;
-
-//     const sys = ws.sys;
-//     const b = makeBuilder(sys.panel);
-
-//     this.window = b(View, { w: 100, h: 100, background, layout: makeVacuumLayout(1) },
-//       b(Paned, { dir: 'y', vacuum: 'a' },
-//         b(Spaced, { padding: 1, onMouseDown: () => { sys.trackMouse({ move: dragMove(sys, this.window) }); }, },
-//           b(Label, { text: title, color: 0xffffff33 }),
-//           b(Group, { gap: 2 },
-//             b(Button, { onClick: () => this.minimize() }, b(ImageView, { image: minImage })),
-//             b(Button, { onClick: () => this.maximize() }, b(ImageView, { image: maxImage })),
-//             b(Button, { onClick: () => this.close() }, b(ImageView, { image: axeImage }))
-//           )
-//         ),
-//         b(Group, { layout: makeVacuumLayout(1) }, content),
-//       ),
-//       b(ImageView, {
-//         passthrough: false,
-//         image: adjImage,
-//         layout: function (w, h) { this.x = w - this.w!; this.y = h - this.h!; },
-//         onMouseDown: () => {
-//           const resize = dragResize(sys, this.window);
-//           sys.trackMouse({ move: () => { resize(); sys.layoutTree(this.window); } });
-//         },
-//       }),
-//     );
-//   }
-
-//   close() {
-
-//   }
-
-//   minimize() {
-
-//   }
-
-//   maximize() {
-//     this.window.x = this.window.y = 0;
-//     this.window.w = this.ws.desktop.w;
-//     this.window.h = this.ws.desktop.h;
-//     this.ws.sys.layoutTree(this.window);
-//   }
-
-//   show() {
-//     this.ws.desktop.children.push(this.window);
-//     this.ws.sys.layoutTree();
-//   }
-
-//   hide() {
-
-//   }
-
-// }
-
 
 
 
@@ -133,22 +63,45 @@ const canvas = document.querySelector('canvas')!;
 const sys = new System(canvas);
 sys.resize(320 * 2, 180 * 2);
 sys.crt.autoscale();
-sys.root.view.layout = makeVacuumLayout(10);
-sys.root.view.background = 0x330000ff
+// sys.root.view.layout = makeVacuumLayout(10);
+sys.root.view.content.background = 0x330000ff;
 
-const sub = new Panel(sys, 'sub');
+const sub = new Panel(sys, {
+  title: 'sub',
+  x: 30, y: 10, w: 400, h: 300,
+  background: 0x003300ff
+});
 
-sub.view = sub.make(View, { layout: makeVacuumLayout(20), background: 0x003300ff })
-sys.root.view.children = [sub.view];
+sys.root.view.content.children = [sub.view];
 
-sub.view.children.push(
-  sub.make(View, { layout: makeVacuumLayout(0), background: 0x000033ff },
-    sub.make(Split, { pos: 30, dir: 'x', resizable: true },
-      sub.make(View, { layout: centerLayout, background: 0x003333ff }, demo(sub)),
-      mapmaker(sub),
-    )
-  )
-);
+// sys.root.view.children = [sub.view];
+
+// sub.view = sub.make(View, { layout: makeVacuumLayout(20), background: 0x003300ff })
+// sys.root.view.children = [sub.view];
+
+// sub.view.children.push(
+//   sub.make(View, { layout: makeVacuumLayout(0), background: 0x000033ff },
+//     sub.make(Split, { pos: 30, dir: 'x', resizable: true },
+//       sub.make(View, { layout: centerLayout, background: 0x003333ff }, demo(sub)),
+//       mapmaker(sub),
+//     )
+//   )
+// );
+
+
+
+
+// const win1 = sub.make(PanelView, {
+//   title: 'win1', background: 0x003300ff,
+//   x: 30, y: 30, w: 40, h: 50,
+//   layout: makeVacuumLayout(3)
+// },
+//   sub.make(View, { background: 0x000099ff })
+// );
+
+
+// sub.view.children = [win1];
+
 
 sys.layoutTree();
 

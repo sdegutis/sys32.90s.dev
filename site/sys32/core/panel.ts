@@ -1,16 +1,15 @@
+import { PanelView } from "../containers/panelview.js";
 import { System } from "./system.js";
 import { View } from "./view.js";
 
 export class Panel {
 
   sys: System;
-  view: View;
-  name: string;
+  view: PanelView;
 
-  constructor(sys: System, name: string) {
+  constructor(sys: System, config: Partial<PanelView>) {
     this.sys = sys;
-    this.view = this.make(View);
-    this.name = name;
+    this.view = this.make(PanelView, config);
   }
 
   make<T extends View>(
@@ -21,6 +20,29 @@ export class Panel {
     const view = Object.assign(new ctor(this), { children }, config);
     view.init?.();
     return view;
+  }
+
+  close() {
+
+  }
+
+  minimize() {
+
+  }
+
+  maximize() {
+    // this.window.x = this.window.y = 0;
+    // this.window.w = this.ws.desktop.w;
+    // this.window.h = this.ws.desktop.h;
+    // this.ws.sys.layoutTree(this.window);
+  }
+
+  show() {
+    this.view.visible = true;
+  }
+
+  hide() {
+    this.view.visible = false;
   }
 
 }

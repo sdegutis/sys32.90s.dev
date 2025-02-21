@@ -44,10 +44,6 @@ export class View {
     this.panel = panel;
   }
 
-  config(sys: System, config: Partial<typeof this>) {
-    this.sys = sys;
-  }
-
   get firstChild(): View | undefined { return this.children[0]; }
   get lastChild(): View | undefined { return this.children[this.children.length - 1]; }
 
