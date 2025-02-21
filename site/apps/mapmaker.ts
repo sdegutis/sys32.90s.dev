@@ -6,7 +6,8 @@ import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
-import { makeVacuumLayout } from "../sys32/util/layouts.js";
+import { Workspace } from "../sys32/desktop/workspace.js";
+import { centerLayout, makeVacuumLayout } from "../sys32/util/layouts.js";
 import { TileSelection, dragMove } from "../sys32/util/selections.js";
 
 const COLORS = [
@@ -33,8 +34,18 @@ class ColorButton extends RadioButton {
 
 }
 
-export default (sys: System) => {
+export default (ws: Workspace) => {
+  const $ = ws.sys.make.bind(ws.sys);
+  const panel = ws.newPanel({
+    title: 'mapmaker',
+    x: 70, y: 20, w: 200, h: 100,
+    content: $(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
+      mapmaker(ws.sys)
+    )
+  });
+};
 
+export function mapmaker(sys: System) {
   const $ = sys.make.bind(sys);
 
   let showGrid = true;
@@ -268,5 +279,4 @@ export default (sys: System) => {
   }
 
   return root;
-
-};
+}

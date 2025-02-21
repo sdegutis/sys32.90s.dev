@@ -79,7 +79,7 @@ export class TextField extends View {
     this.#restartBlinking();
   };
 
-  #blink?: number;
+  #blink?: ReturnType<typeof setInterval>;
 
   #restartBlinking() {
     this.#stopBlinking();

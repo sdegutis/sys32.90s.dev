@@ -98,7 +98,7 @@ export class Panel extends View {
   }
 
   minimize() {
-
+    this.visible = false;
   }
 
   maximize() {

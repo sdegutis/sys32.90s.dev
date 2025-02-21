@@ -7,14 +7,28 @@ import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
+import { View } from "../sys32/core/view.js";
+import { Workspace } from "../sys32/desktop/workspace.js";
+import { centerLayout } from "../sys32/util/layouts.js";
 
-export default function demo(sys: System) {
+export default (ws: Workspace) => {
+  const $ = ws.sys.make.bind(ws.sys);
+  const panel = ws.newPanel({
+    title: 'demo',
+    x: 70, y: 20, w: 200, h: 100,
+    content: $(View, { layout: centerLayout, background: 0xffffff11 },
+      demo(ws.sys)
+    )
+  });
+};
+
+export function demo(sys: System) {
   const $ = sys.make.bind(sys);
 
   const group1 = new RadioGroup();
   const group2 = new RadioGroup();
 
-  return $(Group, { padding: 1, gap: 2, background: 0x0000ff33 },
+  const main = $(Group, { padding: 1, gap: 2, background: 0x0000ff33 },
 
     $(Group, { dir: 'y', gap: 1 },
       $(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, $(RadioButton, { group: group1, size: 2, padding: 2 }), $(Label, { text: 'aaa' })),
@@ -127,4 +141,6 @@ export default function demo(sys: System) {
 
 
   );
+
+  return main;
 }

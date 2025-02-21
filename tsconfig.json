@@ -5,6 +5,10 @@
       "DOM",
       "DOM.Iterable",
     ],
+    "types": [
+      "node",
+      "@imlib/core/runtime.d.ts"
+    ],
     "target": "ESNext",
     "module": "ESNext",
     "rootDir": "site",
