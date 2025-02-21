@@ -24,7 +24,7 @@ const adjImage = new Bitmap([0xffffff11], 3, [0, 0, 1, 0, 0, 1, 1, 1, 1,]);
 
 export class Panel {
 
-  #window;
+  window;
   ws: Workspace;
 
   constructor(ws: Workspace, title: string, content: View, background = 0x000000aa) {
@@ -33,9 +33,9 @@ export class Panel {
     const sys = ws.sys;
     const b = makeBuilder(sys);
 
-    this.#window = b(View, { w: 100, h: 100, background, layout: makeVacuumLayout(1) },
+    this.window = b(View, { w: 100, h: 100, background, layout: makeVacuumLayout(1) },
       b(Paned, { dir: 'y', vacuum: 'a' },
-        b(Spaced, { padding: 1, onMouseDown: () => { sys.trackMouse({ move: dragMove(sys, this.#window) }); }, },
+        b(Spaced, { padding: 1, onMouseDown: () => { sys.trackMouse({ move: dragMove(sys, this.window) }); }, },
           b(Label, { text: title, color: 0xffffff33 }),
           b(Group, { gap: 2 },
             b(Button, { onClick: () => this.minimize() }, b(ImageView, { image: minImage })),
@@ -50,8 +50,8 @@ export class Panel {
         image: adjImage,
         layout: function (w, h) { this.x = w - this.w!; this.y = h - this.h!; },
         onMouseDown: () => {
-          const resize = dragResize(sys, this.#window);
-          sys.trackMouse({ move: () => { resize(); sys.layoutTree(this.#window); } });
+          const resize = dragResize(sys, this.window);
+          sys.trackMouse({ move: () => { resize(); sys.layoutTree(this.window); } });
         },
       }),
     );
@@ -66,14 +66,14 @@ export class Panel {
   }
 
   maximize() {
-    this.#window.x = this.#window.y = 0;
-    this.#window.w = this.ws.desktop.w;
-    this.#window.h = this.ws.desktop.h;
-    this.ws.sys.layoutTree(this.#window);
+    this.window.x = this.window.y = 0;
+    this.window.w = this.ws.desktop.w;
+    this.window.h = this.ws.desktop.h;
+    this.ws.sys.layoutTree(this.window);
   }
 
   show() {
-    this.ws.desktop.children.push(this.#window);
+    this.ws.desktop.children.push(this.window);
     this.ws.sys.layoutTree();
   }
 
@@ -138,7 +138,7 @@ export class Workspace {
 
 const canvas = document.querySelector('canvas')!;
 const sys = new System(canvas);
-// sys.resize(320 * 2, 180 * 2);
+sys.resize(320 * 2, 180 * 2);
 sys.crt.autoscale();
 sys.root.layout = makeVacuumLayout();
 const b = makeBuilder(sys);
@@ -147,6 +147,8 @@ const b = makeBuilder(sys);
 const ws = new Workspace(sys);
 
 const win = new Panel(ws, 'mapmaker', mapmaker(sys));
+win.window.x = 100;
+win.window.y = 100;
 win.show();
 
 const win2 = new Panel(ws, 'demo',
@@ -156,4 +158,6 @@ const win2 = new Panel(ws, 'demo',
     )
   )
 );
+win2.window.x = 300;
+win2.window.y = 150;
 win2.show();
