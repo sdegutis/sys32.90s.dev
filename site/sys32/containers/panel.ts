@@ -35,6 +35,9 @@ export class Panel extends View {
   content = this.sys.make(View);
   bare = false;
 
+  minw = 30;
+  minh = 30;
+
   #lastPos?: { x: number, y: number, w: number, h: number };
 
   override init(): void {
@@ -52,7 +55,8 @@ export class Panel extends View {
       $(Paned, { dir: 'y', vacuum: 'a' },
 
         $(Spaced, {
-          padding: pad, onMouseDown: () => {
+          padding: pad,
+          onMouseDown: () => {
             const move = dragMove(this.sys, this);
             this.#lastPos = undefined!;
             this.sys.trackMouse({ move });
@@ -86,7 +90,14 @@ export class Panel extends View {
         onMouseDown: () => {
           this.#lastPos = undefined!;
           const resize = dragResize(this.sys, this);
-          this.sys.trackMouse({ move: () => { resize(); this.sys.layoutTree(this); } });
+          this.sys.trackMouse({
+            move: () => {
+              resize();
+              if (this.w < this.minw) this.w = this.minw;
+              if (this.h < this.minh) this.h = this.minh;
+              this.sys.layoutTree(this);
+            }
+          });
         },
       }),
 
