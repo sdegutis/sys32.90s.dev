@@ -51,7 +51,13 @@ export class Panel extends View {
 
       $(Paned, { dir: 'y', vacuum: 'a' },
 
-        $(Spaced, { padding: pad, onMouseDown: () => { this.sys.trackMouse({ move: dragMove(this.sys, this) }); }, },
+        $(Spaced, {
+          padding: pad, onMouseDown: () => {
+            const move = dragMove(this.sys, this);
+            this.#lastPos = undefined!;
+            this.sys.trackMouse({ move });
+          },
+        },
           $(Label, { text: this.title, color: 0xffffff33 }),
           $(Group, { gap: 2 },
             $(Button, { onClick: () => this.minimize() }, $(ImageView, { image: minImage })),
@@ -78,6 +84,7 @@ export class Panel extends View {
         mouse: { x: 0, y: 0, cursor: adjCursor },
         layout: function (w, h) { this.x = w - this.w!; this.y = h - this.h!; },
         onMouseDown: () => {
+          this.#lastPos = undefined!;
           const resize = dragResize(this.sys, this);
           this.sys.trackMouse({ move: () => { resize(); this.sys.layoutTree(this); } });
         },
