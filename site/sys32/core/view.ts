@@ -9,7 +9,7 @@ type Mouse = {
 
 export class View {
 
-  // init?(): void;
+  init?(): void;
   onScroll?(up: boolean): void;
   onKeyDown?(key: string): void;
   onMouseDown?(): void;

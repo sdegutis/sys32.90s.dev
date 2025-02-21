@@ -19,7 +19,7 @@ export class Panel {
     ...children: any[]
   ): T {
     const view = Object.assign(new ctor(this), { children }, config);
-    // view.init?.();
+    view.init?.();
     return view;
   }
 
