@@ -22,13 +22,13 @@ class ColorButton extends RadioButton {
   color = 0x00000000;
 
   override draw(): void {
-    this.sys.rectFill(this.padding, this.padding, this.size, this.size, this.color);
+    this.sys.crt.rectFill(this.padding, this.padding, this.size, this.size, this.color);
 
     if (this.checked) {
-      this.sys.rectLine(0, 0, this.w, this.h, this.checkColor);
+      this.sys.crt.rectLine(0, 0, this.w, this.h, this.checkColor);
     }
     else if (this.hovered) {
-      this.sys.rectLine(0, 0, this.w, this.h, 0xffffff77);
+      this.sys.crt.rectLine(0, 0, this.w, this.h, 0xffffff77);
     }
   }
 
@@ -55,11 +55,11 @@ export default (sys: System) => {
   const mapArea = b(View, {
     background: 0x222222ff,
     draw: () => {
-      sys.rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
+      sys.crt.rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
       let off = 0;
       for (let y = 0; y < mapArea.h; y++) {
         for (let x = 0; x < mapArea.w; x += 4) {
-          sys.pset(off + x, y, 0x272727ff);
+          sys.crt.pset(off + x, y, 0x272727ff);
         }
         if (y % 2 === 0) off = (off + 1) % 4;
       }
@@ -131,12 +131,12 @@ export default (sys: System) => {
 
   for (let i = 0; i < 16; i++) {
     drawTerrain.push((x, y) => {
-      sys.rectFill(x, y, 4, 4, COLORS[i]);
+      sys.crt.rectFill(x, y, 4, 4, COLORS[i]);
     });
   }
 
   drawTerrain.push((x, y) => {
-    sys.rectFill(x, y, 4, 4, COLORS[3]);
+    sys.crt.rectFill(x, y, 4, 4, COLORS[3]);
   });
 
 
@@ -239,32 +239,32 @@ export default (sys: System) => {
 
     if (showGrid) {
       for (let x = 0; x < map.width; x++) {
-        sys.rectFill(x * 4, 0, 1, map.height * 4, 0x00000011);
+        sys.crt.rectFill(x * 4, 0, 1, map.height * 4, 0x00000011);
       }
 
       for (let y = 0; y < map.height; y++) {
-        sys.rectFill(0, y * 4, map.width * 4, 1, 0x00000011);
+        sys.crt.rectFill(0, y * 4, map.width * 4, 1, 0x00000011);
       }
     }
 
     if (hovered) {
       const tx = Math.floor(mapView.mouse.x / 4);
       const ty = Math.floor(mapView.mouse.y / 4);
-      sys.rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);
+      sys.crt.rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);
 
       if (sys.keys['Alt']) {
-        sys.rectFill((tx + 0) * 4, (ty + 1) * 4, 4, 4, 0x0000ff77);
-        sys.rectFill((tx + 0) * 4, (ty - 1) * 4, 4, 4, 0x0000ff77);
-        sys.rectFill((tx + 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
-        sys.rectFill((tx - 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
+        sys.crt.rectFill((tx + 0) * 4, (ty + 1) * 4, 4, 4, 0x0000ff77);
+        sys.crt.rectFill((tx + 0) * 4, (ty - 1) * 4, 4, 4, 0x0000ff77);
+        sys.crt.rectFill((tx + 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
+        sys.crt.rectFill((tx - 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
       }
     }
 
     if (tilesel) {
       const { tx1, tx2, ty1, ty2 } = tilesel;
 
-      sys.rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
-      sys.rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
+      sys.crt.rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
+      sys.crt.rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
     }
   }
 

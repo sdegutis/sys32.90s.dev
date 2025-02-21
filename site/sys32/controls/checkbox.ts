@@ -27,7 +27,7 @@ export class Checkbox extends Button {
     super.draw();
 
     if ((this.borderColor & 0x000000ff) > 0) {
-      this.sys.rectLine(0, 0, this.w, this.h, this.borderColor);
+      this.sys.crt.rectLine(0, 0, this.w, this.h, this.borderColor);
     }
 
     this.drawCheck();
@@ -35,7 +35,7 @@ export class Checkbox extends Button {
 
   drawCheck() {
     if (this.checked) {
-      this.sys.rectFill(this.padding, this.padding, this.size, this.size, this.checkColor);
+      this.sys.crt.rectFill(this.padding, this.padding, this.size, this.size, this.checkColor);
     }
   }
 

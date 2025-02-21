@@ -43,10 +43,10 @@ export class RadioButton extends Checkbox {
     super.draw();
 
     if (this.checked) {
-      this.sys.rectLine(0, 0, this.w, this.h, this.borderSelected);
+      this.sys.crt.rectLine(0, 0, this.w, this.h, this.borderSelected);
     }
     else if (this.hovered) {
-      this.sys.rectLine(0, 0, this.w, this.h, this.borderHovered);
+      this.sys.crt.rectLine(0, 0, this.w, this.h, this.borderHovered);
     }
   }
 

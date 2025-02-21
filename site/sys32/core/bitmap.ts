@@ -19,7 +19,7 @@ export class Bitmap {
     for (let y = 0; y < this.h; y++) {
       for (let x = 0; x < this.w; x++) {
         const s = this.pixels[i++];
-        if (s) sys.pset(px + x, py + y, this.colors[s - 1]);
+        if (s) sys.crt.pset(px + x, py + y, this.colors[s - 1]);
       }
     }
   }

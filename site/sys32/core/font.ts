@@ -106,7 +106,7 @@ export class Font {
           const py = y + (posy * 6) + yy;
 
           if (map[yy][xx]) {
-            sys.pset(px, py, c);
+            sys.crt.pset(px, py, c);
           }
         }
       }

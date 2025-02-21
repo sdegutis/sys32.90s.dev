@@ -1,6 +1,7 @@
 import { Bitmap } from "./bitmap.js";
 import { View } from "./view.js";
 import { Font } from "./font.js";
+import { CRT } from "./crt.js";
 
 export class System {
 
@@ -16,20 +17,16 @@ export class System {
   #hovered: View;
   #trackingMouse?: { move: () => void, up?: () => void };
 
-  pixels!: Uint8ClampedArray;
-
-  #clip = { cx: 0, cy: 0, x1: 0, y1: 0, x2: 0, y2: 0 };
-  #context;
-  #imgdata!: ImageData;
-
   #destroyer = new AbortController();
 
   #ticks = new Set<(delta: number) => void>();
 
-  canvas: HTMLCanvasElement;
+  #canvas: HTMLCanvasElement;
+  crt;
 
   constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
+    this.#canvas = canvas;
+    this.crt = new CRT(canvas);
 
     canvas.style.imageRendering = 'pixelated';
     canvas.style.backgroundColor = '#000';
@@ -38,7 +35,6 @@ export class System {
     canvas.tabIndex = 0;
     canvas.focus();
 
-    this.#context = canvas.getContext('2d')!;
     this.root = new View(this);
     this.focused = this.root;
     this.#hovered = this.root;
@@ -126,7 +122,7 @@ export class System {
           const cursor = this.#hovered.mouse.cursor ?? pointer;
           cursor.bitmap.draw(this, this.mouse.x - cursor.offset[0], this.mouse.y - cursor.offset[1]);
 
-          this.blit();
+          this.crt.blit();
         }
         last = t;
       }
@@ -149,22 +145,10 @@ export class System {
   }
 
   resize(w: number, h: number) {
-    const canvas = this.canvas;
+    this.crt.resize(w, h);
 
-    canvas.width = w;
-    canvas.height = h;
-
-    this.pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
-    this.#imgdata = new ImageData(this.pixels, canvas.width, canvas.height);
-    for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
-      this.pixels[i + 3] = 255;
-    }
-
-    this.#clip.x2 = canvas.width - 1;
-    this.#clip.y2 = canvas.height - 1;
-
-    this.root.w = canvas.width;
-    this.root.h = canvas.height;
+    this.root.w = this.#canvas.width;
+    this.root.h = this.#canvas.height;
 
     this.layoutTree();
     this.#autoscale();
@@ -207,78 +191,23 @@ export class System {
   }
 
   #autoscale() {
-    const rect = this.canvas.parentElement!.getBoundingClientRect();
-    let w = this.canvas.width;
-    let h = this.canvas.height;
+    const rect = this.#canvas.parentElement!.getBoundingClientRect();
+    let w = this.#canvas.width;
+    let h = this.#canvas.height;
     let s = 1;
-    while ((w += this.canvas.width) <= rect.width &&
-      (h += this.canvas.height) <= rect.height) s++;
+    while ((w += this.#canvas.width) <= rect.width &&
+      (h += this.#canvas.height) <= rect.height) s++;
     this.scale(s);
   }
 
   autoscale() {
     const observer = new ResizeObserver(() => this.#autoscale());
-    observer.observe(this.canvas.parentElement!);
+    observer.observe(this.#canvas.parentElement!);
     return observer;
   }
 
   scale(scale: number) {
-    this.canvas.style.transform = `scale(${scale})`;
-  }
-
-  blit() {
-    this.#context.putImageData(this.#imgdata, 0, 0);
-  }
-
-  pset(x: number, y: number, c: number) {
-    this.rectFill(x, y, 1, 1, c);
-  }
-
-  rectLine(x: number, y: number, w: number, h: number, c: number) {
-    this.rectFill(x + 1, y, w - 2, 1, c);
-    this.rectFill(x + 1, y + h - 1, w - 2, 1, c);
-    this.rectFill(x, y, 1, h, c);
-    this.rectFill(x + w - 1, y, 1, h, c);
-  }
-
-  rectFill(x: number, y: number, w: number, h: number, c: number) {
-    const cw = this.canvas.width;
-
-    let x1 = x + this.#clip.cx;
-    let y1 = y + this.#clip.cy;
-    let x2 = x1 + w - 1;
-    let y2 = y1 + h - 1;
-
-    if (this.#clip.x1 > x1) x1 = this.#clip.x1;
-    if (this.#clip.y1 > y1) y1 = this.#clip.y1;
-    if (this.#clip.x2 < x2) x2 = this.#clip.x2;
-    if (this.#clip.y2 < y2) y2 = this.#clip.y2;
-
-    const r = c >> 24 & 0xff;
-    const g = c >> 16 & 0xff;
-    const b = c >> 8 & 0xff;
-    const a = c & 0xff;
-
-    // if (a === 0) return;
-
-    for (y = y1; y <= y2; y++) {
-      for (x = x1; x <= x2; x++) {
-        const i = y * cw * 4 + x * 4;
-
-        if (a === 255) {
-          this.pixels[i + 0] = r;
-          this.pixels[i + 1] = g;
-          this.pixels[i + 2] = b;
-        }
-        else {
-          const ia = (255 - a) / 255;
-          const aa = (a / 255);
-          this.pixels[i + 0] = (this.pixels[i + 0] * ia) + (r * aa);
-          this.pixels[i + 1] = (this.pixels[i + 1] * ia) + (g * aa);
-          this.pixels[i + 2] = (this.pixels[i + 2] * ia) + (b * aa);
-        }
-      }
-    }
+    this.#canvas.style.transform = `scale(${scale})`;
   }
 
   focus(node: View) {
@@ -322,22 +251,22 @@ export class System {
   #draw(node: View) {
     if (!node.visible) return;
 
-    const cx1 = this.#clip.x1;
-    const cx2 = this.#clip.x2;
-    const cy1 = this.#clip.y1;
-    const cy2 = this.#clip.y2;
+    const cx1 = this.crt.clip.x1;
+    const cx2 = this.crt.clip.x2;
+    const cy1 = this.crt.clip.y1;
+    const cy2 = this.crt.clip.y2;
 
     // TODO: skip drawing if entirely clipped?
 
-    this.#clip.cx += node.x;
-    this.#clip.cy += node.y;
-    this.#clip.x1 = Math.max(cx1, this.#clip.cx);
-    this.#clip.y1 = Math.max(cy1, this.#clip.cy);
-    this.#clip.x2 = Math.min(cx2, (this.#clip.cx + node.w - 1));
-    this.#clip.y2 = Math.min(cy2, (this.#clip.cy + node.h - 1));
+    this.crt.clip.cx += node.x;
+    this.crt.clip.cy += node.y;
+    this.crt.clip.x1 = Math.max(cx1, this.crt.clip.cx);
+    this.crt.clip.y1 = Math.max(cy1, this.crt.clip.cy);
+    this.crt.clip.x2 = Math.min(cx2, (this.crt.clip.cx + node.w - 1));
+    this.crt.clip.y2 = Math.min(cy2, (this.crt.clip.cy + node.h - 1));
 
     if ((node.background & 0x000000ff) > 0) {
-      node.sys.rectFill(0, 0, node.w, node.h, node.background);
+      this.crt.rectFill(0, 0, node.w, node.h, node.background);
     }
 
     node.draw?.();
@@ -346,13 +275,13 @@ export class System {
       this.#draw(node.children[i]);
     }
 
-    this.#clip.cx -= node.x;
-    this.#clip.cy -= node.y;
+    this.crt.clip.cx -= node.x;
+    this.crt.clip.cy -= node.y;
 
-    this.#clip.x1 = cx1;
-    this.#clip.x2 = cx2;
-    this.#clip.y1 = cy1;
-    this.#clip.y2 = cy2;
+    this.crt.clip.x1 = cx1;
+    this.crt.clip.x2 = cx2;
+    this.crt.clip.y1 = cy1;
+    this.crt.clip.y2 = cy2;
   }
 
 }

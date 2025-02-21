@@ -47,10 +47,10 @@ class SplitDivider extends View {
 
   override draw(): void {
     if (this.pressed) {
-      this.sys.rectFill(0, 0, this.w, this.h, this.split.dividerColorPress);
+      this.sys.crt.rectFill(0, 0, this.w, this.h, this.split.dividerColorPress);
     }
     else if (this.#hovered) {
-      this.sys.rectFill(0, 0, this.w, this.h, this.split.dividerColorHover);
+      this.sys.crt.rectFill(0, 0, this.w, this.h, this.split.dividerColorHover);
     }
   }
 

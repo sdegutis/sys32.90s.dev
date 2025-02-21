@@ -47,10 +47,10 @@ export class Button extends View {
   override draw(): void {
     super.draw?.();
     if (this.pressed) {
-      this.sys.rectFill(0, 0, this.w, this.h, this.pressColor);
+      this.sys.crt.rectFill(0, 0, this.w, this.h, this.pressColor);
     }
     else if (this.hovered) {
-      this.sys.rectFill(0, 0, this.w, this.h, this.hoverColor);
+      this.sys.crt.rectFill(0, 0, this.w, this.h, this.hoverColor);
     }
   }
 
