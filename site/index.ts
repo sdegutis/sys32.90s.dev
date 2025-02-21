@@ -56,6 +56,7 @@ class ClockView extends Group {
 let i = 1;
 
 const desktop = $(View, { background: 0x333333ff });
+
 const taskbar = $(Spaced, { background: 0x000000ff },
   $(Group, { background: 0x222222ff },
     $(Button, {
@@ -88,13 +89,13 @@ sys.root.children = [
 ];
 
 
-// sys.root.addChild($(Panel, {
-//   title: 'demo',
-//   x: 70, y: 90, w: 400, h: 300,
-//   content: $(View, { layout: centerLayout, background: 0x22222299 },
-//     demo(sys)
-//   )
-// }));
+desktop.addChild($(Panel, {
+  title: 'demo',
+  x: 70, y: 90, w: 200, h: 100,
+  content: $(View, { layout: centerLayout },
+    demo(sys)
+  )
+}));
 
 
 // sys.root.addChild($(Panel, {
