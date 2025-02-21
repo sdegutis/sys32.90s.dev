@@ -17,11 +17,11 @@ export class Spaced extends View {
 
   override layout(): void {
     const max = this[this.dir === 'x' ? 'w' : 'h'] - this.padding * 2;
-    let totalWidth = this.padding;
+    let combinedWidths = this.padding;
     for (let i = 0; i < this.children.length; i++) {
-      totalWidth += this.children[i].w;
+      combinedWidths += this.children[i].w;
     }
-    const gap = max - totalWidth;
+    const gap = Math.floor((max - combinedWidths) / (this.children.length - 1));
 
     const dw = this.dir === 'x' ? 'w' : 'h';
     const dh = this.dir === 'x' ? 'h' : 'w';
