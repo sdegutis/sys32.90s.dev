@@ -6,6 +6,8 @@ import { System } from "../core/system.js";
 import { View } from "../core/view.js";
 import { makeBuilder } from "../util/build.js";
 
+let i = 0;
+
 export class Workspace {
 
   sys: System;
@@ -19,7 +21,13 @@ export class Workspace {
     this.desktop = b(View, { background: 0x333333ff });
     this.taskbar = b(Spaced, { background: 0x000000ff },
       b(Group, { background: 0x222222ff },
-        b(Button, { padding: 2 }, b(Label, { text: 'one' }))
+        b(Button, {
+          padding: 2, onClick() {
+            // i++
+            i = (i + 1) % 2;
+            sys.resize(320 * (i + 1), 180 * (i + 1));
+          }
+        }, b(Label, { text: 'one' }))
       ),
       b(Group, { background: 0x222222ff },
       )

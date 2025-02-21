@@ -14,19 +14,41 @@ export class CRT {
   }
 
   resize(w: number, h: number) {
-    const canvas = this.#canvas;
+    this.#canvas.width = w;
+    this.#canvas.height = h;
 
-    canvas.width = w;
-    canvas.height = h;
-
-    this.pixels = new Uint8ClampedArray(canvas.width * canvas.height * 4);
-    this.#imgdata = new ImageData(this.pixels, canvas.width, canvas.height);
-    for (let i = 0; i < canvas.width * canvas.height * 4; i += 4) {
+    this.pixels = new Uint8ClampedArray(w * h * 4);
+    this.#imgdata = new ImageData(this.pixels, w, h);
+    for (let i = 0; i < w * h * 4; i += 4) {
       this.pixels[i + 3] = 255;
     }
 
-    this.clip.x2 = canvas.width - 1;
-    this.clip.y2 = canvas.height - 1;
+    this.clip.x2 = w - 1;
+    this.clip.y2 = h - 1;
+
+    this.#autoscale();
+  }
+
+  #autoscale() {
+    const rect = this.#canvas.parentElement!.getBoundingClientRect();
+    let w = this.#canvas.width;
+    let h = this.#canvas.height;
+    let s = 1;
+    while (
+      (w += this.#canvas.width) <= rect.width &&
+      (h += this.#canvas.height) <= rect.height
+    ) s++;
+    this.scale(s);
+  }
+
+  autoscale() {
+    const observer = new ResizeObserver(() => this.#autoscale());
+    observer.observe(this.#canvas.parentElement!);
+    return observer;
+  }
+
+  scale(scale: number) {
+    this.#canvas.style.transform = `scale(${scale})`;
   }
 
   blit() {

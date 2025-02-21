@@ -21,11 +21,9 @@ export class System {
 
   #ticks = new Set<(delta: number) => void>();
 
-  #canvas: HTMLCanvasElement;
   crt;
 
   constructor(canvas: HTMLCanvasElement) {
-    this.#canvas = canvas;
     this.crt = new CRT(canvas);
 
     canvas.style.imageRendering = 'pixelated';
@@ -145,13 +143,12 @@ export class System {
   }
 
   resize(w: number, h: number) {
+    this.root.w = w;
+    this.root.h = h;
+    this.mouse.x = 0;
+    this.mouse.y = 0;
     this.crt.resize(w, h);
-
-    this.root.w = this.#canvas.width;
-    this.root.h = this.#canvas.height;
-
     this.layoutTree();
-    this.#autoscale();
   }
 
   layoutTree(node: View = this.root) {
@@ -188,26 +185,6 @@ export class System {
 
   destroy() {
     this.#destroyer.abort();
-  }
-
-  #autoscale() {
-    const rect = this.#canvas.parentElement!.getBoundingClientRect();
-    let w = this.#canvas.width;
-    let h = this.#canvas.height;
-    let s = 1;
-    while ((w += this.#canvas.width) <= rect.width &&
-      (h += this.#canvas.height) <= rect.height) s++;
-    this.scale(s);
-  }
-
-  autoscale() {
-    const observer = new ResizeObserver(() => this.#autoscale());
-    observer.observe(this.#canvas.parentElement!);
-    return observer;
-  }
-
-  scale(scale: number) {
-    this.#canvas.style.transform = `scale(${scale})`;
   }
 
   focus(node: View) {

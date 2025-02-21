@@ -10,7 +10,7 @@ import { makeBuilder } from "./sys32/util/build.js";
 const canvas = document.querySelector('canvas')!;
 const sys = new System(canvas);
 // sys.resize(320 * 2, 180 * 2);
-sys.autoscale();
+sys.crt.autoscale();
 sys.root.layout = makeVacuumLayout();
 const b = makeBuilder(sys);
 
