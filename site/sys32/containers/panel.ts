@@ -10,17 +10,17 @@ import { Group } from "./group.js";
 import { Paned } from "./paned.js";
 import { Spaced } from "./spaced.js";
 
-const minImage = new Bitmap([0xffffff33], 4, [
+const minImage = new Bitmap([0xaaaaaaff], 4, [
   0, 0, 0, 0,
   0, 0, 0, 0,
   0, 0, 0, 0,
   1, 1, 1, 1,]);
-const maxImage = new Bitmap([0xffffff33], 4, [
+const maxImage = new Bitmap([0xaaaaaaff], 4, [
   1, 1, 1, 1,
   1, 0, 0, 1,
   1, 0, 0, 1,
   1, 1, 1, 1,]);
-const axeImage = new Bitmap([0xffffff33], 4, [
+const axeImage = new Bitmap([0xaaaaaaff], 4, [
   1, 0, 0, 1,
   0, 1, 1, 0,
   0, 1, 1, 0,
@@ -43,7 +43,7 @@ const adjCursor: Cursor = {
 
 export class Panel extends View {
 
-  override background = 0x000000aa;
+  override background = 0x070707ee;
   override layout = makeVacuumLayout(0);
 
   title = '';
@@ -77,7 +77,7 @@ export class Panel extends View {
             this.sys.trackMouse({ move });
           },
         },
-          $(Label, { padding: pad, text: this.title, color: 0xffffff33 }),
+          $(Label, { padding: pad, text: this.title, color: 0xaaaaaaff }),
           $(Group, { gap: 0 },
             $(Button, { hoverColor: 0xffffff33, onClick: () => this.minimize() }, $(ImageView, { padding: 2, image: minImage })),
             $(Button, { hoverColor: 0xffffff33, onClick: () => this.maximize() }, $(ImageView, { padding: 2, image: maxImage })),
