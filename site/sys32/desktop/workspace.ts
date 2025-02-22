@@ -13,8 +13,8 @@ export class Workspace {
 
   sys: System;
 
-  #iconArea: View;
-  #windowArea: View;
+  #icons: View;
+  #desktop: View;
   #taskbar: View;
   #panels: View;
 
@@ -27,8 +27,18 @@ export class Workspace {
 
     sys.root.layout = makeVacuumLayout();
 
-    this.#windowArea = $(View, { background: 0x00000000 });
-    this.#iconArea = $(View, { background: 0x333333ff, layout: makeFlowLayout(3, 10) });
+    this.#icons = $(View, {
+      background: 0x330000ff,
+      layout: makeFlowLayout(3, 10),
+      adjust: function () {
+        this.x = this.y = 0;
+        this.w = this.parent!.w;
+        this.h = this.parent!.h;
+      }
+    });
+
+    this.#desktop = $(View, {}, this.#icons);
+
     this.#panels = $(Group, { background: 0x222222ff });
 
     this.#taskbar = $(Spaced, { background: 0x000000ff },
@@ -48,19 +58,7 @@ export class Workspace {
 
     sys.root.children = [
       $(Paned, { vacuum: 'b', dir: 'y' },
-        $(View, {
-          layout: function (this: View) {
-            for (const c of this.children) {
-              c.x = 0;
-              c.y = 0;
-              c.w = this.w - 0 * 2;
-              c.h = this.h - 0 * 2;
-            }
-          }
-        },
-          this.#iconArea,
-          this.#windowArea,
-        ),
+        this.#desktop,
         this.#taskbar,
       )
     ];
@@ -71,14 +69,13 @@ export class Workspace {
   newPanel(config: Partial<Panel>) {
     const $ = this.sys.make.bind(this.sys);
     const panel = $(Panel, config)
-    this.#windowArea.addChild(panel);
+    this.#desktop.addChild(panel);
     return panel;
   }
 
-
   addProgram(title: string, launch: (ws: Workspace) => void) {
     const $ = this.sys.make.bind(this.sys);
-    this.#iconArea.addChild($(Button, {
+    this.#icons.addChild($(Button, {
       padding: 2,
       onClick: () => {
         launch(this);
