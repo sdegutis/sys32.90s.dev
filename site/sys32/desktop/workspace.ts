@@ -7,11 +7,14 @@ import { Label } from "../controls/label.js";
 import { System } from "../core/system.js";
 import { View } from "../core/view.js";
 import { makeFlowLayout, makeVacuumLayout } from "../util/layouts.js";
+import { Clock } from "./clock.js";
 
 export class Workspace {
 
   sys: System;
-  desktop: View;
+
+  #iconArea: View;
+  #windowArea: View;
   #taskbar: View;
   #panels: View;
 
@@ -24,7 +27,8 @@ export class Workspace {
 
     sys.root.layout = makeVacuumLayout();
 
-    this.desktop = $(View, { background: 0x333333ff });
+    this.#windowArea = $(View, { background: 0x00000000 });
+    this.#iconArea = $(View, { background: 0x333333ff, layout: makeFlowLayout(3, 10) });
     this.#panels = $(Group, { background: 0x222222ff });
 
     this.#taskbar = $(Spaced, { background: 0x000000ff },
@@ -44,7 +48,19 @@ export class Workspace {
 
     sys.root.children = [
       $(Paned, { vacuum: 'b', dir: 'y' },
-        this.desktop,
+        $(View, {
+          layout: function (this: View) {
+            for (const c of this.children) {
+              c.x = 0;
+              c.y = 0;
+              c.w = this.w - 0 * 2;
+              c.h = this.h - 0 * 2;
+            }
+          }
+        },
+          this.#iconArea,
+          this.#windowArea,
+        ),
         this.#taskbar,
       )
     ];
@@ -55,14 +71,14 @@ export class Workspace {
   newPanel(config: Partial<Panel>) {
     const $ = this.sys.make.bind(this.sys);
     const panel = $(Panel, config)
-    this.desktop.addChild(panel);
+    this.#windowArea.addChild(panel);
     return panel;
   }
 
 
   addProgram(title: string, launch: (ws: Workspace) => void) {
     const $ = this.sys.make.bind(this.sys);
-    this.#panels.addChild($(Button, {
+    this.#iconArea.addChild($(Button, {
       padding: 2,
       onClick: () => {
         launch(this);
@@ -70,34 +86,6 @@ export class Workspace {
       },
     }, $(Label, { text: title })));
     this.sys.layoutTree();
-  }
-
-}
-
-class Clock extends Group {
-
-  #label = this.sys.make(Label);
-  #timer?: ReturnType<typeof setInterval>;
-
-  override init(): void {
-    this.children = [this.#label];
-    this.#updateTime();
-  }
-
-  override adopted(): void {
-    this.#timer = setInterval((() => {
-      this.#updateTime();
-      this.sys.layoutTree();
-    }), 1000);
-  }
-
-  override abandoned(): void {
-    clearInterval(this.#timer);
-    this.#timer = undefined!;
-  }
-
-  #updateTime() {
-    this.#label.text = new Date().toLocaleTimeString('en-us');
   }
 
 }
