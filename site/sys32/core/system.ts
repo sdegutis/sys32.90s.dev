@@ -126,7 +126,8 @@ export class System {
     requestAnimationFrame(update);
   }
 
-  panelFor(node: View): Panel | undefined {
+  panelFor(view: View): Panel | undefined {
+    let node: View | undefined = view;
     while (node && !(node instanceof Panel)) {
       node = node.parent;
     }
@@ -208,8 +209,8 @@ export class System {
     const panel = this.panelFor(this.#hovered);
     if (panel) {
       const parent = panel.parent;
-      parent.removeChild(panel);
-      parent.addChild(panel);
+      parent?.removeChild(panel);
+      parent?.addChild(panel);
     }
   }
 

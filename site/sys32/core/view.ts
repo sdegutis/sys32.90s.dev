@@ -41,7 +41,7 @@ export class View {
 
   trackingArea?: { x: number, y: number, w: number, h: number };
 
-  parent!: View;
+  parent?: View;
   sys: System;
 
   constructor(sys: System) {
@@ -49,6 +49,10 @@ export class View {
   }
 
   set children(children: View[]) {
+    for (const child of this.#children) {
+      child.parent = undefined!;
+      child.abandoned?.();
+    }
     this.#children = children;
     for (const child of children) {
       child.parent = this;

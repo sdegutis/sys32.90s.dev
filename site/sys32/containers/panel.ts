@@ -20,7 +20,7 @@ const maxImage = new Bitmap([0xffffff33], 4, [
   1, 0, 0, 1,
   1, 0, 0, 1,
   1, 1, 1, 1,]);
-const axeImage = new Bitmap([0x990000ff], 4, [
+const axeImage = new Bitmap([0xffffff33], 4, [
   1, 0, 0, 1,
   0, 1, 1, 0,
   0, 1, 1, 0,
@@ -79,9 +79,9 @@ export class Panel extends View {
         },
           $(Label, { padding: pad, text: this.title, color: 0xffffff33 }),
           $(Group, { gap: 0 },
-            $(Button, { onClick: () => this.minimize() }, $(ImageView, { padding: 2, image: minImage })),
-            $(Button, { onClick: () => this.maximize() }, $(ImageView, { padding: 2, image: maxImage })),
-            $(Button, { onClick: () => this.close() }, $(ImageView, { padding: 2, image: axeImage }))
+            $(Button, { hoverColor: 0xffffff33, onClick: () => this.minimize() }, $(ImageView, { padding: 2, image: minImage })),
+            $(Button, { hoverColor: 0xffffff33, onClick: () => this.maximize() }, $(ImageView, { padding: 2, image: maxImage })),
+            $(Button, { hoverColor: 0x770000ff, onClick: () => this.close() }, $(ImageView, { padding: 2, image: axeImage }))
           )
         ),
 
@@ -120,7 +120,7 @@ export class Panel extends View {
   }
 
   close() {
-    this.parent.removeChild(this);
+    this.parent!.removeChild(this);
   }
 
   minimize() {
@@ -138,8 +138,8 @@ export class Panel extends View {
     else {
       this.#lastPos = { x: this.x, y: this.y, w: this.w, h: this.h };
       this.x = this.y = 0;
-      this.w = this.parent.w;
-      this.h = this.parent.h;
+      this.w = this.parent!.w;
+      this.h = this.parent!.h;
     }
 
     this.sys.layoutTree(this);
