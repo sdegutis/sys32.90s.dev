@@ -17,7 +17,7 @@ export class Label extends View {
   }
 
   override draw() {
-    this.sys.font.print(this.sys.crt, this.padding, this.padding, this.color, this.text);
+    this.font.print(this.sys.crt, this.padding, this.padding, this.color, this.text);
   }
 
 }
