@@ -38,3 +38,11 @@ export class Group extends View {
   }
 
 }
+
+export class GroupX extends Group {
+  override dir = 'x' as const;
+}
+
+export class GroupY extends Group {
+  override dir = 'y' as const;
+}

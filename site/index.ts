@@ -1,5 +1,6 @@
 import { demo } from "./apps/demo.js";
 import { mapmaker } from "./apps/mapmaker.js";
+import paint from "./apps/paint.js";
 import { Split } from "./sys32/containers/split.js";
 import { System } from "./sys32/core/system.js";
 import { View } from "./sys32/core/view.js";
@@ -8,7 +9,7 @@ import { centerLayout, makeVacuumLayout } from "./sys32/util/layouts.js";
 
 const canvas = document.querySelector('canvas')!;
 const sys = new System(canvas);
-sys.resize(320 * 2, 180 * 2);
+// sys.resize(320 * 2, 180 * 2);
 sys.crt.autoscale();
 
 const ws = new Workspace(sys);
@@ -36,12 +37,12 @@ ws.addProgram('both', (ws) => {
   });
 });
 
+paint(ws);
 
-
-const panel = ws.newPanel({
-  title: 'mapmaker',
-  content: mapmaker(sys),
-});
+// const panel = ws.newPanel({
+//   title: 'mapmaker',
+//   content: mapmaker(sys),
+// });
 
 
 // let text = '';

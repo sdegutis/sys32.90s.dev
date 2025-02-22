@@ -71,7 +71,7 @@ export class Workspace {
     const $ = this.sys.make.bind(this.sys);
     const panel = $(Panel, {
       ...config,
-      x: 20, y: 20, w: 200, h: 200,
+      x: 20, y: 20, w: 140, h: 140,
     });
     this.#desktop.addChild(panel);
 
