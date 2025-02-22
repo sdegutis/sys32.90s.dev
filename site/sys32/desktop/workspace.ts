@@ -51,6 +51,7 @@ export class Workspace {
           onClick: () => {
             big = !big;
             sys.resize(320 * (+big + 1), 180 * (+big + 1));
+            sys.layoutTree();
           },
         }, $(Label, { text: 'resize' }))
       ),
