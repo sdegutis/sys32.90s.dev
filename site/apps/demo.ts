@@ -15,7 +15,6 @@ export default (ws: Workspace) => {
   const $ = ws.sys.make.bind(ws.sys);
   const panel = ws.newPanel({
     title: 'demo',
-    x: 70, y: 20, w: 200, h: 100,
     content: $(View, { layout: centerLayout, background: 0xffffff11 },
       demo(ws.sys)
     )

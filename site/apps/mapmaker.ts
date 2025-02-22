@@ -7,7 +7,7 @@ import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Workspace } from "../sys32/desktop/workspace.js";
-import { centerLayout, makeVacuumLayout } from "../sys32/util/layouts.js";
+import { makeVacuumLayout } from "../sys32/util/layouts.js";
 import { TileSelection, dragMove } from "../sys32/util/selections.js";
 
 const COLORS = [
@@ -38,7 +38,6 @@ export default (ws: Workspace) => {
   const $ = ws.sys.make.bind(ws.sys);
   const panel = ws.newPanel({
     title: 'mapmaker',
-    x: 70, y: 20, w: 200, h: 100,
     content: $(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
       mapmaker(ws.sys)
     )

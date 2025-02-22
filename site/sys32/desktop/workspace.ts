@@ -69,7 +69,10 @@ export class Workspace {
 
   newPanel(config: Partial<Panel>) {
     const $ = this.sys.make.bind(this.sys);
-    const panel = $(Panel, config)
+    const panel = $(Panel, {
+      ...config,
+      x: 20, y: 20, w: 200, h: 200,
+    });
     this.#desktop.addChild(panel);
 
     const button = $(Button, {}, $(Label, { padding: 2, text: panel.title }));
