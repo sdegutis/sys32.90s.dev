@@ -3,11 +3,11 @@ import { Paned } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
 import { Button } from "../controls/button.js";
 import { Label } from "../controls/label.js";
-import { Panel } from "../core/panel.js";
 import { System } from "../core/system.js";
 import { View } from "../core/view.js";
 import { makeFlowLayout, makeVacuumLayout } from "../util/layouts.js";
 import { Clock } from "./clock.js";
+import { Panel } from "./panel.js";
 
 export class Workspace {
 
