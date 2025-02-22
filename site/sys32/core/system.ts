@@ -1,3 +1,4 @@
+import { EventManager } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
 import { Font } from "./font.js";
@@ -12,7 +13,7 @@ export class System {
   mouse = { x: 0, y: 0, button: 0 };
   crt: CRT;
 
-  #ticks = new Set<(delta: number) => void>();
+  onTick = new EventManager<number>();
 
   needsRedraw = true;
 
@@ -102,9 +103,7 @@ export class System {
     const update = (t: number) => {
       const delta = t - last;
       if (delta >= 30) {
-        for (const fn of this.#ticks) {
-          fn(delta);
-        }
+        this.onTick.dispatch(delta);
 
         if (this.needsRedraw) {
           this.needsRedraw = false;
@@ -134,11 +133,6 @@ export class System {
     Object.assign(view, { children }, config);
     view.init?.();
     return view;
-  }
-
-  onTick(fn: (delta: number) => void) {
-    this.#ticks.add(fn);
-    return () => this.#ticks.delete(fn);
   }
 
   trackMouse(fns: { move: () => void; up?: () => void; }) {
