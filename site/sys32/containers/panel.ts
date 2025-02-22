@@ -43,6 +43,8 @@ const adjCursor: Cursor = {
 
 export class Panel extends View {
 
+  onClose?(): void;
+
   override background = 0x070707ee;
   override layout = makeVacuumLayout(0);
 
@@ -124,6 +126,7 @@ export class Panel extends View {
 
   close() {
     this.parent!.removeChild(this);
+    this.onClose?.();
   }
 
   minimize() {

@@ -78,6 +78,12 @@ export class Workspace {
       this.sys.focus(panel);
     };
     this.#panels.addChild(button);
+    this.sys.layoutTree(this.#panels);
+
+    panel.onClose = () => {
+      button.parent?.removeChild(button);
+      this.sys.layoutTree(this.#panels);
+    };
 
     return panel;
   }
