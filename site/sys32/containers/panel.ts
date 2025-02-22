@@ -4,6 +4,7 @@ import { Label } from "../controls/label.js";
 import { Bitmap } from "../core/bitmap.js";
 import { Cursor } from "../core/system.js";
 import { View } from "../core/view.js";
+import { EventManager } from "../util/events.js";
 import { makeVacuumLayout } from "../util/layouts.js";
 import { dragMove, dragResize } from "../util/selections.js";
 import { Group } from "./group.js";
@@ -43,7 +44,7 @@ const adjCursor: Cursor = {
 
 export class Panel extends View {
 
-  onClose?(): void;
+  didClose = new EventManager();
 
   override background = 0x070707ee;
   override layout = makeVacuumLayout(0);
@@ -126,7 +127,7 @@ export class Panel extends View {
 
   close() {
     this.parent!.removeChild(this);
-    this.onClose?.();
+    this.didClose.dispatch();
   }
 
   minimize() {

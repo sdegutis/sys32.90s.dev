@@ -80,10 +80,10 @@ export class Workspace {
     this.#panels.addChild(button);
     this.sys.layoutTree(this.#panels);
 
-    panel.onClose = () => {
+    panel.didClose.listen(() => {
       button.parent?.removeChild(button);
       this.sys.layoutTree(this.#panels);
-    };
+    });
 
     return panel;
   }
