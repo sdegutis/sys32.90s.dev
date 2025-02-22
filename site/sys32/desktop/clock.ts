@@ -1,13 +1,10 @@
-import { Group } from "../containers/group.js";
 import { Label } from "../controls/label.js";
 
-export class Clock extends Group {
+export class Clock extends Label {
 
-  #label = this.sys.make(Label);
   #timer?: ReturnType<typeof setInterval>;
 
   override init(): void {
-    this.children = [this.#label];
     this.#updateTime();
   }
 
@@ -24,7 +21,7 @@ export class Clock extends Group {
   }
 
   #updateTime() {
-    this.#label.text = new Date().toLocaleTimeString('en-us');
+    this.text = new Date().toLocaleTimeString('en-us');
   }
 
 }
