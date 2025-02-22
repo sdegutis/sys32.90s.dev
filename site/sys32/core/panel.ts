@@ -1,3 +1,6 @@
+import { Group } from "../containers/group.js";
+import { Paned } from "../containers/paned.js";
+import { Spaced } from "../containers/spaced.js";
 import { Button } from "../controls/button.js";
 import { ImageView } from "../controls/image.js";
 import { Label } from "../controls/label.js";
@@ -7,9 +10,6 @@ import { View } from "../core/view.js";
 import { EventManager } from "../util/events.js";
 import { makeVacuumLayout } from "../util/layouts.js";
 import { dragMove, dragResize } from "../util/selections.js";
-import { Group } from "./group.js";
-import { Paned } from "./paned.js";
-import { Spaced } from "./spaced.js";
 
 const minImage = new Bitmap([0xaaaaaaff], 4, [
   0, 0, 0, 0,

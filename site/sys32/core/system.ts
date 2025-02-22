@@ -1,7 +1,7 @@
-import { Panel } from "../containers/panel.js";
 import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
 import { Font } from "./font.js";
+import { Panel } from "./panel.js";
 import { View } from "./view.js";
 
 export class System {
