@@ -11,10 +11,17 @@ export class TextField extends View {
 
   #text = '';
   length = 10;
-  font = Font.crt2025;
 
   #field = this.sys.make(Label, { text: '', padding: 0 });
   #cursor = this.sys.make(Label, { visible: false, text: '_', padding: 0, color: 0x1177ffff });
+
+  #font = this.sys.font;
+  get font() { return this.#font; }
+  set font(font: Font) {
+    this.#font = font;
+    this.#field.font = font;
+    this.#cursor.font = font;
+  }
 
   get color() { return this.#field.color; }
   set color(c: number) { this.#field.color = c; }

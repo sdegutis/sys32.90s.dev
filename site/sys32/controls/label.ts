@@ -1,4 +1,3 @@
-import { Font } from "../core/font.js";
 import { View } from "../core/view.js";
 
 export class Label extends View {
@@ -6,7 +5,7 @@ export class Label extends View {
   padding = 0;
 
   text = '';
-  font = Font.crt2025;
+  font = this.sys.font;
   color = 0xffffffff;
   override passthrough = true;
 

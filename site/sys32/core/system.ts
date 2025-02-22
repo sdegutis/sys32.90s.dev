@@ -1,12 +1,14 @@
 import { EventManager } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
+import { Font } from "./font.js";
 import { View } from "./view.js";
 
 export class System {
 
   readonly root: View;
   focused: View;
+  font = Font.crt2025;
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0, button: 0 };
   crt: CRT;
