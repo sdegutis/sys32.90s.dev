@@ -27,17 +27,9 @@ export class Clock extends Label {
   // override draw(): void {
   //   super.draw();
 
-  //   const old = { ...      this.sys.crt.clip };
-  //   this.sys.crt.clip.cx = 0;
-  //   this.sys.crt.clip.cy = 0;
-  //   this.sys.crt.clip.x1 = 0;
-  //   this.sys.crt.clip.y1 = 0;
-  //   this.sys.crt.clip.x2 = 320;
-  //   this.sys.crt.clip.y2 = 180;
-
+  //   this.sys.crt.raw = true;
   //   this.sys.crt.rectFill(10, 2, 200, 100, 0x0000ff88)
-
-  //   Object.assign(this.sys.crt.clip, old);
+  //   this.sys.crt.raw = false;
   // }
 
 }

@@ -2,6 +2,7 @@ export class CRT {
 
   pixels!: Uint8ClampedArray;
   clip = { cx: 0, cy: 0, x1: 0, y1: 0, x2: 0, y2: 0 };
+  raw = false;
 
   #canvas: HTMLCanvasElement;
   #context: CanvasRenderingContext2D;
@@ -85,15 +86,15 @@ export class CRT {
   rectFill(x: number, y: number, w: number, h: number, c: number) {
     const cw = this.#canvas.width;
 
-    let x1 = x + this.clip.cx;
-    let y1 = y + this.clip.cy;
+    let x1 = this.raw ? x : x + this.clip.cx;
+    let y1 = this.raw ? y : y + this.clip.cy;
     let x2 = x1 + w - 1;
     let y2 = y1 + h - 1;
 
-    if (this.clip.x1 > x1) x1 = this.clip.x1;
-    if (this.clip.y1 > y1) y1 = this.clip.y1;
-    if (this.clip.x2 < x2) x2 = this.clip.x2;
-    if (this.clip.y2 < y2) y2 = this.clip.y2;
+    if (!this.raw && this.clip.x1 > x1) x1 = this.clip.x1;
+    if (!this.raw && this.clip.y1 > y1) y1 = this.clip.y1;
+    if (!this.raw && this.clip.x2 < x2) x2 = this.clip.x2;
+    if (!this.raw && this.clip.y2 < y2) y2 = this.clip.y2;
 
     const r = c >> 24 & 0xff;
     const g = c >> 16 & 0xff;
