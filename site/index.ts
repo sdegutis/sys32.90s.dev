@@ -1,6 +1,6 @@
 import { demo } from "./apps/demo.js";
 import { mapmaker } from "./apps/mapmaker.js";
-import { Group } from "./sys32/containers/group.js";
+import { Scroll } from "./sys32/containers/scroll.js";
 import { Split } from "./sys32/containers/split.js";
 import { Label } from "./sys32/controls/label.js";
 import { System } from "./sys32/core/system.js";
@@ -40,43 +40,6 @@ ws.addProgram('both', (ws) => {
 });
 
 
-class Scroll extends Group {
-
-  sx = 0;
-  sy = 0;
-
-  override adjust(): void {
-    this.w = this.parent!.w;
-    this.h = this.parent!.h;
-  }
-
-  override layout(): void {
-    this.#adjust();
-    this.firstChild!.x = -this.sx;
-    this.firstChild!.y = -this.sy;
-  }
-
-  override onScroll(up: boolean): void {
-    const sy = this.sys.keys['Shift'] ? 'sx' : 'sy';
-
-    const n = 6;
-    this[sy] += up ? -n : n;
-
-    this.#adjust();
-    this.sys.layoutTree(this);
-  }
-
-  #adjust() {
-    const sy = this.sys.keys['Shift'] ? 'sx' : 'sy';
-    const dh = this.sys.keys['Shift'] ? 'w' : 'h';
-
-    const max = this.firstChild![dh] - this[dh];
-    if (this[sy] >= max) this[sy] = max;
-    if (this[sy] < 0) this[sy] = 0;
-  }
-
-}
-
 
 let text = '';
 for (let i = 0; i < 23; i++) {
@@ -90,7 +53,7 @@ const panel = ws.newPanel({
   x: 20, y: 30, w: 240, h: 130,
   content: $(View, { layout: makeVacuumLayout(), background: 0x44444433 },
     $(Scroll, { background: 0x0000ff11 },
-      $(Label, { text, })
+      $(Label, { text, background: 0x00ff0011 })
     )
   )
 });
