@@ -51,22 +51,28 @@ class Scroll extends Group {
   }
 
   override layout(): void {
+    this.#adjust();
     this.firstChild!.x = -this.sx;
     this.firstChild!.y = -this.sy;
   }
 
   override onScroll(up: boolean): void {
     const sy = this.sys.keys['Shift'] ? 'sx' : 'sy';
-    const dh = this.sys.keys['Shift'] ? 'w' : 'h';
 
     const n = 6;
     this[sy] += up ? -n : n;
 
+    this.#adjust();
+    this.sys.layoutTree(this);
+  }
+
+  #adjust() {
+    const sy = this.sys.keys['Shift'] ? 'sx' : 'sy';
+    const dh = this.sys.keys['Shift'] ? 'w' : 'h';
+
     const max = this.firstChild![dh] - this[dh];
     if (this[sy] >= max) this[sy] = max;
     if (this[sy] < 0) this[sy] = 0;
-
-    this.sys.layoutTree(this);
   }
 
 }
@@ -84,7 +90,7 @@ const panel = ws.newPanel({
   x: 20, y: 30, w: 240, h: 130,
   content: $(View, { layout: makeVacuumLayout(), background: 0x44444433 },
     $(Scroll, { background: 0x0000ff11 },
-      $(Label, { text, background: 0x00ff0033 })
+      $(Label, { text, })
     )
   )
 });
