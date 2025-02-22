@@ -173,7 +173,7 @@ export function mapmaker(sys: System) {
   mapView.h = map.height * 4;
   mapArea.addChild(mapView);
 
-  mapView.mouse.cursor = {
+  mapView.cursor = {
     bitmap: new Bitmap([], 0, []),
     offset: [0, 0],
   }

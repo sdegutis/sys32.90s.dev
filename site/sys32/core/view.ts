@@ -1,11 +1,5 @@
 import { Cursor, System } from "./system.js";
 
-type Mouse = {
-  x: number;
-  y: number;
-  cursor: Cursor | undefined;
-};
-
 export class View {
 
   init?(): void;
@@ -37,7 +31,8 @@ export class View {
   get firstChild(): View | undefined { return this.children[0]; }
   get lastChild(): View | undefined { return this.children[this.children.length - 1]; }
 
-  mouse: Mouse = { x: 0, y: 0, cursor: undefined };
+  mouse = { x: 0, y: 0 };
+  cursor: Cursor | undefined;
 
   trackingArea?: { x: number, y: number, w: number, h: number };
 

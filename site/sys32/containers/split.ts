@@ -33,7 +33,7 @@ class SplitDivider extends View {
     super(split.sys);
     this.split = split;
     this.background = split.dividerColor;
-    this.mouse.cursor = this.split.dir === 'x' ? xresize : yresize;
+    this.cursor = this.split.dir === 'x' ? xresize : yresize;
   }
 
   override layout(): void {

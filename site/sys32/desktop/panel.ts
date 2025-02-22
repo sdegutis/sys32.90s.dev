@@ -103,7 +103,7 @@ export class Panel extends View {
       $(ImageView, {
         passthrough: false,
         image: adjImage,
-        mouse: { x: 0, y: 0, cursor: adjCursor },
+        cursor: adjCursor,
         layout: function () {
           this.x = this.parent!.w - this.w!;
           this.y = this.parent!.h - this.h!;

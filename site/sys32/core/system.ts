@@ -111,7 +111,7 @@ export class System {
 
           this.#draw(this.root);
 
-          const cursor = this.#hovered.mouse.cursor ?? pointer;
+          const cursor = this.#hovered.cursor ?? pointer;
           cursor.bitmap.draw(this.crt, this.mouse.x - cursor.offset[0], this.mouse.y - cursor.offset[1]);
 
           this.crt.blit();
