@@ -18,7 +18,7 @@ export class View {
   onFocus?(): void;
   onBlur?(): void;
   draw?(): void;
-  layout?(w: number, h: number): void;
+  layout?(): void;
   adjust?(): void;
   adopted?(): void;
   abandoned?(): void;

@@ -101,7 +101,10 @@ export class Panel extends View {
         passthrough: false,
         image: adjImage,
         mouse: { x: 0, y: 0, cursor: adjCursor },
-        layout: function (w, h) { this.x = w - this.w!; this.y = h - this.h!; },
+        layout: function () {
+          this.x = this.parent!.w - this.w!;
+          this.y = this.parent!.h - this.h!;
+        },
         onMouseDown: () => {
           this.#lastPos = undefined!;
           const resize = dragResize(this.sys, this);
