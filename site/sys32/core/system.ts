@@ -1,7 +1,6 @@
 import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
 import { Font } from "./font.js";
-import { Panel } from "./panel.js";
 import { View } from "./view.js";
 
 export class System {
@@ -126,14 +125,6 @@ export class System {
     requestAnimationFrame(update);
   }
 
-  panelFor(view: View): Panel | undefined {
-    let node: View | undefined = view;
-    while (node && !(node instanceof Panel)) {
-      node = node.parent;
-    }
-    return node;
-  }
-
   make<T extends View>(
     ctor: { new(sys: System): T },
     config?: Partial<T>,
@@ -201,16 +192,14 @@ export class System {
     this.#destroyer.abort();
   }
 
-  focus(node: View) {
-    this.focused = node;
+  focus(view: View) {
+    this.focused = view;
     this.focused.focused = true;
-    node.onFocus?.();
 
-    const panel = this.panelFor(this.focused);
-    if (panel) {
-      const parent = panel.parent;
-      parent!.removeChild(panel);
-      parent!.addChild(panel);
+    let node: View | undefined = view;
+    while (node) {
+      node.onFocus?.();
+      node = node.parent;
     }
   }
 

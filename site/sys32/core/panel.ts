@@ -160,4 +160,10 @@ export class Panel extends View {
     this.visible = false;
   }
 
+  override onFocus(): void {
+    const parent = this.parent!;
+    parent.removeChild(this);
+    parent.addChild(this);
+  }
+
 }
