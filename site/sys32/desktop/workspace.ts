@@ -39,7 +39,7 @@ export class Workspace {
 
     this.#desktop = $(View, {}, this.#icons);
 
-    this.#panels = $(Group, { background: 0x222222ff });
+    this.#panels = $(Group, { gap: 2 });
 
     this.#taskbar = $(Spaced, { background: 0x000000ff },
       this.#panels,
@@ -71,6 +71,14 @@ export class Workspace {
     const $ = this.sys.make.bind(this.sys);
     const panel = $(Panel, config)
     this.#desktop.addChild(panel);
+
+    const button = $(Button, {}, $(Label, { padding: 2, text: panel.title }));
+    button.onClick = () => {
+      panel.show();
+      this.sys.focus(panel);
+    };
+    this.#panels.addChild(button);
+
     return panel;
   }
 

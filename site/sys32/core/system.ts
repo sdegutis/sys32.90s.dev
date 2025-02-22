@@ -206,11 +206,11 @@ export class System {
     this.focused.focused = true;
     node.onFocus?.();
 
-    const panel = this.panelFor(this.#hovered);
+    const panel = this.panelFor(this.focused);
     if (panel) {
       const parent = panel.parent;
-      parent?.removeChild(panel);
-      parent?.addChild(panel);
+      parent!.removeChild(panel);
+      parent!.addChild(panel);
     }
   }
 
