@@ -9,17 +9,16 @@ import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
-import { Workspace } from "../sys32/desktop/workspace.js";
 import { centerLayout } from "../sys32/util/layouts.js";
 
-export default (ws: Workspace) => {
-  const panel = ws.sys.make(Panel, {
+export default (sys: System) => {
+  const panel = sys.make(Panel, {
     title: 'demo',
-    content: ws.sys.make(View, { layout: centerLayout, background: 0xffffff11 },
-      demo(ws.sys)
+    content: sys.make(View, { layout: centerLayout, background: 0xffffff11 },
+      demo(sys)
     )
   })
-  ws.sys.root.addChild(panel);
+  sys.root.addChild(panel);
 };
 
 export function demo(sys: System) {

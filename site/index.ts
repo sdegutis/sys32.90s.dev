@@ -18,9 +18,9 @@ const ws = new Workspace(sys);
 ws.addProgram('demo', demo);
 ws.addProgram('mapmaker', mapmaker);
 ws.addProgram('paint', paint);
-paint(ws);
 sys.layoutTree()
 
+paint(sys);
 
 let text = '';
 for (let i = 0; i < 23; i++) {

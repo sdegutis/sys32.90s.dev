@@ -3,13 +3,11 @@ import { PanedYB } from "../sys32/containers/paned.js";
 import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { TextField } from "../sys32/controls/textfield.js";
+import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
-import { Workspace } from "../sys32/desktop/workspace.js";
 
-export default function paint(ws: Workspace) {
-  const sys = ws.sys;
-
+export default function paint(sys: System) {
   const widthLabel = sys.make(TextField, { length: 3, background: 0x000000ff, padding: 2 });
   const heightLabel = sys.make(TextField, { length: 3, background: 0x000000ff, padding: 2 });
 
@@ -46,5 +44,5 @@ export default function paint(ws: Workspace) {
 
   sys.layoutTree(panel)
 
-  ws.sys.root.addChild(panel);
+  sys.root.addChild(panel);
 }

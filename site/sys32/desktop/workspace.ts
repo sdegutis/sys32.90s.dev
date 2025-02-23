@@ -102,11 +102,11 @@ export class Workspace {
     return panel;
   }
 
-  addProgram(title: string, launch: (ws: Workspace) => void) {
+  addProgram(title: string, launch: (sys: System) => void) {
     this.#icons.addChild(this.sys.make(Button, {
       padding: 2,
       onClick: () => {
-        launch(this);
+        launch(this.sys);
         this.sys.layoutTree();
       },
     }, this.sys.make(Label, { text: title })));
