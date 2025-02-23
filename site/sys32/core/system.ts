@@ -17,7 +17,6 @@ export class System {
 
   needsRedraw = true;
 
-  #allHovered: View[] = [];
   #hovered: View;
   #trackingMouse?: { move: () => void, up?: () => void };
 
@@ -90,14 +89,15 @@ export class System {
 
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
-      let i = this.#allHovered.length;
-      while (i--) {
-        const view = this.#allHovered[i];
-        if (view.onScroll) {
-          view.onScroll(e.deltaY < 0);
+
+      let node: View | undefined = this.#hovered;
+      while (node) {
+        if (node.onScroll) {
+          node.onScroll(e.deltaY < 0);
           this.needsRedraw = true;
           return;
         }
+        node = node.parent;
       }
     }, { signal: this.#destroyer.signal })
 
@@ -179,7 +179,6 @@ export class System {
   }
 
   #checkUnderMouse() {
-    this.#allHovered.length = 0;
     const activeHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
 
     if (this.#hovered !== activeHovered) {
@@ -220,8 +219,6 @@ export class System {
 
     const inThis = (x >= tx && y >= ty && x < tw && y < th);
     if (!inThis) return null;
-
-    this.#allHovered.push(node);
 
     node.mouse.x = x;
     node.mouse.y = y;
