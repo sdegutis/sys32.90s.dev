@@ -44,4 +44,5 @@ export default function paint(sys: System) {
   )
 
   sys.root.addChild(panel);
+  sys.focus(panel);
 }

@@ -43,6 +43,7 @@ export default (sys: System) => {
     )
   );
   sys.root.addChild(panel);
+  sys.focus(panel);
 };
 
 export function mapmaker(sys: System) {
