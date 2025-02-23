@@ -6,6 +6,7 @@ import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
+import { Panel } from "../sys32/desktop/panel.js";
 import { Workspace } from "../sys32/desktop/workspace.js";
 import { makeVacuumLayout } from "../sys32/util/layouts.js";
 import { TileSelection, dragMove } from "../sys32/util/selections.js";
@@ -35,12 +36,13 @@ class ColorButton extends RadioButton {
 }
 
 export default (ws: Workspace) => {
-  const panel = ws.newPanel({
+  const panel = ws.sys.make(Panel, {
     title: 'mapmaker',
     content: ws.sys.make(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
       mapmaker(ws.sys)
     )
   });
+  ws.addPanel(panel);
 };
 
 export function mapmaker(sys: System) {

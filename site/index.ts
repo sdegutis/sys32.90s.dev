@@ -1,9 +1,7 @@
 import { demo } from "./apps/demo.js";
 import { mapmaker } from "./apps/mapmaker.js";
 import paint from "./apps/paint.js";
-import { Scroll } from "./sys32/containers/scroll.js";
 import { Split } from "./sys32/containers/split.js";
-import { Label } from "./sys32/controls/label.js";
 import { System } from "./sys32/core/system.js";
 import { View } from "./sys32/core/view.js";
 import { Panel } from "./sys32/desktop/panel.js";
@@ -26,7 +24,7 @@ appPaths.forEach(p => {
 })
 
 ws.addProgram('both', (ws) => {
-  const panel = ws.newPanel({
+  const panel = sys.make(Panel, {
     title: 'both',
     content: sys.make(View, { layout: makeVacuumLayout(), background: 0x000033ff },
       sys.make(Split, { pos: 200, min: 20, max: 20, dir: 'x', resizable: true },
@@ -36,7 +34,8 @@ ws.addProgram('both', (ws) => {
         mapmaker(sys)
       )
     )
-  });
+  })
+  ws.addPanel(panel);
 });
 
 paint(ws);

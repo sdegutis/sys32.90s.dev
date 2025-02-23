@@ -65,11 +65,7 @@ export class Workspace {
     sys.layoutTree();
   }
 
-  newPanel(config: Partial<Panel>) {
-    const panel = this.sys.make(Panel, {
-      ...config,
-      x: 20, y: 20, w: 240, h: 140,
-    });
+  addPanel(panel: Panel) {
     this.#desktop.addChild(panel);
 
     const button = this.sys.make(Button, {}, this.sys.make(Label, { padding: 2, text: panel.title }));
