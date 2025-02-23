@@ -43,9 +43,11 @@ class PaintView extends View {
       }
     }
 
-    const px = Math.floor(this.mouse.x / 4) * 4;
-    const py = Math.floor(this.mouse.y / 4) * 4;
-    this.sys.crt.rectFill(px, py, 4, 4, 0x0000ff77);
+    if (this.#hovered) {
+      const px = Math.floor(this.mouse.x / 4) * 4;
+      const py = Math.floor(this.mouse.y / 4) * 4;
+      this.sys.crt.rectFill(px, py, 4, 4, 0x0000ff77);
+    }
   }
 
   override onMouseDown(): void {
@@ -77,13 +79,32 @@ class PaintView extends View {
     this.sys.layoutTree(this.parent);
   }
 
+  #hovered = false;
+
+  override onMouseEnter(): void {
+    super.onMouseEnter?.();
+    this.#hovered = true;
+  }
+
+  override onMouseExit(): void {
+    super.onMouseExit?.();
+    this.#hovered = false;
+  }
+
 }
 
 export default function paint(sys: System) {
   const paintView = sys.make(PaintView, {});
+  const widthLabel = sys.make(Label, {});
+  const heightLabel = sys.make(Label, {});
 
-  const widthLabel = sys.make(Label, { text: paintView.width.toString() });
-  const heightLabel = sys.make(Label, { text: paintView.height.toString() });
+  function updateLabels() {
+    widthLabel.text = paintView.width.toString();
+    heightLabel.text = paintView.height.toString();
+    sys.layoutTree(heightLabel.parent);
+  }
+
+  updateLabels();
 
   const resizer = sys.make(View, {
     background: 0x77000077,
@@ -102,17 +123,15 @@ export default function paint(sys: System) {
           const w = Math.floor(o.w / 4);
           const h = Math.floor(o.h / 4);
           paintView.resize(w, h);
-
-          widthLabel.text = paintView.width.toString();
-          heightLabel.text = paintView.height.toString();
+          updateLabels();
         }
       })
 
     }
   });
 
-  const panel = sys.make(Panel, { title: 'paint' },
-    sys.make(PanedYB, {},
+  const panel = sys.make(Panel, { title: 'paint', minw: 50 },
+    sys.make(PanedYB, { gap: 1 },
 
       sys.make(Scroll, {
         background: 0x222222ff,
@@ -133,7 +152,9 @@ export default function paint(sys: System) {
       ),
 
       sys.make(GroupX, {},
+        sys.make(Label, { text: 'w:' }),
         widthLabel,
+        sys.make(Label, { text: '  h:' }),
         heightLabel,
       )
 
