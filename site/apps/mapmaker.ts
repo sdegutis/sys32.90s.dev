@@ -42,7 +42,7 @@ export default (ws: Workspace) => {
       mapmaker(ws.sys)
     )
   });
-  ws.addPanel(panel);
+  ws.sys.root.addChild(panel);
 };
 
 export function mapmaker(sys: System) {

@@ -15,13 +15,11 @@ const sys = new System(canvas);
 sys.crt.autoscale();
 
 const ws = new Workspace(sys);
-
 ws.addProgram('demo', demo);
 ws.addProgram('mapmaker', mapmaker);
 ws.addProgram('paint', paint);
-
 paint(ws);
-
+sys.layoutTree()
 
 
 let text = '';
@@ -41,3 +39,5 @@ const panel = sys.make(Panel, {
 });
 sys.root.addChild(panel);
 sys.layoutTree(panel)
+
+sys.layoutTree()

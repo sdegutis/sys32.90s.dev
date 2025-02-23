@@ -46,5 +46,5 @@ export default function paint(ws: Workspace) {
 
   sys.layoutTree(panel)
 
-  ws.addPanel(panel);
+  ws.sys.root.addChild(panel);
 }

@@ -19,7 +19,7 @@ export default (ws: Workspace) => {
       demo(ws.sys)
     )
   })
-  ws.addPanel(panel);
+  ws.sys.root.addChild(panel);
 };
 
 export function demo(sys: System) {

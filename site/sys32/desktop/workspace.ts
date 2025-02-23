@@ -55,17 +55,32 @@ export class Workspace {
       ),
     );
 
+    const myroot = sys.make(Paned, { vacuum: 'b', dir: 'y' },
+      this.#desktop,
+      this.#taskbar,
+    );
+
     sys.root.children = [
-      sys.make(Paned, { vacuum: 'b', dir: 'y' },
-        this.#desktop,
-        this.#taskbar,
-      )
+      myroot
     ];
+
+    sys.onTick.listen(() => {
+      let did = false;
+      for (const child of sys.root.children.toReversed()) {
+        // if (child === myroot) continue;
+        if (child instanceof Panel) {
+          sys.root.removeChild(child);
+          this.#addPanel(child);
+          did = true;
+        }
+      }
+      if (did) sys.layoutTree();
+    });
 
     sys.layoutTree();
   }
 
-  addPanel(panel: Panel) {
+  #addPanel(panel: Panel) {
     panel.x = 20;
     panel.y = 20;
 
