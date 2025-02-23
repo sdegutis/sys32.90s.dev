@@ -5,7 +5,7 @@ import { Button } from "../controls/button.js";
 import { ImageView } from "../controls/image.js";
 import { Label } from "../controls/label.js";
 import { Bitmap } from "../core/bitmap.js";
-import { Cursor } from "../core/system.js";
+import { Cursor, System } from "../core/system.js";
 import { View } from "../core/view.js";
 import { multifn } from "../util/events.js";
 import { makeVacuumLayout } from "../util/layouts.js";
@@ -156,17 +156,24 @@ export class Panel extends View {
     this.visible = false;
   }
 
-  // #panelFor(view: View) {
-  //   let node: View | undefined = view;
-  //   while (node) {
-  //     if (node instanceof Panel) return node;
-  //     node = node.parent;
-  //   }
-  //   return node;
-  // }
+  #realbg = this.background;
 
   override onFocus(): void {
-    console.log('here', this.title)
+    const old = focusedPanel.get(this.sys);
+    if (old === this) return;
+
+    if (old) old.#unfocus();
+
+    focusedPanel.set(this.sys, this);
+    this.#focus();
+  }
+
+  #unfocus() {
+    this.background = 0x333333ff;
+  }
+
+  #focus() {
+    this.background = this.#realbg;
 
     const parent = this.parent!;
     parent.removeChild(this);
@@ -174,3 +181,5 @@ export class Panel extends View {
   }
 
 }
+
+const focusedPanel = new WeakMap<System, Panel>();
