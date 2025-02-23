@@ -42,7 +42,5 @@ export default function paint(sys: System) {
     ),
   })
 
-  sys.layoutTree(panel)
-
   sys.root.addChild(panel);
 }

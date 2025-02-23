@@ -24,7 +24,6 @@ ws.addProgram('demo', demo);
 ws.addProgram('mapmaker', mapmaker);
 ws.addProgram('paint', paint);
 ws.addProgram('text test', texttest);
-sys.layoutTree()
 
 
 function texttest(sys: System) {
