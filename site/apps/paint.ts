@@ -67,13 +67,14 @@ class PaintView extends View {
   resize(width: number, height: number) {
     const oldgrid = [...this.#grid];
     const oldwidth = this.width;
+    const oldheight = this.height;
 
     this.width = width;
     this.height = height;
     this.#grid.length = 0;
 
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
+    for (let y = 0; y < Math.min(height, oldheight); y++) {
+      for (let x = 0; x < Math.min(width, oldwidth); x++) {
         const c = oldgrid[y * oldwidth + x];
         if (c !== undefined) this.#grid[y * width + x] = c;
       }
