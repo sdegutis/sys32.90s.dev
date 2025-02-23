@@ -55,29 +55,30 @@ export class Workspace {
       ),
     );
 
-    const myroot = sys.make(Paned, { vacuum: 'b', dir: 'y' },
-      this.#desktop,
-      this.#taskbar,
-    );
+    this.#stealPanels();
+    sys.onTick.listen(() => this.#stealPanels());
 
     sys.root.children = [
-      myroot
+      sys.make(Paned, { vacuum: 'b', dir: 'y' },
+        this.#desktop,
+        this.#taskbar
+      )
     ];
 
-    sys.onTick.listen(() => {
-      let did = false;
-      for (const child of sys.root.children.toReversed()) {
-        // if (child === myroot) continue;
-        if (child instanceof Panel) {
-          sys.root.removeChild(child);
-          this.#addPanel(child);
-          did = true;
-        }
-      }
-      if (did) sys.layoutTree();
-    });
-
     sys.layoutTree();
+  }
+
+  #stealPanels() {
+    let did = false;
+    for (const child of this.sys.root.children.toReversed()) {
+      // if (child === myroot) continue;
+      if (child instanceof Panel) {
+        this.sys.root.removeChild(child);
+        this.#addPanel(child);
+        did = true;
+      }
+    }
+    if (did) this.sys.layoutTree();
   }
 
   #addPanel(panel: Panel) {

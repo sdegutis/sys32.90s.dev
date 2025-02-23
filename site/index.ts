@@ -14,30 +14,32 @@ const sys = new System(canvas);
 // sys.resize(320 * 2, 180 * 2);
 sys.crt.autoscale();
 
+paint(sys);
+sys.layoutTree()
+
 const ws = new Workspace(sys);
 ws.addProgram('demo', demo);
 ws.addProgram('mapmaker', mapmaker);
 ws.addProgram('paint', paint);
+ws.addProgram('text test', texttest);
 sys.layoutTree()
 
-paint(sys);
 
-let text = '';
-for (let i = 0; i < 23; i++) {
-  text += String.fromCharCode(97 + i).repeat(i + 1) + '\n';
-}
+function texttest(sys: System) {
+  let text = '';
+  for (let i = 0; i < 23; i++) {
+    text += String.fromCharCode(97 + i).repeat(i + 1) + '\n';
+  }
 
-
-const panel = sys.make(Panel, {
-  title: 'both',
-  x: 40, y: 40, w: 70, h: 50,
-  content: sys.make(View, { layout: makeVacuumLayout(), background: 0x44444433 },
-    sys.make(Scroll, { amount: 6, background: 0x0000ff11 },
-      sys.make(Label, { text, background: 0x00ff0011 })
+  const panel = sys.make(Panel, {
+    title: 'text test',
+    x: 40, y: 40, w: 70, h: 50,
+    content: sys.make(View, { layout: makeVacuumLayout(), background: 0x44444433 },
+      sys.make(Scroll, { amount: 6, background: 0x0000ff11 },
+        sys.make(Label, { text, background: 0x00ff0011 })
+      )
     )
-  )
-});
-sys.root.addChild(panel);
-sys.layoutTree(panel)
-
-sys.layoutTree()
+  });
+  sys.root.addChild(panel);
+  sys.layoutTree(panel)
+}
