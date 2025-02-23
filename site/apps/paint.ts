@@ -7,6 +7,7 @@ import { TextField } from "../sys32/controls/textfield.js";
 import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
+import { dragMove, dragResize } from "../sys32/util/selections.js";
 
 class PaintView extends View {
 
@@ -17,14 +18,14 @@ class PaintView extends View {
 
   #grid: number[] = [];
 
-  override init(): void {
+  override adjust(): void {
     this.w = this.width * 4;
     this.h = this.height * 4;
   }
 
   override draw(): void {
     for (let x = 0; x < this.width; x++) {
-      this.sys.crt.rectFill(x * 4, 0, 1, this.w, 0x00000033);
+      this.sys.crt.rectFill(x * 4, 0, 1, this.h, 0x00000033);
     }
     for (let y = 0; y < this.height; y++) {
       this.sys.crt.rectFill(0, y * 4, this.w, 1, 0x00000033);
@@ -56,13 +57,53 @@ class PaintView extends View {
         this.#grid[i] = 0xffffffff;
       }
     })
+  }
 
+  resize(width: number, height: number) {
+    const oldgrid = [...this.#grid];
+    const oldwidth = this.width;
+
+    this.width = width;
+    this.height = height;
+    this.#grid.length = 0;
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const c = oldgrid[y * oldwidth + x];
+        if (c !== undefined) this.#grid[y * width + x] = c;
+      }
+    }
+
+    this.sys.layoutTree(this.parent);
   }
 
 }
 
 export default function paint(sys: System) {
   const paintView = sys.make(PaintView);
+
+  const resizer = sys.make(View, {
+    background: 0x77000077,
+    w: 4, h: 4,
+    layout: () => {
+      resizer.x = paintView.w;
+      resizer.y = paintView.h;
+    },
+    onMouseDown() {
+      const o = { w: paintView.w, h: paintView.h };
+      const fn = dragResize(sys, o);
+
+      this.sys?.trackMouse({
+        move: () => {
+          fn();
+          const w = Math.floor(o.w / 4);
+          const h = Math.floor(o.h / 4);
+          paintView.resize(w, h);
+        }
+      })
+
+    }
+  });
 
   const panel = sys.make(Panel, { title: 'paint' },
     sys.make(Scroll, {
@@ -77,9 +118,10 @@ export default function paint(sys: System) {
           }
           if (y % h === (h - 1)) off = (off + 1) % w;
         }
-      }
+      },
     },
-      paintView
+      paintView,
+      resizer
     )
 
     // sys.make(PanedYB, {},
