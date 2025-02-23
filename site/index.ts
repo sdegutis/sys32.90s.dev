@@ -16,6 +16,7 @@ sys.crt.autoscale();
 // sys.root.background = 0x003300ff;
 // sys.root.layout = makeVacuumLayout()
 
+// mapmaker(sys);
 paint(sys);
 sys.layoutTree()
 
@@ -35,12 +36,13 @@ function texttest(sys: System) {
   const panel = sys.make(Panel, {
     title: 'text test',
     x: 40, y: 40, w: 70, h: 50,
-    content: sys.make(View, { layout: makeVacuumLayout(), background: 0x44444433 },
+  },
+    sys.make(View, { layout: makeVacuumLayout(), background: 0x44444433 },
       sys.make(Scroll, { amount: 6, background: 0x0000ff11 },
         sys.make(Label, { text, background: 0x00ff0011 })
       )
     )
-  });
+  );
   sys.root.addChild(panel);
   sys.layoutTree(panel)
 }

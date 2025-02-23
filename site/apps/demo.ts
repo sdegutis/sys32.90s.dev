@@ -14,10 +14,11 @@ import { centerLayout } from "../sys32/util/layouts.js";
 export default (sys: System) => {
   const panel = sys.make(Panel, {
     title: 'demo',
-    content: sys.make(View, { layout: centerLayout, background: 0xffffff11 },
+  },
+    sys.make(View, { layout: centerLayout, background: 0xffffff11 },
       demo(sys)
     )
-  })
+  )
   sys.root.addChild(panel);
 };
 

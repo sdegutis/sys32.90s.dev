@@ -19,7 +19,8 @@ export default function paint(sys: System) {
 
   const panel = sys.make(Panel, {
     title: 'paint',
-    content: sys.make(PanedYB, {},
+  },
+    sys.make(PanedYB, {},
       sys.make(View, { background: 0x111111ff }),
       sys.make(GroupY, { background: 0x0000ff33 },
         sys.make(View, { h: 3, background: 0x00ff00ff }),
@@ -39,8 +40,8 @@ export default function paint(sys: System) {
           }, sys.make(Label, { text: 'resize' }))
         ),
       )
-    ),
-  })
+    )
+  )
 
   sys.root.addChild(panel);
 }

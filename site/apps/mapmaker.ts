@@ -37,10 +37,11 @@ class ColorButton extends RadioButton {
 export default (sys: System) => {
   const panel = sys.make(Panel, {
     title: 'mapmaker',
-    content: sys.make(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
+  },
+    sys.make(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
       mapmaker(sys)
     )
-  });
+  );
   sys.root.addChild(panel);
 };
 

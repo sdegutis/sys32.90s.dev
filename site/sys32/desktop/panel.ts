@@ -50,7 +50,6 @@ export class Panel extends View {
   override layout = makeVacuumLayout(0);
 
   title = '';
-  content = this.sys.make(View);
   bare = false;
 
   override w = 240;
@@ -64,11 +63,12 @@ export class Panel extends View {
   override init(): void {
     if (this.bare) {
       this.layout = makeVacuumLayout();
-      this.children = [this.content];
       return;
     }
 
     const pad = 2;
+
+    const content = this.children[0];
 
     this.children = [
 
@@ -98,7 +98,7 @@ export class Panel extends View {
             c.w = this.w - (pad * 2);
             c.h = this.h - pad;
           }
-        }, this.content),
+        }, content),
 
       ),
 
@@ -163,6 +163,8 @@ export class Panel extends View {
   }
 
   override onFocus(): void {
+    // console.log(this.sys.focused)
+
     const parent = this.parent!;
     parent.removeChild(this);
     parent.addChild(this);
