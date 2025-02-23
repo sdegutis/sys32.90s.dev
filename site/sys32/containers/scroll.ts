@@ -4,6 +4,7 @@ export class Scroll extends View {
 
   sx = 0;
   sy = 0;
+  amount = 6;
 
   override layout(): void {
     this.#adjust();
@@ -12,9 +13,8 @@ export class Scroll extends View {
   }
 
   override onScroll(up: boolean): void {
-    const n = 6;
     const sy = this.sys.keys['Shift'] ? 'sx' : 'sy';
-    this[sy] += up ? -n : n;
+    this[sy] += up ? -this.amount : this.amount;
 
     this.#adjust();
     this.sys.layoutTree(this);

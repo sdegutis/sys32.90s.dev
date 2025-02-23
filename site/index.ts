@@ -6,6 +6,7 @@ import { Split } from "./sys32/containers/split.js";
 import { Label } from "./sys32/controls/label.js";
 import { System } from "./sys32/core/system.js";
 import { View } from "./sys32/core/view.js";
+import { Panel } from "./sys32/desktop/panel.js";
 import { Workspace } from "./sys32/desktop/workspace.js";
 import { centerLayout, makeVacuumLayout } from "./sys32/util/layouts.js";
 
@@ -52,12 +53,13 @@ paint(ws);
 // }
 
 
-// const panel = ws.newPanel({
+// const panel = sys.make(Panel, {
 //   title: 'both',
-//   x: 20, y: 30, w: 240, h: 130,
+//   x: 40, y: 40, w: 70, h: 50,
 //   content: sys.make(View, { layout: makeVacuumLayout(), background: 0x44444433 },
-//     sys.make(Scroll, { background: 0x0000ff11 },
+//     sys.make(Scroll, { amount: 6, background: 0x0000ff11 },
 //       sys.make(Label, { text, background: 0x00ff0011 })
 //     )
 //   )
 // });
+// sys.root.addChild(panel);

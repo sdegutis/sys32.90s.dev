@@ -53,6 +53,9 @@ export class Panel extends View {
   content = this.sys.make(View);
   bare = false;
 
+  override w = 240;
+  override h = 140;
+
   minw = 30;
   minh = 30;
 
