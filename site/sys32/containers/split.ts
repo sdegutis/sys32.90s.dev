@@ -105,7 +105,7 @@ export class Split extends View {
 
   override init(): void {
     while (this.children.length < 2) {
-      this.addChild(this.sys.make(View));
+      this.addChild(this.sys.make(View, {}));
     }
   }
 

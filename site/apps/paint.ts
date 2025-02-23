@@ -80,7 +80,10 @@ class PaintView extends View {
 }
 
 export default function paint(sys: System) {
-  const paintView = sys.make(PaintView);
+  const paintView = sys.make(PaintView, {});
+
+  const widthLabel = sys.make(Label, { text: paintView.width.toString() });
+  const heightLabel = sys.make(Label, { text: paintView.height.toString() });
 
   const resizer = sys.make(View, {
     background: 0x77000077,
@@ -99,6 +102,9 @@ export default function paint(sys: System) {
           const w = Math.floor(o.w / 4);
           const h = Math.floor(o.h / 4);
           paintView.resize(w, h);
+
+          widthLabel.text = paintView.width.toString();
+          heightLabel.text = paintView.height.toString();
         }
       })
 
@@ -106,22 +112,31 @@ export default function paint(sys: System) {
   });
 
   const panel = sys.make(Panel, { title: 'paint' },
-    sys.make(Scroll, {
-      background: 0x222222ff,
-      draw() {
-        let off = 0;
-        const w = 4;
-        const h = 3;
-        for (let y = 0; y < this.h!; y++) {
-          for (let x = 0; x < this.w!; x += w) {
-            sys.crt.pset(off + x, y, 0x272727ff);
+    sys.make(PanedYB, {},
+
+      sys.make(Scroll, {
+        background: 0x222222ff,
+        draw() {
+          let off = 0;
+          const w = 4;
+          const h = 3;
+          for (let y = 0; y < this.h!; y++) {
+            for (let x = 0; x < this.w!; x += w) {
+              sys.crt.pset(off + x, y, 0x272727ff);
+            }
+            if (y % h === (h - 1)) off = (off + 1) % w;
           }
-          if (y % h === (h - 1)) off = (off + 1) % w;
-        }
+        },
       },
-    },
-      paintView,
-      resizer
+        paintView,
+        resizer
+      ),
+
+      sys.make(GroupX, {},
+        widthLabel,
+        heightLabel,
+      )
+
     )
 
     // sys.make(PanedYB, {},

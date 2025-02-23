@@ -131,7 +131,7 @@ export class System {
 
   make<T extends View>(
     ctor: { new(sys: System): T },
-    config?: Partial<T>,
+    config: Partial<T>,
     ...children: any[]
   ): T {
     const view = new ctor(this);

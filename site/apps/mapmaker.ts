@@ -162,7 +162,7 @@ export function mapmaker(sys: System) {
 
 
 
-  const mapView = sys.make(View);
+  const mapView = sys.make(View, {});
 
 
   let hovered = false;
