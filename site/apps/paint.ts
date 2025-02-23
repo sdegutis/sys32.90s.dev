@@ -5,10 +5,12 @@ import { Spaced } from "../sys32/containers/spaced.js";
 import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
+import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
 import { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
+import { makeFlowLayout } from "../sys32/util/layouts.js";
 import { dragResize } from "../sys32/util/selections.js";
 
 class ColorButton extends RadioButton {
@@ -125,8 +127,11 @@ class PaintView extends View {
 
 export default function paint(sys: System) {
   const paintView = sys.make(PaintView, {});
+
   const widthLabel = sys.make(Label, {});
   const heightLabel = sys.make(Label, {});
+
+  const colorLabel = sys.make(Label, {});
 
   function updateLabels() {
     widthLabel.text = paintView.width.toString();
@@ -137,7 +142,7 @@ export default function paint(sys: System) {
   updateLabels();
 
   const resizer = sys.make(View, {
-    background: 0x77000077,
+    background: 0x00000077,
     w: 4, h: 4,
     layout: () => {
       resizer.x = paintView.w;
@@ -162,28 +167,42 @@ export default function paint(sys: System) {
 
   const colorRadios = new RadioGroup();
 
-  // colorRadios.onChange = () => {
-  //   colorRadios.selected
-  // }
-
-  function addColor() {
-    console.log('add color')
-  }
-
-  const colorGroup = sys.make(GroupY, { gap: -2 },
-    sys.make(Button, { onClick: addColor }, sys.make(Label, { text: '+' }),),
+  const colorField = sys.make(TextField, { length: 9, background: 0x111111ff, padding: 1 });
+  const colorGroup = sys.make(View, {
+    w: 36,
+    background: 0x99000033,
+    layout: makeFlowLayout(),
+  },
+    colorField,
   );
 
-  for (const color of COLORS) {
-    const b = sys.make(ColorButton, {
+  colorField.onEnter = () => {
+    const color = parseInt('0x' + colorField.text, 16);
+    colorField.text = '';
+    makeColorButton(color);
+    sys.layoutTree(colorGroup.parent)
+  };
+
+  function makeColorButton(color: number) {
+    const button = sys.make(ColorButton, {
+      background: 0x99999933,
       color, group: colorRadios, size: 4, padding: 1,
-      onSelected: () => { paintView.color = color; }
+      onSelected: () => {
+        paintView.color = color;
+        colorLabel.text = '0x' + color.toString(16).padStart(8, '0');
+        sys.layoutTree(colorLabel.parent);
+      }
     });
-    colorGroup.addChild(b);
+    colorGroup.addChild(button);
+
+    if (!colorRadios.selected) colorRadios.select(button)
   }
 
+  for (const color of COLORS) {
+    makeColorButton(color);
+  }
 
-  const panel = sys.make(Panel, { title: 'paint', minw: 50, w: 80, h: 70 },
+  const panel = sys.make(Panel, { title: 'paint', minw: 50, w: 180, h: 70 },
 
     sys.make(PanedXB, { gap: 1 },
 
@@ -213,41 +232,18 @@ export default function paint(sys: System) {
             widthLabel,
             sys.make(Label, { color: 0xffffff33, text: '  h:' }),
             heightLabel,
+            sys.make(Label, { color: 0xffffff33, text: '  c:' }),
+            colorLabel,
           ),
           sys.make(Label, { text: 'hm' })
         )
 
       ),
 
-
-
       colorGroup,
+
     ),
-
-
-
-    // sys.make(PanedYB, {},
-    //   sys.make(View, { background: 0x111111ff }),
-    //   sys.make(GroupY, { background: 0x0000ff33 },
-    //     sys.make(View, { h: 3, background: 0x00ff00ff }),
-    //     sys.make(GroupX, {},
-
-    //       sys.make(Label, { text: 'w:' }),
-    //       widthLabel,
-
-    //       sys.make(Label, { text: 'h:' }),
-    //       heightLabel,
-
-    //       sys.make(Button, {
-    //         padding: 2,
-    //         onClick: () => {
-    //           console.log('hey')
-    //         }
-    //       }, sys.make(Label, { text: 'resize' }))
-    //     ),
-    //   )
-    // )
-  )
+  );
 
   sys.root.addChild(panel);
   sys.focus(panel);
