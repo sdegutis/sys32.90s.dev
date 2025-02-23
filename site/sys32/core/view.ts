@@ -16,6 +16,7 @@ export class View {
   adjust?(): void;
   adopted?(): void;
   abandoned?(): void;
+  childrenChanged?(): void;
 
   x = 0;
   y = 0;
@@ -53,6 +54,7 @@ export class View {
       child.parent = this;
       child.adopted?.();
     }
+    this.childrenChanged?.();
   }
 
   addChild(child: View, pos?: number) {
@@ -60,6 +62,7 @@ export class View {
     this.#children.splice(i, 0, child);
     child.parent = this;
     child.adopted?.();
+    this.childrenChanged?.();
   }
 
   removeChild(child: View) {
@@ -68,6 +71,7 @@ export class View {
     this.#children.splice(i, 1);
     child.parent = undefined!;
     child.abandoned?.();
+    this.childrenChanged?.();
   }
 
 }

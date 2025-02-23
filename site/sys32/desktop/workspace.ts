@@ -56,7 +56,7 @@ export class Workspace {
     );
 
     this.#stealPanels();
-    sys.onTick.listen(() => this.#stealPanels());
+    sys.root.childrenChanged = () => this.#stealPanels();
 
     sys.root.children = [
       sys.make(Paned, { vacuum: 'b', dir: 'y' },
@@ -109,7 +109,7 @@ export class Workspace {
       padding: 2,
       onClick: () => {
         launch(this.sys);
-        this.sys.layoutTree();
+        // this.sys.layoutTree();
       },
     }, this.sys.make(Label, { text: title })));
     this.sys.layoutTree();
