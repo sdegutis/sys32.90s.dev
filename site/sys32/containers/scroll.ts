@@ -7,9 +7,11 @@ export class Scroll extends View {
   amount = 6;
 
   override layout(): void {
+    if (!this.firstChild) return;
+
     this.#adjust();
-    this.firstChild!.x = -this.sx;
-    this.firstChild!.y = -this.sy;
+    this.firstChild.x = -this.sx;
+    this.firstChild.y = -this.sy;
   }
 
   override onScroll(up: boolean): void {
@@ -21,8 +23,10 @@ export class Scroll extends View {
   }
 
   #adjust() {
-    this.sx = Math.max(0, Math.min(this.firstChild!.w - this.w, this.sx));
-    this.sy = Math.max(0, Math.min(this.firstChild!.h - this.h, this.sy));
+    if (!this.firstChild) return;
+
+    this.sx = Math.max(0, Math.min(this.firstChild.w - this.w, this.sx));
+    this.sy = Math.max(0, Math.min(this.firstChild.h - this.h, this.sy));
   }
 
 }
