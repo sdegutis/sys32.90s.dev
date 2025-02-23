@@ -47,8 +47,10 @@ export class View {
 
   set children(children: View[]) {
     for (const child of this.#children) {
-      child.parent = undefined!;
-      child.abandoned?.();
+      if (child.parent === this) {
+        child.parent = undefined!;
+        child.abandoned?.();
+      }
     }
     this.#children = children;
     for (const child of children) {
