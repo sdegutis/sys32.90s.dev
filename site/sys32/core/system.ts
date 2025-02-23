@@ -1,4 +1,4 @@
-import { EventManager } from "../util/events.js";
+import { multifn } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
 import { Font } from "./font.js";
@@ -13,7 +13,7 @@ export class System {
   mouse = { x: 0, y: 0, button: 0 };
   crt: CRT;
 
-  onTick = new EventManager<number>();
+  onTick = multifn<number>();
 
   needsRedraw = true;
 
@@ -110,7 +110,7 @@ export class System {
     const update = (t: number) => {
       const delta = t - last;
       if (delta >= 30) {
-        this.onTick.dispatch(delta);
+        this.onTick(delta);
 
         if (this.needsRedraw) {
           this.needsRedraw = false;
@@ -195,10 +195,16 @@ export class System {
   focus(view: View) {
     if (view === this.focused) return;
 
+    let node: View | undefined = view;
+    while (node) {
+      node.willFocus?.();
+      node = node.parent;
+    }
+
     this.focused = view;
     this.focused.focused = true;
 
-    let node: View | undefined = view;
+    node = view;
     while (node) {
       node.onFocus?.();
       node = node.parent;

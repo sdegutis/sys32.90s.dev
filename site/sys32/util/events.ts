@@ -1,16 +1,16 @@
-export class EventManager<T = void> {
+export function multifn<T = void, U = void>() {
+  const list = new Set<(data: T) => U>();
 
-  #listeners = new Set<(d: T) => void>();
-
-  listen(fn: (d: T) => void) {
-    this.#listeners.add(fn);
-    return () => { this.#listeners.delete(fn); }
-  }
-
-  dispatch(d: T) {
-    for (const fn of this.#listeners) {
-      fn(d);
+  function all(data: T) {
+    for (const fn of list) {
+      fn(data);
     }
   }
 
+  all.watch = (fn: (data: T) => U) => {
+    list.add(fn);
+    return () => { list.delete(fn); };
+  };
+
+  return all;
 }

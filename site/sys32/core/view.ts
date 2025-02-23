@@ -9,6 +9,7 @@ export class View {
   onMouseMove?(): void;
   onMouseEnter?(): void;
   onMouseExit?(): void;
+  willFocus?(): void;
   onFocus?(): void;
   onBlur?(): void;
   draw?(): void;

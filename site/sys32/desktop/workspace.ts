@@ -106,7 +106,7 @@ export class Workspace {
     this.#panels.addChild(button);
     this.sys.layoutTree(this.#panels);
 
-    panel.didClose.listen(() => {
+    panel.didClose.watch(() => {
       button.parent?.removeChild(button);
       this.sys.layoutTree(this.#panels);
     });
