@@ -44,6 +44,8 @@ class PaintView extends View {
 
   color = 0xffffffff;
 
+  tool: 'pencil' | 'eraser' = 'pencil';
+
   override background = 0xffffff33;
   override cursor: Cursor = { bitmap: new Bitmap([], 0, []), offset: [0, 0] };
 
@@ -82,14 +84,16 @@ class PaintView extends View {
   }
 
   override onMouseDown(): void {
-    this.sys.trackMouse({
-      move: () => {
-        const x = Math.floor(this.mouse.x / 4);
-        const y = Math.floor(this.mouse.y / 4);
-        const i = y * this.width + x;
-        this.#grid[i] = this.color;
-      }
-    })
+    if (this.tool === 'pencil' || this.tool === 'eraser') {
+      this.sys.trackMouse({
+        move: () => {
+          const x = Math.floor(this.mouse.x / 4);
+          const y = Math.floor(this.mouse.y / 4);
+          const i = y * this.width + x;
+          this.#grid[i] = this.tool === 'pencil' ? this.color : 0x00000000;
+        }
+      })
+    }
   }
 
   resize(width: number, height: number) {
@@ -165,6 +169,13 @@ export default function paint(sys: System) {
     }
   });
 
+  const toolRadios = new RadioGroup();
+
+  const pencilTool = sys.make(RadioButton, { group: toolRadios, onSelected: () => { paintView.tool = 'pencil' } });
+  const eraserTool = sys.make(RadioButton, { group: toolRadios, onSelected: () => { paintView.tool = 'eraser' } });
+
+  toolRadios.select(pencilTool)
+
   const colorRadios = new RadioGroup();
 
   const colorField = sys.make(TextField, { length: 9, background: 0x111111ff, padding: 1 });
@@ -173,6 +184,8 @@ export default function paint(sys: System) {
     background: 0x99000033,
     layout: makeFlowLayout(),
   },
+    pencilTool,
+    eraserTool,
     colorField,
   );
 
@@ -226,16 +239,13 @@ export default function paint(sys: System) {
           resizer
         ),
 
-        sys.make(Spaced, { dir: 'x' },
-          sys.make(GroupX, {},
-            sys.make(Label, { color: 0xffffff33, text: 'w:' }),
-            widthLabel,
-            sys.make(Label, { color: 0xffffff33, text: '  h:' }),
-            heightLabel,
-            sys.make(Label, { color: 0xffffff33, text: '  c:' }),
-            colorLabel,
-          ),
-          sys.make(Label, { text: 'hm' })
+        sys.make(GroupX, {},
+          sys.make(Label, { color: 0xffffff33, text: 'w:' }),
+          widthLabel,
+          sys.make(Label, { color: 0xffffff33, text: ' h:' }),
+          heightLabel,
+          sys.make(Label, { color: 0xffffff33, text: ' c:' }),
+          colorLabel,
         )
 
       ),
