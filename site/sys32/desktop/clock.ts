@@ -11,7 +11,7 @@ export class Clock extends Label {
   override adopted(): void {
     this.#timer = setInterval((() => {
       this.#updateTime();
-      this.sys.layoutTree();
+      this.sys.layoutTree(this.parent);
     }), 1000);
   }
 
