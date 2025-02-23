@@ -13,6 +13,8 @@ const canvas = document.querySelector('canvas')!;
 const sys = new System(canvas);
 // sys.resize(320 * 2, 180 * 2);
 sys.crt.autoscale();
+// sys.root.background = 0x003300ff;
+// sys.root.layout = makeVacuumLayout()
 
 paint(sys);
 sys.layoutTree()

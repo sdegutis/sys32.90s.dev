@@ -70,8 +70,9 @@ export class Workspace {
 
   #stealPanels() {
     let did = false;
-    for (const child of this.sys.root.children.toReversed()) {
-      // if (child === myroot) continue;
+    let i = this.sys.root.children.length;
+    while (i--) {
+      const child = this.sys.root.children[i];
       if (child instanceof Panel) {
         this.sys.root.removeChild(child);
         this.#addPanel(child);
