@@ -66,6 +66,9 @@ export class Workspace {
   }
 
   addPanel(panel: Panel) {
+    panel.x = 20;
+    panel.y = 20;
+
     this.#desktop.addChild(panel);
 
     const button = this.sys.make(Button, {}, this.sys.make(Label, { padding: 2, text: panel.title }));
