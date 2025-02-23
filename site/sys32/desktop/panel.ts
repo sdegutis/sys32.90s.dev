@@ -50,7 +50,6 @@ export class Panel extends View {
   override layout = makeVacuumLayout(0);
 
   title = '';
-  bare = false;
 
   override w = 240;
   override h = 140;
@@ -61,11 +60,6 @@ export class Panel extends View {
   #lastPos?: { x: number, y: number, w: number, h: number };
 
   override init(): void {
-    if (this.bare) {
-      this.layout = makeVacuumLayout();
-      return;
-    }
-
     const pad = 2;
 
     const content = this.children[0];
