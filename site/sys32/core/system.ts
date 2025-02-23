@@ -193,6 +193,8 @@ export class System {
   }
 
   focus(view: View) {
+    if (view === this.focused) return;
+
     this.focused = view;
     this.focused.focused = true;
 
