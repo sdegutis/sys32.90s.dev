@@ -35,30 +35,34 @@ export class System {
     this.resize(canvas.width, canvas.height);
 
     canvas.addEventListener('keydown', (e) => {
+      e.preventDefault();
       this.keys[e.key] = true;
       this.focused.onKeyDown?.(e.key);
       this.needsRedraw = true;
-    }, { passive: true, signal: this.#destroyer.signal });
+    }, { signal: this.#destroyer.signal });
 
     canvas.addEventListener('keyup', (e) => {
+      e.preventDefault();
       this.keys[e.key] = false;
       this.needsRedraw = true;
-    }, { passive: true, signal: this.#destroyer.signal });
+    }, { signal: this.#destroyer.signal });
 
     canvas.addEventListener('contextmenu', (e) => {
       e.preventDefault();
     }, { signal: this.#destroyer.signal });
 
     canvas.addEventListener('mousedown', (e) => {
+      e.preventDefault();
       this.mouse.button = e.button;
       this.focused.focused = false;
       this.focused.onBlur?.();
       this.focus(this.#hovered);
       this.#hovered.onMouseDown?.();
       this.needsRedraw = true;
-    }, { passive: true, signal: this.#destroyer.signal });
+    }, { signal: this.#destroyer.signal });
 
     canvas.addEventListener('mousemove', (e) => {
+      e.preventDefault();
       const x = Math.floor(e.offsetX);
       const y = Math.floor(e.offsetY);
 
@@ -74,15 +78,17 @@ export class System {
       if (!this.#trackingMouse) this.#hovered.onMouseMove?.();
 
       this.needsRedraw = true;
-    }, { passive: true, signal: this.#destroyer.signal });
+    }, { signal: this.#destroyer.signal });
 
     canvas.addEventListener('mouseup', (e) => {
+      e.preventDefault();
       this.#trackingMouse?.up?.();
       this.#trackingMouse = undefined!;
       this.needsRedraw = true;
-    }, { passive: true, signal: this.#destroyer.signal });
+    }, { signal: this.#destroyer.signal });
 
     canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
       let i = this.#allHovered.length;
       while (i--) {
         const view = this.#allHovered[i];
@@ -92,7 +98,7 @@ export class System {
           return;
         }
       }
-    }, { passive: true, signal: this.#destroyer.signal })
+    }, { signal: this.#destroyer.signal })
 
     let alive = true;
     this.#destroyer.signal.addEventListener('abort', () => {
