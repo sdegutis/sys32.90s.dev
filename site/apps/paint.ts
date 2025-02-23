@@ -7,20 +7,17 @@ import { Workspace } from "../sys32/desktop/workspace.js";
 
 export default function paint(ws: Workspace) {
 
-  const $ = ws.sys.make.bind(ws.sys);
-
   const panel = ws.newPanel({
     title: 'paint',
-    content: $(PanedYB, {},
-      $(View, { background: 0x111111ff }),
-      $(GroupY, {},
-        $(View, { h: 3, background: 0x00ff0033 }),
-        $(GroupX, {},
-          $(Button, {}, $(Label, { text: 'hey' }))
+    content: ws.sys.make(PanedYB, {},
+      ws.sys.make(View, { background: 0x111111ff }),
+      ws.sys.make(GroupY, {},
+        ws.sys.make(View, { h: 3, background: 0x00ff0033 }),
+        ws.sys.make(GroupX, {},
+          ws.sys.make(Button, {}, ws.sys.make(Label, { text: 'hey' }))
         ),
       )
     ),
   });
-
 
 }

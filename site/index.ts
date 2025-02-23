@@ -1,7 +1,9 @@
 import { demo } from "./apps/demo.js";
 import { mapmaker } from "./apps/mapmaker.js";
 import paint from "./apps/paint.js";
+import { Scroll } from "./sys32/containers/scroll.js";
 import { Split } from "./sys32/containers/split.js";
+import { Label } from "./sys32/controls/label.js";
 import { System } from "./sys32/core/system.js";
 import { View } from "./sys32/core/view.js";
 import { Workspace } from "./sys32/desktop/workspace.js";
@@ -23,12 +25,11 @@ appPaths.forEach(p => {
 })
 
 ws.addProgram('both', (ws) => {
-  const $ = sys.make.bind(sys);
   const panel = ws.newPanel({
     title: 'both',
-    content: $(View, { layout: makeVacuumLayout(), background: 0x000033ff },
-      $(Split, { pos: 200, min: 20, max: 20, dir: 'x', resizable: true },
-        $(View, { layout: centerLayout, background: 0x003333ff },
+    content: sys.make(View, { layout: makeVacuumLayout(), background: 0x000033ff },
+      sys.make(Split, { pos: 200, min: 20, max: 20, dir: 'x', resizable: true },
+        sys.make(View, { layout: centerLayout, background: 0x003333ff },
           demo(sys)
         ),
         mapmaker(sys)
@@ -51,13 +52,12 @@ paint(ws);
 // }
 
 
-// const $ = sys.make.bind(sys);
 // const panel = ws.newPanel({
 //   title: 'both',
 //   x: 20, y: 30, w: 240, h: 130,
-//   content: $(View, { layout: makeVacuumLayout(), background: 0x44444433 },
-//     $(Scroll, { background: 0x0000ff11 },
-//       $(Label, { text, background: 0x00ff0011 })
+//   content: sys.make(View, { layout: makeVacuumLayout(), background: 0x44444433 },
+//     sys.make(Scroll, { background: 0x0000ff11 },
+//       sys.make(Label, { text, background: 0x00ff0011 })
 //     )
 //   )
 // });

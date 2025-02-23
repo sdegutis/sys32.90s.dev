@@ -35,22 +35,19 @@ class ColorButton extends RadioButton {
 }
 
 export default (ws: Workspace) => {
-  const $ = ws.sys.make.bind(ws.sys);
   const panel = ws.newPanel({
     title: 'mapmaker',
-    content: $(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
+    content: ws.sys.make(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
       mapmaker(ws.sys)
     )
   });
 };
 
 export function mapmaker(sys: System) {
-  const $ = sys.make.bind(sys);
-
   let showGrid = true;
-  const gridButton = $(Button, {
+  const gridButton = sys.make(Button, {
     onClick: () => showGrid = !showGrid,
-  }, $(Label, { text: 'grid' }));
+  }, sys.make(Label, { text: 'grid' }));
 
   let currentTool = 5;
 
@@ -61,7 +58,7 @@ export function mapmaker(sys: System) {
   }
 
 
-  const mapArea = $(View, {
+  const mapArea = sys.make(View, {
     background: 0x222222ff,
     draw: () => {
       sys.crt.rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
@@ -75,11 +72,11 @@ export function mapmaker(sys: System) {
     }
   });
 
-  const root = $(Paned, { vacuum: 'a', dir: 'x' },
-    $(Group, { background: 0x333333ff, dir: 'y' },
+  const root = sys.make(Paned, { vacuum: 'a', dir: 'x' },
+    sys.make(Group, { background: 0x333333ff, dir: 'y' },
       gridButton,
-      $(View, { h: 3 }),
-      ...COLORS.map((col, i) => $(ColorButton, {
+      sys.make(View, { h: 3 }),
+      ...COLORS.map((col, i) => sys.make(ColorButton, {
         group: toolGroup,
         color: col,
         size: 4,
@@ -87,7 +84,7 @@ export function mapmaker(sys: System) {
         w: 6, h: 6,
       })),
     ),
-    $(View, { background: 0x333344ff, layout: makeVacuumLayout() },
+    sys.make(View, { background: 0x333344ff, layout: makeVacuumLayout() },
       mapArea
     )
   );
@@ -162,7 +159,7 @@ export function mapmaker(sys: System) {
 
 
 
-  const mapView = $(View);
+  const mapView = sys.make(View);
 
 
   let hovered = false;

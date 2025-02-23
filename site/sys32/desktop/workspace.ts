@@ -21,13 +21,11 @@ export class Workspace {
   constructor(sys: System) {
     this.sys = sys;
 
-    const $ = sys.make.bind(sys);
-
     let big = false;
 
     sys.root.layout = makeVacuumLayout();
 
-    this.#icons = $(View, {
+    this.#icons = sys.make(View, {
       background: 0x330000ff,
       layout: makeFlowLayout(3, 10),
       adjust: function () {
@@ -37,15 +35,15 @@ export class Workspace {
       }
     });
 
-    this.#desktop = $(View, {}, this.#icons);
+    this.#desktop = sys.make(View, {}, this.#icons);
 
-    this.#panels = $(Group, { gap: 2 });
+    this.#panels = sys.make(Group, { gap: 2 });
 
-    this.#taskbar = $(Spaced, { background: 0x000000ff },
+    this.#taskbar = sys.make(Spaced, { background: 0x000000ff },
       this.#panels,
-      $(Group, {},
-        $(Clock, { padding: 2 }),
-        $(Button, {
+      sys.make(Group, {},
+        sys.make(Clock, { padding: 2 }),
+        sys.make(Button, {
           background: 0x222222ff,
           padding: 2,
           onClick: () => {
@@ -53,12 +51,12 @@ export class Workspace {
             sys.resize(320 * (+big + 1), 180 * (+big + 1));
             sys.layoutTree();
           },
-        }, $(Label, { text: 'resize' }))
+        }, sys.make(Label, { text: 'resize' }))
       ),
     );
 
     sys.root.children = [
-      $(Paned, { vacuum: 'b', dir: 'y' },
+      sys.make(Paned, { vacuum: 'b', dir: 'y' },
         this.#desktop,
         this.#taskbar,
       )
@@ -68,14 +66,13 @@ export class Workspace {
   }
 
   newPanel(config: Partial<Panel>) {
-    const $ = this.sys.make.bind(this.sys);
-    const panel = $(Panel, {
+    const panel = this.sys.make(Panel, {
       ...config,
       x: 20, y: 20, w: 240, h: 140,
     });
     this.#desktop.addChild(panel);
 
-    const button = $(Button, {}, $(Label, { padding: 2, text: panel.title }));
+    const button = this.sys.make(Button, {}, this.sys.make(Label, { padding: 2, text: panel.title }));
     button.onClick = () => {
       panel.show();
       this.sys.focus(panel);
@@ -92,14 +89,13 @@ export class Workspace {
   }
 
   addProgram(title: string, launch: (ws: Workspace) => void) {
-    const $ = this.sys.make.bind(this.sys);
-    this.#icons.addChild($(Button, {
+    this.#icons.addChild(this.sys.make(Button, {
       padding: 2,
       onClick: () => {
         launch(this);
         this.sys.layoutTree();
       },
-    }, $(Label, { text: title })));
+    }, this.sys.make(Label, { text: title })));
     this.sys.layoutTree();
   }
 

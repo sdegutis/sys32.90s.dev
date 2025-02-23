@@ -67,12 +67,11 @@ export class Panel extends View {
 
     const pad = 2;
 
-    const $ = this.sys.make.bind(this.sys);
     this.children = [
 
-      $(Paned, { dir: 'y', vacuum: 'a' },
+      this.sys.make(Paned, { dir: 'y', vacuum: 'a' },
 
-        $(Spaced, {
+        this.sys.make(Spaced, {
           padding: 0,
           onMouseDown: () => {
             const move = dragMove(this.sys, this);
@@ -80,15 +79,15 @@ export class Panel extends View {
             this.sys.trackMouse({ move });
           },
         },
-          $(Label, { padding: pad, text: this.title, color: 0xaaaaaaff }),
-          $(Group, { gap: 0 },
-            $(Button, { hoverColor: 0xffffff33, onClick: () => this.minimize() }, $(ImageView, { padding: 2, image: minImage })),
-            $(Button, { hoverColor: 0xffffff33, onClick: () => this.maximize() }, $(ImageView, { padding: 2, image: maxImage })),
-            $(Button, { hoverColor: 0x770000ff, onClick: () => this.close() }, $(ImageView, { padding: 2, image: axeImage }))
+          this.sys.make(Label, { padding: pad, text: this.title, color: 0xaaaaaaff }),
+          this.sys.make(Group, { gap: 0 },
+            this.sys.make(Button, { hoverColor: 0xffffff33, onClick: () => this.minimize() }, this.sys.make(ImageView, { padding: 2, image: minImage })),
+            this.sys.make(Button, { hoverColor: 0xffffff33, onClick: () => this.maximize() }, this.sys.make(ImageView, { padding: 2, image: maxImage })),
+            this.sys.make(Button, { hoverColor: 0x770000ff, onClick: () => this.close() }, this.sys.make(ImageView, { padding: 2, image: axeImage }))
           )
         ),
 
-        $(Group, {
+        this.sys.make(Group, {
           layout: function (this: View) {
             const c = this.firstChild!;
             c.x = pad;
@@ -100,7 +99,7 @@ export class Panel extends View {
 
       ),
 
-      $(ImageView, {
+      this.sys.make(ImageView, {
         passthrough: false,
         image: adjImage,
         cursor: adjCursor,
