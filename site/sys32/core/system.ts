@@ -54,8 +54,6 @@ export class System {
     canvas.addEventListener('mousedown', (e) => {
       e.preventDefault();
       this.mouse.button = e.button;
-      this.focused.focused = false;
-      this.focused.onBlur?.();
       this.focus(this.#hovered);
       this.#hovered.onMouseDown?.();
       this.needsRedraw = true;
@@ -194,6 +192,9 @@ export class System {
 
   focus(view: View) {
     if (view === this.focused) return;
+
+    this.focused.focused = false;
+    this.focused.onBlur?.();
 
     let node: View | undefined = view;
     while (node) {
