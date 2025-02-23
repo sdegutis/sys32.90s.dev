@@ -37,7 +37,15 @@ export class System {
       e.preventDefault();
       if (e.key === 'F5') location.reload();
       this.keys[e.key] = true;
-      this.focused.onKeyDown?.(e.key);
+
+      let node: View | undefined = this.focused;
+      while (node) {
+        if (node.onKeyDown && node.onKeyDown(e.key)) {
+          break;
+        }
+        node = node.parent;
+      }
+
       this.needsRedraw = true;
     }, { signal: this.#destroyer.signal });
 

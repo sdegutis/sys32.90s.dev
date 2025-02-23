@@ -62,7 +62,7 @@ export class TextField extends View {
     this.h = s.h + this.padding * 2;
   }
 
-  override onKeyDown(key: string): void {
+  override onKeyDown(key: string): boolean {
     if (key === 'v' && this.sys.keys['Control']) {
       navigator.clipboard.readText().then(s => {
         this.text += s;
@@ -84,6 +84,7 @@ export class TextField extends View {
       this.onChange?.();
     }
     this.#restartBlinking();
+    return true;
   };
 
   #blink?: ReturnType<typeof setInterval>;

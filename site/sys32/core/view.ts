@@ -4,7 +4,7 @@ export class View {
 
   init?(): void;
   onScroll?(up: boolean): void;
-  onKeyDown?(key: string): void;
+  onKeyDown?(key: string): boolean;
   onMouseDown?(): void;
   onMouseMove?(): void;
   onMouseEnter?(): void;

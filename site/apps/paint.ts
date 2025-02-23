@@ -101,7 +101,16 @@ export default function paint(sys: System) {
     makeColorButton(color);
   }
 
-  const panel = sys.make(Panel, { title: 'paint', minw: 50, w: 180, h: 70 },
+  const panel = sys.make(Panel, {
+    title: 'paint', minw: 50, w: 180, h: 70,
+    onKeyDown(key) {
+      if (key === 's' && sys.keys['Control']) {
+        console.log('saving')
+        return true;
+      }
+      return false;
+    }
+  },
 
     sys.make(PanedXB, { gap: 1 },
 
