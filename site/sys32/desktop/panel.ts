@@ -156,7 +156,7 @@ export class Panel extends View {
     this.visible = false;
   }
 
-  #realbg = this.background;
+  #realbg?: number;
 
   override onFocus(): void {
     const old = focusedPanel.get(this.sys);
@@ -169,11 +169,12 @@ export class Panel extends View {
   }
 
   #unfocus() {
+    this.#realbg = this.background;
     this.background = 0x222222ee;
   }
 
   #focus() {
-    this.background = this.#realbg;
+    if (this.#realbg !== undefined) this.background = this.#realbg;
 
     const parent = this.parent!;
     parent.removeChild(this);

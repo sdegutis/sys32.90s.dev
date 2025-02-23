@@ -8,39 +8,41 @@ import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 
 export default function paint(sys: System) {
-  const widthLabel = sys.make(TextField, { length: 3, background: 0x000000ff, padding: 2 });
-  const heightLabel = sys.make(TextField, { length: 3, background: 0x000000ff, padding: 2 });
+  // const widthLabel = sys.make(TextField, { length: 3, background: 0x000000ff, padding: 2 });
+  // const heightLabel = sys.make(TextField, { length: 3, background: 0x000000ff, padding: 2 });
 
-  widthLabel.onChange = () => {
+  // widthLabel.onChange = () => {
 
-    console.log(widthLabel.text)
-  }
+  //   console.log(widthLabel.text)
+  // }
 
 
   const panel = sys.make(Panel, {
     title: 'paint',
+    background: 0x003300ff
   },
-    sys.make(PanedYB, {},
-      sys.make(View, { background: 0x111111ff }),
-      sys.make(GroupY, { background: 0x0000ff33 },
-        sys.make(View, { h: 3, background: 0x00ff00ff }),
-        sys.make(GroupX, {},
+    sys.make(View)
+    // sys.make(PanedYB, {},
+    //   sys.make(View, { background: 0x111111ff }),
+    //   sys.make(GroupY, { background: 0x0000ff33 },
+    //     sys.make(View, { h: 3, background: 0x00ff00ff }),
+    //     sys.make(GroupX, {},
 
-          sys.make(Label, { text: 'w:' }),
-          widthLabel,
+    //       sys.make(Label, { text: 'w:' }),
+    //       widthLabel,
 
-          sys.make(Label, { text: 'h:' }),
-          heightLabel,
+    //       sys.make(Label, { text: 'h:' }),
+    //       heightLabel,
 
-          sys.make(Button, {
-            padding: 2,
-            onClick: () => {
-              console.log('hey')
-            }
-          }, sys.make(Label, { text: 'resize' }))
-        ),
-      )
-    )
+    //       sys.make(Button, {
+    //         padding: 2,
+    //         onClick: () => {
+    //           console.log('hey')
+    //         }
+    //       }, sys.make(Label, { text: 'resize' }))
+    //     ),
+    //   )
+    // )
   )
 
   sys.root.addChild(panel);
