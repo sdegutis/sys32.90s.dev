@@ -4,7 +4,8 @@ import { Scroll } from "../sys32/containers/scroll.js";
 import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { TextField } from "../sys32/controls/textfield.js";
-import { System } from "../sys32/core/system.js";
+import { Bitmap } from "../sys32/core/bitmap.js";
+import { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { dragMove, dragResize } from "../sys32/util/selections.js";
@@ -15,6 +16,8 @@ class PaintView extends View {
   height = 10;
 
   override background = 0xffffff33;
+
+  override cursor: Cursor = { bitmap: new Bitmap([], 0, []), offset: [0, 0] };
 
   #grid: number[] = [];
 
