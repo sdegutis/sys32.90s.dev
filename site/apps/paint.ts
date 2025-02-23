@@ -1,22 +1,48 @@
 import { GroupX, GroupY } from "../sys32/containers/group.js";
-import { PanedYB } from "../sys32/containers/paned.js";
+import { PanedXB, PanedYB } from "../sys32/containers/paned.js";
 import { Scroll } from "../sys32/containers/scroll.js";
+import { Spaced } from "../sys32/containers/spaced.js";
 import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
-import { TextField } from "../sys32/controls/textfield.js";
+import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
 import { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
-import { dragMove, dragResize } from "../sys32/util/selections.js";
+import { dragResize } from "../sys32/util/selections.js";
+
+class ColorButton extends RadioButton {
+
+  color = 0x00000000;
+
+  override draw(): void {
+    this.sys.crt.rectFill(this.padding, this.padding, this.size, this.size, this.color);
+
+    if (this.checked) {
+      this.sys.crt.rectLine(0, 0, this.w, this.h, this.checkColor);
+    }
+    else if (this.hovered) {
+      this.sys.crt.rectLine(0, 0, this.w, this.h, 0xffffff77);
+    }
+  }
+
+}
+
+const COLORS = [
+  0x000000ff, 0x1D2B53ff, 0x7E2553ff, 0x008751ff,
+  0xAB5236ff, 0x5F574Fff, 0xC2C3C7ff, 0xFFF1E8ff,
+  0xFF004Dff, 0xFFA300ff, 0xFFEC27ff, 0x00E436ff,
+  0x29ADFFff, 0x83769Cff, 0xFF77A8ff, 0xFFCCAAff,
+];
 
 class PaintView extends View {
 
   width = 10;
   height = 10;
 
-  override background = 0xffffff33;
+  color = 0xffffffff;
 
+  override background = 0xffffff33;
   override cursor: Cursor = { bitmap: new Bitmap([], 0, []), offset: [0, 0] };
 
   #grid: number[] = [];
@@ -59,7 +85,7 @@ class PaintView extends View {
         const x = Math.floor(this.mouse.x / 4);
         const y = Math.floor(this.mouse.y / 4);
         const i = y * this.width + x;
-        this.#grid[i] = 0xffffffff;
+        this.#grid[i] = this.color;
       }
     })
   }
@@ -134,35 +160,71 @@ export default function paint(sys: System) {
     }
   });
 
-  const panel = sys.make(Panel, { title: 'paint', minw: 50 },
-    sys.make(PanedYB, { gap: 1 },
+  const colorRadios = new RadioGroup();
 
-      sys.make(Scroll, {
-        background: 0x222222ff,
-        draw() {
-          let off = 0;
-          const w = 4;
-          const h = 3;
-          for (let y = 0; y < this.h!; y++) {
-            for (let x = 0; x < this.w!; x += w) {
-              sys.crt.pset(off + x, y, 0x272727ff);
+  // colorRadios.onChange = () => {
+  //   colorRadios.selected
+  // }
+
+  function addColor() {
+    console.log('add color')
+  }
+
+  const colorGroup = sys.make(GroupY, { gap: -2 },
+    sys.make(Button, { onClick: addColor }, sys.make(Label, { text: '+' }),),
+  );
+
+  for (const color of COLORS) {
+    const b = sys.make(ColorButton, {
+      color, group: colorRadios, size: 4, padding: 1,
+      onSelected: () => { paintView.color = color; }
+    });
+    colorGroup.addChild(b);
+  }
+
+
+  const panel = sys.make(Panel, { title: 'paint', minw: 50, w: 80, h: 70 },
+
+    sys.make(PanedXB, { gap: 1 },
+
+      sys.make(PanedYB, { gap: 1 },
+
+        sys.make(Scroll, {
+          background: 0x222222ff,
+          draw() {
+            let off = 0;
+            const w = 4;
+            const h = 3;
+            for (let y = 0; y < this.h!; y++) {
+              for (let x = 0; x < this.w!; x += w) {
+                sys.crt.pset(off + x, y, 0x272727ff);
+              }
+              if (y % h === (h - 1)) off = (off + 1) % w;
             }
-            if (y % h === (h - 1)) off = (off + 1) % w;
-          }
+          },
         },
-      },
-        paintView,
-        resizer
+          paintView,
+          resizer
+        ),
+
+        sys.make(Spaced, { dir: 'x' },
+          sys.make(GroupX, {},
+            sys.make(Label, { color: 0xffffff33, text: 'w:' }),
+            widthLabel,
+            sys.make(Label, { color: 0xffffff33, text: '  h:' }),
+            heightLabel,
+          ),
+          sys.make(Label, { text: 'hm' })
+        )
+
       ),
 
-      sys.make(GroupX, {},
-        sys.make(Label, { text: 'w:' }),
-        widthLabel,
-        sys.make(Label, { text: '  h:' }),
-        heightLabel,
-      )
 
-    )
+
+      colorGroup,
+    ),
+
+
 
     // sys.make(PanedYB, {},
     //   sys.make(View, { background: 0x111111ff }),

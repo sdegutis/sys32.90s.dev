@@ -15,11 +15,14 @@ export class RadioGroup {
       b.checked = (b === button);
     }
     this.onChange?.();
+    this.selected.onSelected?.();
   }
 
 }
 
 export class RadioButton extends Checkbox {
+
+  onSelected?(): void;
 
   borderSelected = 0xffffff77;
   borderHovered = 0xffffff33;
