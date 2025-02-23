@@ -169,7 +169,7 @@ export class Panel extends View {
   }
 
   #unfocus() {
-    this.background = 0x333333ff;
+    this.background = 0x222222ee;
   }
 
   #focus() {
