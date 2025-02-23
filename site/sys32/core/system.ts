@@ -196,16 +196,10 @@ export class System {
     this.focused.focused = false;
     this.focused.onBlur?.();
 
-    let node: View | undefined = view;
-    while (node) {
-      node.willFocus?.();
-      node = node.parent;
-    }
-
     this.focused = view;
     this.focused.focused = true;
 
-    node = view;
+    let node: View | undefined = view;
     while (node) {
       node.onFocus?.();
       node = node.parent;

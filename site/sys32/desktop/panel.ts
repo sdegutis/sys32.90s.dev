@@ -156,12 +156,17 @@ export class Panel extends View {
     this.visible = false;
   }
 
-  override willFocus(): void {
-    // console.log(this, this.sys.focused)
-  }
+  // #panelFor(view: View) {
+  //   let node: View | undefined = view;
+  //   while (node) {
+  //     if (node instanceof Panel) return node;
+  //     node = node.parent;
+  //   }
+  //   return node;
+  // }
 
   override onFocus(): void {
-    // console.log(this.sys.focused)
+    console.log('here', this.title)
 
     const parent = this.parent!;
     parent.removeChild(this);
