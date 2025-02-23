@@ -1,8 +1,7 @@
-import { GroupX, GroupY } from "../sys32/containers/group.js";
+import { GroupX } from "../sys32/containers/group.js";
 import { PanedXB, PanedYB } from "../sys32/containers/paned.js";
 import { Scroll } from "../sys32/containers/scroll.js";
 import { Spaced } from "../sys32/containers/spaced.js";
-import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
 import { TextField } from "../sys32/controls/textfield.js";
@@ -259,13 +258,10 @@ export default function paint(sys: System) {
 
           sys.make(GroupX, {},
             sys.make(Slider, {
-              w: 20, h: 4, background: 0x330000ff, onChange() {
+              w: 20, h: 4, onChange() {
                 paintView.zoom = this.val!;
-
                 zoomLabel.text = paintView.zoom.toString();
-
-                sys.layoutTree(paintView.parent)
-                console.log(this.val!)
+                sys.layoutTree(panel)
               }
             }),
           )
@@ -288,36 +284,42 @@ class Slider extends View {
   onChange?(): void;
 
   min = 1;
-  max = 10;
+  max = 12;
   val = 3;
 
   knobSize = 2;
   lineSize = 1;
 
   override onMouseDown(): void {
-    // const o = {}
-
+    const o = { x: this.mouse.x, y: 0 };
+    const fn = dragMove(this.sys, o);
 
     this.sys.trackMouse({
       move: () => {
         const oldval = this.val;
-        this.val = Math.floor((this.mouse.x / this.w) * (this.max - this.min) + this.min);
+
+        fn();
+        o.x = Math.max(0, Math.min(this.w, o.x));
+        const p = o.x / this.w;
+        this.val = Math.round((this.max - this.min) * p + this.min);
 
         if (this.val !== oldval) {
           this.onChange?.();
         }
-
       }
     });
 
   }
 
   override draw(): void {
-
     const y1 = Math.floor(this.h / 2);
     this.sys.crt.rectFill(0, y1, this.w, 1, 0xffffff33);
 
-    const x = Math.round(this.val / (this.max - this.min) * this.w);
+    const p = (this.val - this.min) / (this.max - this.min);
+
+    // console.log(this.val, (this.max - this.min), this.val / (this.max - this.min))
+
+    const x = Math.floor(p * (this.w - this.knobSize));
     const y = Math.round(this.h / 2 - this.knobSize / 2);
     this.sys.crt.rectFill(x, y, 2, 2, 0xffffffff);
   }
