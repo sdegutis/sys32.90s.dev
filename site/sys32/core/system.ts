@@ -36,6 +36,7 @@ export class System {
 
     canvas.addEventListener('keydown', (e) => {
       e.preventDefault();
+      if (e.key === 'F5') location.reload();
       this.keys[e.key] = true;
       this.focused.onKeyDown?.(e.key);
       this.needsRedraw = true;
