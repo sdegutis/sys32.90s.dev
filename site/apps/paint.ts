@@ -11,7 +11,7 @@ import { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeFlowLayout } from "../sys32/util/layouts.js";
-import { dragResize } from "../sys32/util/selections.js";
+import { dragMove, dragResize } from "../sys32/util/selections.js";
 
 class ColorButton extends RadioButton {
 
@@ -42,6 +42,8 @@ class PaintView extends View {
   width = 10;
   height = 10;
 
+  zoom = 4;
+
   color = 0xffffffff;
 
   tool: 'pencil' | 'eraser' = 'pencil';
@@ -52,16 +54,16 @@ class PaintView extends View {
   #grid: number[] = [];
 
   override adjust(): void {
-    this.w = this.width * 4;
-    this.h = this.height * 4;
+    this.w = this.width * this.zoom;
+    this.h = this.height * this.zoom;
   }
 
   override draw(): void {
     for (let x = 0; x < this.width; x++) {
-      this.sys.crt.rectFill(x * 4, 0, 1, this.h, 0x00000033);
+      this.sys.crt.rectFill(x * this.zoom, 0, 1, this.h, 0x00000033);
     }
     for (let y = 0; y < this.height; y++) {
-      this.sys.crt.rectFill(0, y * 4, this.w, 1, 0x00000033);
+      this.sys.crt.rectFill(0, y * this.zoom, this.w, 1, 0x00000033);
     }
 
     for (let y = 0; y < this.height; y++) {
@@ -69,17 +71,17 @@ class PaintView extends View {
         const i = y * this.width + x;
         const c = this.#grid[i];
         if (c !== undefined) {
-          const px = x * 4;
-          const py = y * 4;
-          this.sys.crt.rectFill(px, py, 4, 4, c);
+          const px = x * this.zoom;
+          const py = y * this.zoom;
+          this.sys.crt.rectFill(px, py, this.zoom, this.zoom, c);
         }
       }
     }
 
     if (this.#hovered) {
-      const px = Math.floor(this.mouse.x / 4) * 4;
-      const py = Math.floor(this.mouse.y / 4) * 4;
-      this.sys.crt.rectFill(px, py, 4, 4, 0x0000ff77);
+      const px = Math.floor(this.mouse.x / this.zoom) * this.zoom;
+      const py = Math.floor(this.mouse.y / this.zoom) * this.zoom;
+      this.sys.crt.rectFill(px, py, this.zoom, this.zoom, 0x0000ff77);
     }
   }
 
@@ -87,8 +89,8 @@ class PaintView extends View {
     if (this.tool === 'pencil' || this.tool === 'eraser') {
       this.sys.trackMouse({
         move: () => {
-          const x = Math.floor(this.mouse.x / 4);
-          const y = Math.floor(this.mouse.y / 4);
+          const x = Math.floor(this.mouse.x / this.zoom);
+          const y = Math.floor(this.mouse.y / this.zoom);
           const i = y * this.width + x;
           this.#grid[i] = this.tool === 'pencil' ? this.color : 0x00000000;
         }
@@ -136,14 +138,17 @@ export default function paint(sys: System) {
   const heightLabel = sys.make(Label, {});
 
   const colorLabel = sys.make(Label, {});
+  const zoomLabel = sys.make(Label, {});
 
-  function updateLabels() {
+  function updateSizeLabels() {
     widthLabel.text = paintView.width.toString();
     heightLabel.text = paintView.height.toString();
     sys.layoutTree(heightLabel.parent);
   }
 
-  updateLabels();
+  zoomLabel.text = paintView.zoom.toString();
+
+  updateSizeLabels();
 
   const resizer = sys.make(View, {
     background: 0x00000077,
@@ -159,10 +164,10 @@ export default function paint(sys: System) {
       this.sys?.trackMouse({
         move: () => {
           fn();
-          const w = Math.floor(o.w / 4);
-          const h = Math.floor(o.h / 4);
+          const w = Math.floor(o.w / paintView.zoom);
+          const h = Math.floor(o.h / paintView.zoom);
           paintView.resize(w, h);
-          updateLabels();
+          updateSizeLabels();
         }
       })
 
@@ -239,13 +244,32 @@ export default function paint(sys: System) {
           resizer
         ),
 
-        sys.make(GroupX, {},
-          sys.make(Label, { color: 0xffffff33, text: 'w:' }),
-          widthLabel,
-          sys.make(Label, { color: 0xffffff33, text: ' h:' }),
-          heightLabel,
-          sys.make(Label, { color: 0xffffff33, text: ' c:' }),
-          colorLabel,
+        sys.make(Spaced, { dir: 'x' },
+
+          sys.make(GroupX, {},
+            sys.make(Label, { color: 0xffffff33, text: 'w:' }),
+            widthLabel,
+            sys.make(Label, { color: 0xffffff33, text: ' h:' }),
+            heightLabel,
+            sys.make(Label, { color: 0xffffff33, text: ' c:' }),
+            colorLabel,
+            sys.make(Label, { color: 0xffffff33, text: ' z:' }),
+            zoomLabel,
+          ),
+
+          sys.make(GroupX, {},
+            sys.make(Slider, {
+              w: 20, h: 4, background: 0x330000ff, onChange() {
+                paintView.zoom = this.val!;
+
+                zoomLabel.text = paintView.zoom.toString();
+
+                sys.layoutTree(paintView.parent)
+                console.log(this.val!)
+              }
+            }),
+          )
+
         )
 
       ),
@@ -257,4 +281,45 @@ export default function paint(sys: System) {
 
   sys.root.addChild(panel);
   sys.focus(panel);
+}
+
+class Slider extends View {
+
+  onChange?(): void;
+
+  min = 1;
+  max = 10;
+  val = 3;
+
+  knobSize = 2;
+  lineSize = 1;
+
+  override onMouseDown(): void {
+    // const o = {}
+
+
+    this.sys.trackMouse({
+      move: () => {
+        const oldval = this.val;
+        this.val = Math.floor((this.mouse.x / this.w) * (this.max - this.min) + this.min);
+
+        if (this.val !== oldval) {
+          this.onChange?.();
+        }
+
+      }
+    });
+
+  }
+
+  override draw(): void {
+
+    const y1 = Math.floor(this.h / 2);
+    this.sys.crt.rectFill(0, y1, this.w, 1, 0xffffff33);
+
+    const x = Math.round(this.val / (this.max - this.min) * this.w);
+    const y = Math.round(this.h / 2 - this.knobSize / 2);
+    this.sys.crt.rectFill(x, y, 2, 2, 0xffffffff);
+  }
+
 }
