@@ -46,3 +46,13 @@ function texttest(sys: System) {
   sys.root.addChild(panel);
   sys.layoutTree(panel)
 }
+
+// (async function () {
+
+//   const a = await window.showDirectoryPicker();
+
+//   for await (const [name, handle] of a.entries()) {
+//     console.log(name, handle)
+//   }
+
+// })();
