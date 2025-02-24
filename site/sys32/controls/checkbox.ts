@@ -5,7 +5,8 @@ export class Checkbox extends Button {
   onChange?() { }
 
   borderColor = 0xffffff33;
-  checkColor = 0xffffffff;
+  checkColorOn = 0xffffffff;
+  checkColorOff = 0x00000000;
   size = 2;
   #checked = false;
 
@@ -34,9 +35,13 @@ export class Checkbox extends Button {
   }
 
   drawCheck() {
-    if (this.checked) {
-      this.sys.crt.rectFill(this.padding, this.padding, this.size, this.size, this.checkColor);
-    }
+    this.sys.crt.rectFill(
+      this.padding,
+      this.padding,
+      this.size,
+      this.size,
+      this.checked ? this.checkColorOn : this.checkColorOff
+    );
   }
 
   override onClick(): void {

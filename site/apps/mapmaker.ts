@@ -17,23 +17,6 @@ const COLORS = [
   0x29ADFFff, 0x83769Cff, 0xFF77A8ff, 0xFFCCAAff,
 ];
 
-class ColorButton extends RadioButton {
-
-  color = 0x00000000;
-
-  override draw(): void {
-    this.sys.crt.rectFill(this.padding, this.padding, this.size, this.size, this.color);
-
-    if (this.checked) {
-      this.sys.crt.rectLine(0, 0, this.w, this.h, this.checkColor);
-    }
-    else if (this.hovered) {
-      this.sys.crt.rectLine(0, 0, this.w, this.h, 0xffffff77);
-    }
-  }
-
-}
-
 export default (sys: System) => {
   const panel = sys.make(Panel, {
     title: 'mapmaker',
@@ -70,9 +53,11 @@ export function mapmaker(sys: System) {
     sys.make(PanedYA, { w: 19, background: 0x333333ff },
       gridButton,
       sys.make(View, { layout: makeFlowLayoutY() },
-        ...COLORS.map((col, i) => sys.make(ColorButton, {
+        ...COLORS.map((col, i) => sys.make(RadioButton, {
           group: toolGroup,
-          color: col,
+          checkColorOn: col,
+          checkColorOff: col,
+          borderColor: 0x00000000,
           size: 4,
           padding: 1,
           w: 6, h: 6,

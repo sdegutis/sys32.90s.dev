@@ -109,9 +109,13 @@ export default function paint(sys: System) {
   const colorRadios = new RadioGroup();
 
   function makeColorButton(color: number) {
-    const button = sys.make(ColorButton, {
-      background: 0x99999933,
-      color, group: colorRadios, size: 4, padding: 1,
+    const button = sys.make(RadioButton, {
+      checkColorOn: color,
+      checkColorOff: color,
+      borderColor: 0x99999933,
+      borderSelected: 0xffffffff,
+      borderHovered: 0xffffff77,
+      group: colorRadios, size: 4, padding: 1,
       onSelected: () => {
         paintView.color = color;
         colorLabel.text = '0x' + color.toString(16).padStart(8, '0');
@@ -268,23 +272,6 @@ class PaintView extends View {
   override onMouseExit(): void {
     super.onMouseExit?.();
     this.#hovered = false;
-  }
-
-}
-
-class ColorButton extends RadioButton {
-
-  color = 0x00000000;
-
-  override draw(): void {
-    this.sys.crt.rectFill(this.padding, this.padding, this.size, this.size, this.color);
-
-    if (this.checked) {
-      this.sys.crt.rectLine(0, 0, this.w, this.h, this.checkColor);
-    }
-    else if (this.hovered) {
-      this.sys.crt.rectLine(0, 0, this.w, this.h, 0xffffff77);
-    }
   }
 
 }

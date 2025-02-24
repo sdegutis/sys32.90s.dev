@@ -109,12 +109,12 @@ export function demo(sys: System) {
     ),
 
     sys.make(Group, { dir: 'y', gap: 1 },
-      sys.make(Checkbox, { checked: true, size: 0, padding: 2, checkColor: 0x990000ff }),
-      sys.make(Checkbox, { checked: true, size: 1, padding: 2, checkColor: 0x990000ff }),
-      sys.make(Checkbox, { checked: true, size: 2, padding: 2, checkColor: 0x990000ff }),
-      sys.make(Checkbox, { checked: true, size: 3, padding: 2, checkColor: 0x990000ff }),
-      sys.make(Checkbox, { checked: true, size: 4, padding: 2, checkColor: 0x990000ff }),
-      sys.make(Checkbox, { checked: true, size: 5, padding: 2, checkColor: 0x990000ff }),
+      sys.make(Checkbox, { checked: true, size: 0, padding: 2, checkColorOn: 0x990000ff }),
+      sys.make(Checkbox, { checked: true, size: 1, padding: 2, checkColorOn: 0x990000ff }),
+      sys.make(Checkbox, { checked: true, size: 2, padding: 2, checkColorOn: 0x990000ff }),
+      sys.make(Checkbox, { checked: true, size: 3, padding: 2, checkColorOn: 0x990000ff }),
+      sys.make(Checkbox, { checked: true, size: 4, padding: 2, checkColorOn: 0x990000ff }),
+      sys.make(Checkbox, { checked: true, size: 5, padding: 2, checkColorOn: 0x990000ff }),
     ),
 
     sys.make(Group, { dir: 'y', gap: 1 },
