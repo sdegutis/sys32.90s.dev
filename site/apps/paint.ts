@@ -62,10 +62,8 @@ export default function paint(sys: System) {
 
   toolRadios.select(pencilTool)
 
-  const colorRadios = new RadioGroup();
-
   const colorField = sys.make(TextField, { length: 9, background: 0x111111ff, padding: 1 });
-  const colorGroup = sys.make(View, {
+  const toolArea = sys.make(View, {
     w: 36,
     background: 0x99000033,
     layout: makeFlowLayout(),
@@ -79,8 +77,10 @@ export default function paint(sys: System) {
     const color = parseInt('0x' + colorField.text, 16);
     colorField.text = '';
     makeColorButton(color);
-    sys.layoutTree(colorGroup.parent)
+    sys.layoutTree(toolArea.parent)
   };
+
+  const colorRadios = new RadioGroup();
 
   function makeColorButton(color: number) {
     const button = sys.make(ColorButton, {
@@ -92,7 +92,7 @@ export default function paint(sys: System) {
         sys.layoutTree(colorLabel.parent);
       }
     });
-    colorGroup.addChild(button);
+    toolArea.addChild(button);
 
     if (!colorRadios.selected) colorRadios.select(button)
   }
@@ -101,68 +101,58 @@ export default function paint(sys: System) {
     makeColorButton(color);
   }
 
+  const statusBar = sys.make(Spaced, { dir: 'x' },
+    sys.make(GroupX, {},
+      sys.make(Label, { color: 0xffffff33, text: 'w:' }), widthLabel,
+      sys.make(Label, { color: 0xffffff33, text: ' h:' }), heightLabel,
+      sys.make(Label, { color: 0xffffff33, text: ' c:' }), colorLabel,
+      sys.make(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel,
+    ),
+    sys.make(GroupX, {},
+      sys.make(Slider, {
+        w: 20, h: 4, onChange() {
+          paintView.zoom = this.val!;
+          zoomLabel.text = paintView.zoom.toString();
+          sys.layoutTree(panel);
+        }
+      })
+    )
+  );
+
+  const paintArea = sys.make(Scroll, {
+    background: 0x222222ff,
+    draw() {
+      let off = 0;
+      const w = 4;
+      const h = 3;
+      for (let y = 0; y < this.h!; y++) {
+        for (let x = 0; x < this.w!; x += w) {
+          sys.crt.pset(off + x, y, 0x272727ff);
+        }
+        if (y % h === (h - 1)) off = (off + 1) % w;
+      }
+    },
+  },
+    paintView,
+    resizer
+  );
+
   const panel = sys.make(Panel, {
     title: 'paint', minw: 50, w: 180, h: 70,
     onKeyDown(key) {
       if (key === 's' && sys.keys['Control']) {
-        console.log('saving')
+        console.log('saving');
         return true;
       }
       return false;
     }
   },
-
     sys.make(PanedXB, { gap: 1 },
-
       sys.make(PanedYB, { gap: 1 },
-
-        sys.make(Scroll, {
-          background: 0x222222ff,
-          draw() {
-            let off = 0;
-            const w = 4;
-            const h = 3;
-            for (let y = 0; y < this.h!; y++) {
-              for (let x = 0; x < this.w!; x += w) {
-                sys.crt.pset(off + x, y, 0x272727ff);
-              }
-              if (y % h === (h - 1)) off = (off + 1) % w;
-            }
-          },
-        },
-          paintView,
-          resizer
-        ),
-
-        sys.make(Spaced, { dir: 'x' },
-
-          sys.make(GroupX, {},
-            sys.make(Label, { color: 0xffffff33, text: 'w:' }),
-            widthLabel,
-            sys.make(Label, { color: 0xffffff33, text: ' h:' }),
-            heightLabel,
-            sys.make(Label, { color: 0xffffff33, text: ' c:' }),
-            colorLabel,
-            sys.make(Label, { color: 0xffffff33, text: ' z:' }),
-            zoomLabel,
-          ),
-
-          sys.make(GroupX, {},
-            sys.make(Slider, {
-              w: 20, h: 4, onChange() {
-                paintView.zoom = this.val!;
-                zoomLabel.text = paintView.zoom.toString();
-                sys.layoutTree(panel)
-              }
-            }),
-          )
-
-        )
-
+        paintArea,
+        statusBar
       ),
-
-      colorGroup,
-
+      toolArea,
     ),
   );
 
