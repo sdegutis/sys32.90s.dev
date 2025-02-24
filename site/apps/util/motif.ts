@@ -1,7 +1,7 @@
 import { System } from "../../sys32/core/system.js";
 import { View } from "../../sys32/core/view.js";
 
-export function makeMotifDraw(sys: System, w = 4, h = 3) {
+export function makeStripeMotifDraw(sys: System, w = 4, h = 3) {
   return function (this: View) {
     let off = 0;
     for (let y = 0; y < this.h!; y++) {

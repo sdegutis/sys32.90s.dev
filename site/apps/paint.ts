@@ -11,7 +11,7 @@ import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeFlowLayout } from "../sys32/util/layouts.js";
 import { dragMove, dragResize } from "../sys32/util/selections.js";
-import { makeMotifDraw } from "./util/motif.js";
+import { makeStripeMotifDraw } from "./util/motif.js";
 
 export default function paint(sys: System) {
   const paintView = sys.make(PaintView, {});
@@ -122,7 +122,7 @@ export default function paint(sys: System) {
 
   const paintArea = sys.make(Scroll, {
     background: 0x222222ff,
-    draw: makeMotifDraw(sys),
+    draw: makeStripeMotifDraw(sys),
   },
     paintView,
     resizer

@@ -8,7 +8,7 @@ import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeFlowLayoutY, makeVacuumLayout } from "../sys32/util/layouts.js";
 import { TileSelection, dragMove } from "../sys32/util/selections.js";
-import { makeMotifDraw } from "./util/motif.js";
+import { makeStripeMotifDraw } from "./util/motif.js";
 
 const COLORS = [
   0x000000ff, 0x1D2B53ff, 0x7E2553ff, 0x008751ff,
@@ -63,7 +63,7 @@ export function mapmaker(sys: System) {
 
   const mapArea = sys.make(View, {
     background: 0x222222ff,
-    draw: makeMotifDraw(sys, 4, 2)
+    draw: makeStripeMotifDraw(sys, 4, 2)
   });
 
   const root = sys.make(PanedXA, {},
