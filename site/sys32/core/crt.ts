@@ -10,6 +10,9 @@ export class CRT {
 
   #autoscaling = false;
 
+  width = 0;
+  height = 0;
+
   constructor(canvas: HTMLCanvasElement) {
     canvas.style.imageRendering = 'pixelated';
     canvas.style.backgroundColor = '#000';
@@ -22,8 +25,8 @@ export class CRT {
   }
 
   resize(w: number, h: number) {
-    this.#canvas.width = w;
-    this.#canvas.height = h;
+    this.#canvas.width = this.width = w;
+    this.#canvas.height = this.height = h;
 
     this.pixels = new Uint8ClampedArray(w * h * 4);
     this.#imgdata = new ImageData(this.pixels, w, h);
@@ -84,7 +87,7 @@ export class CRT {
   }
 
   rectFill(x: number, y: number, w: number, h: number, c: number) {
-    const cw = this.#canvas.width;
+    const cw = this.width;
 
     let x1 = this.raw ? x : x + this.clip.cx;
     let y1 = this.raw ? y : y + this.clip.cy;
