@@ -10,10 +10,10 @@ import { Bitmap } from "../sys32/core/bitmap.js";
 import { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
+import { makeStripeDrawer } from "../sys32/util/draw.js";
 import { multifn } from "../sys32/util/events.js";
 import { makeFlowLayout } from "../sys32/util/layouts.js";
 import { dragResize } from "../sys32/util/selections.js";
-import { makeStripeMotifDraw } from "./util/motif.js";
 
 class Reactable<T> {
 
@@ -150,7 +150,7 @@ export default function paint(sys: System) {
 
   const paintArea = sys.make(Scroll, {
     background: 0x222222ff,
-    draw: makeStripeMotifDraw(sys),
+    draw: makeStripeDrawer(sys),
   },
     paintView,
     resizer
