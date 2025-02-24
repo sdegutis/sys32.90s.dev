@@ -1,5 +1,4 @@
-import { Group } from "../sys32/containers/group.js";
-import { Paned } from "../sys32/containers/paned.js";
+import { PanedXA, PanedYA } from "../sys32/containers/paned.js";
 import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
@@ -7,7 +6,7 @@ import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
-import { makeVacuumLayout } from "../sys32/util/layouts.js";
+import { makeFlowLayoutY, makeVacuumLayout } from "../sys32/util/layouts.js";
 import { TileSelection, dragMove } from "../sys32/util/selections.js";
 import { makeMotifDraw } from "./util/motif.js";
 
@@ -51,7 +50,7 @@ export function mapmaker(sys: System) {
   let showGrid = true;
   const gridButton = sys.make(Button, {
     onClick: () => showGrid = !showGrid,
-  }, sys.make(Label, { text: 'grid' }));
+  }, sys.make(Label, { padding: 2, text: 'grid' }));
 
   let currentTool = 5;
 
@@ -67,17 +66,18 @@ export function mapmaker(sys: System) {
     draw: makeMotifDraw(sys, 4, 2)
   });
 
-  const root = sys.make(Paned, { vacuum: 'a', dir: 'x' },
-    sys.make(Group, { background: 0x333333ff, dir: 'y' },
+  const root = sys.make(PanedXA, {},
+    sys.make(PanedYA, { w: 19, background: 0x333333ff, gap: 1 },
       gridButton,
-      sys.make(View, { h: 3 }),
-      ...COLORS.map((col, i) => sys.make(ColorButton, {
-        group: toolGroup,
-        color: col,
-        size: 4,
-        padding: 2,
-        w: 6, h: 6,
-      })),
+      sys.make(View, { layout: makeFlowLayoutY() },
+        ...COLORS.map((col, i) => sys.make(ColorButton, {
+          group: toolGroup,
+          color: col,
+          size: 4,
+          padding: 2,
+          w: 6, h: 6,
+        }))
+      )
     ),
     sys.make(View, { background: 0x333344ff, layout: makeVacuumLayout() },
       mapArea
