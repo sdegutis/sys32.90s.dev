@@ -145,3 +145,11 @@ export class Split extends View {
   }
 
 }
+
+export class SplitX extends Split {
+  override dir = 'x' as const;
+}
+
+export class SplitY extends Split {
+  override dir = 'y' as const;
+}

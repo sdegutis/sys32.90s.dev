@@ -38,3 +38,11 @@ export class Spaced extends View {
   }
 
 }
+
+export class SpacedX extends Spaced {
+  override dir = 'x' as const;
+}
+
+export class SpacedY extends Spaced {
+  override dir = 'y' as const;
+}
