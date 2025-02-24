@@ -17,6 +17,7 @@ import { makeStripeMotifDraw } from "./util/motif.js";
 class Reactable<T> {
 
   #data;
+  #changed = multifn<T>();
 
   constructor(data: T) {
     this.#data = data;
@@ -33,8 +34,6 @@ class Reactable<T> {
     this.#changed(this.val);
     return done;
   }
-
-  #changed = multifn<T>();
 
 }
 
