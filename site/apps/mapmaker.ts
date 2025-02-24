@@ -50,7 +50,7 @@ export function mapmaker(sys: System) {
   let showGrid = true;
   const gridButton = sys.make(Button, {
     onClick: () => showGrid = !showGrid,
-  }, sys.make(Label, { padding: 2, text: 'grid' }));
+  }, sys.make(Label, { padding: 2, text: 'grid', background: 0x00000033 }));
 
   let currentTool = 5;
 
@@ -67,14 +67,14 @@ export function mapmaker(sys: System) {
   });
 
   const root = sys.make(PanedXA, {},
-    sys.make(PanedYA, { w: 19, background: 0x333333ff, gap: 1 },
+    sys.make(PanedYA, { w: 19, background: 0x333333ff },
       gridButton,
       sys.make(View, { layout: makeFlowLayoutY() },
         ...COLORS.map((col, i) => sys.make(ColorButton, {
           group: toolGroup,
           color: col,
           size: 4,
-          padding: 2,
+          padding: 1,
           w: 6, h: 6,
         }))
       )
