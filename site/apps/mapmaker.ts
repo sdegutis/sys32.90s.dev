@@ -9,6 +9,7 @@ import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeVacuumLayout } from "../sys32/util/layouts.js";
 import { TileSelection, dragMove } from "../sys32/util/selections.js";
+import { makeMotifDraw } from "./util/motif.js";
 
 const COLORS = [
   0x000000ff, 0x1D2B53ff, 0x7E2553ff, 0x008751ff,
@@ -63,16 +64,7 @@ export function mapmaker(sys: System) {
 
   const mapArea = sys.make(View, {
     background: 0x222222ff,
-    draw: () => {
-      sys.crt.rectFill(0, 0, mapArea.w, mapArea.h, mapArea.background!);
-      let off = 0;
-      for (let y = 0; y < mapArea.h; y++) {
-        for (let x = 0; x < mapArea.w; x += 4) {
-          sys.crt.pset(off + x, y, 0x272727ff);
-        }
-        if (y % 2 === 0) off = (off + 1) % 4;
-      }
-    }
+    draw: makeMotifDraw(sys, 4, 2)
   });
 
   const root = sys.make(Paned, { vacuum: 'a', dir: 'x' },
