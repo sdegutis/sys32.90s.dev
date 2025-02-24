@@ -17,9 +17,9 @@ sys.crt.autoscale();
 // sys.root.background = 0x003300ff;
 // sys.root.layout = makeVacuumLayout()
 
-mapmaker(sys);
+// mapmaker(sys);
 // files(sys)
-// paint(sys);
+paint(sys);
 sys.layoutTree()
 
 const ws = new Workspace(sys);

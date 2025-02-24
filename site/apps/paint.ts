@@ -9,11 +9,38 @@ import { Bitmap } from "../sys32/core/bitmap.js";
 import { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
+import { multifn } from "../sys32/util/events.js";
 import { makeFlowLayout } from "../sys32/util/layouts.js";
 import { dragMove, dragResize } from "../sys32/util/selections.js";
 import { makeStripeMotifDraw } from "./util/motif.js";
 
+class Reactable<T> {
+
+  #data;
+
+  constructor(data: T) {
+    this.#data = data;
+  }
+
+  get val() { return this.#data; }
+  set val(data: T) {
+    this.#data = data;
+    this.#changed(data);
+  }
+
+  watch(fn: (data: T) => void) {
+    const done = this.#changed.watch(fn);
+    this.#changed(this.val);
+    return done;
+  }
+
+  #changed = multifn<T>();
+
+}
+
 export default function paint(sys: System) {
+  const zoom = new Reactable(4);
+
   const paintView = sys.make(PaintView, {});
 
   const widthLabel = sys.make(Label, {});
@@ -28,7 +55,8 @@ export default function paint(sys: System) {
     sys.layoutTree(heightLabel.parent);
   }
 
-  zoomLabel.text = paintView.zoom.toString();
+  zoom.watch(n => zoomLabel.text = n.toString());
+  zoom.watch(n => paintView.zoom = n);
 
   updateSizeLabels();
 
@@ -46,8 +74,8 @@ export default function paint(sys: System) {
       this.sys?.trackMouse({
         move: () => {
           fn();
-          const w = Math.floor(o.w / paintView.zoom);
-          const h = Math.floor(o.h / paintView.zoom);
+          const w = Math.floor(o.w / zoom.val);
+          const h = Math.floor(o.h / zoom.val);
           paintView.resize(w, h);
           updateSizeLabels();
         }
@@ -112,8 +140,7 @@ export default function paint(sys: System) {
     sys.make(GroupX, {},
       sys.make(Slider, {
         w: 20, h: 4, onChange() {
-          paintView.zoom = this.val!;
-          zoomLabel.text = paintView.zoom.toString();
+          zoom.val = this.val!;
           sys.layoutTree(panel);
         }
       })
