@@ -40,6 +40,7 @@ class Reactable<T> {
 
 export default function paint(sys: System) {
   const zoom = new Reactable(4);
+  const size = new Reactable({ w: 10, h: 10 });
 
   const paintView = sys.make(PaintView, {});
 
@@ -49,16 +50,13 @@ export default function paint(sys: System) {
   const colorLabel = sys.make(Label, {});
   const zoomLabel = sys.make(Label, {});
 
-  function updateSizeLabels() {
-    widthLabel.text = paintView.width.toString();
-    heightLabel.text = paintView.height.toString();
-    sys.layoutTree(heightLabel.parent);
-  }
+  size.watch(s => paintView.resize(s.w, s.h));
+  size.watch(s => widthLabel.text = s.w.toString());
+  size.watch(s => heightLabel.text = s.h.toString());
+  size.watch(s => sys.layoutTree(heightLabel.parent));
 
   zoom.watch(n => zoomLabel.text = n.toString());
   zoom.watch(n => paintView.zoom = n);
-
-  updateSizeLabels();
 
   const resizer = sys.make(View, {
     background: 0x00000077,
@@ -76,8 +74,7 @@ export default function paint(sys: System) {
           fn();
           const w = Math.floor(o.w / zoom.val);
           const h = Math.floor(o.h / zoom.val);
-          paintView.resize(w, h);
-          updateSizeLabels();
+          size.val = { w, h };
         }
       })
 
