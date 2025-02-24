@@ -151,16 +151,7 @@ export default function paint(sys: System) {
     resizer
   );
 
-  const panel = sys.make(Panel, {
-    title: 'paint', minw: 50, w: 180, h: 70,
-    onKeyDown(key) {
-      if (key === 's' && sys.keys['Control']) {
-        console.log('saving');
-        return true;
-      }
-      return false;
-    }
-  },
+  const panel = sys.make(Panel, { title: 'paint', minw: 50, w: 180, h: 70, },
     sys.make(PanedXB, { gap: 1 },
       sys.make(PanedYB, { gap: 1 },
         paintArea,
@@ -169,6 +160,14 @@ export default function paint(sys: System) {
       toolArea,
     ),
   );
+
+  panel.onKeyDown = (key) => {
+    if (key === 's' && sys.keys['Control']) {
+      console.log('saving');
+      return true;
+    }
+    return false;
+  };
 
   sys.root.addChild(panel);
   sys.focus(panel);
