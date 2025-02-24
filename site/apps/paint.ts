@@ -135,7 +135,7 @@ export default function paint(sys: System) {
     ),
     sys.make(GroupX, {},
       sys.make(Slider, {
-        w: 20, h: 4, onChange() {
+        w: 20, onChange() {
           zoom.val = this.val!;
           sys.layoutTree(panel);
         }
@@ -281,6 +281,11 @@ class Slider extends View {
 
   knobSize = 2;
   lineSize = 1;
+  padding = 1;
+
+  override adjust(): void {
+    this.h = this.padding * 2 + this.knobSize;
+  }
 
   override onMouseDown(): void {
     const o = { x: this.mouse.x, y: 0 };
