@@ -1,4 +1,5 @@
 import demo from "./apps/demo.js";
+import files from "./apps/files.js";
 import mapmaker from "./apps/mapmaker.js";
 import paint from "./apps/paint.js";
 import { Scroll } from "./sys32/containers/scroll.js";
@@ -17,11 +18,13 @@ sys.crt.autoscale();
 // sys.root.layout = makeVacuumLayout()
 
 // mapmaker(sys);
-paint(sys);
+files(sys)
+// paint(sys);
 sys.layoutTree()
 
 const ws = new Workspace(sys);
 ws.addProgram('demo', demo);
+ws.addProgram('files', files);
 ws.addProgram('mapmaker', mapmaker);
 ws.addProgram('paint', paint);
 ws.addProgram('text test', texttest);
@@ -46,13 +49,3 @@ function texttest(sys: System) {
   sys.root.addChild(panel);
   sys.layoutTree(panel)
 }
-
-// (async function () {
-
-//   const a = await window.showDirectoryPicker();
-
-//   for await (const [name, handle] of a.entries()) {
-//     console.log(name, handle)
-//   }
-
-// })();
