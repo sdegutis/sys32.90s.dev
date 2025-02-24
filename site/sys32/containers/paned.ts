@@ -19,10 +19,18 @@ export class Paned extends View {
     a.w = b.w = this.w;
     a.h = b.h = this.h;
 
-    const pos = (this.vacuum === 'a' ? vv : this[dw] - vv - this.gap);
-    a[dw] = pos - this.gap;
-    b[dx] = pos + this.gap;
-    b[dw] = this[dw] - pos - this.gap;
+    if (this.vacuum === 'a') {
+      const pos = vv;
+      a[dw] = pos;
+      b[dx] = pos + this.gap;
+      b[dw] = this[dw] - a[dw] - this.gap;
+    }
+    else {
+      const pos = this[dw] - vv - this.gap;
+      a[dw] = pos;
+      b[dx] = pos + this.gap;
+      b[dw] = vv;
+    }
   }
 
 }
