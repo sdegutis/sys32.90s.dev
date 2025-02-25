@@ -4,6 +4,7 @@ export interface Folder {
   getFolder(name: string): Promise<Folder | undefined>;
   putFile(name: string, content: string): Promise<void>;
   makeFolder(name: string): Promise<Folder>;
+  list(): Promise<{ kind: 'file' | 'folder', name: string }[]>;
 
 }
 
@@ -37,29 +38,14 @@ class MemoryFolder implements Folder {
     return f;
   }
 
+  async list() {
+    return Object.keys(this.#items).map(name => {
+      const kind: 'file' | 'folder' = typeof name === 'string' ? 'file' : 'folder';
+      return { name, kind };
+    });
+  }
+
 }
-
-// class LocalStorageFolder implements Folder {
-
-
-
-//   async getFile(name: string) {
-//     return undefined;
-//   }
-
-//   async getFolder(name: string) {
-//     return undefined;
-//   }
-
-//   async putFile(name: string, content: string) {
-
-//   }
-
-//   async mkdir(name: string) {
-
-//   }
-
-// }
 
 // class IndexedDbFolder implements Folder {
 
@@ -112,13 +98,22 @@ class UserFolder implements Folder {
     return new UserFolder(h);
   }
 
+  async list() {
+    const list = [];
+    const entries = this.#dir.entries();
+    for await (const [name, obj] of entries) {
+      const kind: 'folder' | 'file' = (obj.kind === 'directory') ? 'folder' : 'file';
+      list.push({ name, kind });
+    }
+    return list;
+  }
+
 }
 
 export class FS {
 
   drives: Record<string, Folder> = {
     a: new MemoryFolder(),
-    // b: new LocalStorageFolder(),
     // c: new IndexedDbFolder(),
   };
 

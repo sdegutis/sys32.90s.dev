@@ -72,9 +72,6 @@ export default (sys: System) => {
 
     await adddrive(db, 'd', folder);
     await loadview();
-    console.log('cool')
-
-
 
 
   };
