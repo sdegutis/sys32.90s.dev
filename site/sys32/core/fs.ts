@@ -22,7 +22,6 @@ class MemoryFolder implements Folder {
   async getFolder(name: string) {
     const f = this.#items[name];
     if (typeof f === 'string') {
-      console.log(name)
       throw new Error(`Expected folder got file [${name}]`);
     }
     return f;
@@ -102,7 +101,7 @@ class UserFolder implements Folder {
   }
 
   async putFile(name: string, content: string) {
-    const h = await this.#dir.getFileHandle(name);
+    const h = await this.#dir.getFileHandle(name, { create: true });
     const w = await h.createWritable();
     await w.write(content);
     await w.close();
@@ -123,11 +122,14 @@ export class FS {
     // c: new IndexedDbFolder(),
   };
 
-  constructor() {
-    this.#remountUserDrives();
-  }
+  ready = new Promise<void>(async res => {
+    await Promise.allSettled([
+      this.#loadUserDrives(),
+    ]);
+    res();
+  });
 
-  async #remountUserDrives() {
+  async #loadUserDrives() {
     const db = await opendb();
     const drives = await getdrives(db);
     for (const { drive, folder } of drives) {

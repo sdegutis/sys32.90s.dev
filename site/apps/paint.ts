@@ -170,25 +170,19 @@ export default function paint(sys: System) {
 
   (async () => {
 
-    console.log('a')
-    await sys.fs.drives['a'].makeFolder('bar');
-    console.log('b')
-    await sys.fs.drives['a'].getFolder('bar').then(d => d!.makeFolder('qux'));
-    console.log('c')
+    await sys.fs.ready;
 
-    console.log(sys.fs.drives["a"])
+    await sys.fs.drives['d'].makeFolder('bar');
+    await sys.fs.drives['d'].getFolder('bar').then(d => d!.makeFolder('qux'));
 
-    const path = 'a/bar/qux/foo.bitmap';
+
+    const path = 'd/bar/qux/foo.bitmap';
     // const path = 'a/bar/qux/foo.bitmap';
 
-    await sys.fs.saveFile(path, 'hello');
-    console.log('d')
+    await sys.fs.saveFile(path, 'hello\nworld');
 
-    console.log('here')
     const f = await sys.fs.loadFile(path);
-    console.log('e')
 
-    console.log('there')
     console.log(f)
   })();
 

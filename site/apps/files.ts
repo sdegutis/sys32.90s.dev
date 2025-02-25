@@ -68,6 +68,7 @@ export default (sys: System) => {
 
   const mountNew = async () => {
     const folder = await window.showDirectoryPicker();
+    await folder.requestPermission({ mode: 'readwrite' });
 
     await adddrive(db, 'd', folder);
     await loadview();
