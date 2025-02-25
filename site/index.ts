@@ -19,7 +19,8 @@ sys.crt.autoscale();
 // sys.root.layout = makeVacuumLayout()
 
 // mapmaker(sys);
-files(sys)
+// files(sys)
+demo(sys)
 // paint(sys);
 // texttest(sys);
 sys.layoutTree()

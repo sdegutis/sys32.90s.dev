@@ -4,16 +4,14 @@ import { Label } from "./label.js";
 
 export class TextField extends View {
 
-  padding = 0;
-
   onEnter?(): void;
   onChange?(): void;
 
   #text = '';
   length = 10;
 
-  #field = this.sys.make(Label, { text: '', padding: 0 });
-  #cursor = this.sys.make(Label, { visible: false, text: '_', padding: 0, color: 0x1177ffff });
+  #field = this.sys.make(Label, { text: '' });
+  #cursor = this.sys.make(Label, { visible: false, text: '_', color: 0x1177ffff });
 
   #font = this.sys.font;
   get font() { return this.#font; }
@@ -50,16 +48,16 @@ export class TextField extends View {
   }
 
   override layout(): void {
-    this.#field.x = this.padding;
-    this.#field.y = this.padding;
-    this.#cursor.x = this.padding + (this.#cursor.w + 1) * this.#field.text.length;
-    this.#cursor.y = this.padding;
+    this.#field.x = 0;
+    this.#field.y = 0;
+    this.#cursor.x = (this.#cursor.w + 1) * this.#field.text.length;
+    this.#cursor.y = 0;
   }
 
   override adjust(): void {
     const s = this.font.calcSize(' '.repeat(this.length));
-    this.w = s.w + this.padding * 2;
-    this.h = s.h + this.padding * 2;
+    this.w = s.w;
+    this.h = s.h;
   }
 
   override onKeyDown(key: string): boolean {

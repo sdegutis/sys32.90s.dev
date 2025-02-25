@@ -89,7 +89,7 @@ export default function paint(sys: System) {
 
   toolRadios.select(pencilTool)
 
-  const colorField = sys.make(TextField, { length: 9, background: 0x111111ff, padding: 1 });
+  const colorField = sys.make(TextField, { length: 9, background: 0x111111ff });
   const toolArea = sys.make(View, {
     w: 36,
     background: 0x99000033,

@@ -2,8 +2,6 @@ import { View } from "../core/view.js";
 
 export class Label extends View {
 
-  padding = 0;
-
   text = '';
   font = this.sys.font;
   color = 0xffffffff;
@@ -11,12 +9,12 @@ export class Label extends View {
 
   override adjust(): void {
     const size = this.font.calcSize(this.text);
-    this.w = size.w + this.padding * 2;
-    this.h = size.h + this.padding * 2;
+    this.w = size.w;
+    this.h = size.h;
   }
 
   override draw() {
-    this.font.print(this.sys.crt, this.padding, this.padding, this.color, this.text);
+    this.font.print(this.sys.crt, 0, 0, this.color, this.text);
   }
 
 }

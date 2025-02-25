@@ -7,6 +7,8 @@ export class Border extends View {
   l = 0;
   r = 0;
 
+  override passthrough = true;
+
   set size(n: number) { this.u = this.d = this.l = this.r = n; }
 
   override adjust(): void {

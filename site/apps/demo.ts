@@ -1,3 +1,4 @@
+import { Border } from "../sys32/containers/border.js";
 import { Group } from "../sys32/containers/group.js";
 import { Button, wrapButton } from "../sys32/controls/button.js";
 import { Checkbox } from "../sys32/controls/checkbox.js";
@@ -27,6 +28,12 @@ export function demo(sys: System) {
   const group1 = new RadioGroup();
   const group2 = new RadioGroup();
 
+  function passFocus(config: Partial<Border>) {
+    config.passthrough = false;
+    config.onFocus = function () { sys.focus(this.firstChild!); };
+    return config;
+  }
+
   const main = sys.make(Group, { padding: 1, gap: 2, background: 0x0000ff33 },
 
     sys.make(Group, { dir: 'y', gap: 1 },
@@ -42,10 +49,10 @@ export function demo(sys: System) {
     ),
 
     sys.make(Group, { dir: 'y', gap: 1 },
-      sys.make(TextField, { text: 'hi', background: 0x000000ff, padding: 0, length: 4 }),
-      sys.make(TextField, { text: 'hi', background: 0x000000ff, padding: 1, length: 4 }),
-      sys.make(TextField, { text: 'hi', background: 0x000000ff, padding: 2, length: 4 }),
-      sys.make(TextField, { text: 'hi', background: 0x000099ff, padding: 2, length: 4, cursorColor: 0xff000099, color: 0xffff00ff }),
+      sys.make(Border, passFocus({ background: 0x000000ff, size: 0 }), sys.make(TextField, { text: 'hi', length: 4 })),
+      sys.make(Border, passFocus({ background: 0x000000ff, size: 1 }), sys.make(TextField, { text: 'hi', length: 4 })),
+      sys.make(Border, passFocus({ background: 0x000000ff, size: 2 }), sys.make(TextField, { text: 'hi', length: 4 })),
+      sys.make(Border, passFocus({ background: 0x000099ff, size: 2 }), sys.make(TextField, { text: 'hi', length: 4, cursorColor: 0xff000099, color: 0xffff00ff })),
     ),
 
     sys.make(Group, { dir: 'y', gap: 1 },
@@ -55,15 +62,15 @@ export function demo(sys: System) {
 
     sys.make(Group, { dir: 'y', gap: 1 },
       sys.make(Group, { dir: 'y', gap: 1 },
-        sys.make(Label, { text: 'hello', background: 0x00000077, padding: 3 }),
+        sys.make(Border, { background: 0x00000077, size: 3 }, sys.make(Label, { text: 'hello' })),
         sys.make(Button, { onClick: () => { console.log('button') } },
-          sys.make(Label, { text: 'hello', background: 0x00000077, padding: 3 })
+          sys.make(Border, { background: 0x00000077, size: 3 }, sys.make(Label, { text: 'hello' }))
         ),
       ),
       sys.make(Group, { dir: 'y', gap: 1 },
-        sys.make(Label, { text: 'hello', background: 0x00000077, padding: 3 }),
+        sys.make(Border, { background: 0x00000077, size: 3 }, sys.make(Label, { text: 'hello' })),
         sys.make(Button, { onClick: () => { console.log('button') } },
-          sys.make(Label, { text: 'hello', background: 0x00000077, padding: 3 })
+          sys.make(Border, { background: 0x00000077, size: 3 }, sys.make(Label, { text: 'hello' }))
         ),
       ),
     ),

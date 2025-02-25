@@ -1,3 +1,4 @@
+import { Border } from "../containers/border.js";
 import { Group } from "../containers/group.js";
 import { Paned } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
@@ -42,7 +43,7 @@ export class Workspace {
     this.#taskbar = sys.make(Spaced, { background: 0x000000ff },
       this.#panels,
       sys.make(Group, {},
-        sys.make(Clock, { padding: 2 }),
+        sys.make(Border, { size: 2 }, sys.make(Clock, {})),
         sys.make(Button, {
           background: 0x222222ff,
           padding: 2,
@@ -98,7 +99,11 @@ export class Workspace {
 
     this.#desktop.addChild(panel);
 
-    const button = this.sys.make(Button, {}, this.sys.make(Label, { padding: 2, text: panel.title }));
+    const button = this.sys.make(Button, {},
+      this.sys.make(Border, { size: 2 },
+        this.sys.make(Label, { text: panel.title })
+      )
+    );
     button.onClick = () => {
       panel.show();
       this.sys.focus(panel);

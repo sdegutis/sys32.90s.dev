@@ -1,3 +1,4 @@
+import { Border } from "../containers/border.js";
 import { Group } from "../containers/group.js";
 import { Paned } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
@@ -76,7 +77,9 @@ export class Panel extends View {
             this.sys.trackMouse({ move });
           },
         },
-          this.sys.make(Label, { padding: pad, text: this.title, color: 0xaaaaaaff }),
+          this.sys.make(Border, { l: pad },
+            this.sys.make(Label, { text: this.title, color: 0xaaaaaaff })
+          ),
           this.sys.make(Group, { gap: 0 },
             this.sys.make(Button, { hoverColor: 0xffffff33, onClick: () => this.minimize() }, this.sys.make(ImageView, { padding: 2, image: minImage })),
             this.sys.make(Button, { hoverColor: 0xffffff33, onClick: () => this.maximize() }, this.sys.make(ImageView, { padding: 2, image: maxImage })),

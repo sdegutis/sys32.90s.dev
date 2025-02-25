@@ -1,3 +1,4 @@
+import { Border } from "../sys32/containers/border.js";
 import { PanedXA, PanedYA } from "../sys32/containers/paned.js";
 import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
@@ -33,7 +34,9 @@ export function mapmaker(sys: System) {
   let showGrid = true;
   const gridButton = sys.make(Button, {
     onClick: () => showGrid = !showGrid,
-  }, sys.make(Label, { padding: 2, text: 'grid', background: 0x00000033 }));
+  }, sys.make(Border, { background: 0x00000033, size: 2 },
+    sys.make(Label, { text: 'grid' })
+  ));
 
   let currentTool = 5;
 

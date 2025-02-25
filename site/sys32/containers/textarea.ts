@@ -11,8 +11,8 @@ export class TextArea extends Label {
 
     let c = this.color;
 
-    const x = this.padding;
-    const y = this.padding;
+    const x = 0;
+    const y = 0;
 
     const text = this.text;
     const font = this.font;
