@@ -1,8 +1,9 @@
 export interface Folder {
 
-  get(name: string): Promise<Folder | string | undefined>;
-  put(name: string, content: string): Promise<void>;
-  mkdir(name: string): Promise<void>;
+  getFile(name: string): Promise<string | undefined>;
+  getFolder(name: string): Promise<Folder | undefined>;
+  putFile(name: string, content: string): Promise<void>;
+  makeFolder(name: string): Promise<Folder>;
 
 }
 
@@ -10,87 +11,106 @@ class MemoryFolder implements Folder {
 
   #items: Record<string, Folder | string> = {};
 
-  async get(name: string) {
-    return this.#items[name];
+  async getFile(name: string) {
+    const f = this.#items[name];
+    if (typeof f !== 'string') {
+      throw new Error(`Expected file got folder [${name}]`);
+    }
+    return f;
   }
 
-  async put(name: string, content: string) {
+  async getFolder(name: string) {
+    const f = this.#items[name];
+    if (typeof f === 'string') {
+      console.log(name)
+      throw new Error(`Expected folder got file [${name}]`);
+    }
+    return f;
+  }
+
+  async putFile(name: string, content: string) {
     this.#items[name] = content;
   }
 
-  async mkdir(name: string) {
-    this.#items[name] = new MemoryFolder();
-  }
-
-  constructor() {
-
-    // type JsonFile = {
-    //   path: string;
-    //   content: string;
-    // };
-
-    // (fetch(import.meta.resolve('./files.json'))
-    //   .then<JsonFile[]>(res => res.json())
-    //   .then(json => {
-    //     console.log(json[0].path)
-    //     console.log(json[0].content)
-    //   }));
+  async makeFolder(name: string) {
+    const f = new MemoryFolder();
+    this.#items[name] = f;
+    return f;
   }
 
 }
 
-class LocalStorageFolder implements Folder {
+// class LocalStorageFolder implements Folder {
 
-  async get(name: string) {
-    return undefined;
-  }
 
-  async put(name: string, content: string) {
 
-  }
+//   async getFile(name: string) {
+//     return undefined;
+//   }
 
-  async mkdir(name: string) {
+//   async getFolder(name: string) {
+//     return undefined;
+//   }
 
-  }
+//   async putFile(name: string, content: string) {
 
-}
+//   }
 
-class IndexedDbFolder implements Folder {
+//   async mkdir(name: string) {
 
-  async get(name: string) {
-    return undefined;
-  }
+//   }
 
-  async put(name: string, content: string) {
+// }
 
-  }
+// class IndexedDbFolder implements Folder {
 
-  async mkdir(name: string) {
+//   async getFile(name: string) {
+//     return undefined;
+//   }
 
-  }
+//   async getFolder(name: string) {
+//     return undefined;
+//   }
 
-}
+//   async putFile(name: string, content: string) {
+
+//   }
+
+//   async mkdir(name: string) {
+
+//   }
+
+// }
 
 class UserFolder implements Folder {
 
-  async get(name: string) {
-    return undefined;
+  #dir: FileSystemDirectoryHandle;
+
+  constructor(dir: FileSystemDirectoryHandle) {
+    this.#dir = dir;
   }
 
-  async put(name: string, content: string) {
-
+  async getFile(name: string) {
+    const h = await this.#dir.getFileHandle(name);
+    const f = await h.getFile();
+    return await f.text();
   }
 
-  async mkdir(name: string) {
-
+  async getFolder(name: string) {
+    const h = await this.#dir.getDirectoryHandle(name);
+    return new UserFolder(h);
   }
 
-  handle!: FileSystemDirectoryHandle;
+  async putFile(name: string, content: string) {
+    const h = await this.#dir.getFileHandle(name);
+    const w = await h.createWritable();
+    await w.write(content);
+    await w.close();
+  }
 
-  async getDir() {
-    const dir = await this.handle.getDirectoryHandle('');
-    const f = await dir.getFileHandle('');
-
+  async makeFolder(name: string) {
+    const h = await this.#dir.getDirectoryHandle(name, { create: true });
+    return new UserFolder(h);
   }
 
 }
@@ -107,27 +127,27 @@ export class FS {
     this.#remountUserDrives();
   }
 
-  #remountUserDrives() {
-
+  async #remountUserDrives() {
+    const db = await opendb();
+    const drives = await getdrives(db);
+    for (const { drive, folder } of drives) {
+      this.drives[drive] = new UserFolder(folder);
+    }
   }
 
   async loadFile(path: string): Promise<string | null> {
     const file = await this.#getdir(path);
     if (!file) return null;
 
-    const found = await file.folder.get(file.filename);
-    if (found === undefined) return null;
-    if (typeof found === 'string') return found;
-
-    console.error(`Expected file named "${file.filename}" but got folder`);
-    return null;
+    const found = await file.folder.getFile(file.filename);
+    return found ?? null;
   }
 
   async saveFile(path: string, content: string) {
     const file = await this.#getdir(path);
     if (!file) return;
 
-    file.folder.put(file.filename, content);
+    file.folder.putFile(file.filename, content);
   }
 
   async #getdir(path: string) {
@@ -138,15 +158,10 @@ export class FS {
 
     while (segments.length > 1) {
       const nextName = segments.shift()!;
-      const nextFolder = await folder.get(nextName);
+      const nextFolder = await folder.getFolder(nextName);
 
       if (!nextFolder) {
         console.error(`No item in folder named "${nextName}"`);
-        return null;
-      }
-
-      if (typeof nextFolder === 'string') {
-        console.error(`Expected folder named "${nextName}" but got file`);
         return null;
       }
 
@@ -156,4 +171,29 @@ export class FS {
     return { folder, filename: segments.pop()! };
   }
 
+}
+
+function opendb() {
+  return new Promise<IDBDatabase>(res => {
+    const dbopenreq = window.indexedDB.open('fs', 1);
+    dbopenreq.onerror = console.log;
+    dbopenreq.onupgradeneeded = () => {
+      const db = dbopenreq.result;
+      db.createObjectStore('mounts', { keyPath: 'drive' });
+    };
+    dbopenreq.onsuccess = e => {
+      const db = dbopenreq.result;
+      res(db);
+    };
+  });
+}
+
+function getdrives(db: IDBDatabase) {
+  return new Promise<{ drive: string, folder: FileSystemDirectoryHandle }[]>(res => {
+    const t = db.transaction('mounts', 'readonly');
+    const store = t.objectStore('mounts');
+    const all = store.getAll();
+    all.onerror = console.log;
+    all.onsuccess = (e) => res(all.result);
+  });
 }
