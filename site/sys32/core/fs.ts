@@ -58,111 +58,62 @@ class IndexedDbFolder implements Folder {
   }
 
   async getFile(name: string) {
-    const db = await shareddb;
-    const item = await new Promise<{
-      name: string,
-      path: string,
-      prefix: string,
-      content?: string,
-    }>(res => {
-      const t = db.transaction('files', 'readwrite');
-      const store = t.objectStore('files');
-      const r = store.get(this.#prefix + name);
-      r.onerror = console.log;
-      r.onsuccess = (e: any) => res(e.target.result);
-    });
+    const item = await this.#getitem(name);
     return item.content;
   }
 
   async getFolder(name: string) {
-    const db = await shareddb;
-    const result = await new Promise<{
-      name: string,
-      path: string,
-      prefix: string,
-      content?: string,
-    }>(res => {
-      const t = db.transaction('files', 'readwrite');
-      const store = t.objectStore('files');
-      const r = store.get(this.#prefix + name);
-      r.onerror = console.log;
-      r.onsuccess = (e: any) => res(e.target.result);
-    });
-
-    if (result) {
-      return new IndexedDbFolder(this.#prefix + name + '/');
-    }
-    else {
-      return undefined;
-    }
-
-
-
-    // const db = await shareddb;
-    // const list = await new Promise<{
-    //   name: string,
-    //   path: string,
-    //   prefix: string,
-    //   content?: string,
-    // }>(res => {
-    //   const t = db.transaction('files', 'readwrite');
-    //   const store = t.objectStore('files');
-    //   const r = store.get(this.#prefix + name);
-    //   r.onerror = console.log;
-    //   r.onsuccess = (e: any) => res(e.target.result);
-    // });
-    // return list.map(it => ({
-    //   name: it.name,
-    //   kind: it.content === undefined ? 'folder' : 'file',
-    // }));
-
-    // return undefined;
+    const item = await this.#getitem(name);
+    return item && new IndexedDbFolder(this.#prefix + name + '/');
   }
 
   async putFile(name: string, content: string) {
     const db = await shareddb;
-    const t = db.transaction('files', 'readwrite');
-    const store = t.objectStore('files');
-
-    const r = store.put({
-      name,
-      prefix: this.#prefix,
-      path: this.#prefix + name,
-      content,
+    return await new Promise<void>(resolve => {
+      const t = db.transaction('files', 'readwrite');
+      const store = t.objectStore('files');
+      const r = store.put({
+        name,
+        prefix: this.#prefix,
+        path: this.#prefix + name,
+        content,
+      });
+      r.onerror = console.log;
+      r.onsuccess = res => resolve();
     });
-
-    const p = Promise.withResolvers<void>();
-    r.onerror = console.log;
-    r.onsuccess = res => p.resolve();
-    return p.promise;
   }
 
   async putFolder(name: string) {
     const db = await shareddb;
-    const t = db.transaction('files', 'readwrite');
-    const store = t.objectStore('files');
-
-    const r = store.put({
-      name,
-      prefix: this.#prefix,
-      path: this.#prefix + name,
+    await new Promise<void>(resolve => {
+      const t = db.transaction('files', 'readwrite');
+      const store = t.objectStore('files');
+      const r = store.put({
+        name,
+        prefix: this.#prefix,
+        path: this.#prefix + name,
+      });
+      r.onerror = console.log;
+      r.onsuccess = res => resolve();
     });
+    return new IndexedDbFolder(this.#prefix + name + '/');
+  }
 
-    const p = Promise.withResolvers<IndexedDbFolder>();
-    r.onerror = console.log;
-    r.onsuccess = res => p.resolve(new IndexedDbFolder(this.#prefix + name + '/'));
-    return p.promise;
+  async #getitem(name: string) {
+    const db = await shareddb;
+    return await new Promise<DbFile>(resolve => {
+      const t = db.transaction('files', 'readonly');
+      const store = t.objectStore('files');
+      const r = store.get(this.#prefix + name);
+      r.onerror = console.log;
+      r.onsuccess = (e: any) => resolve(e.target.result);
+    });
   }
 
   async list(): Promise<{ kind: "file" | "folder"; name: string; }[]> {
     const db = await shareddb;
-    const list = await new Promise<{
-      name: string,
-      path: string,
-      prefix: string,
-      content?: string,
-    }[]>(res => {
-      const t = db.transaction('files', 'readwrite');
+    const list = await new Promise<DbFile[]>(res => {
+      const t = db.transaction('files', 'readonly');
       const store = t.objectStore('files');
       const index = store.index('indexprefix');
       const r = index.getAll(this.#prefix);
@@ -284,16 +235,16 @@ export class FS {
 }
 
 const shareddb = new Promise<IDBDatabase>(res => {
-  const dbopenreq = window.indexedDB.open('fs', 1);
-  dbopenreq.onerror = console.log;
-  dbopenreq.onupgradeneeded = () => {
-    const db = dbopenreq.result;
+  const r = window.indexedDB.open('fs', 1);
+  r.onerror = console.log;
+  r.onupgradeneeded = () => {
+    const db = r.result;
     db.createObjectStore('mounts', { keyPath: 'drive' });
     const files = db.createObjectStore('files', { keyPath: 'path' });
     files.createIndex('indexprefix', 'prefix', { unique: false });
   };
-  dbopenreq.onsuccess = e => {
-    const db = dbopenreq.result;
+  r.onsuccess = e => {
+    const db = r.result;
     res(db);
   };
 });
@@ -307,3 +258,60 @@ function getdrives(db: IDBDatabase) {
     all.onsuccess = (e) => res(all.result);
   });
 }
+
+type DbMount = {
+  drive: string,
+  folder: FileSystemDirectoryHandle
+};
+
+type DbFile = {
+  name: string,
+  path: string,
+  prefix: string,
+  content?: string,
+};
+
+// async function opendb() {
+
+
+//   type Store<T> = {
+//     // shape: T,
+//     name: string,
+//     setup: (db: IDBDatabase) => void,
+//   };
+
+
+//   const store1: Store<DbMount> = {
+//     name: 'mounts',
+//     setup: function (db: IDBDatabase) {
+//       db.createObjectStore(this.name, { keyPath: 'drive' });
+//     }
+//   }
+
+//   const store2: Store<DbFile> = {
+//     name: 'files',
+//     setup: function (db: IDBDatabase) {
+//       const files = db.createObjectStore(this.name, { keyPath: 'path' });
+//       files.createIndex('indexprefix', 'prefix', { unique: false });
+//     }
+//   }
+
+//   const stores: Store<any>[] = [store1, store2];
+
+//   const db = await new Promise<IDBDatabase>(res => {
+//     const r = window.indexedDB.open('fs', 1);
+//     r.onerror = console.log;
+//     r.onupgradeneeded = () => {
+//       const db = r.result;
+//       stores.forEach(store => store.setup(db));
+//     };
+//     r.onsuccess = e => {
+//       const db = r.result;
+//       res(db);
+//     };
+//   });
+
+
+
+// }
+
