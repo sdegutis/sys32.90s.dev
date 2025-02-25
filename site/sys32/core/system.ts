@@ -218,7 +218,7 @@ export class System {
   }
 
   #hover(node: View, x: number, y: number): View | null {
-    if (node.passthrough || !node.visible) return null;
+    if (!node.visible) return null;
 
     let tx = 0;
     let ty = 0;
@@ -243,6 +243,8 @@ export class System {
       const found = this.#hover(child, x - child.x, y - child.y);
       if (found) return found;
     }
+
+    if (node.passthrough) return null;
 
     return node;
   }
