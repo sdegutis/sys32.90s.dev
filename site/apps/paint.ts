@@ -174,7 +174,7 @@ export default function paint(sys: System) {
     // await sys.fs.b.putFolder('qux')
     // await sys.fs.saveFile('b/qux/hmm', 'bar123es')
     console.log(await sys.fs.loadFile('b/qux/hmm'))
-    for (const f of await sys.fs.b.list()) {
+    for (const f of await sys.fs.drives['b'].list()) {
       console.log(f);
     }
 

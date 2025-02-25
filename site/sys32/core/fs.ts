@@ -51,9 +51,11 @@ class MemoryFolder implements Folder {
 
 class IndexedDbFolder implements Folder {
 
+  #db: IDBDatabase;
   #prefix: string;
 
-  constructor(prefix: string) {
+  constructor(db: IDBDatabase, prefix: string) {
+    this.#db = db;
     this.#prefix = prefix;
   }
 
@@ -64,13 +66,12 @@ class IndexedDbFolder implements Folder {
 
   async getFolder(name: string) {
     const item = await this.#getitem(name);
-    return item && new IndexedDbFolder(this.#prefix + name + '/');
+    return item && new IndexedDbFolder(this.#db, this.#prefix + name + '/');
   }
 
   async putFile(name: string, content: string) {
-    const db = await shareddb;
     return await new Promise<void>(resolve => {
-      const t = db.transaction('files', 'readwrite');
+      const t = this.#db.transaction('files', 'readwrite');
       const store = t.objectStore('files');
       const r = store.put({
         name,
@@ -84,9 +85,8 @@ class IndexedDbFolder implements Folder {
   }
 
   async putFolder(name: string) {
-    const db = await shareddb;
     await new Promise<void>(resolve => {
-      const t = db.transaction('files', 'readwrite');
+      const t = this.#db.transaction('files', 'readwrite');
       const store = t.objectStore('files');
       const r = store.put({
         name,
@@ -96,13 +96,12 @@ class IndexedDbFolder implements Folder {
       r.onerror = console.log;
       r.onsuccess = res => resolve();
     });
-    return new IndexedDbFolder(this.#prefix + name + '/');
+    return new IndexedDbFolder(this.#db, this.#prefix + name + '/');
   }
 
   async #getitem(name: string) {
-    const db = await shareddb;
     return await new Promise<DbFile>(resolve => {
-      const t = db.transaction('files', 'readonly');
+      const t = this.#db.transaction('files', 'readonly');
       const store = t.objectStore('files');
       const r = store.get(this.#prefix + name);
       r.onerror = console.log;
@@ -111,9 +110,8 @@ class IndexedDbFolder implements Folder {
   }
 
   async list(): Promise<{ kind: "file" | "folder"; name: string; }[]> {
-    const db = await shareddb;
     const list = await new Promise<DbFile[]>(res => {
-      const t = db.transaction('files', 'readonly');
+      const t = this.#db.transaction('files', 'readonly');
       const store = t.objectStore('files');
       const index = store.index('indexprefix');
       const r = index.getAll(this.#prefix);
@@ -175,18 +173,16 @@ export class FS {
 
   drives: Record<string, Folder> = {
     a: new MemoryFolder(),
-    b: new IndexedDbFolder('/'),
   };
 
-  a = this.drives['a'];
-  b = this.drives['b'];
+  ready = Promise.allSettled([
+    this.#loadUserDrives(),
+    this.#loadDriveB(),
+  ]);
 
-  ready = new Promise<void>(async res => {
-    await Promise.allSettled([
-      this.#loadUserDrives(),
-    ]);
-    res();
-  });
+  async #loadDriveB() {
+    this.drives['b'] = new IndexedDbFolder(await shareddb, '/');
+  }
 
   async #loadUserDrives() {
     const db = await shareddb;
