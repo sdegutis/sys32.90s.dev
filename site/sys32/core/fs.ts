@@ -186,7 +186,7 @@ export class FS {
     };
   });
 
-  #drives = new Promise<Record<string, Folder>>(async resolve => {
+  drives = new Promise<Record<string, Folder>>(async resolve => {
     const db = await this.#db;
     const drives = {
       a: new MemoryFolder(),
@@ -195,10 +195,6 @@ export class FS {
     await this.#loadUserDrives(db, drives);
     resolve(drives);
   });
-
-  async drives() {
-    return this.#drives;
-  }
 
   async #loadUserDrives(db: IDBDatabase, drives: Record<string, Folder>) {
     const found = await new Promise<{ drive: string, folder: FileSystemDirectoryHandle }[]>(res => {
@@ -223,7 +219,7 @@ export class FS {
       t.oncomplete = e => resolve();
     });
     const folder = new UserFolder(dir);
-    (await this.#drives)[drive] = folder;
+    (await this.drives)[drive] = folder;
     return folder;
   }
 
@@ -253,7 +249,7 @@ export class FS {
     const segments = path.split('/');
 
     const drive = segments.shift()!;
-    let folder: Folder = (await this.#drives)[drive];
+    let folder: Folder = (await this.drives)[drive];
 
     while (segments.length > 1) {
       const nextName = segments.shift()!;

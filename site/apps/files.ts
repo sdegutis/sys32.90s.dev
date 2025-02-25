@@ -9,6 +9,31 @@ import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 
 
+class Border extends View {
+
+  u = 0;
+  d = 0;
+  l = 0;
+  r = 0;
+
+  set size(n: number) { this.u = this.d = this.l = this.r = n; }
+
+  override adjust(): void {
+    this.w = this.l + (this.firstChild?.w ?? 0) + this.r;
+    this.h = this.u + (this.firstChild?.h ?? 0) + this.d;
+  }
+
+  override layout(): void {
+    const c = this.firstChild;
+    if (c) {
+      c.x = this.l;
+      c.y = this.u;
+    }
+  }
+
+}
+
+
 export default (sys: System) => {
   const mountLabel = sys.make(TextField, { length: 2, background: 0xffffff11 });
   const toolbar = sys.make(GroupX, {},
@@ -31,10 +56,10 @@ export default (sys: System) => {
 
   // })()
 
-  const sidelist = sys.make(GroupY, {});
+  const sidelist = sys.make(GroupY, { gap: 1 });
   const filelist = sys.make(GroupY, {});
 
-  sys.fs.drives().then(drives => {
+  sys.fs.drives.then(drives => {
     for (const key of Object.keys(drives)) {
       sidelist.addChild(sys.make(Button, {
         background: 0x11111111,
@@ -49,7 +74,13 @@ export default (sys: System) => {
           // filelist.children = 
         }
       },
-        sys.make(Label, { text: `drive: ${key}`, padding: 2 }))
+        sys.make(Border, { size: 2, background: 0xff000033, },
+          sys.make(Label, {
+            text: `drive: ${key}`,
+            // padding: 2,
+
+          }))
+      )
       );
       sys.layoutTree(sidelist.parent!);
     }
