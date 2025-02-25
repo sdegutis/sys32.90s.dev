@@ -7,6 +7,7 @@ import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
 import { Slider } from "../sys32/controls/slider.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
+import { Folder } from "../sys32/core/fs.js";
 import { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
@@ -166,6 +167,26 @@ export default function paint(sys: System) {
       toolArea,
     ),
   );
+
+  (async () => {
+
+    await sys.fs.drives['a'].mkdir('bar');
+    await sys.fs.drives['a'].get('bar').then(d => (d as Folder).mkdir('qux'));
+
+    const path = 'a/bar/qux/foo.bitmap';
+    // const path = 'a/bar/qux/foo.bitmap';
+
+    await sys.fs.saveFile(path, 'hi');
+
+    console.log('here')
+    const f = await sys.fs.loadFile(path);
+
+    console.log('there')
+    console.log(f)
+  })();
+
+
+
 
   // let file:
 
