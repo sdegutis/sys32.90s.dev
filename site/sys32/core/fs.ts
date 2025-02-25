@@ -171,46 +171,41 @@ class UserFolder implements Folder {
 
 export class FS {
 
-  #drives: Record<string, Folder> = {
-    a: new MemoryFolder(),
-  };
-
-  #db = new Promise<IDBDatabase>(async resolve => {
-    const db = await new Promise<IDBDatabase>(res => {
-      const r = window.indexedDB.open('fs', 1);
-      r.onerror = console.error;
-      r.onupgradeneeded = () => {
-        const db = r.result;
-        db.createObjectStore('mounts', { keyPath: 'drive' });
-        const files = db.createObjectStore('files', { keyPath: 'path' });
-        files.createIndex('indexprefix', 'prefix', { unique: false });
-      };
-      r.onsuccess = e => {
-        const db = r.result;
-        res(db);
-      };
-    });
-
-    this.#loadDriveB(db);
-    await this.#loadUserDrives(db);
-
-    resolve(db);
+  #db = new Promise<IDBDatabase>(resolve => {
+    const r = window.indexedDB.open('fs', 1);
+    r.onerror = console.error;
+    r.onupgradeneeded = () => {
+      const db = r.result;
+      db.createObjectStore('mounts', { keyPath: 'drive' });
+      const files = db.createObjectStore('files', { keyPath: 'path' });
+      files.createIndex('indexprefix', 'prefix', { unique: false });
+    };
+    r.onsuccess = e => {
+      const db = r.result;
+      resolve(db);
+    };
   });
 
-  #loadDriveB(db: IDBDatabase) {
-    this.#drives['b'] = new IndexedDbFolder(db, '/');
-  }
+  #drives = new Promise<Record<string, Folder>>(async resolve => {
+    const db = await this.#db;
+    const drives = {
+      a: new MemoryFolder(),
+      b: new IndexedDbFolder(db, '/'),
+    };
+    await this.#loadUserDrives(db, drives);
+    resolve(drives);
+  });
 
-  async #loadUserDrives(db: IDBDatabase) {
-    const drives = await new Promise<{ drive: string, folder: FileSystemDirectoryHandle }[]>(res => {
+  async #loadUserDrives(db: IDBDatabase, drives: Record<string, Folder>) {
+    const found = await new Promise<{ drive: string, folder: FileSystemDirectoryHandle }[]>(res => {
       const t = db.transaction('mounts', 'readonly');
       const store = t.objectStore('mounts');
       const r = store.getAll();
       r.onerror = console.error;
       r.onsuccess = (e) => res(r.result);
     });
-    for (const { drive, folder } of drives) {
-      this.#drives[drive] = new UserFolder(folder);
+    for (const { drive, folder } of found) {
+      drives[drive] = new UserFolder(folder);
     }
   }
 
@@ -237,12 +232,10 @@ export class FS {
   }
 
   async #getdir(path: string) {
-    await this.#db;
-
     const segments = path.split('/');
 
     const drive = segments.shift()!;
-    let folder: Folder = this.#drives[drive];
+    let folder: Folder = (await this.#drives)[drive];
 
     while (segments.length > 1) {
       const nextName = segments.shift()!;
