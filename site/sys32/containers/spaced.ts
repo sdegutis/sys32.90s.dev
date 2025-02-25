@@ -2,7 +2,6 @@ import { View } from "../core/view.js";
 
 export class Spaced extends View {
 
-  padding = 0;
   dir: 'x' | 'y' = 'x';
 
   override adjust(): void {
@@ -12,12 +11,11 @@ export class Spaced extends View {
       const child = this.children[i];
       if (this[dh] < child[dh]) this[dh] = child[dh];
     }
-    this[dh] += this.padding * 2;
   }
 
   override layout(): void {
-    const max = this[this.dir === 'x' ? 'w' : 'h'] - this.padding * 2;
-    let combinedWidths = this.padding;
+    const max = this[this.dir === 'x' ? 'w' : 'h'];
+    let combinedWidths = 0;
     for (let i = 0; i < this.children.length; i++) {
       combinedWidths += this.children[i].w;
     }
@@ -28,7 +26,7 @@ export class Spaced extends View {
     const dx = this.dir === 'x' ? 'x' : 'y';
     const dy = this.dir === 'x' ? 'y' : 'x';
 
-    let x = this.padding;
+    let x = 0;
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
       child[dx] = x;

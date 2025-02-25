@@ -70,7 +70,6 @@ export class Panel extends View {
       this.sys.make(Paned, { dir: 'y', vacuum: 'a' },
 
         this.sys.make(Spaced, {
-          padding: 0,
           onMouseDown: () => {
             const move = dragMove(this.sys, this);
             this.#lastPos = undefined!;
