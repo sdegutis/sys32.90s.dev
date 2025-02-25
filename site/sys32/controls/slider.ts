@@ -44,7 +44,7 @@ export class Slider extends View {
     const p = (this.val - this.min) / (this.max - this.min);
     const x = Math.floor(p * (this.w - this.knobSize));
     const y = Math.round(this.h / 2 - this.knobSize / 2);
-    this.sys.crt.rectFill(x, y, 2, 2, 0xffffffff);
+    this.sys.crt.rectFill(x, y, this.knobSize, this.knobSize, 0xffffffff);
   }
 
 }

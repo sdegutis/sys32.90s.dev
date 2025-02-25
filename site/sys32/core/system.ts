@@ -2,6 +2,7 @@ import { multifn } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
 import { Font } from "./font.js";
+import { FS } from "./fs.js";
 import { View } from "./view.js";
 
 export class System {
@@ -21,6 +22,8 @@ export class System {
   #trackingMouse?: { move: () => void, up?: () => void };
 
   #destroyer = new AbortController();
+
+  fs = new FS();
 
   constructor(canvas: HTMLCanvasElement) {
     this.crt = new CRT(canvas);

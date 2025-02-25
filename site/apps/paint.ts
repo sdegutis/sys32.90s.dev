@@ -140,6 +140,7 @@ export default function paint(sys: System) {
     ),
     sys.make(GroupX, {},
       sys.make(Slider, {
+        knobSize: 3,
         w: 20, onChange() {
           zoom.val = this.val!;
           sys.layoutTree(panel);
@@ -166,9 +167,14 @@ export default function paint(sys: System) {
     ),
   );
 
+  // let file:
+
   panel.onKeyDown = (key) => {
     if (key === 's' && sys.keys['Control']) {
       console.log('saving');
+
+      // sys.fs.
+
       return true;
     }
     return false;

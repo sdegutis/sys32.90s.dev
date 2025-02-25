@@ -20,8 +20,8 @@ sys.crt.autoscale();
 
 // mapmaker(sys);
 // files(sys)
-// paint(sys);
-texttest(sys);
+paint(sys);
+// texttest(sys);
 sys.layoutTree()
 
 const ws = new Workspace(sys);
