@@ -103,16 +103,19 @@ export function demo(sys: System) {
           1, 1, 1, 1, 1,
         ])
       }),
-      sys.make(ImageView, {
+      sys.make(Border, {
         background: 0x00000033,
-        padding: 1,
-        image: new Bitmap([0xffffffff], 4, [
-          1, 0, 0, 1,
-          0, 1, 1, 0,
-          0, 1, 1, 0,
-          1, 0, 0, 1,
-        ])
-      }),
+        size: 1,
+      },
+        sys.make(ImageView, {
+          image: new Bitmap([0xffffffff], 4, [
+            1, 0, 0, 1,
+            0, 1, 1, 0,
+            0, 1, 1, 0,
+            1, 0, 0, 1,
+          ])
+        }),
+      )
     ),
 
     sys.make(Group, { dir: 'y', gap: 1 },
