@@ -114,7 +114,7 @@ export class FS {
 
   drives: Record<string, Folder> = {
     a: new MemoryFolder(),
-    // c: new IndexedDbFolder(),
+    // b: new IndexedDbFolder(),
   };
 
   ready = new Promise<void>(async res => {

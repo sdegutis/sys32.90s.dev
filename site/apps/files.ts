@@ -70,7 +70,7 @@ export default (sys: System) => {
     const folder = await window.showDirectoryPicker();
     await folder.requestPermission({ mode: 'readwrite' });
 
-    await adddrive(db, 'd', folder);
+    await adddrive(db, 'c', folder);
     await loadview();
 
 
