@@ -169,17 +169,20 @@ export default function paint(sys: System) {
   );
 
   (async () => {
-    console.log(await sys.fs.getFolder('a'))
-    // await sys.fs.#drives['b'].putFile('foo', 'bar')
-    // await sys.fs.#drives['b'].putFolder('qux')
-    const b = await sys.fs.getFolder('a');
-    await b!.putFolder('qux')
-    await sys.fs.saveFile('a/qux/hmm3', 'bar123es')
-    // console.log(await sys.fs.loadFile('b/qux/hmm'))
-    const dir = await (await sys.fs.getFolder('a/qux'))?.list() ?? [];
-    for (const f of dir) {
-      console.log(f);
-    }
+
+
+
+    // console.log(await sys.fs.getFolder('a'))
+    // // await sys.fs.#drives['b'].putFile('foo', 'bar')
+    // // await sys.fs.#drives['b'].putFolder('qux')
+    // const b = await sys.fs.getFolder('a');
+    // await b!.putFolder('qux')
+    // await sys.fs.saveFile('a/qux/hmm3', 'bar123es')
+    // // console.log(await sys.fs.loadFile('b/qux/hmm'))
+    // const dir = await (await sys.fs.getFolder('a/qux'))?.list() ?? [];
+    // for (const f of dir) {
+    //   console.log(f);
+    // }
 
 
     // await sys.fs.drives['d'].makeFolder('bar');
