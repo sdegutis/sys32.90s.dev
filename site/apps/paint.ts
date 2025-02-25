@@ -16,7 +16,7 @@ import { multifn } from "../sys32/util/events.js";
 import { makeFlowLayout } from "../sys32/util/layouts.js";
 import { dragResize } from "../sys32/util/selections.js";
 
-class Reactable<T> {
+export class Reactable<T> {
 
   #data;
   #changed = multifn<T>();

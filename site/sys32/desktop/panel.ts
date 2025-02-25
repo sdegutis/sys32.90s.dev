@@ -80,9 +80,9 @@ export class Panel extends View {
             this.sys.make(Label, { text: this.title, color: 0xaaaaaaff })
           ),
           this.sys.make(Group, { gap: 0 },
-            this.sys.make(Button, { hoverColor: 0xffffff33, onClick: () => this.minimize() }, this.sys.make(Border, { size: 2 }, this.sys.make(ImageView, { image: minImage }))),
-            this.sys.make(Button, { hoverColor: 0xffffff33, onClick: () => this.maximize() }, this.sys.make(Border, { size: 2 }, this.sys.make(ImageView, { image: maxImage }))),
-            this.sys.make(Button, { hoverColor: 0x770000ff, onClick: () => this.close() }, this.sys.make(Border, { size: 2 }, this.sys.make(ImageView, { image: axeImage })))
+            this.sys.make(Button, { hoverColor: 0xffffff33, onClick: () => this.minimize() }, this.sys.make(Border, { all: 2 }, this.sys.make(ImageView, { image: minImage }))),
+            this.sys.make(Button, { hoverColor: 0xffffff33, onClick: () => this.maximize() }, this.sys.make(Border, { all: 2 }, this.sys.make(ImageView, { image: maxImage }))),
+            this.sys.make(Button, { hoverColor: 0x770000ff, onClick: () => this.close() }, this.sys.make(Border, { all: 2 }, this.sys.make(ImageView, { image: axeImage })))
           )
         ),
 

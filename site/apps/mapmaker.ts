@@ -34,7 +34,7 @@ export function mapmaker(sys: System) {
   let showGrid = true;
   const gridButton = sys.make(Button, {
     onClick: () => showGrid = !showGrid,
-  }, sys.make(Border, { background: 0x00000033, size: 2 },
+  }, sys.make(Border, { background: 0x00000033, all: 2 },
     sys.make(Label, { text: 'grid' })
   ));
 

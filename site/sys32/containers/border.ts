@@ -6,10 +6,11 @@ export class Border extends View {
   d = 0;
   l = 0;
   r = 0;
+  set all(n: number) { this.u = this.d = this.l = this.r = n; }
+
+  borderColor = 0x00000000;
 
   override passthrough = true;
-
-  set size(n: number) { this.u = this.d = this.l = this.r = n; }
 
   override adjust(): void {
     this.w = this.l + (this.firstChild?.w ?? 0) + this.r;
@@ -21,6 +22,15 @@ export class Border extends View {
     if (c) {
       c.x = this.l;
       c.y = this.u;
+    }
+  }
+
+  override draw(): void {
+    if ((this.borderColor & 0x000000ff) > 0) {
+      this.sys.crt.rectFill(0, 0, this.w, this.u, this.borderColor);
+      this.sys.crt.rectFill(0, this.h - this.d, this.w, this.d, this.borderColor);
+      this.sys.crt.rectFill(0, this.u, this.l, this.h - this.u - this.d, this.borderColor);
+      this.sys.crt.rectFill(this.w - this.r, this.u, this.r, this.h - this.u - this.d, this.borderColor);
     }
   }
 

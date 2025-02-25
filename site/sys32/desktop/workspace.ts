@@ -43,7 +43,7 @@ export class Workspace {
     this.#taskbar = sys.make(Spaced, { background: 0x000000ff },
       this.#panels,
       sys.make(Group, {},
-        sys.make(Border, { size: 2 }, sys.make(Clock, {})),
+        sys.make(Border, { all: 2 }, sys.make(Clock, {})),
         sys.make(Button, {
           background: 0x222222ff,
           onClick: () => {
@@ -52,7 +52,7 @@ export class Workspace {
             sys.layoutTree();
           },
         },
-          sys.make(Border, { size: 2 },
+          sys.make(Border, { all: 2 },
             sys.make(Label, { text: 'resize' })
           )
         )
@@ -103,7 +103,7 @@ export class Workspace {
     this.#desktop.addChild(panel);
 
     const button = this.sys.make(Button, {},
-      this.sys.make(Border, { size: 2 },
+      this.sys.make(Border, { all: 2 },
         this.sys.make(Label, { text: panel.title })
       )
     );
@@ -129,7 +129,7 @@ export class Workspace {
         // this.sys.layoutTree();
       },
     },
-      this.sys.make(Border, { size: 2 },
+      this.sys.make(Border, { all: 2 },
         this.sys.make(Label, { text: title })
       )
     ));

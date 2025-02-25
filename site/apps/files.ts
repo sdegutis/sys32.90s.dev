@@ -50,7 +50,7 @@ export default (sys: System) => {
           // filelist.children = 
         }
       },
-        sys.make(Border, { size: 2, background: 0xff000033, },
+        sys.make(Border, { all: 2, background: 0xff000033, },
           sys.make(Label, { text: `drive: ${key}` })
         )
       ));

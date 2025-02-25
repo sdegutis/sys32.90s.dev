@@ -1,5 +1,5 @@
 import { Border } from "../sys32/containers/border.js";
-import { Group } from "../sys32/containers/group.js";
+import { Group, GroupY } from "../sys32/containers/group.js";
 import { Button, wrapButton } from "../sys32/controls/button.js";
 import { Checkbox } from "../sys32/controls/checkbox.js";
 import { ImageView } from "../sys32/controls/image.js";
@@ -11,6 +11,7 @@ import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { centerLayout } from "../sys32/util/layouts.js";
+import { Reactable } from "./paint.js";
 
 export default (sys: System) => {
   const panel = sys.make(Panel, {
@@ -24,9 +25,46 @@ export default (sys: System) => {
   sys.focus(panel);
 };
 
+class Checkbox2 extends Button {
+
+  source = new Reactable(false);
+
+  #stopWatching!: () => void;
+
+  override adopted(): void {
+    this.#stopWatching = this.source.watch(b => {
+      this.sys.needsRedraw = true;
+    });
+  }
+
+  override abandoned(): void {
+    this.#stopWatching();
+    this.#stopWatching = undefined!;
+  }
+
+  override adjust(): void {
+    this.w = this.h = 10;
+  }
+
+  override draw(): void {
+    super.draw();
+    this.sys.crt.rectFill(0, 0, this.w, this.h, this.source.val ? 0xffffff33 : 0x000000ff);
+  }
+
+  override onClick(): void {
+    super.onClick?.();
+    this.source.val = !this.source.val;
+  }
+
+}
+
 export function demo(sys: System) {
   const group1 = new RadioGroup();
   const group2 = new RadioGroup();
+
+  const on = new Reactable(true);
+
+  on.watch(b => console.log({ b }))
 
   function passFocus(config: Partial<Border>) {
     config.passthrough = false;
@@ -34,8 +72,15 @@ export function demo(sys: System) {
     return config;
   }
 
-  const main = sys.make(Border, { size: 2, background: 0xff000033 },
+  const main = sys.make(Border, { all: 2, borderColor: 0xff000033 },
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
+
+      sys.make(GroupY, { gap: 1 },
+        sys.make(Button, { onClick: () => { on.val = !on.val } },
+          sys.make(Label, { text: 'hey' })
+        ),
+        sys.make(Checkbox2, { source: on })
+      ),
 
       sys.make(Group, { dir: 'y', gap: 1 },
         sys.make(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, sys.make(RadioButton, { group: group1, size: 2, padding: 2 }), sys.make(Label, { text: 'aaa' })),
@@ -50,10 +95,10 @@ export function demo(sys: System) {
       ),
 
       sys.make(Group, { dir: 'y', gap: 1 },
-        sys.make(Border, passFocus({ background: 0x000000ff, size: 0 }), sys.make(TextField, { text: 'hi', length: 4 })),
-        sys.make(Border, passFocus({ background: 0x000000ff, size: 1 }), sys.make(TextField, { text: 'hi', length: 4 })),
-        sys.make(Border, passFocus({ background: 0x000000ff, size: 2 }), sys.make(TextField, { text: 'hi', length: 4 })),
-        sys.make(Border, passFocus({ background: 0x000099ff, size: 2 }), sys.make(TextField, { text: 'hi', length: 4, cursorColor: 0xff000099, color: 0xffff00ff })),
+        sys.make(Border, passFocus({ background: 0x000000ff, all: 0 }), sys.make(TextField, { text: 'hi', length: 4 })),
+        sys.make(Border, passFocus({ background: 0x000000ff, all: 1 }), sys.make(TextField, { text: 'hi', length: 4 })),
+        sys.make(Border, passFocus({ background: 0x000000ff, all: 2 }), sys.make(TextField, { text: 'hi', length: 4 })),
+        sys.make(Border, passFocus({ background: 0x000099ff, all: 2 }), sys.make(TextField, { text: 'hi', length: 4, cursorColor: 0xff000099, color: 0xffff00ff })),
       ),
 
       sys.make(Group, { dir: 'y', gap: 1 },
@@ -63,15 +108,15 @@ export function demo(sys: System) {
 
       sys.make(Group, { dir: 'y', gap: 1 },
         sys.make(Group, { dir: 'y', gap: 1 },
-          sys.make(Border, { background: 0x00000077, size: 3 }, sys.make(Label, { text: 'hello' })),
+          sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' })),
           sys.make(Button, { onClick: () => { console.log('button') } },
-            sys.make(Border, { background: 0x00000077, size: 3 }, sys.make(Label, { text: 'hello' }))
+            sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' }))
           ),
         ),
         sys.make(Group, { dir: 'y', gap: 1 },
-          sys.make(Border, { background: 0x00000077, size: 3 }, sys.make(Label, { text: 'hello' })),
+          sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' })),
           sys.make(Button, { onClick: () => { console.log('button') } },
-            sys.make(Border, { background: 0x00000077, size: 3 }, sys.make(Label, { text: 'hello' }))
+            sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' }))
           ),
         ),
       ),
@@ -106,7 +151,7 @@ export function demo(sys: System) {
         }),
         sys.make(Border, {
           background: 0x00000033,
-          size: 1,
+          all: 1,
         },
           sys.make(ImageView, {
             image: new Bitmap([0xffffffff], 4, [
