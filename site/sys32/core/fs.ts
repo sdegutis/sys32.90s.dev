@@ -212,15 +212,15 @@ export class FS {
   async getFolder(path: string) {
     const found = await this.#getdir(path);
     if (!found) return null;
-    if (!found.filename) return found.folder;
-    return found.folder.getFolder(found.filename);
+    if (!found.base) return found.folder;
+    return found.folder.getFolder(found.base);
   }
 
   async loadFile(path: string): Promise<string | null> {
     const file = await this.#getdir(path);
     if (!file) return null;
 
-    const found = await file.folder.getFile(file.filename);
+    const found = await file.folder.getFile(file.base);
     return found ?? null;
   }
 
@@ -228,7 +228,7 @@ export class FS {
     const file = await this.#getdir(path);
     if (!file) return;
 
-    file.folder.putFile(file.filename, content);
+    file.folder.putFile(file.base, content);
   }
 
   async #getdir(path: string) {
@@ -249,7 +249,7 @@ export class FS {
       folder = nextFolder;
     }
 
-    return { folder, filename: segments.pop()! };
+    return { folder, base: segments.pop()! };
   }
 
 }
