@@ -30,7 +30,7 @@ export function demo(sys: System) {
 
   function passFocus(config: Partial<Border>) {
     config.passthrough = false;
-    config.onFocus = function () { sys.focus(this.firstChild!); };
+    config.onFocus = function () { this.firstChild?.focus(); };
     return config;
   }
 

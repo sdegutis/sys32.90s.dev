@@ -76,4 +76,12 @@ export class View {
     this.childrenChanged?.();
   }
 
+  focus() {
+    this.sys.focus(this);
+  }
+
+  layoutTree() {
+    this.sys.layoutTree(this);
+  }
+
 }
