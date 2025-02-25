@@ -171,7 +171,7 @@ class UserFolder implements Folder {
 
 export class FS {
 
-  drives: Record<string, Folder> = {
+  #drives: Record<string, Folder> = {
     a: new MemoryFolder(),
   };
 
@@ -198,7 +198,7 @@ export class FS {
   });
 
   #loadDriveB(db: IDBDatabase) {
-    this.drives['b'] = new IndexedDbFolder(db, '/');
+    this.#drives['b'] = new IndexedDbFolder(db, '/');
   }
 
   async #loadUserDrives(db: IDBDatabase) {
@@ -210,8 +210,15 @@ export class FS {
       r.onsuccess = (e) => res(r.result);
     });
     for (const { drive, folder } of drives) {
-      this.drives[drive] = new UserFolder(folder);
+      this.#drives[drive] = new UserFolder(folder);
     }
+  }
+
+  async getFolder(path: string) {
+    const found = await this.#getdir(path);
+    if (!found) return null;
+    if (!found.filename) return found.folder;
+    return found.folder.getFolder(found.filename);
   }
 
   async loadFile(path: string): Promise<string | null> {
@@ -235,7 +242,7 @@ export class FS {
     const segments = path.split('/');
 
     const drive = segments.shift()!;
-    let folder: Folder = this.drives[drive];
+    let folder: Folder = this.#drives[drive];
 
     while (segments.length > 1) {
       const nextName = segments.shift()!;

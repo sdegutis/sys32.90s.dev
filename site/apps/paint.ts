@@ -169,14 +169,15 @@ export default function paint(sys: System) {
   );
 
   (async () => {
-    // console.log('loading4', sys.fs.db)
-    // // await sys.fs.db;
-    // console.log('loading3')
-    // await sys.fs.b.putFile('foo', 'bar')
-    // await sys.fs.b.putFolder('qux')
-    // await sys.fs.saveFile('b/qux/hmm', 'bar123es')
-    console.log(await sys.fs.loadFile('b/qux/hmm'))
-    for (const f of await sys.fs.drives['b'].list()) {
+    console.log(await sys.fs.getFolder('b'))
+    // await sys.fs.#drives['b'].putFile('foo', 'bar')
+    // await sys.fs.#drives['b'].putFolder('qux')
+    const b = await sys.fs.getFolder('b');
+    await b!.putFolder('qux')
+    await sys.fs.saveFile('b/qux/hmm3', 'bar123es')
+    // console.log(await sys.fs.loadFile('b/qux/hmm'))
+    const dir = await (await sys.fs.getFolder('b/qux'))?.list() ?? [];
+    for (const f of dir) {
       console.log(f);
     }
 
