@@ -169,14 +169,11 @@ export default function paint(sys: System) {
   );
 
   (async () => {
-
     await sys.fs.ready;
-
-    await sys.fs.b.putFile('foo', 'bar')
-    await sys.fs.b.putFolder('qux')
-
-    await sys.fs.saveFile('b/qux/hmm', 'bar123yes')
-
+    // await sys.fs.b.putFile('foo', 'bar')
+    // await sys.fs.b.putFolder('qux')
+    // await sys.fs.saveFile('b/qux/hmm', 'bar123es')
+    console.log(await sys.fs.loadFile('b/qux/hmm'))
     for (const f of await sys.fs.b.list()) {
       console.log(f);
     }
