@@ -2,8 +2,10 @@ export interface Folder {
 
   getFile(name: string): Promise<string | undefined>;
   getFolder(name: string): Promise<Folder | undefined>;
+
   putFile(name: string, content: string): Promise<void>;
-  makeFolder(name: string): Promise<Folder>;
+  putFolder(name: string): Promise<Folder>;
+
   list(): Promise<{ kind: 'file' | 'folder', name: string }[]>;
 
 }
@@ -32,7 +34,7 @@ class MemoryFolder implements Folder {
     this.#items[name] = content;
   }
 
-  async makeFolder(name: string) {
+  async putFolder(name: string) {
     const f = new MemoryFolder();
     this.#items[name] = f;
     return f;
@@ -47,25 +49,78 @@ class MemoryFolder implements Folder {
 
 }
 
-// class IndexedDbFolder implements Folder {
+class IndexedDbFolder implements Folder {
 
-//   async getFile(name: string) {
-//     return undefined;
-//   }
+  #prefix: string;
 
-//   async getFolder(name: string) {
-//     return undefined;
-//   }
+  constructor(prefix: string) {
+    this.#prefix = prefix;
+  }
 
-//   async putFile(name: string, content: string) {
+  async getFile(name: string) {
+    return undefined;
+  }
 
-//   }
+  async getFolder(name: string) {
+    return undefined;
+  }
 
-//   async mkdir(name: string) {
+  async putFile(name: string, content: string) {
+    const db = await shareddb;
+    const t = db.transaction('files', 'readwrite');
+    const store = t.objectStore('files');
 
-//   }
+    const r = store.put({
+      name,
+      prefix: this.#prefix,
+      path: this.#prefix + name,
+      content,
+    });
 
-// }
+    const p = Promise.withResolvers<void>();
+    r.onerror = console.log;
+    r.onsuccess = res => p.resolve();
+    return p.promise;
+  }
+
+  async putFolder(name: string) {
+    const db = await shareddb;
+    const t = db.transaction('files', 'readwrite');
+    const store = t.objectStore('files');
+
+    const r = store.put({
+      name,
+      prefix: this.#prefix,
+      path: this.#prefix + name,
+    });
+
+    const p = Promise.withResolvers<IndexedDbFolder>();
+    r.onerror = console.log;
+    r.onsuccess = res => p.resolve(new IndexedDbFolder(this.#prefix + name + '/'));
+    return p.promise;
+  }
+
+  async list(): Promise<{ kind: "file" | "folder"; name: string; }[]> {
+    const db = await shareddb;
+    const list = await new Promise<{
+      name: string,
+      path: string,
+      prefix: string,
+      content?: string,
+    }[]>(res => {
+      const t = db.transaction('files', 'readwrite');
+      const store = t.objectStore('files');
+      const r = store.getAll();
+      r.onerror = console.log;
+      r.onsuccess = (e: any) => res(e.target.result);
+    });
+    return list.map(it => ({
+      name: it.name,
+      kind: it.content === undefined ? 'folder' : 'file',
+    }));
+  }
+
+}
 
 class UserFolder implements Folder {
 
@@ -93,7 +148,7 @@ class UserFolder implements Folder {
     await w.close();
   }
 
-  async makeFolder(name: string) {
+  async putFolder(name: string) {
     const h = await this.#dir.getDirectoryHandle(name, { create: true });
     return new UserFolder(h);
   }
@@ -114,8 +169,11 @@ export class FS {
 
   drives: Record<string, Folder> = {
     a: new MemoryFolder(),
-    // b: new IndexedDbFolder(),
+    b: new IndexedDbFolder('/'),
   };
+
+  a = this.drives['a'];
+  b = this.drives['b'];
 
   ready = new Promise<void>(async res => {
     await Promise.allSettled([
@@ -125,7 +183,7 @@ export class FS {
   });
 
   async #loadUserDrives() {
-    const db = await opendb();
+    const db = await shareddb;
     const drives = await getdrives(db);
     for (const { drive, folder } of drives) {
       this.drives[drive] = new UserFolder(folder);
@@ -170,20 +228,19 @@ export class FS {
 
 }
 
-function opendb() {
-  return new Promise<IDBDatabase>(res => {
-    const dbopenreq = window.indexedDB.open('fs', 1);
-    dbopenreq.onerror = console.log;
-    dbopenreq.onupgradeneeded = () => {
-      const db = dbopenreq.result;
-      db.createObjectStore('mounts', { keyPath: 'drive' });
-    };
-    dbopenreq.onsuccess = e => {
-      const db = dbopenreq.result;
-      res(db);
-    };
-  });
-}
+const shareddb = new Promise<IDBDatabase>(res => {
+  const dbopenreq = window.indexedDB.open('fs', 1);
+  dbopenreq.onerror = console.log;
+  dbopenreq.onupgradeneeded = () => {
+    const db = dbopenreq.result;
+    db.createObjectStore('mounts', { keyPath: 'drive' });
+    db.createObjectStore('files', { keyPath: 'path' });
+  };
+  dbopenreq.onsuccess = e => {
+    const db = dbopenreq.result;
+    res(db);
+  };
+});
 
 function getdrives(db: IDBDatabase) {
   return new Promise<{ drive: string, folder: FileSystemDirectoryHandle }[]>(res => {

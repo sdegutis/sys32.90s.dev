@@ -172,6 +172,16 @@ export default function paint(sys: System) {
 
     await sys.fs.ready;
 
+    await sys.fs.b.putFile('foo', 'bar')
+    await sys.fs.b.putFolder('qux')
+
+    await sys.fs.saveFile('b/qux/hmm', 'bar123yes')
+
+    for (const f of await sys.fs.b.list()) {
+      console.log(f);
+    }
+
+
     // await sys.fs.drives['d'].makeFolder('bar');
     // await sys.fs.drives['d'].getFolder('bar').then(d => d!.makeFolder('qux'));
 
