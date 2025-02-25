@@ -2,7 +2,6 @@ import { View } from "../core/view.js";
 
 export class Group extends View {
 
-  padding = 0;
   gap = 0;
   dir: 'x' | 'y' = 'x';
 
@@ -17,9 +16,6 @@ export class Group extends View {
       if (i > 0) this[dw] += this.gap;
       if (this[dh] < child[dh]) this[dh] = child[dh];
     }
-
-    this[dw] += this.padding * 2;
-    this[dh] += this.padding * 2;
   }
 
   override layout(): void {
@@ -28,7 +24,7 @@ export class Group extends View {
     const dx = this.dir === 'x' ? 'x' : 'y';
     const dy = this.dir === 'x' ? 'y' : 'x';
 
-    let x = this.padding;
+    let x = 0;
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
       child[dx] = x;
