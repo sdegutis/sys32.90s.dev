@@ -10,7 +10,7 @@ export class Checkbox extends Button {
   size = 2;
   #checked = false;
 
-  override padding = 2;
+  padding = 2;
 
   get checked() { return this.#checked; }
   set checked(is: boolean) {

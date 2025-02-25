@@ -2,8 +2,6 @@ import { View } from "../core/view.js";
 
 export class Button extends View {
 
-  padding = 0;
-
   hoverColor = 0xffffff22;
   pressColor = 0xffffff11;
 
@@ -15,16 +13,16 @@ export class Button extends View {
   override layout(): void {
     const c = this.firstChild;
     if (c) {
-      c.x = this.padding;
-      c.y = this.padding;
+      c.x = 0;
+      c.y = 0;
     }
   }
 
   override adjust(): void {
     const c = this.firstChild;
     if (c) {
-      this.w = c.w + this.padding * 2;
-      this.h = c.h + this.padding * 2;
+      this.w = c.w;
+      this.h = c.h;
     }
   }
 

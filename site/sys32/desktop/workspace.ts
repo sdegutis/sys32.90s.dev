@@ -46,13 +46,16 @@ export class Workspace {
         sys.make(Border, { size: 2 }, sys.make(Clock, {})),
         sys.make(Button, {
           background: 0x222222ff,
-          padding: 2,
           onClick: () => {
             big = !big;
             sys.resize(320 * (+big + 1), 180 * (+big + 1));
             sys.layoutTree();
           },
-        }, sys.make(Label, { text: 'resize' }))
+        },
+          sys.make(Border, { size: 2 },
+            sys.make(Label, { text: 'resize' })
+          )
+        )
       ),
     );
 
@@ -121,12 +124,15 @@ export class Workspace {
 
   addProgram(title: string, launch: (sys: System) => void) {
     this.#icons.addChild(this.sys.make(Button, {
-      padding: 2,
       onClick: () => {
         launch(this.sys);
         // this.sys.layoutTree();
       },
-    }, this.sys.make(Label, { text: title })));
+    },
+      this.sys.make(Border, { size: 2 },
+        this.sys.make(Label, { text: title })
+      )
+    ));
     this.sys.layoutTree();
   }
 
