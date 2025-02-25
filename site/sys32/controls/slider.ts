@@ -11,10 +11,9 @@ export class Slider extends View {
 
   knobSize = 2;
   lineSize = 1;
-  padding = 1;
 
   override adjust(): void {
-    this.h = this.padding * 2 + this.knobSize;
+    this.h = this.knobSize;
   }
 
   override onMouseDown(): void {
