@@ -183,7 +183,7 @@ export default function paint(sys: System) {
 
     // const f = await sys.fs.loadFile(path);
 
-    console.log(f)
+    // console.log(f)
   })();
 
 
