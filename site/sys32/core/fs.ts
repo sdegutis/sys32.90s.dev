@@ -79,7 +79,7 @@ class IndexedDbFolder implements Folder {
         path: this.#prefix + name,
         content,
       });
-      r.onerror = console.log;
+      r.onerror = console.error;
       r.onsuccess = res => resolve();
     });
   }
@@ -93,7 +93,7 @@ class IndexedDbFolder implements Folder {
         prefix: this.#prefix,
         path: this.#prefix + name,
       });
-      r.onerror = console.log;
+      r.onerror = console.error;
       r.onsuccess = res => resolve();
     });
     return new IndexedDbFolder(this.#db, this.#prefix + name + '/');
@@ -104,7 +104,7 @@ class IndexedDbFolder implements Folder {
       const t = this.#db.transaction('files', 'readonly');
       const store = t.objectStore('files');
       const r = store.get(this.#prefix + name);
-      r.onerror = console.log;
+      r.onerror = console.error;
       r.onsuccess = (e: any) => resolve(e.target.result);
     });
   }
@@ -115,7 +115,7 @@ class IndexedDbFolder implements Folder {
       const store = t.objectStore('files');
       const index = store.index('indexprefix');
       const r = index.getAll(this.#prefix);
-      r.onerror = console.log;
+      r.onerror = console.error;
       r.onsuccess = (e: any) => res(e.target.result);
     });
     return list.map(it => ({
@@ -175,18 +175,40 @@ export class FS {
     a: new MemoryFolder(),
   };
 
-  ready = Promise.allSettled([
-    this.#loadUserDrives(),
-    this.#loadDriveB(),
-  ]);
+  #db = new Promise<IDBDatabase>(async resolve => {
+    const db = await new Promise<IDBDatabase>(res => {
+      const r = window.indexedDB.open('fs', 1);
+      r.onerror = console.error;
+      r.onupgradeneeded = () => {
+        const db = r.result;
+        db.createObjectStore('mounts', { keyPath: 'drive' });
+        const files = db.createObjectStore('files', { keyPath: 'path' });
+        files.createIndex('indexprefix', 'prefix', { unique: false });
+      };
+      r.onsuccess = e => {
+        const db = r.result;
+        res(db);
+      };
+    });
 
-  async #loadDriveB() {
-    this.drives['b'] = new IndexedDbFolder(await shareddb, '/');
+    this.#loadDriveB(db);
+    await this.#loadUserDrives(db);
+
+    resolve(db);
+  });
+
+  #loadDriveB(db: IDBDatabase) {
+    this.drives['b'] = new IndexedDbFolder(db, '/');
   }
 
-  async #loadUserDrives() {
-    const db = await shareddb;
-    const drives = await getdrives(db);
+  async #loadUserDrives(db: IDBDatabase) {
+    const drives = await new Promise<{ drive: string, folder: FileSystemDirectoryHandle }[]>(res => {
+      const t = db.transaction('mounts', 'readonly');
+      const store = t.objectStore('mounts');
+      const r = store.getAll();
+      r.onerror = console.error;
+      r.onsuccess = (e) => res(r.result);
+    });
     for (const { drive, folder } of drives) {
       this.drives[drive] = new UserFolder(folder);
     }
@@ -208,6 +230,8 @@ export class FS {
   }
 
   async #getdir(path: string) {
+    await this.#db;
+
     const segments = path.split('/');
 
     const drive = segments.shift()!;
@@ -228,31 +252,6 @@ export class FS {
     return { folder, filename: segments.pop()! };
   }
 
-}
-
-const shareddb = new Promise<IDBDatabase>(res => {
-  const r = window.indexedDB.open('fs', 1);
-  r.onerror = console.log;
-  r.onupgradeneeded = () => {
-    const db = r.result;
-    db.createObjectStore('mounts', { keyPath: 'drive' });
-    const files = db.createObjectStore('files', { keyPath: 'path' });
-    files.createIndex('indexprefix', 'prefix', { unique: false });
-  };
-  r.onsuccess = e => {
-    const db = r.result;
-    res(db);
-  };
-});
-
-function getdrives(db: IDBDatabase) {
-  return new Promise<{ drive: string, folder: FileSystemDirectoryHandle }[]>(res => {
-    const t = db.transaction('mounts', 'readonly');
-    const store = t.objectStore('mounts');
-    const all = store.getAll();
-    all.onerror = console.log;
-    all.onsuccess = (e) => res(all.result);
-  });
 }
 
 type DbMount = {
