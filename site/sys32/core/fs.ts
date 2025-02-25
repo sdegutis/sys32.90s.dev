@@ -209,6 +209,20 @@ export class FS {
     }
   }
 
+  async mountUserFolder(drive: string, dir: FileSystemDirectoryHandle) {
+    const db = await this.#db;
+    await new Promise<void>(async resolve => {
+      const t = db.transaction('mounts', 'readwrite');
+      const store = t.objectStore('mounts');
+      store.add({ drive, folder: dir });
+      t.onerror = console.error;
+      t.oncomplete = e => resolve();
+    });
+    const folder = new UserFolder(dir);
+    (await this.#drives)[drive] = folder;
+    return folder;
+  }
+
   async getFolder(path: string) {
     const found = await this.#getdir(path);
     if (!found) return null;
