@@ -1,3 +1,4 @@
+import { Border } from "../sys32/containers/border.js";
 import { GroupX, GroupY } from "../sys32/containers/group.js";
 import { PanedXA, PanedYB } from "../sys32/containers/paned.js";
 import { Scroll } from "../sys32/containers/scroll.js";
@@ -5,33 +6,8 @@ import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { System } from "../sys32/core/system.js";
-import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 
-
-class Border extends View {
-
-  u = 0;
-  d = 0;
-  l = 0;
-  r = 0;
-
-  set size(n: number) { this.u = this.d = this.l = this.r = n; }
-
-  override adjust(): void {
-    this.w = this.l + (this.firstChild?.w ?? 0) + this.r;
-    this.h = this.u + (this.firstChild?.h ?? 0) + this.d;
-  }
-
-  override layout(): void {
-    const c = this.firstChild;
-    if (c) {
-      c.x = this.l;
-      c.y = this.u;
-    }
-  }
-
-}
 
 
 export default (sys: System) => {
@@ -75,13 +51,9 @@ export default (sys: System) => {
         }
       },
         sys.make(Border, { size: 2, background: 0xff000033, },
-          sys.make(Label, {
-            text: `drive: ${key}`,
-            // padding: 2,
-
-          }))
-      )
-      );
+          sys.make(Label, { text: `drive: ${key}` })
+        )
+      ));
       sys.layoutTree(sidelist.parent!);
     }
   });
