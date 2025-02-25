@@ -114,7 +114,7 @@ export class Panel extends View {
               resize();
               if (this.w < this.minw) this.w = this.minw;
               if (this.h < this.minh) this.h = this.minh;
-              this.sys.layoutTree(this);
+              this.layoutTree();
             }
           });
         },
@@ -147,7 +147,7 @@ export class Panel extends View {
       this.h = this.parent!.h;
     }
 
-    this.sys.layoutTree(this);
+    this.layoutTree();
   }
 
   show() {

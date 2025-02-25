@@ -51,5 +51,5 @@ function texttest(sys: System) {
     )
   );
   sys.root.addChild(panel);
-  sys.layoutTree(panel)
+  panel.layoutTree();
 }

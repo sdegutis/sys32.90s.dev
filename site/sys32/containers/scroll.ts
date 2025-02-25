@@ -19,7 +19,7 @@ export class Scroll extends View {
     this[sy] += up ? -this.amount : this.amount;
 
     this.#adjust();
-    this.sys.layoutTree(this);
+    this.layoutTree();
   }
 
   #adjust() {

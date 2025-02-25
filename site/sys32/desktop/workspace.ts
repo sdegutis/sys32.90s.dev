@@ -112,11 +112,11 @@ export class Workspace {
       this.sys.focus(panel);
     };
     this.#panels.addChild(button);
-    this.sys.layoutTree(this.#panels);
+    this.#panels.layoutTree();
 
     panel.didClose.watch(() => {
       button.parent?.removeChild(button);
-      this.sys.layoutTree(this.#panels);
+      this.#panels.layoutTree();
     });
 
     return panel;

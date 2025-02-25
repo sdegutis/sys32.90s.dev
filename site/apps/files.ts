@@ -54,7 +54,7 @@ export default (sys: System) => {
           sys.make(Label, { text: `drive: ${key}` })
         )
       ));
-      sys.layoutTree(sidelist.parent!);
+      sidelist.parent?.layoutTree();
     }
   });
 

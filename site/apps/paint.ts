@@ -54,7 +54,7 @@ export default function paint(sys: System) {
   size.watch(s => paintView.resize(s.w, s.h));
   size.watch(s => widthLabel.text = s.w.toString());
   size.watch(s => heightLabel.text = s.h.toString());
-  size.watch(s => sys.layoutTree(heightLabel.parent));
+  size.watch(s => heightLabel.parent?.layoutTree());
 
   zoom.watch(n => zoomLabel.text = n.toString());
   zoom.watch(n => paintView.zoom = n);
@@ -104,7 +104,7 @@ export default function paint(sys: System) {
     const color = parseInt('0x' + colorField.text, 16);
     colorField.text = '';
     makeColorButton(color);
-    sys.layoutTree(toolArea.parent)
+    toolArea.parent?.layoutTree();
   };
 
   const colorRadios = new RadioGroup();
@@ -120,7 +120,7 @@ export default function paint(sys: System) {
       onSelected: () => {
         paintView.color = color;
         colorLabel.text = '0x' + color.toString(16).padStart(8, '0');
-        sys.layoutTree(colorLabel.parent);
+        colorLabel.parent?.layoutTree();
       }
     });
     toolArea.addChild(button);
@@ -144,7 +144,7 @@ export default function paint(sys: System) {
         knobSize: 3,
         w: 20, onChange() {
           zoom.val = this.val!;
-          sys.layoutTree(panel);
+          panel.layoutTree();
         }
       })
     )
@@ -300,7 +300,7 @@ class PaintView extends View {
       }
     }
 
-    this.sys.layoutTree(this.parent);
+    this.parent?.layoutTree();
   }
 
   #hovered = false;

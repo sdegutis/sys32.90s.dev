@@ -40,7 +40,7 @@ export class TextField extends View {
     else {
       this.#field.text = this.text.slice(0, this.length);
     }
-    this.sys.layoutTree(this);
+    this.layoutTree();
   }
 
   override init(): void {
