@@ -147,6 +147,7 @@ export class System {
   ): T {
     const view = new ctor(this);
     Object.assign(view, { children }, config);
+    view.enableDataSources();
     view.init?.();
     return view;
   }

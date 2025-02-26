@@ -14,69 +14,69 @@ import { makeVacuumLayout } from "./sys32/util/layouts.js";
 
 
 
-class Foo {
+// class Foo {
 
-  x = 1;
-  y = 2;
+//   x = 1;
+//   y = 2;
 
-  #datas: Record<any, Reactable<any>> = {};
+//   #datas: Record<any, Reactable<any>> = {};
 
-  watch<K extends keyof this, T = this[K]>(key: K, fn: (data: T) => void) {
-    return this.#datas[key].watch(fn);
-  }
+//   watch<K extends keyof this, T = this[K]>(key: K, fn: (data: T) => void) {
+//     return this.#datas[key].watch(fn);
+//   }
 
-  dataSource<K extends keyof this>(key: K) {
-    return this.#datas[key];
-  }
+//   dataSource<K extends keyof this>(key: K) {
+//     return this.#datas[key];
+//   }
 
-  enableDataSources() {
-    for (let [key, val] of Object.entries(this)) {
-      this.#datas[key] = new Reactable(val);
-      if (Object.getOwnPropertyDescriptor(this, key)?.get) continue;
-      Object.defineProperty(this, key, {
-        enumerable: true,
-        set: (v) => this.#datas[key].val = v,
-        get: () => this.#datas[key].val,
-      });
-    }
-  }
+//   enableDataSources() {
+//     for (let [key, val] of Object.entries(this)) {
+//       this.#datas[key] ??= new Reactable(val);
+//       if (Object.getOwnPropertyDescriptor(this, key)?.get) continue;
+//       Object.defineProperty(this, key, {
+//         enumerable: true,
+//         set: (v) => this.#datas[key].val = v,
+//         get: () => this.#datas[key].val,
+//       });
+//     }
+//   }
 
-  useDataSources<K extends keyof this>(sources: Record<K, Reactable<this[K]>>) {
-    for (const [key, r] of Object.entries<Reactable<any>>(sources)) {
-      this.#datas[key] = r;
-    }
-  }
+//   useDataSources<K extends keyof this>(sources: Record<K, Reactable<this[K]>>) {
+//     for (const [key, r] of Object.entries<Reactable<any>>(sources)) {
+//       this.#datas[key] = r;
+//     }
+//   }
 
-}
+// }
 
-class Bar extends Foo {
+// class Bar extends Foo {
 
-  override x = 11;
-  z = 3;
+//   override x = 11;
+//   z = 3;
 
-}
+// }
 
-const two = new Reactable(9);
+// const two = new Reactable(9);
 
-const foo = new Foo();
-foo.enableDataSources();
-foo.useDataSources({ x: two });
-const done = foo.watch('x', d => { console.log('watched', d) })
-foo.x = 234;
-foo.x = 235;
-done();
-foo.x = 236;
-console.log(foo.x)
+// const foo = new Foo();
+// foo.enableDataSources();
+// const done = foo.watch('x', d => { console.log('watched', d) })
+// foo.useDataSources({ x: two });
+// foo.x = 234;
+// foo.x = 235;
+// done();
+// foo.x = 236;
+// console.log(foo.x)
 
-const bar = new Bar();
-bar.enableDataSources();
-const done2 = bar.watch('y', n => console.log('watched2', n))
-bar.y = 123;
-bar.x = 111;
-bar.y = 124;
-bar.y = 125;
-done2();
-console.log(bar.y)
+// const bar = new Bar();
+// bar.enableDataSources();
+// const done2 = bar.watch('y', n => console.log('watched2', n))
+// bar.y = 123;
+// bar.x = 111;
+// bar.y = 124;
+// bar.y = 125;
+// done2();
+// console.log(bar.y)
 
 
 
@@ -91,7 +91,7 @@ sys.crt.autoscale();
 // mapmaker(sys);
 // files(sys)
 demo(sys)
-// paint(sys);
+paint(sys);
 // texttest(sys);
 sys.layoutTree()
 

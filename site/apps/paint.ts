@@ -110,6 +110,11 @@ export default function paint(sys: System) {
     makeColorButton(color);
   }
 
+  function useDataSources<T extends View, K extends keyof T>(view: T, sources: Record<K, Reactable<T[K]>>) {
+    view.useDataSources(sources);
+    return view;
+  }
+
   const statusBar = sys.make(Spaced, { dir: 'x' },
     sys.make(GroupX, {},
       sys.make(Label, { color: 0xffffff33, text: 'w:' }), widthLabel,
@@ -118,7 +123,7 @@ export default function paint(sys: System) {
       sys.make(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel,
     ),
     sys.make(GroupX, {},
-      sys.make(Slider, { knobSize: 3, w: 20, val: zoom.val })
+      useDataSources(sys.make(Slider, { knobSize: 3, w: 20 }), { val: zoom })
     )
   );
 
