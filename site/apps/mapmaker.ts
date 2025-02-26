@@ -1,6 +1,6 @@
 import { Border } from "../sys32/containers/border.js";
 import { PanedXA, PanedYA } from "../sys32/containers/paned.js";
-import { Button, makeButton } from "../sys32/controls/button.js";
+import { makeButton } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
@@ -9,7 +9,7 @@ import { Panel } from "../sys32/desktop/panel.js";
 import { makeStripeDrawer } from "../sys32/util/draw.js";
 import { multiplex, Reactable } from "../sys32/util/events.js";
 import { makeFlowLayoutY, makeVacuumLayout } from "../sys32/util/layouts.js";
-import { TileSelection, dragMove } from "../sys32/util/selections.js";
+import { dragMove, TileSelection } from "../sys32/util/selections.js";
 
 const COLORS = [
   0x000000ff, 0x1D2B53ff, 0x7E2553ff, 0x008751ff,
@@ -32,11 +32,14 @@ export default (sys: System) => {
 
 export function mapmaker(sys: System) {
   let showGrid = true;
-  const gridButton = sys.make(Button, {
-    onClick: () => showGrid = !showGrid,
-  }, sys.make(Border, { background: 0x00000033, all: 2 },
+
+  const gridButton = sys.make(Border, {
+    background: 0x00000033,
+    all: 2,
+    ...makeButton(() => showGrid = !showGrid).all,
+  },
     sys.make(Label, { text: 'grid' })
-  ));
+  );
 
   let currentTool = new Reactable(5);
 
