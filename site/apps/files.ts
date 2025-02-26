@@ -2,7 +2,7 @@ import { Border } from "../sys32/containers/border.js";
 import { GroupX, GroupY } from "../sys32/containers/group.js";
 import { PanedXA, PanedYB } from "../sys32/containers/paned.js";
 import { Scroll } from "../sys32/containers/scroll.js";
-import { Button } from "../sys32/controls/button.js";
+import { makeButton } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { System } from "../sys32/core/system.js";
@@ -39,22 +39,19 @@ export default (sys: System) => {
 
   sys.fs.drives.then(drives => {
     for (const key of Object.keys(drives)) {
-      sidelist.addChild(sys.make(Button, {
-        background: 0x11111111,
-        onClick: async () => {
-          console.log(key)
+      const button = makeButton(async () => {
+        console.log(key)
 
-          const sub = await sys.fs.getFolder(key);
-          const list = await sub?.list();
+        const sub = await sys.fs.getFolder(key);
+        const list = await sub?.list();
 
-          console.log(list)
+        console.log(list)
 
-          // filelist.children = 
-        }
-      },
-        sys.make(Border, { all: 2, background: 0xff000033, },
-          sys.make(Label, { text: `drive: ${key}` })
-        )
+        // filelist.children = 
+      });
+
+      sidelist.addChild(sys.make(Border, { all: 2, background: 0xff000033, ...button.all },
+        sys.make(Label, { text: `drive: ${key}` })
       ));
       sidelist.parent?.layoutTree();
     }
