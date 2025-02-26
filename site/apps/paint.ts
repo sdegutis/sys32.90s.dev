@@ -31,9 +31,9 @@ export class Reactable<T> {
     this.#changed(data);
   }
 
-  watch(fn: (data: T) => void) {
+  watch(fn: (data: T) => void, initial = true) {
     const done = this.#changed.watch(fn);
-    this.#changed(this.val);
+    if (initial) this.#changed(this.val);
     return done;
   }
 
@@ -58,6 +58,7 @@ export default function paint(sys: System) {
 
   zoom.watch(n => zoomLabel.text = n.toString());
   zoom.watch(n => paintView.zoom = n);
+  zoom.watch(n => panel.layoutTree(), false);
 
   const resizer = sys.make(View, {
     background: 0x00000077,
@@ -140,13 +141,7 @@ export default function paint(sys: System) {
       sys.make(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel,
     ),
     sys.make(GroupX, {},
-      sys.make(Slider, {
-        knobSize: 3,
-        w: 20, onChange() {
-          zoom.val = this.val!;
-          panel.layoutTree();
-        }
-      })
+      sys.make(Slider, { knobSize: 3, w: 20, val: zoom })
     )
   );
 

@@ -5,6 +5,7 @@ import { Checkbox } from "../sys32/controls/checkbox.js";
 import { ImageView } from "../sys32/controls/image.js";
 import { Label } from "../sys32/controls/label.js";
 import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
+import { Slider } from "../sys32/controls/slider.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
@@ -65,10 +66,6 @@ export function demo(sys: System) {
   const group1 = new RadioGroup();
   const group2 = new RadioGroup();
 
-  const on = new Reactable(true);
-
-  on.watch(b => console.log({ b }))
-
   function passFocus(config: Partial<Border>) {
     config.passthrough = false;
     config.onFocus = function () { this.firstChild?.focus(); };
@@ -122,6 +119,8 @@ export function demo(sys: System) {
   // }, 1000);
 
   function wrapFn<V extends View, K extends keyof V, F extends V[K]>(attr: K, view: V, fn: F) {
+
+
     // const old = view[attr].bind(view);
     // view[attr] = (...args: any[]) => {
     //   old.call(view, ...args);
@@ -151,30 +150,21 @@ export function demo(sys: System) {
     return view;
   }
 
+  const on = new Reactable(true);
+  on.watch(b => console.log({ b }))
   const button = makeButton(() => { on.val = !on.val; });
 
-  const checkmark = sys.make(View, { background: 0xffffffff, w: 2, h: 2 });
-
-  setTimeout(() => {
-    const parent = checkmark.parent!;
-    checkmark.remove();
-
-    setTimeout(() => {
-      parent.addChild(checkmark);
-    }, 2000);
-
-
-  }, 1000);
-
+  // const zoom = new Reactable(3);
 
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
 
       sys.make(GroupX, { gap: 1, ...button.mouse },
+        sys.make(Slider, { knobSize: 3, w: 20, val: 3 }),
         sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
           sys.make(Border, { all: 1 },
             sys.make(Border, {},
-              reactTo('visible', on, checkmark)
+              reactTo('visible', on, sys.make(View, { background: 0xffffffff, w: 2, h: 2 }))
             )
           )
         ),

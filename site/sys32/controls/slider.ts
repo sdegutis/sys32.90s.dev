@@ -1,3 +1,4 @@
+import { Reactable } from "../../apps/paint.js";
 import { View } from "../core/view.js";
 import { dragMove } from "../util/selections.js";
 
@@ -7,7 +8,7 @@ export class Slider extends View {
 
   min = 1;
   max = 12;
-  val = 3;
+  val = new Reactable(3);
 
   knobSize = 2;
   lineSize = 1;
@@ -22,14 +23,14 @@ export class Slider extends View {
 
     this.sys.trackMouse({
       move: () => {
-        const oldval = this.val;
+        const oldval = this.val.val;
 
         fn();
         o.x = Math.max(0, Math.min(this.w, o.x));
         const p = o.x / this.w;
-        this.val = Math.round((this.max - this.min) * p + this.min);
+        this.val.val = Math.round((this.max - this.min) * p + this.min);
 
-        if (this.val !== oldval) {
+        if (this.val.val !== oldval) {
           this.onChange?.();
         }
       }
@@ -41,7 +42,7 @@ export class Slider extends View {
     super.draw();
     const y1 = Math.floor(this.h / 2);
     this.sys.crt.rectFill(0, y1, this.w, 1, 0xffffff33);
-    const p = (this.val - this.min) / (this.max - this.min);
+    const p = (this.val.val - this.min) / (this.max - this.min);
     const x = Math.floor(p * (this.w - this.knobSize));
     const y = Math.round(this.h / 2 - this.knobSize / 2);
     this.sys.crt.rectFill(x, y, this.knobSize, this.knobSize, 0xffffffff);
