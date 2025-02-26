@@ -1,8 +1,7 @@
 import demo from "./apps/demo.js";
-import filebrowser from "./apps/filebrowser.js";
-import files from "./apps/filebrowser.js";
+import filer from "./apps/filer.js";
 import mapmaker from "./apps/mapmaker.js";
-import paint from "./apps/paint.js";
+import painter from "./apps/painter.js";
 import { Scroll } from "./sys32/containers/scroll.js";
 import { TextArea } from "./sys32/containers/textarea.js";
 import { System } from "./sys32/core/system.js";
@@ -20,7 +19,7 @@ sys.crt.autoscale();
 // sys.root.layout = makeVacuumLayout()
 
 // mapmaker(sys);
-filebrowser(sys)
+filer(sys)
 // demo(sys)
 // paint(sys);
 // texttest(sys);
@@ -28,13 +27,13 @@ sys.layoutTree()
 
 const ws = new Workspace(sys);
 ws.addProgram('demo', demo);
-ws.addProgram('files', files);
+ws.addProgram('filer', filer);
 ws.addProgram('mapmaker', mapmaker);
-ws.addProgram('paint', paint);
-ws.addProgram('text test', texttest);
+ws.addProgram('painter', painter);
+ws.addProgram('writer', writer);
 
 
-function texttest(sys: System) {
+function writer(sys: System) {
   const textarea = sys.make(TextArea, { background: 0x00990033 });
 
   textarea.text = 'foo\nbar\n\nhello world'

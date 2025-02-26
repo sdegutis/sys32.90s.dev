@@ -12,7 +12,7 @@ import { Folder } from "../sys32/core/fs.js";
 import { System } from "../sys32/core/system.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { passedFocus } from "../sys32/util/unsure.js";
-import paint from "./paint.js";
+import paint from "./painter.js";
 
 
 const folderIcon = new Bitmap([0x990000ff], 1, [1]);
