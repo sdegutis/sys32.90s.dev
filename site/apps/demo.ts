@@ -123,13 +123,14 @@ export function demo(sys: System) {
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
 
       sys.make(GroupX, { gap: 1, ...button.mouse },
-        sys.make(Label, { text: 'hey' }),
         sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
           sys.make(Border, { all: 1 },
             sys.make(Border, {},
               sys.make(Checkbox2, { visible2: on, background: 0xffffffff, w: 2, h: 2 })
             )
-          ))
+          )
+        ),
+        sys.make(Label, { text: 'hey' }),
       ),
 
       sys.make(Group, { dir: 'y', gap: 1 },
