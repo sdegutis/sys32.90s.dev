@@ -2,7 +2,7 @@ import { Border } from "../containers/border.js";
 import { Group } from "../containers/group.js";
 import { Paned } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
-import { Button } from "../controls/button.js";
+import { makeButton } from "../controls/button.js";
 import { Label } from "../controls/label.js";
 import { System } from "../core/system.js";
 import { View } from "../core/view.js";
@@ -44,17 +44,16 @@ export class Workspace {
       this.#panels,
       sys.make(Group, {},
         sys.make(Border, { all: 2 }, sys.make(Clock, {})),
-        sys.make(Button, {
+        sys.make(Border, {
+          all: 2,
           background: 0x222222ff,
-          onClick: () => {
+          ...makeButton(() => {
             big = !big;
             sys.resize(320 * (+big + 1), 180 * (+big + 1));
             sys.layoutTree();
-          },
+          }).all
         },
-          sys.make(Border, { all: 2 },
-            sys.make(Label, { text: 'resize' })
-          )
+          sys.make(Label, { text: 'resize' })
         )
       ),
     );
@@ -102,15 +101,15 @@ export class Workspace {
 
     this.#desktop.addChild(panel);
 
-    const button = this.sys.make(Button, {},
-      this.sys.make(Border, { all: 2 },
-        this.sys.make(Label, { text: panel.title })
-      )
+    const button = this.sys.make(Border, {
+      all: 2,
+      ...makeButton(() => {
+        panel.show();
+        this.sys.focus(panel);
+      }).all
+    },
+      this.sys.make(Label, { text: panel.title })
     );
-    button.onClick = () => {
-      panel.show();
-      this.sys.focus(panel);
-    };
     this.#panels.addChild(button);
     this.#panels.layoutTree();
 
@@ -123,15 +122,8 @@ export class Workspace {
   }
 
   addProgram(title: string, launch: (sys: System) => void) {
-    this.#icons.addChild(this.sys.make(Button, {
-      onClick: () => {
-        launch(this.sys);
-        // this.sys.layoutTree();
-      },
-    },
-      this.sys.make(Border, { all: 2 },
-        this.sys.make(Label, { text: title })
-      )
+    this.#icons.addChild(this.sys.make(Border, { all: 2, ...makeButton(() => launch(this.sys)).all },
+      this.sys.make(Label, { text: title })
     ));
     this.sys.layoutTree();
   }
