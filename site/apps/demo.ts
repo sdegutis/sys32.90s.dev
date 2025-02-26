@@ -117,16 +117,55 @@ export function demo(sys: System) {
     };
   }
 
-  setInterval(() => {
-    on.val = !on.val;
-  }, 1000);
+  // setInterval(() => {
+  //   on.val = !on.val;
+  // }, 1000);
 
-  function reactTo<V extends View, T extends V[K], K extends keyof V>(attr: K, reactable: Reactable<T>, view: V) {
-    reactable.watch(data => view[attr] = data);
+  function wrapFn<V extends View, K extends keyof V, F extends V[K]>(attr: K, view: V, fn: F) {
+    // const old = view[attr].bind(view);
+    // view[attr] = (...args: any[]) => {
+    //   old.call(view, ...args);
+    //   fn();
+    // };
+    // return
+  }
+
+  function reactTo<V extends View, K extends keyof V, T extends V[K]>(attr: K, reactable: Reactable<T>, view: V) {
+    let stop: () => void;
+
+    const oldAdopted = view.adopted;
+    view.adopted = () => {
+      console.log('startgin')
+      oldAdopted?.call(view);
+      stop = reactable.watch(data => view[attr] = data);
+    };
+
+    const oldAbandoned = view.abandoned;
+    view.abandoned = () => {
+      console.log('stopping')
+      oldAbandoned?.call(view);
+      stop();
+      stop = undefined!;
+    };
+
     return view;
   }
 
   const button = makeButton(() => { on.val = !on.val; });
+
+  const checkmark = sys.make(View, { background: 0xffffffff, w: 2, h: 2 });
+
+  setTimeout(() => {
+    const parent = checkmark.parent!;
+    checkmark.remove();
+
+    setTimeout(() => {
+      parent.addChild(checkmark);
+    }, 2000);
+
+
+  }, 1000);
+
 
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
@@ -135,7 +174,7 @@ export function demo(sys: System) {
         sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
           sys.make(Border, { all: 1 },
             sys.make(Border, {},
-              reactTo('visible', on, sys.make(View, { background: 0xffffffff, w: 2, h: 2 }))
+              reactTo('visible', on, checkmark)
             )
           )
         ),

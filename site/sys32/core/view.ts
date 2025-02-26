@@ -89,4 +89,8 @@ export class View {
     this.sys.layoutTree(this);
   }
 
+  remove() {
+    this.parent?.removeChild(this);
+  }
+
 }
