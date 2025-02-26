@@ -78,39 +78,6 @@ export function demo(sys: System) {
     };
   }
 
-
-  function wrapFn<V extends View, K extends keyof V, F extends V[K]>(attr: K, view: V, fn: F) {
-
-
-    // const old = view[attr].bind(view);
-    // view[attr] = (...args: any[]) => {
-    //   old.call(view, ...args);
-    //   fn();
-    // };
-    // return
-  }
-
-  function reactTo<V extends View, K extends keyof V, T extends V[K]>(attr: K, reactable: Reactable<T>, view: V) {
-    let stop: () => void;
-
-    const oldAdopted = view.adopted;
-    view.adopted = () => {
-      console.log('startgin')
-      oldAdopted?.call(view);
-      stop = reactable.watch(data => view[attr] = data);
-    };
-
-    const oldAbandoned = view.abandoned;
-    view.abandoned = () => {
-      console.log('stopping')
-      oldAbandoned?.call(view);
-      stop();
-      stop = undefined!;
-    };
-
-    return view;
-  }
-
   const on = new Reactable(true);
   on.watch(b => console.log({ b }))
   // setInterval(() => { on.val = !on.val; }, 1000);
@@ -124,23 +91,29 @@ export function demo(sys: System) {
   const zoom = new Reactable(3);
   zoom.watch(n => main.layoutTree(), false)
 
+  function useDataSources<T extends View>(view: T, sources: { [K in keyof T]?: Reactable<T[K]> }) {
+    for (const [key, r] of Object.entries(sources)) {
+      view.dataSources[key] = r;
+    }
+  }
+
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
 
       digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3, min: 2, max: 7 }), slider => {
-        slider.useDataSources({ val: zoom });
+        useDataSources(slider, { val: zoom });
       }),
       sys.make(GroupX, { gap: 1, ...button.mouse },
         digInto(sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
           sys.make(Border, { all: 1 },
             sys.make(Border, {},
-              reactTo('visible', on, digInto(sys.make(View, { passthrough: true, background: 0xffffffff, }), view => {
-                view.useDataSources({ w: zoom, h: zoom });
-              }))
+              digInto(sys.make(View, { passthrough: true, background: 0xffffffff, }), view => {
+                useDataSources(view, { w: zoom, h: zoom, visible: on });
+              })
             )
           )
         ), border => {
-          // border.useDataSources({ r: zoom })
+          useDataSources(border, { r: zoom })
         }),
         sys.make(Label, { text: 'hey' }),
       ),

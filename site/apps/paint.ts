@@ -111,7 +111,9 @@ export default function paint(sys: System) {
   }
 
   function useDataSources<T extends View, K extends keyof T>(view: T, sources: Record<K, Reactable<T[K]>>) {
-    view.useDataSources(sources);
+    for (const [key, r] of Object.entries<Reactable<any>>(sources)) {
+      view.dataSources[key] = r;
+    }
     return view;
   }
 
