@@ -91,29 +91,25 @@ export function demo(sys: System) {
   const zoom = new Reactable(3);
   zoom.watch(n => main.layoutTree(), false)
 
-  function useDataSources<T extends View>(view: T, sources: { [K in keyof T]?: Reactable<T[K]> }) {
-    for (const [key, r] of Object.entries(sources)) {
-      view.dataSources[key] = r;
-    }
-  }
-
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
 
       digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3, min: 2, max: 7 }), slider => {
-        useDataSources(slider, { val: zoom });
+        slider.useDataSource('val', zoom);
       }),
       sys.make(GroupX, { gap: 1, ...button.mouse },
         digInto(sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
           sys.make(Border, { all: 1 },
             sys.make(Border, {},
               digInto(sys.make(View, { passthrough: true, background: 0xffffffff, }), view => {
-                useDataSources(view, { w: zoom, h: zoom, visible: on });
+                view.useDataSource('w', zoom);
+                view.useDataSource('h', zoom);
+                view.useDataSource('visible', on);
               })
             )
           )
         ), border => {
-          useDataSources(border, { r: zoom })
+          border.useDataSource('r', zoom);
         }),
         sys.make(Label, { text: 'hey' }),
       ),

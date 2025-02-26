@@ -96,4 +96,8 @@ export class View {
 
   dataSources: Record<any, Reactable<any>> = {};
 
+  useDataSource<K extends keyof this>(k: K, r: Reactable<this[K]>) {
+    this.dataSources[k] = r;
+  }
+
 }

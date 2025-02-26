@@ -110,11 +110,9 @@ export default function paint(sys: System) {
     makeColorButton(color);
   }
 
-  function useDataSources<T extends View, K extends keyof T>(view: T, sources: Record<K, Reactable<T[K]>>) {
-    for (const [key, r] of Object.entries<Reactable<any>>(sources)) {
-      view.dataSources[key] = r;
-    }
-    return view;
+  function digInto<T>(t: T, fn: (t: T) => void) {
+    fn(t);
+    return t;
   }
 
   const statusBar = sys.make(Spaced, { dir: 'x' },
@@ -125,7 +123,9 @@ export default function paint(sys: System) {
       sys.make(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel,
     ),
     sys.make(GroupX, {},
-      useDataSources(sys.make(Slider, { knobSize: 3, w: 20 }), { val: zoom })
+      digInto(sys.make(Slider, { knobSize: 3, w: 20 }), slider => {
+        slider.useDataSource('val', zoom);
+      })
     )
   );
 
