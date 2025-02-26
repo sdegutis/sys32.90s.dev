@@ -11,7 +11,7 @@ import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
-import { Reactable } from "../sys32/util/events.js";
+import { multiplex, Reactable } from "../sys32/util/events.js";
 import { centerLayout } from "../sys32/util/layouts.js";
 import { passedFocus } from "../sys32/util/unsure.js";
 
@@ -88,16 +88,14 @@ export function demo(sys: System) {
 
           const on = currentColor.adapt(n => n === c).reactive;
 
-          const multi = new Reactable({ selected: false, hovered: false, pressed: false });
-
-          on.watch(val => multi.val = { ...multi.val, selected: val });
-          button.hovered.watch(val => multi.val = { ...multi.val, hovered: val });
-          button.pressed.watch(val => multi.val = { ...multi.val, pressed: val });
-
-          const borderColor = multi.adapt<number>(v => {
-            if (v.selected) return 0xffffffff;
-            if (v.pressed) return 0xffffff11;
-            if (v.hovered) return 0xffffff22;
+          const borderColor = multiplex({
+            selected: on,
+            hovered: button.hovered,
+            pressed: button.pressed,
+          }).adapt<number>(data => {
+            if (data.selected) return 0xffffffff;
+            if (data.pressed) return 0xffffff11;
+            if (data.hovered) return 0xffffff22;
             return 0;
           }).reactive;
 

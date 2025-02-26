@@ -43,3 +43,12 @@ export class Reactable<T> {
   }
 
 }
+
+export function multiplex<T extends Record<string, any>>(reactives: { [K in keyof T]: Reactable<T[K]> }): Reactable<T> {
+  const initial = Object.fromEntries(Object.entries<Reactable<any>>(reactives).map(([key, val]) => [key, val.val])) as T;
+  const m = new Reactable(initial);
+  for (const [key, r] of Object.entries<Reactable<any>>(reactives)) {
+    r.watch(data => m.val = { ...m.val, [key]: data });
+  }
+  return m;
+}
