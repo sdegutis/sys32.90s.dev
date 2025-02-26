@@ -118,7 +118,10 @@ export function demo(sys: System) {
         ), border => {
           border.useDataSource('r', zoom);
         }),
-        sys.make(Label, { text: 'hey' }),
+        digInto(sys.make(Label, { text: 'hey' }), label => {
+          const r = zoom2.reactive.adapt(n => n.toString()).reactive;
+          label.useDataSource('text', r)
+        }),
       ),
 
       sys.make(Group, { dir: 'y', gap: 1 },
