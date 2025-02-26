@@ -63,6 +63,7 @@ export class System {
     }, { signal: this.#destroyer.signal });
 
     canvas.addEventListener('mousedown', (e) => {
+      canvas.focus();
       e.preventDefault();
       this.mouse.button = e.button;
       this.#hovered.focus();
