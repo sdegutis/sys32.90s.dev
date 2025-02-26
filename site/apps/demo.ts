@@ -122,23 +122,26 @@ export function demo(sys: System) {
   }
 
   const zoom = new Reactable(3);
+  zoom.watch(n => main.layoutTree(), false)
 
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
 
+      digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3, min: 2, max: 7 }), slider => {
+        slider.useDataSources({ val: zoom });
+      }),
       sys.make(GroupX, { gap: 1, ...button.mouse },
-        digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3 }), slider => {
-          slider.useDataSources({ val: zoom });
-        }),
-        sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
+        digInto(sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
           sys.make(Border, { all: 1 },
             sys.make(Border, {},
-              reactTo('visible', on, digInto(sys.make(View, { background: 0xffffffff, }), view => {
+              reactTo('visible', on, digInto(sys.make(View, { passthrough: true, background: 0xffffffff, }), view => {
                 view.useDataSources({ w: zoom, h: zoom });
               }))
             )
           )
-        ),
+        ), border => {
+          // border.useDataSources({ r: zoom })
+        }),
         sys.make(Label, { text: 'hey' }),
       ),
 
