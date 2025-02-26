@@ -1,5 +1,5 @@
 import { Border } from "../sys32/containers/border.js";
-import { Group, GroupY } from "../sys32/containers/group.js";
+import { Group, GroupX, GroupY } from "../sys32/containers/group.js";
 import { Button, wrapButton } from "../sys32/controls/button.js";
 import { Checkbox } from "../sys32/controls/checkbox.js";
 import { ImageView } from "../sys32/controls/image.js";
@@ -25,14 +25,16 @@ export default (sys: System) => {
   sys.focus(panel);
 };
 
-class Checkbox2 extends Button {
+class Checkbox2 extends View {
 
-  source = new Reactable(false);
+  visible2 = new Reactable(false);
 
   #stopWatching!: () => void;
 
+  override passthrough = true;
+
   override adopted(): void {
-    this.#stopWatching = this.source.watch(b => {
+    this.#stopWatching = this.visible2.watch(b => {
       this.sys.needsRedraw = true;
     });
   }
@@ -47,14 +49,15 @@ class Checkbox2 extends Button {
   // }
 
   override draw(): void {
-    super.draw();
-    this.sys.crt.rectFill(0, 0, this.w, this.h, this.source.val ? 0xffffff33 : 0);
+    if (this.visible2.val) {
+      super.draw();
+    }
   }
 
-  override onClick(): void {
-    super.onClick?.();
-    this.source.val = !this.source.val;
-  }
+  // override onClick(): void {
+  //   super.onClick?.();
+  //   this.source.val = !this.source.val;
+  // }
 
 }
 
@@ -72,19 +75,65 @@ export function demo(sys: System) {
     return config;
   }
 
-  const main = sys.make(Border, { all: 2, borderColor: 0xff000033 },
+  function makeButton<T extends View>(
+    onClick: () => void,
+    hoverColor = 0xffffff22,
+    pressColor = 0xffffff11,
+  ) {
+
+    const pressed = new Reactable(false);
+    const hovered = new Reactable(false);
+
+    function wrapDraw(view: View) {
+      const oldDraw = view.draw;
+      view.draw = function (this: View) {
+        oldDraw.call(view);
+        if (pressed.val) {
+          this.sys.crt.rectFill(0, 0, this.w, this.h, pressColor);
+        }
+        else if (hovered.val) {
+          this.sys.crt.rectFill(0, 0, this.w, this.h, hoverColor);
+        }
+      }
+      return view;
+    }
+
+    const onMouseEnter = () => hovered.val = true;
+    const onMouseExit = () => hovered.val = false;
+    const onMouseDown = function (this: View) {
+      pressed.val = true;
+      const cancel = this.sys.trackMouse({
+        move: () => {
+          if (!hovered) {
+            pressed.val = false;
+            cancel();
+          }
+        },
+        up: () => {
+          pressed.val = false;
+          onClick();
+        },
+      });
+    };
+
+    return { onMouseEnter, onMouseExit, onMouseDown, wrapDraw };
+  }
+
+  const button = makeButton(() => {
+    on.val = !on.val;
+  });
+
+  const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
 
-      sys.make(GroupY, { gap: 1 },
-        sys.make(Button, { onClick: () => { on.val = !on.val } },
-          sys.make(Label, { text: 'hey' })
-        ),
-        sys.make(Border, { borderColor: 0x003300ff, all: 1, },
-          sys.make(Border, { borderColor: 0, all: 1, },
+      sys.make(GroupX, { gap: 1, ...button },
+        sys.make(Label, { text: 'hey' }),
+        sys.make(Border, { borderColor: 0xffffff33, all: 1, },
+          button.wrapDraw(sys.make(Border, { all: 1 },
             sys.make(Border, {},
-              sys.make(Checkbox2, { source: on, w: 4, h: 4 })
+              sys.make(Checkbox2, { visible2: on, background: 0xffffffff, w: 2, h: 2 })
             )
-          )
+          ))
         )
       ),
 
