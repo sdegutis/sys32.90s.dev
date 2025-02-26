@@ -91,6 +91,12 @@ export function demo(sys: System) {
   const zoom = new Reactable(3);
   zoom.watch(n => main.layoutTree(), false)
 
+  const zoom2 = zoom.adapt(n => n * 2);
+
+  setTimeout(() => {
+    zoom2.disconnect();
+  }, 1000);
+
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
 
@@ -102,7 +108,7 @@ export function demo(sys: System) {
           sys.make(Border, { all: 1 },
             sys.make(Border, {},
               digInto(sys.make(View, { passthrough: true, background: 0xffffffff, }), view => {
-                view.useDataSource('w', zoom.adapt(n => n * 2));
+                view.useDataSource('w', zoom2.reactive);
                 view.useDataSource('h', zoom);
                 view.useDataSource('visible', on);
               })

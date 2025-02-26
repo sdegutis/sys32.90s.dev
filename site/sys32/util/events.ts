@@ -54,9 +54,9 @@ export class Reactable<T> {
   }
 
   adapt<U>(fn: (data: T) => U) {
-    const r = new Reactable<U>(fn(this.val));
-    const done = this.watch(data => r.val = fn(data), false);
-    return r;
+    const reactive = new Reactable<U>(fn(this.val));
+    const disconnect = this.watch(data => reactive.val = fn(data), false);
+    return { reactive, disconnect };
   }
 
 }
