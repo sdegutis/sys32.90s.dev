@@ -89,10 +89,10 @@ export function demo(sys: System) {
   }
 
   const zoom = new Reactable(3);
-  zoom.watch(n => main.layoutTree(), false)
+  zoom.watch(n => main.parent?.layoutTree(), false)
 
   const zoom2 = zoom.adapt(n => n * 2);
-  zoom2.reactive.watch(n => main.layoutTree(), false)
+  zoom2.reactive.watch(n => main.parent?.layoutTree(), false)
 
   setTimeout(() => {
     zoom2.disconnect();
