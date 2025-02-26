@@ -1,4 +1,5 @@
 import { View } from "../core/view.js";
+import { Reactable } from "../util/events.js";
 
 export class Button extends View {
 
@@ -78,8 +79,8 @@ export function makeButton(
   hoverColor = 0xffffff22,
   pressColor = 0xffffff11,
 ) {
-  let pressed = false;
-  let hovered = false;
+  const pressed = new Reactable(false);
+  const hovered = new Reactable(false);
 
   function draw(this: View) {
     (Object.getPrototypeOf(this) as View).draw.call(this);
@@ -91,19 +92,19 @@ export function makeButton(
     }
   }
 
-  const onMouseEnter = () => hovered = true;
-  const onMouseExit = () => hovered = false;
+  const onMouseEnter = () => hovered.val = true;
+  const onMouseExit = () => hovered.val = false;
   const onMouseDown = function (this: View) {
-    pressed = true;
+    pressed.val = true;
     const cancel = this.sys.trackMouse({
       move: () => {
         if (!hovered) {
-          pressed = false;
+          pressed.val = false;
           cancel();
         }
       },
       up: () => {
-        pressed = false;
+        pressed.val = false;
         onClick();
       },
     });
@@ -120,5 +121,7 @@ export function makeButton(
     draw,
     mouse,
     all: { draw, ...mouse },
+    pressed,
+    hovered,
   };
 }

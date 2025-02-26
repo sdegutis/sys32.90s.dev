@@ -70,23 +70,46 @@ export function demo(sys: System) {
     return group;
   }
 
+  const COLORS = [
+    0x000000ff, 0x1D2B53ff, 0x7E2553ff, 0x008751ff,
+    0xAB5236ff, 0x5F574Fff, 0xC2C3C7ff, 0xFFF1E8ff,
+    0xFF004Dff, 0xFFA300ff, 0xFFEC27ff, 0x00E436ff,
+    0x29ADFFff, 0x83769Cff, 0xFF77A8ff, 0xFFCCAAff,
+  ];
+
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
-    sys.make(Group, { gap: 2, background: 0x0000ff33 },
+    sys.make(GroupX, { gap: 4, background: 0x0000ff33 },
 
       (() => {
-        const on = new Reactable(true);
-        const button = makeButton(() => { on.val = !on.val; });
-        let checkmark;
-        const group = sys.make(GroupX, { gap: 2, ...button.mouse },
-          sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
-            sys.make(Border, { all: 1 },
-              checkmark = sys.make(View, { passthrough: true, background: 0xffffffff, w: 2, h: 2 })
-            )
-          ),
-          sys.make(Label, { text: 'radio' }),
-        );
-        checkmark.useDataSource('visible', on);
-        return group;
+        const currentColor = new Reactable(COLORS[3]);
+
+        const radios = COLORS.map(c => {
+          const button = makeButton(() => { currentColor.val = c; });
+
+          const on = currentColor.adapt(n => n === c).reactive;
+
+          const multi = new Reactable({ selected: false, hovered: false, pressed: false });
+
+          on.watch(val => multi.val = { ...multi.val, selected: val });
+          button.hovered.watch(val => multi.val = { ...multi.val, hovered: val });
+          button.pressed.watch(val => multi.val = { ...multi.val, pressed: val });
+
+          const borderColor = multi.adapt<number>(v => {
+            if (v.selected) return 0xffffffff;
+            if (v.pressed) return 0xffffff11;
+            if (v.hovered) return 0xffffff22;
+            return 0;
+          }).reactive;
+
+          const colorView = sys.make(View, { passthrough: true, background: c, w: 4, h: 4 });
+          const border = sys.make(Border, { borderColor: 0xffffff33, all: 1, ...button.mouse }, colorView);
+
+          border.useDataSource('borderColor', borderColor);
+
+          return border;
+        });
+
+        return sys.make(GroupY, { gap: 2 }, ...radios);
       })(),
 
       sys.make(GroupY, { gap: 2 },
