@@ -92,6 +92,7 @@ export function demo(sys: System) {
   zoom.watch(n => main.layoutTree(), false)
 
   const zoom2 = zoom.adapt(n => n * 2);
+  zoom2.reactive.watch(n => main.layoutTree(), false)
 
   setTimeout(() => {
     zoom2.disconnect();
