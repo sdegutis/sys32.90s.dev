@@ -27,7 +27,7 @@ const axeImage = new Bitmap([0xaaaaaaff], 4, [
   0, 1, 1, 0,
   0, 1, 1, 0,
   1, 0, 0, 1,]);
-const adjImage = new Bitmap([0xffffff11], 3, [
+const adjImage = new Bitmap([0xffffff77], 3, [
   0, 0, 1,
   0, 0, 1,
   1, 1, 1,]);
@@ -70,7 +70,7 @@ export class Panel extends View {
     this.children = [
 
       this.border = this.sys.make(Border, {
-        borderColor: 0x990000ff,
+        borderColor: 0x005599ff,
         all: 1,
         layout: makeVacuumLayout(1),
       },

@@ -27,7 +27,7 @@ export class Workspace {
     sys.root.layout = makeVacuumLayout();
 
     this.#icons = sys.make(View, {
-      background: 0x330000ff,
+      background: 0x222222ff,
       layout: makeFlowLayout(3, 10),
       adjust: function () {
         this.x = this.y = 0;
