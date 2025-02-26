@@ -25,7 +25,7 @@ export class Bitmap {
   }
 
   static fromString(s: string) {
-    const [top, bottom] = s.split('\n\n');
+    const [top, bottom] = s.replace(/\r\n/g, '\n').split('\n\n');
     const colors = top.split('\n').map(s => parseInt(s, 16));
     const lines = bottom.trim().split('\n').map(s => s.split(' ').map(s => parseInt(s, 16)));
     const pixels: number[] = [];
