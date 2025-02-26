@@ -80,6 +80,6 @@ export function dragResize(sys: System, view: { w: number, h: number }) {
     const diffy = sys.mouse.y - startSize.h;
     view.w = startSize.w + diffx - offx;
     view.h = startSize.h + diffy - offy;
-    return { x: diffx - offx, y: diffy - offy };
+    return { w: diffx - offx, h: diffy - offy };
   };
 }

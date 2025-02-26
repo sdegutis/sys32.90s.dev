@@ -107,8 +107,7 @@ export class Panel extends View {
               this.sys.trackMouse({
                 move: () => {
                   const moved = drag();
-                  const d = Math.hypot(moved.x, moved.y);
-                  if (d > 1) {
+                  if (Math.hypot(moved.x, moved.y) > 1) {
                     counter.count = 0;
                     this.#lastPos = undefined!;
                   }
