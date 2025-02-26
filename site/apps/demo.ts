@@ -73,7 +73,7 @@ export function demo(sys: System) {
   ];
 
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
-    sys.make(GroupX, { gap: 4, background: 0x0000ff33 },
+    sys.make(GroupX, { align: 'n', gap: 4, background: 0x0000ff33 },
 
       (() => {
         const currentColor = new Reactable(COLORS[3]);

@@ -4,6 +4,7 @@ export class Group extends View {
 
   gap = 0;
   dir: 'x' | 'y' = 'x';
+  align: 'a' | 'n' | 'z' = 'n';
 
   override adjust(): void {
     const dw = this.dir === 'x' ? 'w' : 'h';
@@ -29,7 +30,9 @@ export class Group extends View {
       const child = this.children[i];
       child[dx] = x;
       x += child[dw] + this.gap;
-      child[dy] = Math.round((this[dh] - child[dh]) / 2);
+      child[dy] = this.align === 'n' ? Math.round((this[dh] - child[dh]) / 2) :
+        this.align === 'a' ? 0 :
+          this[dh] - child[dh];
     }
   }
 

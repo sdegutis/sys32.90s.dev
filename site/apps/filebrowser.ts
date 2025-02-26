@@ -43,10 +43,22 @@ export default (sys: System) => {
   // })()
 
   const sidelist = sys.make(GroupY, { gap: 1 });
-  const filelist = sys.make(GroupY, {});
+  const filelist = sys.make(GroupY, { align: 'a' });
+
+  function sortBy<T, U>(fn: (o: T) => U) {
+    return (a: T, b: T) => {
+      const aa = fn(a);
+      const bb = fn(b);
+      if (aa < bb) return -1;
+      if (aa > bb) return +1;
+      return 0;
+    };
+  }
 
   async function showfiles(folder: Folder) {
     const files = await folder?.list();
+
+    files.sort(sortBy(f => f.name));
 
     filelist.children = files.map(file => {
       const button = makeButton(() => {
