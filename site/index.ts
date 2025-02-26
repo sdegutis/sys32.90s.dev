@@ -1,6 +1,6 @@
 import demo from "./apps/demo.js";
-import listfiles from "./apps/listfiles.js";
-import files from "./apps/listfiles.js";
+import filebrowser from "./apps/filebrowser.js";
+import files from "./apps/filebrowser.js";
 import mapmaker from "./apps/mapmaker.js";
 import paint from "./apps/paint.js";
 import { Scroll } from "./sys32/containers/scroll.js";
@@ -20,8 +20,8 @@ sys.crt.autoscale();
 // sys.root.layout = makeVacuumLayout()
 
 // mapmaker(sys);
-listfiles(sys)
-demo(sys)
+filebrowser(sys)
+// demo(sys)
 // paint(sys);
 // texttest(sys);
 sys.layoutTree()
