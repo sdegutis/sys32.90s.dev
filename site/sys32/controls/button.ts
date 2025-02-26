@@ -84,10 +84,10 @@ export function makeButton(
 
   function draw(this: View) {
     (Object.getPrototypeOf(this) as View).draw.call(this);
-    if (pressed) {
+    if (pressed.val) {
       this.sys.crt.rectFill(0, 0, this.w, this.h, pressColor);
     }
-    else if (hovered) {
+    else if (hovered.val) {
       this.sys.crt.rectFill(0, 0, this.w, this.h, hoverColor);
     }
   }
@@ -98,7 +98,7 @@ export function makeButton(
     pressed.val = true;
     const cancel = this.sys.trackMouse({
       move: () => {
-        if (!hovered) {
+        if (!hovered.val) {
           pressed.val = false;
           cancel();
         }
