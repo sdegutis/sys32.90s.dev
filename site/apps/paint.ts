@@ -12,32 +12,9 @@ import { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeStripeDrawer } from "../sys32/util/draw.js";
-import { multifn } from "../sys32/util/events.js";
+import { multifn, Reactable } from "../sys32/util/events.js";
 import { makeFlowLayout } from "../sys32/util/layouts.js";
 import { dragResize } from "../sys32/util/selections.js";
-
-export class Reactable<T> {
-
-  #data;
-  #changed = multifn<T>();
-
-  constructor(data: T) {
-    this.#data = data;
-  }
-
-  get val() { return this.#data; }
-  set val(data: T) {
-    this.#data = data;
-    this.#changed(data);
-  }
-
-  watch(fn: (data: T) => void, initial = true) {
-    const done = this.#changed.watch(fn);
-    if (initial) this.#changed(this.val);
-    return done;
-  }
-
-}
 
 export default function paint(sys: System) {
   const zoom = new Reactable(4);
@@ -141,7 +118,7 @@ export default function paint(sys: System) {
       sys.make(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel,
     ),
     sys.make(GroupX, {},
-      sys.make(Slider, { knobSize: 3, w: 20, val: zoom })
+      sys.make(Slider, { knobSize: 3, w: 20, val: zoom.val })
     )
   );
 

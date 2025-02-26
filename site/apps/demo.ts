@@ -11,8 +11,8 @@ import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
+import { Reactable } from "../sys32/util/events.js";
 import { centerLayout } from "../sys32/util/layouts.js";
-import { Reactable } from "./paint.js";
 
 export default (sys: System) => {
   const panel = sys.make(Panel, {

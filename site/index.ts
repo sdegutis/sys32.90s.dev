@@ -1,7 +1,7 @@
 import demo from "./apps/demo.js";
 import files from "./apps/files.js";
 import mapmaker from "./apps/mapmaker.js";
-import paint from "./apps/paint.js";
+import paint, { } from "./apps/paint.js";
 import { Scroll } from "./sys32/containers/scroll.js";
 import { TextArea } from "./sys32/containers/textarea.js";
 import { Label } from "./sys32/controls/label.js";
@@ -9,7 +9,7 @@ import { System } from "./sys32/core/system.js";
 import { View } from "./sys32/core/view.js";
 import { Panel } from "./sys32/desktop/panel.js";
 import { Workspace } from "./sys32/desktop/workspace.js";
-import { Listener } from "./sys32/util/events.js";
+import { Listener, Reactable } from "./sys32/util/events.js";
 import { makeVacuumLayout } from "./sys32/util/layouts.js";
 
 
@@ -19,22 +19,31 @@ class Foo {
   x = 1;
   y = 2;
 
-  #watchers: Record<any, Listener<any, any>> = {};
+  #datas: Record<any, Reactable<any>> = {};
 
   watch<K extends keyof this, T = this[K]>(key: K, fn: (data: T) => void) {
-    let watcher = this.#watchers[key];
-    if (!watcher) this.#watchers[key] = watcher = new Listener<T>();
-    return watcher.watch(fn);
+    return this.#datas[key].watch(fn);
   }
 
-  reflect() {
+  dataSource<K extends keyof this>(key: K) {
+    return this.#datas[key];
+  }
+
+  enableDataSources() {
     for (let [key, val] of Object.entries(this)) {
+      this.#datas[key] = new Reactable(val);
       if (Object.getOwnPropertyDescriptor(this, key)?.get) continue;
-      Reflect.defineProperty(this, key, {
+      Object.defineProperty(this, key, {
         enumerable: true,
-        set: (v) => this.#watchers[key]?.dispatch?.(val = v),
-        get: () => val,
+        set: (v) => this.#datas[key].val = v,
+        get: () => this.#datas[key].val,
       });
+    }
+  }
+
+  useDataSources<K extends keyof this>(sources: Record<K, Reactable<this[K]>>) {
+    for (const [key, r] of Object.entries<Reactable<any>>(sources)) {
+      this.#datas[key] = r;
     }
   }
 
@@ -47,8 +56,11 @@ class Bar extends Foo {
 
 }
 
+const two = new Reactable(9);
+
 const foo = new Foo();
-foo.reflect();
+foo.enableDataSources();
+foo.useDataSources({ x: two });
 const done = foo.watch('x', d => { console.log('watched', d) })
 foo.x = 234;
 foo.x = 235;
@@ -57,7 +69,7 @@ foo.x = 236;
 console.log(foo.x)
 
 const bar = new Bar();
-bar.reflect();
+bar.enableDataSources();
 const done2 = bar.watch('y', n => console.log('watched2', n))
 bar.y = 123;
 bar.x = 111;

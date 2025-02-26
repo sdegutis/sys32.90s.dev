@@ -31,3 +31,26 @@ export class Listener<T = void, U = void> {
   }
 
 }
+
+export class Reactable<T> {
+
+  #data;
+  #changed = multifn<T>();
+
+  constructor(data: T) {
+    this.#data = data;
+  }
+
+  get val() { return this.#data; }
+  set val(data: T) {
+    this.#data = data;
+    this.#changed(data);
+  }
+
+  watch(fn: (data: T) => void, initial = true) {
+    const done = this.#changed.watch(fn);
+    if (initial) this.#changed(this.val);
+    return done;
+  }
+
+}
