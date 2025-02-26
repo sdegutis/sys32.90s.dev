@@ -70,6 +70,19 @@ export function demo(sys: System) {
         return group;
       })(),
 
+      (() => {
+        let checkmark: View;
+        const button = makeButton(() => { checkmark.visible = !checkmark.visible; });
+        return sys.make(GroupX, { gap: 2, ...button.mouse },
+          sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
+            sys.make(Border, { all: 1 },
+              checkmark = sys.make(View, { passthrough: true, background: 0xffffffff, w: 2, h: 2 })
+            )
+          ),
+          sys.make(Label, { text: 'radio' })
+        );
+      })(),
+
       sys.make(GroupY, { gap: 4 },
 
         digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3, min: 2, max: 7 }), slider => {
