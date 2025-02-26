@@ -38,6 +38,7 @@ export class Slider extends View {
   }
 
   override draw(): void {
+    super.draw();
     const y1 = Math.floor(this.h / 2);
     this.sys.crt.rectFill(0, y1, this.w, 1, 0xffffff33);
     const p = (this.val - this.min) / (this.max - this.min);

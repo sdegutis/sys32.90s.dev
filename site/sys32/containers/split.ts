@@ -46,6 +46,7 @@ class SplitDivider extends View {
   }
 
   override draw(): void {
+    super.draw();
     if (this.pressed) {
       this.sys.crt.rectFill(0, 0, this.w, this.h, this.split.dividerColorPress);
     }

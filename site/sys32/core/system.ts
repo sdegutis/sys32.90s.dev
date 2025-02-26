@@ -266,10 +266,6 @@ export class System {
     this.crt.clip.x2 = Math.min(cx2, (this.crt.clip.cx + node.w - 1));
     this.crt.clip.y2 = Math.min(cy2, (this.crt.clip.cy + node.h - 1));
 
-    if ((node.background & 0x000000ff) > 0) {
-      this.crt.rectFill(0, 0, node.w, node.h, node.background);
-    }
-
     node.draw?.();
 
     for (let i = 0; i < node.children.length; i++) {

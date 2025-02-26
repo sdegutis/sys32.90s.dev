@@ -11,7 +11,6 @@ export class View {
   onMouseExit?(): void;
   onFocus?(): void;
   onBlur?(): void;
-  draw?(): void;
   layout?(): void;
   adjust?(): void;
   adopted?(): void;
@@ -74,6 +73,12 @@ export class View {
     child.parent = undefined!;
     child.abandoned?.();
     this.childrenChanged?.();
+  }
+
+  draw() {
+    if ((this.background & 0x000000ff) > 0) {
+      this.sys.crt.rectFill(0, 0, this.w, this.h, this.background);
+    }
   }
 
   focus() {

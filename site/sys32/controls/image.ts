@@ -12,7 +12,7 @@ export class ImageView extends View {
   }
 
   override draw(): void {
-    super.draw?.();
+    super.draw();
     this.image?.draw(this.sys.crt, 0, 0);
   }
 

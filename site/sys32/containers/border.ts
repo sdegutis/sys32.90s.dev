@@ -26,6 +26,7 @@ export class Border extends View {
   }
 
   override draw(): void {
+    super.draw();
     if ((this.borderColor & 0x000000ff) > 0) {
       this.sys.crt.rectFill(0, 0, this.w, this.u, this.borderColor);
       this.sys.crt.rectFill(0, this.h - this.d, this.w, this.d, this.borderColor);

@@ -245,6 +245,8 @@ class PaintView extends View {
   }
 
   override draw(): void {
+    super.draw();
+
     for (let x = 0; x < this.width; x++) {
       this.sys.crt.rectFill(x * this.zoom, 0, 1, this.h, 0x00000033);
     }
