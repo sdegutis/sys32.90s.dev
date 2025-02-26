@@ -7,7 +7,6 @@ import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
 import { Slider } from "../sys32/controls/slider.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
-import { Folder } from "../sys32/core/fs.js";
 import { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
@@ -85,6 +84,8 @@ export default function paint(sys: System) {
     toolArea.parent?.layoutTree();
   };
 
+  // paintView.getDataSource('color').watch(n => n)
+
   const colorRadios = new RadioGroup();
 
   function makeColorButton(color: number) {
@@ -124,7 +125,7 @@ export default function paint(sys: System) {
     ),
     sys.make(GroupX, {},
       digInto(sys.make(Slider, { knobSize: 3, w: 20 }), slider => {
-        slider.useDataSource('val', zoom);
+        slider.setDataSource('val', zoom);
       })
     )
   );

@@ -59,7 +59,7 @@ export function mapmaker(sys: System) {
             sys.make(View, { passthrough: true, w: 4, h: 4, background: col })
           );
 
-          border.useDataSource('borderColor', multiplex({
+          border.setDataSource('borderColor', multiplex({
             selected: selected,
             hovered: button.hovered,
             pressed: button.pressed,

@@ -155,13 +155,7 @@ export class System {
   #enableDataSources(view: View) {
     for (let [key, val] of Object.entries(view)) {
       if (key === 'dataSources') continue;
-      view.dataSources[key] ??= new Reactable(val);
-      if (Object.getOwnPropertyDescriptor(view, key)?.get) continue;
-      Object.defineProperty(view, key, {
-        enumerable: true,
-        set: (v) => view.dataSources[key].val = v,
-        get: () => view.dataSources[key].val,
-      });
+      view.setDataSource(key as keyof View, new Reactable(val));
     }
   }
 

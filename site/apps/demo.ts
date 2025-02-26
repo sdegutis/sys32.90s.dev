@@ -88,7 +88,7 @@ export function demo(sys: System) {
           const colorView = sys.make(View, { passthrough: true, background: c, w: 4, h: 4 });
           const border = sys.make(Border, { borderColor: 0xffffff33, all: 1, ...button.mouse }, colorView);
 
-          border.useDataSource('borderColor', multiplex({
+          border.setDataSource('borderColor', multiplex({
             selected: selected,
             hovered: button.hovered,
             pressed: button.pressed,
@@ -114,7 +114,7 @@ export function demo(sys: System) {
       sys.make(GroupY, { gap: 4 },
 
         digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3, min: 2, max: 7 }), slider => {
-          slider.useDataSource('val', zoom);
+          slider.setDataSource('val', zoom);
         }),
 
         sys.make(GroupX, { gap: 1, ...button.mouse },
@@ -122,23 +122,23 @@ export function demo(sys: System) {
             sys.make(Border, { all: 1 },
               sys.make(Border, {},
                 digInto(sys.make(View, { passthrough: true, background: 0xffffffff, }), view => {
-                  view.useDataSource('w', zoom2.reactive);
-                  view.useDataSource('h', zoom);
-                  view.useDataSource('visible', on);
+                  view.setDataSource('w', zoom2.reactive);
+                  view.setDataSource('h', zoom);
+                  view.setDataSource('visible', on);
                 })
               )
             )
           ), border => {
-            border.useDataSource('r', zoom);
+            border.setDataSource('r', zoom);
           }),
           digInto(sys.make(Label, { text: 'hey' }), label => {
             const r = zoom2.reactive.adapt(n => n.toString()).reactive;
-            label.useDataSource('text', r)
+            label.setDataSource('text', r)
           }),
         ),
 
         digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3, min: 2, max: 7 }), slider => {
-          slider.useDataSource('val', zoom);
+          slider.setDataSource('val', zoom);
         }),
 
         sys.make(GroupX, { gap: 1, ...button.mouse },
@@ -146,18 +146,18 @@ export function demo(sys: System) {
             sys.make(Border, { all: 1 },
               sys.make(Border, {},
                 digInto(sys.make(View, { passthrough: true, background: 0xffffffff, }), view => {
-                  view.useDataSource('w', zoom2.reactive);
-                  view.useDataSource('h', zoom);
-                  view.useDataSource('visible', on);
+                  view.setDataSource('w', zoom2.reactive);
+                  view.setDataSource('h', zoom);
+                  view.setDataSource('visible', on);
                 })
               )
             )
           ), border => {
-            border.useDataSource('r', zoom);
+            border.setDataSource('r', zoom);
           }),
           digInto(sys.make(Label, { text: 'hey' }), label => {
             const r = zoom2.reactive.adapt(n => n.toString()).reactive;
-            label.useDataSource('text', r)
+            label.setDataSource('text', r)
           }),
         ),
 

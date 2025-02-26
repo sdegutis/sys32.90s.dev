@@ -94,10 +94,25 @@ export class View {
     this.parent?.removeChild(this);
   }
 
-  dataSources: Record<any, Reactable<any>> = {};
+  #dataSources: Record<any, Reactable<any>> = {};
 
-  useDataSource<K extends keyof this>(k: K, r: Reactable<this[K]>) {
-    this.dataSources[k] = r;
+  getDataSource<K extends keyof this>(k: K): Reactable<this[K]> {
+    return this.#dataSources[k];
+  }
+
+  setDataSource<K extends keyof this>(k: K, r: Reactable<this[K]>) {
+    if (!(k in this.#dataSources)) {
+      if (Object.getOwnPropertyDescriptor(this, k)?.get) return;
+      this.#dataSources[k] = new Reactable(this[k]);
+
+      Object.defineProperty(this, k, {
+        enumerable: true,
+        set: (v) => this.#dataSources[k].val = v,
+        get: () => this.#dataSources[k].val,
+      });
+    }
+
+    this.#dataSources[k] = r;
   }
 
 }
