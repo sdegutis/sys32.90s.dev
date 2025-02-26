@@ -1,7 +1,9 @@
+import { Border } from "../sys32/containers/border.js";
 import { GroupX } from "../sys32/containers/group.js";
 import { PanedXB, PanedYB } from "../sys32/containers/paned.js";
 import { Scroll } from "../sys32/containers/scroll.js";
 import { Spaced } from "../sys32/containers/spaced.js";
+import { makeButton } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
 import { Slider } from "../sys32/controls/slider.js";
@@ -11,7 +13,7 @@ import { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeStripeDrawer } from "../sys32/util/draw.js";
-import { Reactable } from "../sys32/util/events.js";
+import { multiplex, Reactable } from "../sys32/util/events.js";
 import { makeFlowLayout } from "../sys32/util/layouts.js";
 import { dragResize } from "../sys32/util/selections.js";
 
@@ -84,32 +86,37 @@ export default function paint(sys: System) {
     toolArea.parent?.layoutTree();
   };
 
-  // paintView.getDataSource('color').watch(n => n)
-
-  const colorRadios = new RadioGroup();
+  const currentColor = paintView.getDataSource('color');
 
   function makeColorButton(color: number) {
-    const button = sys.make(RadioButton, {
-      checkColorOn: color,
-      checkColorOff: color,
-      borderColor: 0x99999933,
-      borderSelected: 0xffffffff,
-      borderHovered: 0xffffff77,
-      group: colorRadios, size: 4, padding: 1,
-      onSelected: () => {
-        paintView.color = color;
-        colorLabel.text = '0x' + color.toString(16).padStart(8, '0');
-        colorLabel.parent?.layoutTree();
-      }
-    });
-    toolArea.addChild(button);
+    const button = makeButton(() => { paintView.color = color; });
+    const selected = currentColor.adapt(n => paintView.color === color).reactive;
+    const colorView = sys.make(View, { passthrough: true, w: 4, h: 4, background: color, });
+    const border = sys.make(Border, { all: 1, ...button.all }, colorView);
 
-    if (!colorRadios.selected) colorRadios.select(button)
+    border.setDataSource('borderColor', multiplex({
+      selected: selected,
+      hovered: button.hovered,
+      pressed: button.pressed,
+    }).adapt<number>(data => {
+      if (data.selected) return 0xffffff77;
+      if (data.pressed) return 0xffffff11;
+      if (data.hovered) return 0xffffff33;
+      return 0;
+    }).reactive);
+
+    toolArea.addChild(border);
   }
 
   for (const color of COLORS) {
     makeColorButton(color);
   }
+
+  paintView.color = COLORS[3];
+
+  colorLabel.setDataSource('text',
+    currentColor.adapt(color => '0x' + color.toString(16).padStart(8, '0'))
+      .reactive)
 
   function digInto<T>(t: T, fn: (t: T) => void) {
     fn(t);
