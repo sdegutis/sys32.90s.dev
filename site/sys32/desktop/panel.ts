@@ -109,6 +109,7 @@ export class Panel extends View {
                   const moved = drag();
                   const d = Math.hypot(moved.x, moved.y);
                   if (d > 1) {
+                    counter.count = 0;
                     this.#lastPos = undefined!;
                   }
                 },
