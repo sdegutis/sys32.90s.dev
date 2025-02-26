@@ -1,5 +1,5 @@
 import { Border } from "../sys32/containers/border.js";
-import { Group, GroupX } from "../sys32/containers/group.js";
+import { Group, GroupX, GroupY } from "../sys32/containers/group.js";
 import { Button, makeButton, wrapButton } from "../sys32/controls/button.js";
 import { Checkbox } from "../sys32/controls/checkbox.js";
 import { ImageView } from "../sys32/controls/image.js";
@@ -54,27 +54,56 @@ export function demo(sys: System) {
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
 
-      digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3, min: 2, max: 7 }), slider => {
-        slider.useDataSource('val', zoom);
-      }),
-      sys.make(GroupX, { gap: 1, ...button.mouse },
-        digInto(sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
-          sys.make(Border, { all: 1 },
-            sys.make(Border, {},
-              digInto(sys.make(View, { passthrough: true, background: 0xffffffff, }), view => {
-                view.useDataSource('w', zoom2.reactive);
-                view.useDataSource('h', zoom);
-                view.useDataSource('visible', on);
-              })
+      sys.make(GroupY, { gap: 4 },
+
+        digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3, min: 2, max: 7 }), slider => {
+          slider.useDataSource('val', zoom);
+        }),
+
+        sys.make(GroupX, { gap: 1, ...button.mouse },
+          digInto(sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
+            sys.make(Border, { all: 1 },
+              sys.make(Border, {},
+                digInto(sys.make(View, { passthrough: true, background: 0xffffffff, }), view => {
+                  view.useDataSource('w', zoom2.reactive);
+                  view.useDataSource('h', zoom);
+                  view.useDataSource('visible', on);
+                })
+              )
             )
-          )
-        ), border => {
-          border.useDataSource('r', zoom);
+          ), border => {
+            border.useDataSource('r', zoom);
+          }),
+          digInto(sys.make(Label, { text: 'hey' }), label => {
+            const r = zoom2.reactive.adapt(n => n.toString()).reactive;
+            label.useDataSource('text', r)
+          }),
+        ),
+
+        digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3, min: 2, max: 7 }), slider => {
+          slider.useDataSource('val', zoom);
         }),
-        digInto(sys.make(Label, { text: 'hey' }), label => {
-          const r = zoom2.reactive.adapt(n => n.toString()).reactive;
-          label.useDataSource('text', r)
-        }),
+
+        sys.make(GroupX, { gap: 1, ...button.mouse },
+          digInto(sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
+            sys.make(Border, { all: 1 },
+              sys.make(Border, {},
+                digInto(sys.make(View, { passthrough: true, background: 0xffffffff, }), view => {
+                  view.useDataSource('w', zoom2.reactive);
+                  view.useDataSource('h', zoom);
+                  view.useDataSource('visible', on);
+                })
+              )
+            )
+          ), border => {
+            border.useDataSource('r', zoom);
+          }),
+          digInto(sys.make(Label, { text: 'hey' }), label => {
+            const r = zoom2.reactive.adapt(n => n.toString()).reactive;
+            label.useDataSource('text', r)
+          }),
+        ),
+
       ),
 
       sys.make(Group, { dir: 'y', gap: 1 },
