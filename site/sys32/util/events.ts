@@ -14,3 +14,20 @@ export function multifn<T = void, U = void>() {
 
   return all;
 }
+
+export class Listener<T = void, U = void> {
+
+  #list = new Set<(data: T) => U>();
+
+  dispatch(data: T) {
+    for (const fn of this.#list) {
+      fn(data);
+    }
+  }
+
+  watch(fn: (data: T) => U) {
+    this.#list.add(fn);
+    return () => { this.#list.delete(fn); };
+  }
+
+}
