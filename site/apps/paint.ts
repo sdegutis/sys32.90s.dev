@@ -33,8 +33,9 @@ export default function paint(sys: System) {
   size.watch(s => heightLabel.text = s.h.toString());
   size.watch(s => heightLabel.parent?.layoutTree());
 
+  paintView.setDataSource('zoom', zoom);
+
   zoom.watch(n => zoomLabel.text = n.toString());
-  zoom.watch(n => paintView.zoom = n);
   zoom.watch(n => panel.layoutTree(), false);
 
   const resizer = sys.make(View, {
@@ -157,37 +158,6 @@ export default function paint(sys: System) {
       toolArea,
     ),
   );
-
-  (async () => {
-
-
-
-    // console.log(await sys.fs.getFolder('a'))
-    // // await sys.fs.#drives['b'].putFile('foo', 'bar')
-    // // await sys.fs.#drives['b'].putFolder('qux')
-    // const b = await sys.fs.getFolder('a');
-    // await b!.putFolder('qux')
-    // await sys.fs.saveFile('a/qux/hmm3', 'bar123es')
-    // // console.log(await sys.fs.loadFile('b/qux/hmm'))
-    // const dir = await (await sys.fs.getFolder('a/qux'))?.list() ?? [];
-    // for (const f of dir) {
-    //   console.log(f);
-    // }
-
-
-    // await sys.fs.drives['d'].makeFolder('bar');
-    // await sys.fs.drives['d'].getFolder('bar').then(d => d!.makeFolder('qux'));
-
-
-    // const path = 'd/bar/qux/foo.bitmap';
-    // // const path = 'a/bar/qux/foo.bitmap';
-
-    // await sys.fs.saveFile(path, 'hello\nworld');
-
-    // const f = await sys.fs.loadFile(path);
-
-    // console.log(f)
-  })();
 
 
 
