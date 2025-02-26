@@ -67,7 +67,7 @@ export default (sys: System) => {
     )
   )
   sys.root.addChild(panel);
-  sys.focus(panel);
+  panel.focus();
 
 
   async function mountNew() {

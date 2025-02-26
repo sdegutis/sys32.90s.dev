@@ -52,4 +52,5 @@ function texttest(sys: System) {
   );
   sys.root.addChild(panel);
   panel.layoutTree();
+  panel.focus();
 }

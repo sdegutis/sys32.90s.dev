@@ -65,7 +65,7 @@ export class System {
     canvas.addEventListener('mousedown', (e) => {
       e.preventDefault();
       this.mouse.button = e.button;
-      this.focus(this.#hovered);
+      this.#hovered.focus();
       this.#hovered.onMouseDown?.();
       this.needsRedraw = true;
     }, { signal: this.#destroyer.signal });

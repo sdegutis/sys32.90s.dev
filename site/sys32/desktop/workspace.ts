@@ -73,22 +73,13 @@ export class Workspace {
 
   #stealPanels() {
     let did = false;
-    for (let i = 0; i < this.sys.root.children.length; i++) {
-      const child = this.sys.root.children[i];
-      if (child instanceof Panel) {
-        this.sys.root.removeChild(child);
-        this.#addPanel(child);
-        did = true;
-        i--;
-      }
-    }
-
     let i = this.sys.root.children.length;
     while (i--) {
       const child = this.sys.root.children[i];
       if (child instanceof Panel) {
         this.sys.root.removeChild(child);
         this.#addPanel(child);
+        child.focus();
         did = true;
       }
     }
@@ -105,7 +96,7 @@ export class Workspace {
       all: 2,
       ...makeButton(() => {
         panel.show();
-        this.sys.focus(panel);
+        panel.focus();
       }).all
     },
       this.sys.make(Label, { text: panel.title })

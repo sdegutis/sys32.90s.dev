@@ -22,7 +22,7 @@ export default (sys: System) => {
     )
   )
   sys.root.addChild(panel);
-  sys.focus(panel);
+  panel.focus();
 };
 
 export function demo(sys: System) {
