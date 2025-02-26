@@ -1,15 +1,13 @@
 import demo from "./apps/demo.js";
 import files from "./apps/files.js";
 import mapmaker from "./apps/mapmaker.js";
-import paint, { } from "./apps/paint.js";
+import paint from "./apps/paint.js";
 import { Scroll } from "./sys32/containers/scroll.js";
 import { TextArea } from "./sys32/containers/textarea.js";
-import { Label } from "./sys32/controls/label.js";
 import { System } from "./sys32/core/system.js";
 import { View } from "./sys32/core/view.js";
 import { Panel } from "./sys32/desktop/panel.js";
 import { Workspace } from "./sys32/desktop/workspace.js";
-import { Listener, Reactable } from "./sys32/util/events.js";
 import { makeVacuumLayout } from "./sys32/util/layouts.js";
 
 
