@@ -92,7 +92,6 @@ export class Panel extends View {
     this.children = [
 
       this.border = this.sys.make(Border, {
-        borderColor: 0x005599ff,
         all: 1,
         layout: makeVacuumLayout(1),
       },
@@ -168,6 +167,8 @@ export class Panel extends View {
       )
 
     ];
+
+    this.border.setDataSource('borderColor', this.getDataSource('panelFocused').adapt<number>(b => b ? 0x005599ff : 0).reactive);
   }
 
   close() {
@@ -205,8 +206,6 @@ export class Panel extends View {
     this.visible = false;
   }
 
-  #realbg?: number;
-
   override onFocus(): void {
     const old = focusedPanel.get(this.sys);
     if (old === this) return;
@@ -218,17 +217,18 @@ export class Panel extends View {
   }
 
   #unfocus() {
-    this.#realbg = this.border.borderColor;
-    this.border.borderColor = 0;
+    this.panelFocused = false;
   }
 
   #focus() {
-    if (this.#realbg !== undefined) this.border.borderColor = this.#realbg;
+    this.panelFocused = true;
 
     const parent = this.parent!;
     parent.removeChild(this);
     parent.addChild(this);
   }
+
+  panelFocused = false;
 
 }
 
