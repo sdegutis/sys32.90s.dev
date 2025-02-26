@@ -5,7 +5,6 @@ import { Scroll } from "../sys32/containers/scroll.js";
 import { Spaced } from "../sys32/containers/spaced.js";
 import { makeButton } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
-import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
 import { Slider } from "../sys32/controls/slider.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
@@ -61,12 +60,16 @@ export default function paint(sys: System) {
     }
   });
 
-  const toolRadios = new RadioGroup();
+  const toolRadios = paintView.getDataSource('tool');
 
-  const pencilTool = sys.make(RadioButton, { group: toolRadios, onSelected: () => { paintView.tool = 'pencil' } });
-  const eraserTool = sys.make(RadioButton, { group: toolRadios, onSelected: () => { paintView.tool = 'eraser' } });
+  const pencilButton = makeButton(() => { paintView.tool = 'pencil' });
+  const eraserButton = makeButton(() => { paintView.tool = 'eraser' });
 
-  toolRadios.select(pencilTool)
+  const pencilTool = sys.make(View, { w: 4, h: 4, ...pencilButton.all });
+  const eraserTool = sys.make(View, { w: 4, h: 4, ...eraserButton.all });
+
+  pencilTool.setDataSource('background', toolRadios.adapt<number>(t => t === 'pencil' ? 0xffffffff : 0x333333ff).reactive);
+  eraserTool.setDataSource('background', toolRadios.adapt<number>(t => t === 'eraser' ? 0xffffffff : 0x333333ff).reactive);
 
   const colorField = sys.make(TextField, { length: 9, background: 0x111111ff });
   const toolArea = sys.make(View, {
