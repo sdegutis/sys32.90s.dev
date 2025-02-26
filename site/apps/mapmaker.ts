@@ -1,13 +1,13 @@
 import { Border } from "../sys32/containers/border.js";
 import { PanedXA, PanedYA } from "../sys32/containers/paned.js";
-import { Button } from "../sys32/controls/button.js";
+import { Button, makeButton } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
-import { RadioButton, RadioGroup } from "../sys32/controls/radio.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeStripeDrawer } from "../sys32/util/draw.js";
+import { multiplex, Reactable } from "../sys32/util/events.js";
 import { makeFlowLayoutY, makeVacuumLayout } from "../sys32/util/layouts.js";
 import { TileSelection, dragMove } from "../sys32/util/selections.js";
 
@@ -38,13 +38,7 @@ export function mapmaker(sys: System) {
     sys.make(Label, { text: 'grid' })
   ));
 
-  let currentTool = 5;
-
-  const toolGroup = new RadioGroup();
-  toolGroup.onChange = () => {
-    const i = toolGroup.buttons.indexOf(toolGroup.selected!);
-    currentTool = i;
-  }
+  let currentTool = new Reactable(5);
 
 
   const mapArea = sys.make(View, {
@@ -56,15 +50,28 @@ export function mapmaker(sys: System) {
     sys.make(PanedYA, { w: 19, background: 0x333333ff },
       gridButton,
       sys.make(View, { layout: makeFlowLayoutY() },
-        ...COLORS.map((col, i) => sys.make(RadioButton, {
-          group: toolGroup,
-          checkColorOn: col,
-          checkColorOff: col,
-          borderColor: 0x00000000,
-          size: 4,
-          padding: 1,
-          w: 6, h: 6,
-        }))
+        ...COLORS.map((col, i) => {
+
+          const button = makeButton(() => { currentTool.val = i; });
+          const selected = currentTool.adapt(n => n === i).reactive;
+
+          const border = sys.make(Border, { all: 1, ...button.all },
+            sys.make(View, { passthrough: true, w: 4, h: 4, background: col })
+          );
+
+          border.useDataSource('borderColor', multiplex({
+            selected: selected,
+            hovered: button.hovered,
+            pressed: button.pressed,
+          }).adapt<number>(data => {
+            if (data.selected) return 0xffffff77;
+            if (data.pressed) return 0xffffff11;
+            if (data.hovered) return 0xffffff33;
+            return 0;
+          }).reactive);
+
+          return border;
+        })
       )
     ),
     sys.make(View, { background: 0x333344ff, layout: makeVacuumLayout() },
@@ -72,19 +79,16 @@ export function mapmaker(sys: System) {
     )
   );
 
-  toolGroup.select(toolGroup.buttons[currentTool]);
-
 
   root.onScroll = (up) => {
     if (up) {
-      currentTool--;
-      if (currentTool < 0) currentTool = 15;
+      currentTool.val--;
+      if (currentTool.val < 0) currentTool.val = 15;
     }
     else {
-      currentTool++;
-      if (currentTool === 16) currentTool = 0;
+      currentTool.val++;
+      if (currentTool.val === 16) currentTool.val = 0;
     }
-    toolGroup.select(toolGroup.buttons[currentTool]);
   };
 
 
@@ -108,7 +112,7 @@ export function mapmaker(sys: System) {
     useTool(tx: number, ty: number) {
       if (tx < 0 || ty < 0 || tx >= this.width || ty >= this.height) return;
       const ti = ty * this.width + tx;
-      this.terrain[ti] = currentTool;
+      this.terrain[ti] = currentTool.val;
     }
 
   }
