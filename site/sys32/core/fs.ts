@@ -245,7 +245,7 @@ export class FS {
   });
 
   async #loadUserDrives(db: IDBDatabase, drives: Record<string, Folder>) {
-    const found = await new Promise<{ drive: string, folder: FileSystemDirectoryHandle }[]>(res => {
+    const found = await new Promise<DbMount[]>(res => {
       const t = db.transaction('mounts', 'readonly');
       const store = t.objectStore('mounts');
       const r = store.getAll();
