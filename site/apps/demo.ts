@@ -26,42 +26,6 @@ export default (sys: System) => {
   sys.focus(panel);
 };
 
-class Checkbox2 extends View {
-
-  visible2 = new Reactable(false);
-
-  #stopWatching!: () => void;
-
-  override passthrough = true;
-
-  override adopted(): void {
-    this.#stopWatching = this.visible2.watch(b => {
-      this.sys.needsRedraw = true;
-    });
-  }
-
-  override abandoned(): void {
-    this.#stopWatching();
-    this.#stopWatching = undefined!;
-  }
-
-  // override adjust(): void {
-  //   this.w = this.h = 10;
-  // }
-
-  override draw(): void {
-    if (this.visible2.val) {
-      super.draw();
-    }
-  }
-
-  // override onClick(): void {
-  //   super.onClick?.();
-  //   this.source.val = !this.source.val;
-  // }
-
-}
-
 export function demo(sys: System) {
   const group1 = new RadioGroup();
   const group2 = new RadioGroup();
@@ -114,9 +78,6 @@ export function demo(sys: System) {
     };
   }
 
-  // setInterval(() => {
-  //   on.val = !on.val;
-  // }, 1000);
 
   function wrapFn<V extends View, K extends keyof V, F extends V[K]>(attr: K, view: V, fn: F) {
 
@@ -152,19 +113,29 @@ export function demo(sys: System) {
 
   const on = new Reactable(true);
   on.watch(b => console.log({ b }))
+  // setInterval(() => { on.val = !on.val; }, 1000);
   const button = makeButton(() => { on.val = !on.val; });
 
-  // const zoom = new Reactable(3);
+  function digInto<T>(t: T, fn: (t: T) => void) {
+    fn(t);
+    return t;
+  }
+
+  const zoom = new Reactable(3);
 
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
 
       sys.make(GroupX, { gap: 1, ...button.mouse },
-        sys.make(Slider, { knobSize: 3, w: 20, val: 3 }),
+        digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3 }), slider => {
+          slider.useDataSources({ val: zoom });
+        }),
         sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
           sys.make(Border, { all: 1 },
             sys.make(Border, {},
-              reactTo('visible', on, sys.make(View, { background: 0xffffffff, w: 2, h: 2 }))
+              reactTo('visible', on, digInto(sys.make(View, { background: 0xffffffff, }), view => {
+                view.useDataSources({ w: zoom, h: zoom });
+              }))
             )
           )
         ),

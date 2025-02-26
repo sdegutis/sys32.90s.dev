@@ -91,7 +91,7 @@ sys.crt.autoscale();
 // mapmaker(sys);
 // files(sys)
 demo(sys)
-paint(sys);
+// paint(sys);
 // texttest(sys);
 sys.layoutTree()
 
