@@ -1,5 +1,7 @@
 export interface Folder {
 
+  path: string;
+
   getFile(name: string): Promise<string | undefined>;
   getFolder(name: string): Promise<Folder | undefined>;
 
@@ -11,6 +13,11 @@ export interface Folder {
 }
 
 class MemoryFolder implements Folder {
+
+  path: string;
+  constructor(path: string) {
+    this.path = path;
+  }
 
   #items: Record<string, Folder | string> = {};
 
@@ -35,7 +42,7 @@ class MemoryFolder implements Folder {
   }
 
   async putFolder(name: string) {
-    const f = new MemoryFolder();
+    const f = new MemoryFolder(this.path + name + '/');
     this.#items[name] = f;
     return f;
   }
@@ -51,10 +58,12 @@ class MemoryFolder implements Folder {
 
 class IndexedDbFolder implements Folder {
 
+  path: string;
   #db: IDBDatabase;
   #prefix: string;
 
   constructor(db: IDBDatabase, prefix: string) {
+    this.path = prefix;
     this.#db = db;
     this.#prefix = prefix;
   }
@@ -128,9 +137,11 @@ class IndexedDbFolder implements Folder {
 
 class UserFolder implements Folder {
 
+  path: string;
   #dir: FileSystemDirectoryHandle;
 
-  constructor(dir: FileSystemDirectoryHandle) {
+  constructor(dir: FileSystemDirectoryHandle, path: string) {
+    this.path = path;
     this.#dir = dir;
   }
 
@@ -142,7 +153,7 @@ class UserFolder implements Folder {
 
   async getFolder(name: string) {
     const h = await this.#dir.getDirectoryHandle(name);
-    return new UserFolder(h);
+    return new UserFolder(h, this.path + name + '/');
   }
 
   async putFile(name: string, content: string) {
@@ -154,7 +165,7 @@ class UserFolder implements Folder {
 
   async putFolder(name: string) {
     const h = await this.#dir.getDirectoryHandle(name, { create: true });
-    return new UserFolder(h);
+    return new UserFolder(h, this.path + name + '/');
   }
 
   async list() {
@@ -189,8 +200,8 @@ export class FS {
   drives = new Promise<Record<string, Folder>>(async resolve => {
     const db = await this.#db;
     const drives = {
-      a: new MemoryFolder(),
-      b: new IndexedDbFolder(db, '/'),
+      a: new MemoryFolder('a/'),
+      b: new IndexedDbFolder(db, 'b/'),
     };
     await this.#loadUserDrives(db, drives);
     resolve(drives);
@@ -205,7 +216,7 @@ export class FS {
       r.onsuccess = (e) => res(r.result);
     });
     for (const { drive, folder } of found) {
-      drives[drive] = new UserFolder(folder);
+      drives[drive] = new UserFolder(folder, drive + '/');
     }
   }
 
@@ -218,7 +229,7 @@ export class FS {
       t.onerror = console.error;
       t.oncomplete = e => resolve();
     });
-    const folder = new UserFolder(dir);
+    const folder = new UserFolder(dir, drive + '/');
     (await this.drives)[drive] = folder;
     return folder;
   }

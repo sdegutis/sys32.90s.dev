@@ -58,6 +58,8 @@ export default (sys: System) => {
   async function showfiles(folder: Folder) {
     const files = await folder?.list();
 
+    console.log(folder.path);
+
     files.sort(sortBy(f => f.name));
 
     filelist.children = files.map(file => {
@@ -70,7 +72,7 @@ export default (sys: System) => {
         }
         else {
           if (file.name.endsWith('.bitmap')) {
-            // paint(sys, file)
+            paint(sys, folder.path + file.name);
           }
         }
 

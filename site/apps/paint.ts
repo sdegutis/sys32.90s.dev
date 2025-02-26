@@ -161,6 +161,18 @@ export default function paint(sys: System, filepath?: string) {
   );
 
 
+  if (filepath) {
+
+    sys.fs.loadFile(filepath!).then(s => {
+      if (s) {
+        paintView.loadBitmap(s);
+      }
+    });
+
+  }
+  else {
+    filepath = 'b/test1.bitmap';
+  }
 
 
 
@@ -168,20 +180,17 @@ export default function paint(sys: System, filepath?: string) {
   panel.onKeyDown = (key) => {
     if (key === 'o' && sys.keys['Control']) {
 
-      filepath = 'b/test1.bitmap';
 
-      sys.fs.loadFile(filepath).then(s => {
-        if (s) {
-          paintView.loadBitmap(s);
-        }
-      });
+      // sys.fs.loadFile(filepath!).then(s => {
+      //   if (s) {
+      //     paintView.loadBitmap(s);
+      //   }
+      // });
 
 
     }
     else if (key === 's' && sys.keys['Control']) {
       console.log('saving');
-
-      filepath = 'b/test1.bitmap';
 
       const bitmap = paintView.toBitmap();
 
