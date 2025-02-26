@@ -60,6 +60,8 @@ export class Panel extends View {
 
   #lastPos?: { x: number, y: number, w: number, h: number };
 
+  border!: Border;
+
   override init(): void {
     const pad = 2;
 
@@ -67,58 +69,68 @@ export class Panel extends View {
 
     this.children = [
 
-      this.sys.make(Paned, { dir: 'y', vacuum: 'a' },
+      this.border = this.sys.make(Border, {
+        borderColor: 0x990000ff,
+        all: 1,
+        layout: makeVacuumLayout(1),
+      },
 
-        this.sys.make(Spaced, {
-          onMouseDown: () => {
-            const move = dragMove(this.sys, this);
-            this.#lastPos = undefined!;
-            this.sys.trackMouse({ move });
+
+        this.sys.make(Paned, { dir: 'y', vacuum: 'a' },
+
+          this.sys.make(Spaced, {
+            onMouseDown: () => {
+              const move = dragMove(this.sys, this);
+              this.#lastPos = undefined!;
+              this.sys.trackMouse({ move });
+            },
           },
-        },
-          this.sys.make(Border, { l: pad },
-            this.sys.make(Label, { text: this.title, color: 0xaaaaaaff })
+            this.sys.make(Border, { l: pad },
+              this.sys.make(Label, { text: this.title, color: 0xaaaaaaff })
+            ),
+            this.sys.make(Group, { gap: 0 },
+              this.sys.make(Border, { all: 2, ...makeButton(() => this.minimize(), 0xffffff33).all }, this.sys.make(ImageView, { image: minImage })),
+              this.sys.make(Border, { all: 2, ...makeButton(() => this.maximize(), 0xffffff33).all }, this.sys.make(ImageView, { image: maxImage })),
+              this.sys.make(Border, { all: 2, ...makeButton(() => this.close(), 0x770000ff, 0x440000ff).all }, this.sys.make(ImageView, { image: axeImage }))
+            )
           ),
-          this.sys.make(Group, { gap: 0 },
-            this.sys.make(Border, { all: 2, ...makeButton(() => this.minimize(), 0xffffff33).all }, this.sys.make(ImageView, { image: minImage })),
-            this.sys.make(Border, { all: 2, ...makeButton(() => this.maximize(), 0xffffff33).all }, this.sys.make(ImageView, { image: maxImage })),
-            this.sys.make(Border, { all: 2, ...makeButton(() => this.close(), 0x770000ff, 0x440000ff).all }, this.sys.make(ImageView, { image: axeImage }))
-          )
+
+          this.sys.make(Group, {
+            layout: function (this: View) {
+              const c = this.firstChild!;
+              c.x = pad;
+              c.y = 0;
+              c.w = this.w - (pad * 2);
+              c.h = this.h - pad;
+            }
+          }, content),
+
         ),
 
-        this.sys.make(Group, {
-          layout: function (this: View) {
-            const c = this.firstChild!;
-            c.x = pad;
-            c.y = 0;
-            c.w = this.w - (pad * 2);
-            c.h = this.h - pad;
-          }
-        }, content),
+        this.sys.make(ImageView, {
+          passthrough: false,
+          image: adjImage,
+          cursor: adjCursor,
+          layout: function () {
+            this.x = this.parent!.w - this.w!;
+            this.y = this.parent!.h - this.h!;
+          },
+          onMouseDown: () => {
+            this.#lastPos = undefined!;
+            const resize = dragResize(this.sys, this);
+            this.sys.trackMouse({
+              move: () => {
+                resize();
+                if (this.w < this.minw) this.w = this.minw;
+                if (this.h < this.minh) this.h = this.minh;
+                this.layoutTree();
+              }
+            });
+          },
+        }),
 
-      ),
 
-      this.sys.make(ImageView, {
-        passthrough: false,
-        image: adjImage,
-        cursor: adjCursor,
-        layout: function () {
-          this.x = this.parent!.w - this.w!;
-          this.y = this.parent!.h - this.h!;
-        },
-        onMouseDown: () => {
-          this.#lastPos = undefined!;
-          const resize = dragResize(this.sys, this);
-          this.sys.trackMouse({
-            move: () => {
-              resize();
-              if (this.w < this.minw) this.w = this.minw;
-              if (this.h < this.minh) this.h = this.minh;
-              this.layoutTree();
-            }
-          });
-        },
-      }),
+      )
 
     ];
   }
@@ -171,12 +183,12 @@ export class Panel extends View {
   }
 
   #unfocus() {
-    this.#realbg = this.background;
-    this.background = 0x222222ee;
+    this.#realbg = this.border.borderColor;
+    this.border.borderColor = 0;
   }
 
   #focus() {
-    if (this.#realbg !== undefined) this.background = this.#realbg;
+    if (this.#realbg !== undefined) this.border.borderColor = this.#realbg;
 
     const parent = this.parent!;
     parent.removeChild(this);

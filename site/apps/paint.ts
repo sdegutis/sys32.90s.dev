@@ -16,7 +16,7 @@ import { multiplex, Reactable } from "../sys32/util/events.js";
 import { makeFlowLayout } from "../sys32/util/layouts.js";
 import { dragResize } from "../sys32/util/selections.js";
 
-export default function paint(sys: System) {
+export default function paint(sys: System, filepath?: string) {
   const zoom = new Reactable(4);
   const size = new Reactable({ w: 10, h: 10 });
 
@@ -168,6 +168,12 @@ export default function paint(sys: System) {
     if (key === 's' && sys.keys['Control']) {
       console.log('saving');
 
+      filepath = '/test1.bitmap';
+
+      const bitmap = paintView.toBitmap();
+
+      console.log(bitmap);
+
       // sys.fs.
 
       return true;
@@ -244,6 +250,10 @@ class PaintView extends View {
         }
       })
     }
+  }
+
+  toBitmap() {
+    // return new Bitmap();
   }
 
   resize(width: number, height: number) {
