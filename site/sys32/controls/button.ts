@@ -1,13 +1,13 @@
 import { View } from "../core/view.js";
-import { Reactable } from "../util/events.js";
+import { Reactive } from "../util/events.js";
 
 export function makeButton(
   onClick: () => void,
   hoverColor = 0xffffff22,
   pressColor = 0xffffff11,
 ) {
-  const pressed = new Reactable(false);
-  const hovered = new Reactable(false);
+  const pressed = new Reactive(false);
+  const hovered = new Reactive(false);
 
   function draw(this: View) {
     (Object.getPrototypeOf(this) as View).draw.call(this);

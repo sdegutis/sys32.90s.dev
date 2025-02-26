@@ -1,4 +1,4 @@
-import { Listener, Reactable } from "../util/events.js";
+import { Listener, Reactive } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
 import { Font } from "./font.js";
@@ -156,7 +156,7 @@ export class System {
   #enableDataSources(view: View) {
     for (let [key, val] of Object.entries(view)) {
       if (key === 'dataSources') continue;
-      view.setDataSource(key as keyof View, new Reactable(val));
+      view.setDataSource(key as keyof View, new Reactive(val));
     }
   }
 

@@ -7,7 +7,7 @@ import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeStripeDrawer } from "../sys32/util/draw.js";
-import { multiplex, Reactable } from "../sys32/util/events.js";
+import { multiplex, Reactive } from "../sys32/util/events.js";
 import { makeFlowLayoutY, makeVacuumLayout } from "../sys32/util/layouts.js";
 import { dragMove, TileSelection } from "../sys32/util/selections.js";
 
@@ -41,7 +41,7 @@ export function mapmaker(sys: System) {
     sys.make(Label, { text: 'grid' })
   );
 
-  let currentTool = new Reactable(5);
+  let currentTool = new Reactive(5);
 
 
   const mapArea = sys.make(View, {

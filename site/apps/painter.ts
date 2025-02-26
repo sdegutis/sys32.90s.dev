@@ -12,12 +12,12 @@ import { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeStripeDrawer } from "../sys32/util/draw.js";
-import { multiplex, Reactable } from "../sys32/util/events.js";
+import { multiplex, Reactive } from "../sys32/util/events.js";
 import { makeFlowLayout } from "../sys32/util/layouts.js";
 import { dragResize } from "../sys32/util/selections.js";
 
 export default function paint(sys: System, filepath?: string) {
-  const zoom = new Reactable(4);
+  const zoom = new Reactive(4);
 
   const paintView = sys.make(PaintView, {});
 
@@ -159,6 +159,12 @@ export default function paint(sys: System, filepath?: string) {
       toolArea,
     ),
   );
+
+  // const titleSource = new Reactive('');
+
+
+
+  // panel.setDataSource('title', titleSource);
 
 
   if (filepath) {

@@ -1,4 +1,4 @@
-import { Reactable } from "../util/events.js";
+import { Reactive } from "../util/events.js";
 import { Cursor, System } from "./system.js";
 
 export class View {
@@ -94,16 +94,16 @@ export class View {
     this.parent?.removeChild(this);
   }
 
-  #dataSources: Record<any, Reactable<any>> = {};
+  #dataSources: Record<any, Reactive<any>> = {};
 
-  getDataSource<K extends keyof this>(k: K): Reactable<this[K]> {
+  getDataSource<K extends keyof this>(k: K): Reactive<this[K]> {
     return this.#dataSources[k];
   }
 
-  setDataSource<K extends keyof this>(k: K, r: Reactable<this[K]>) {
+  setDataSource<K extends keyof this>(k: K, r: Reactive<this[K]>) {
     if (!(k in this.#dataSources)) {
       if (Object.getOwnPropertyDescriptor(this, k)?.get) return;
-      this.#dataSources[k] = new Reactable(this[k]);
+      this.#dataSources[k] = new Reactive(this[k]);
 
       Object.defineProperty(this, k, {
         enumerable: true,

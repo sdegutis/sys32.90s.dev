@@ -9,7 +9,7 @@ import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
-import { multiplex, Reactable } from "../sys32/util/events.js";
+import { multiplex, Reactive } from "../sys32/util/events.js";
 import { centerLayout } from "../sys32/util/layouts.js";
 import { passedFocus } from "../sys32/util/unsure.js";
 
@@ -26,7 +26,7 @@ export default (sys: System) => {
 };
 
 export function demo(sys: System) {
-  const on = new Reactable(true);
+  const on = new Reactive(true);
   on.watch(b => console.log({ b }))
   // setInterval(() => { on.val = !on.val; }, 1000);
   const button = makeButton(() => { on.val = !on.val; });
@@ -36,7 +36,7 @@ export function demo(sys: System) {
     return t;
   }
 
-  const zoom = new Reactable(3);
+  const zoom = new Reactive(3);
   zoom.watch(n => main.parent?.layoutTree(), false)
 
   const zoom2 = zoom.adapt(n => n * 2);
@@ -76,7 +76,7 @@ export function demo(sys: System) {
     sys.make(GroupX, { align: 'n', gap: 4, background: 0x0000ff33 },
 
       (() => {
-        const currentColor = new Reactable(COLORS[3]);
+        const currentColor = new Reactive(COLORS[3]);
 
         const radios = COLORS.map(c => {
           const button = makeButton(() => { currentColor.val = c; });

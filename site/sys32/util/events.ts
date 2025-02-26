@@ -15,7 +15,7 @@ export class Listener<T = void, U = void> {
 
 }
 
-export class Reactable<T> {
+export class Reactive<T> {
 
   #data;
   #changed = new Listener<T>();
@@ -37,17 +37,17 @@ export class Reactable<T> {
   }
 
   adapt<U>(fn: (data: T) => U) {
-    const reactive = new Reactable<U>(fn(this.val));
+    const reactive = new Reactive<U>(fn(this.val));
     const disconnect = this.watch(data => reactive.val = fn(data), false);
     return { reactive, disconnect };
   }
 
 }
 
-export function multiplex<T extends Record<string, any>>(reactives: { [K in keyof T]: Reactable<T[K]> }): Reactable<T> {
-  const initial = Object.fromEntries(Object.entries<Reactable<any>>(reactives).map(([key, val]) => [key, val.val])) as T;
-  const m = new Reactable(initial);
-  for (const [key, r] of Object.entries<Reactable<any>>(reactives)) {
+export function multiplex<T extends Record<string, any>>(reactives: { [K in keyof T]: Reactive<T[K]> }): Reactive<T> {
+  const initial = Object.fromEntries(Object.entries<Reactive<any>>(reactives).map(([key, val]) => [key, val.val])) as T;
+  const m = new Reactive(initial);
+  for (const [key, r] of Object.entries<Reactive<any>>(reactives)) {
     r.watch(data => m.val = { ...m.val, [key]: data });
   }
   return m;
