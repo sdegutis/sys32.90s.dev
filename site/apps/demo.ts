@@ -117,6 +117,15 @@ export function demo(sys: System) {
     };
   }
 
+  setInterval(() => {
+    on.val = !on.val;
+  }, 1000);
+
+  function reactTo<V extends View, T extends V[K], K extends keyof V>(attr: K, reactable: Reactable<T>, view: V) {
+    reactable.watch(data => view[attr] = data);
+    return view;
+  }
+
   const button = makeButton(() => { on.val = !on.val; });
 
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
@@ -126,7 +135,7 @@ export function demo(sys: System) {
         sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
           sys.make(Border, { all: 1 },
             sys.make(Border, {},
-              sys.make(Checkbox2, { visible2: on, background: 0xffffffff, w: 2, h: 2 })
+              reactTo('visible', on, sys.make(View, { background: 0xffffffff, w: 2, h: 2 }))
             )
           )
         ),
