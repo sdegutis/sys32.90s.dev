@@ -7,8 +7,8 @@ export class ImageView extends View {
   override passthrough = true;
 
   override adjust(): void {
-    this.w = (this.image?.w ?? 0);
-    this.h = (this.image?.h ?? 0);
+    this.w = (this.image?.width ?? 0);
+    this.h = (this.image?.height ?? 0);
   }
 
   override draw(): void {
