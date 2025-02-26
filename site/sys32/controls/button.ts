@@ -72,3 +72,45 @@ export function wrapButton(findButton: (view: View) => View) {
     onMouseDown(this: View) { findButton(this).onMouseDown?.() },
   };
 }
+
+export function makeButton(
+  onClick: () => void,
+  hoverColor = 0xffffff22,
+  pressColor = 0xffffff11,
+) {
+  let pressed = false;
+  let hovered = false;
+
+  function draw(this: View) {
+    (Object.getPrototypeOf(this) as View).draw.call(this);
+    if (pressed) {
+      this.sys.crt.rectFill(0, 0, this.w, this.h, pressColor);
+    }
+    else if (hovered) {
+      this.sys.crt.rectFill(0, 0, this.w, this.h, hoverColor);
+    }
+  }
+
+  const onMouseEnter = () => hovered = true;
+  const onMouseExit = () => hovered = false;
+  const onMouseDown = function (this: View) {
+    pressed = true;
+    const cancel = this.sys.trackMouse({
+      move: () => {
+        if (!hovered) {
+          pressed = false;
+          cancel();
+        }
+      },
+      up: () => {
+        pressed = false;
+        onClick();
+      },
+    });
+  };
+
+  return {
+    mouse: { onMouseEnter, onMouseExit, onMouseDown },
+    draw
+  };
+}

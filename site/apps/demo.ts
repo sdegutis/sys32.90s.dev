@@ -1,6 +1,6 @@
 import { Border } from "../sys32/containers/border.js";
-import { Group, GroupX, GroupY } from "../sys32/containers/group.js";
-import { Button, wrapButton } from "../sys32/controls/button.js";
+import { Group, GroupX } from "../sys32/containers/group.js";
+import { Button, makeButton, wrapButton } from "../sys32/controls/button.js";
 import { Checkbox } from "../sys32/controls/checkbox.js";
 import { ImageView } from "../sys32/controls/image.js";
 import { Label } from "../sys32/controls/label.js";
@@ -13,6 +13,7 @@ import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { Reactable } from "../sys32/util/events.js";
 import { centerLayout } from "../sys32/util/layouts.js";
+import { passedFocus } from "../sys32/util/unsure.js";
 
 export default (sys: System) => {
   const panel = sys.make(Panel, {
@@ -29,54 +30,6 @@ export default (sys: System) => {
 export function demo(sys: System) {
   const group1 = new RadioGroup();
   const group2 = new RadioGroup();
-
-  function passFocus(config: Partial<Border>) {
-    config.passthrough = false;
-    config.onFocus = function () { this.firstChild?.focus(); };
-    return config;
-  }
-
-  function makeButton(
-    onClick: () => void,
-    hoverColor = 0xffffff22,
-    pressColor = 0xffffff11,
-  ) {
-    const pressed = new Reactable(false);
-    const hovered = new Reactable(false);
-
-    function draw(this: View) {
-      (Object.getPrototypeOf(this) as View).draw.call(this);
-      if (pressed.val) {
-        this.sys.crt.rectFill(0, 0, this.w, this.h, pressColor);
-      }
-      else if (hovered.val) {
-        this.sys.crt.rectFill(0, 0, this.w, this.h, hoverColor);
-      }
-    }
-
-    const onMouseEnter = () => hovered.val = true;
-    const onMouseExit = () => hovered.val = false;
-    const onMouseDown = function (this: View) {
-      pressed.val = true;
-      const cancel = this.sys.trackMouse({
-        move: () => {
-          if (!hovered) {
-            pressed.val = false;
-            cancel();
-          }
-        },
-        up: () => {
-          pressed.val = false;
-          onClick();
-        },
-      });
-    };
-
-    return {
-      mouse: { onMouseEnter, onMouseExit, onMouseDown },
-      draw
-    };
-  }
 
   const on = new Reactable(true);
   on.watch(b => console.log({ b }))
@@ -137,10 +90,10 @@ export function demo(sys: System) {
       ),
 
       sys.make(Group, { dir: 'y', gap: 1 },
-        sys.make(Border, passFocus({ background: 0x000000ff, all: 0 }), sys.make(TextField, { text: 'hi', length: 4 })),
-        sys.make(Border, passFocus({ background: 0x000000ff, all: 1 }), sys.make(TextField, { text: 'hi', length: 4 })),
-        sys.make(Border, passFocus({ background: 0x000000ff, all: 2 }), sys.make(TextField, { text: 'hi', length: 4 })),
-        sys.make(Border, passFocus({ background: 0x000099ff, all: 2 }), sys.make(TextField, { text: 'hi', length: 4, cursorColor: 0xff000099, color: 0xffff00ff })),
+        sys.make(Border, { background: 0x000000ff, all: 0, ...passedFocus }, sys.make(TextField, { text: 'hi', length: 4 })),
+        sys.make(Border, { background: 0x000000ff, all: 1, ...passedFocus }, sys.make(TextField, { text: 'hi', length: 4 })),
+        sys.make(Border, { background: 0x000000ff, all: 2, ...passedFocus }, sys.make(TextField, { text: 'hi', length: 4 })),
+        sys.make(Border, { background: 0x000099ff, all: 2, ...passedFocus }, sys.make(TextField, { text: 'hi', length: 4, cursorColor: 0xff000099, color: 0xffff00ff })),
       ),
 
       sys.make(Group, { dir: 'y', gap: 1 },
