@@ -107,7 +107,7 @@ export function demo(sys: System) {
           return border;
         });
 
-        return sys.make(GroupY, { gap: 2 }, ...radios);
+        return sys.make(GroupY, { gap: -1 }, ...radios);
       })(),
 
       sys.make(GroupY, { gap: 2 },
