@@ -3,7 +3,6 @@ import { Group, GroupX, GroupY } from "../sys32/containers/group.js";
 import { makeButton } from "../sys32/controls/button.js";
 import { ImageView } from "../sys32/controls/image.js";
 import { Label } from "../sys32/controls/label.js";
-import { RadioGroup } from "../sys32/controls/radio.js";
 import { Slider } from "../sys32/controls/slider.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
@@ -27,9 +26,6 @@ export default (sys: System) => {
 };
 
 export function demo(sys: System) {
-  const group1 = new RadioGroup();
-  const group2 = new RadioGroup();
-
   const on = new Reactable(true);
   on.watch(b => console.log({ b }))
   // setInterval(() => { on.val = !on.val; }, 1000);
