@@ -67,6 +67,7 @@ export function dragMove(sys: System, view: { x: number, y: number }) {
     const diffy = sys.mouse.y - startPos.y;
     view.x = startPos.x + diffx - offx;
     view.y = startPos.y + diffy - offy;
+    return { x: diffx - offx, y: diffy - offy };
   };
 }
 
@@ -79,5 +80,6 @@ export function dragResize(sys: System, view: { w: number, h: number }) {
     const diffy = sys.mouse.y - startSize.h;
     view.w = startSize.w + diffx - offx;
     view.h = startSize.h + diffy - offy;
+    return { x: diffx - offx, y: diffy - offy };
   };
 }

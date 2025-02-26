@@ -67,6 +67,28 @@ export class Panel extends View {
 
     const content = this.children[0];
 
+
+    class ClickCounter {
+
+      count = 0;
+      clear!: ReturnType<typeof setTimeout>;
+      #secDelay: number;
+
+      constructor(secDelay = 333) {
+        this.#secDelay = secDelay;
+      }
+
+      increase() {
+        this.count++;
+        clearTimeout(this.clear);
+        this.clear = setTimeout(() => this.count = 0, this.#secDelay);
+      }
+
+    }
+
+
+    const counter = new ClickCounter();
+
     this.children = [
 
       this.border = this.sys.make(Border, {
@@ -80,9 +102,22 @@ export class Panel extends View {
 
           this.sys.make(Spaced, {
             onMouseDown: () => {
-              const move = dragMove(this.sys, this);
-              this.#lastPos = undefined!;
-              this.sys.trackMouse({ move });
+              counter.increase();
+              const drag = dragMove(this.sys, this);
+              this.sys.trackMouse({
+                move: () => {
+                  const moved = drag();
+                  const d = Math.hypot(moved.x, moved.y);
+                  if (d > 1) {
+                    this.#lastPos = undefined!;
+                  }
+                },
+                up: () => {
+                  if (counter.count >= 2) {
+                    this.maximize();
+                  }
+                },
+              });
             },
           },
             this.sys.make(Border, { l: pad },
