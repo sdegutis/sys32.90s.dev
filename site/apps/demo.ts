@@ -86,10 +86,10 @@ export function demo(sys: System) {
         const radios = COLORS.map(c => {
           const button = makeButton(() => { currentColor.val = c; });
 
-          const on = currentColor.adapt(n => n === c).reactive;
+          const selected = currentColor.adapt(n => n === c).reactive;
 
           const borderColor = multiplex({
-            selected: on,
+            selected: selected,
             hovered: button.hovered,
             pressed: button.pressed,
           }).adapt<number>(data => {
