@@ -48,7 +48,7 @@ class Checkbox2 extends Button {
 
   override draw(): void {
     super.draw();
-    this.sys.crt.rectFill(0, 0, this.w, this.h, this.source.val ? 0xffffff33 : 0x000000ff);
+    this.sys.crt.rectFill(0, 0, this.w, this.h, this.source.val ? 0xffffff33 : 0);
   }
 
   override onClick(): void {
@@ -79,7 +79,13 @@ export function demo(sys: System) {
         sys.make(Button, { onClick: () => { on.val = !on.val } },
           sys.make(Label, { text: 'hey' })
         ),
-        sys.make(Checkbox2, { source: on })
+        sys.make(Border, { borderColor: 0x003300ff, all: 1, },
+          sys.make(Border, { borderColor: 0, all: 1, },
+            sys.make(Border, {},
+              sys.make(Checkbox2, { source: on })
+            )
+          )
+        )
       ),
 
       sys.make(Group, { dir: 'y', gap: 1 },
