@@ -225,7 +225,7 @@ export class FS {
 
   async getFolder(path: string) {
     const found = await this.#getdir(path);
-    if (!found) return null;
+    if (!found) return undefined;
     if (!found.base) return found.folder;
     return found.folder.getFolder(found.base);
   }
