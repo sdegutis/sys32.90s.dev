@@ -7,14 +7,16 @@ import { Label } from "../sys32/controls/label.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { System } from "../sys32/core/system.js";
 import { Panel } from "../sys32/desktop/panel.js";
+import { passedFocus } from "../sys32/util/unsure.js";
 
 
 
 export default (sys: System) => {
-  const mountLabel = sys.make(TextField, { length: 2, background: 0xffffff11 });
+  const mountLabel = sys.make(TextField, { length: 2, onEnter: mountNew });
   const toolbar = sys.make(GroupX, {},
-    mountLabel,
-    sys.make(Button, { onClick: mountNew }, sys.make(Label, { text: 'mount' }))
+    sys.make(Border, { all: 1, ...passedFocus, background: 0xffffff11 },
+      mountLabel
+    )
   );
 
   // (async () => {
