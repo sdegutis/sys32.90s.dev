@@ -75,27 +75,22 @@ export function demo(sys: System) {
     return config;
   }
 
-  function makeButton<T extends View>(
+  function makeButton(
     onClick: () => void,
     hoverColor = 0xffffff22,
     pressColor = 0xffffff11,
   ) {
-
     const pressed = new Reactable(false);
     const hovered = new Reactable(false);
 
-    function wrapDraw(view: View) {
-      const oldDraw = view.draw;
-      view.draw = function (this: View) {
-        oldDraw.call(view);
-        if (pressed.val) {
-          this.sys.crt.rectFill(0, 0, this.w, this.h, pressColor);
-        }
-        else if (hovered.val) {
-          this.sys.crt.rectFill(0, 0, this.w, this.h, hoverColor);
-        }
+    function draw(this: View) {
+      (Object.getPrototypeOf(this) as View).draw.call(this);
+      if (pressed.val) {
+        this.sys.crt.rectFill(0, 0, this.w, this.h, pressColor);
       }
-      return view;
+      else if (hovered.val) {
+        this.sys.crt.rectFill(0, 0, this.w, this.h, hoverColor);
+      }
     }
 
     const onMouseEnter = () => hovered.val = true;
@@ -116,25 +111,25 @@ export function demo(sys: System) {
       });
     };
 
-    return { onMouseEnter, onMouseExit, onMouseDown, wrapDraw };
+    return {
+      mouse: { onMouseEnter, onMouseExit, onMouseDown },
+      draw
+    };
   }
 
-  const button = makeButton(() => {
-    on.val = !on.val;
-  });
+  const button = makeButton(() => { on.val = !on.val; });
 
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
 
-      sys.make(GroupX, { gap: 1, ...button },
+      sys.make(GroupX, { gap: 1, ...button.mouse },
         sys.make(Label, { text: 'hey' }),
-        sys.make(Border, { borderColor: 0xffffff33, all: 1, },
-          button.wrapDraw(sys.make(Border, { all: 1 },
+        sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
+          sys.make(Border, { all: 1 },
             sys.make(Border, {},
               sys.make(Checkbox2, { visible2: on, background: 0xffffffff, w: 2, h: 2 })
             )
           ))
-        )
       ),
 
       sys.make(Group, { dir: 'y', gap: 1 },
