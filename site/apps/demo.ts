@@ -42,9 +42,9 @@ class Checkbox2 extends Button {
     this.#stopWatching = undefined!;
   }
 
-  override adjust(): void {
-    this.w = this.h = 10;
-  }
+  // override adjust(): void {
+  //   this.w = this.h = 10;
+  // }
 
   override draw(): void {
     super.draw();
@@ -82,7 +82,7 @@ export function demo(sys: System) {
         sys.make(Border, { borderColor: 0x003300ff, all: 1, },
           sys.make(Border, { borderColor: 0, all: 1, },
             sys.make(Border, {},
-              sys.make(Checkbox2, { source: on })
+              sys.make(Checkbox2, { source: on, w: 4, h: 4 })
             )
           )
         )
