@@ -116,6 +116,7 @@ export class Workspace {
     panel.didClose.watch(() => {
       button.parent?.removeChild(button);
       this.#panels.layoutTree();
+      this.#desktop.children.at(-1)?.focus();
     });
 
     return panel;
