@@ -1,4 +1,4 @@
-import { multifn, Reactable } from "../util/events.js";
+import { Listener, Reactable } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
 import { Font } from "./font.js";
@@ -14,7 +14,7 @@ export class System {
   mouse = { x: 0, y: 0, button: 0 };
   crt: CRT;
 
-  onTick = multifn<number>();
+  onTick = new Listener<number>();
 
   needsRedraw = true;
 
@@ -119,7 +119,7 @@ export class System {
     const update = (t: number) => {
       const delta = t - last;
       if (delta >= 30) {
-        this.onTick(delta);
+        this.onTick.dispatch(delta);
 
         if (this.needsRedraw) {
           this.needsRedraw = false;
