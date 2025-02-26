@@ -51,6 +51,25 @@ export function demo(sys: System) {
     zoom2.disconnect();
   }, 1000);
 
+  function makeDemoCheckmark(text: string, reverse = false) {
+    let checkmark: View;
+    const button = makeButton(() => { checkmark.visible = !checkmark.visible; });
+    const group = sys.make(GroupX, { gap: 2, ...button.mouse },
+      sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
+        sys.make(Border, { all: 1 },
+          checkmark = sys.make(View, { passthrough: true, background: 0xffffffff, w: 2, h: 2 })
+        )
+      ),
+      sys.make(Label, { text })
+    );
+    if (reverse) {
+      const child = group.children[0];
+      child.remove();
+      group.addChild(child);
+    }
+    return group;
+  }
+
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
 
@@ -70,18 +89,11 @@ export function demo(sys: System) {
         return group;
       })(),
 
-      (() => {
-        let checkmark: View;
-        const button = makeButton(() => { checkmark.visible = !checkmark.visible; });
-        return sys.make(GroupX, { gap: 2, ...button.mouse },
-          sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
-            sys.make(Border, { all: 1 },
-              checkmark = sys.make(View, { passthrough: true, background: 0xffffffff, w: 2, h: 2 })
-            )
-          ),
-          sys.make(Label, { text: 'radio' })
-        );
-      })(),
+      sys.make(GroupY, { gap: 2 },
+        makeDemoCheckmark('aaa'),
+        makeDemoCheckmark('bbb', true),
+        makeDemoCheckmark('ccc'),
+      ),
 
       sys.make(GroupY, { gap: 4 },
 
@@ -155,11 +167,6 @@ export function demo(sys: System) {
       ),
 
       sys.make(Group, { dir: 'y', gap: 1 },
-        sys.make(Checkbox, { checked: true, padding: 0, size: 4 }),
-        sys.make(Checkbox, { checked: true, padding: 1, size: 4 }),
-      ),
-
-      sys.make(Group, { dir: 'y', gap: 1 },
         sys.make(Group, { dir: 'y', gap: 1 },
           sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' })),
           sys.make(Button, { onClick: () => { console.log('button') } },
@@ -174,77 +181,12 @@ export function demo(sys: System) {
         ),
       ),
 
-      sys.make(Checkbox, { checked: true, }),
-
       sys.make(Group, { dir: 'y', gap: 1 },
-        sys.make(Checkbox, { checked: true, padding: 0 }),
-        sys.make(Checkbox, { checked: true, padding: 1 }),
-        sys.make(Checkbox, { checked: true, padding: 2 }),
-        sys.make(Checkbox, { checked: true, padding: 3 }),
-        sys.make(Checkbox, { checked: true, padding: 4 }),
-        sys.make(Checkbox, { checked: true, padding: 5 }),
-      ),
-
-      sys.make(Group, { dir: 'y', gap: 1 },
-        sys.make(ImageView, {
-          image: new Bitmap([0x00000099, 0xffffffff], 3, [
-            1, 1, 1,
-            1, 2, 1,
-            1, 2, 1,
-            1, 2, 1,
-            1, 1, 1,
-          ])
-        }),
-        sys.make(ImageView, {
-          image: new Bitmap([0x00000099, 0xffffffff], 5, [
-            1, 1, 1, 1, 1,
-            1, 2, 2, 2, 1,
-            1, 1, 1, 1, 1,
-          ])
-        }),
-        sys.make(Border, {
-          background: 0x00000033,
-          all: 1,
-        },
-          sys.make(ImageView, {
-            image: new Bitmap([0xffffffff], 4, [
-              1, 0, 0, 1,
-              0, 1, 1, 0,
-              0, 1, 1, 0,
-              1, 0, 0, 1,
-            ])
-          }),
+        sys.make(ImageView, { image: new Bitmap([0x00000099, 0xffffffff], 3, [1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1,]) }),
+        sys.make(ImageView, { image: new Bitmap([0x00000099, 0xffffffff], 5, [1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1,]) }),
+        sys.make(Border, { background: 0x00000033, all: 1, },
+          sys.make(ImageView, { image: new Bitmap([0xffffffff], 4, [1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,]) }),
         )
-      ),
-
-      sys.make(Group, { dir: 'y', gap: 1 },
-        sys.make(Checkbox, { checked: true, size: 0, padding: 2, checkColorOn: 0x990000ff }),
-        sys.make(Checkbox, { checked: true, size: 1, padding: 2, checkColorOn: 0x990000ff }),
-        sys.make(Checkbox, { checked: true, size: 2, padding: 2, checkColorOn: 0x990000ff }),
-        sys.make(Checkbox, { checked: true, size: 3, padding: 2, checkColorOn: 0x990000ff }),
-        sys.make(Checkbox, { checked: true, size: 4, padding: 2, checkColorOn: 0x990000ff }),
-        sys.make(Checkbox, { checked: true, size: 5, padding: 2, checkColorOn: 0x990000ff }),
-      ),
-
-      sys.make(Group, { dir: 'y', gap: 1 },
-        sys.make(Checkbox, { checked: true, size: 0 }),
-        sys.make(Checkbox, { checked: true, size: 1 }),
-        sys.make(Checkbox, { checked: true, size: 2 }),
-        sys.make(Checkbox, { checked: true, size: 3 }),
-        sys.make(Checkbox, { checked: true, size: 4 }),
-        sys.make(Checkbox, { checked: true, size: 5, cursor: { bitmap: new Bitmap([0x0000ffff], 3, [1, 1, 1, 1, 0, 1, 1, 1, 1,]), offset: [0, 0] } }),
-      ),
-
-      sys.make(Group, { dir: 'y', gap: 1 },
-        sys.make(Group, { gap: 2, ...wrapButton(view => view.firstChild!), },
-          sys.make(Checkbox, { checked: true, padding: 2, size: 2, onChange() { console.log('foo', this.checked) } }),
-          sys.make(Label, { text: 'foo' }),
-        ),
-
-        sys.make(Group, { gap: 2, ...wrapButton(view => view.lastChild!), },
-          sys.make(Label, { text: 'bar' }),
-          sys.make(Checkbox, { checked: true, padding: 2, size: 2, onChange() { console.log('bar', this.checked) } }),
-        ),
       ),
 
 
