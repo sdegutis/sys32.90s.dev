@@ -18,7 +18,6 @@ import { dragResize } from "../sys32/util/selections.js";
 
 export default function paint(sys: System, filepath?: string) {
   const zoom = new Reactable(4);
-  const size = new Reactable({ w: 10, h: 10 });
 
   const paintView = sys.make(PaintView, {});
 
@@ -28,10 +27,12 @@ export default function paint(sys: System, filepath?: string) {
   const colorLabel = sys.make(Label, {});
   const zoomLabel = sys.make(Label, {});
 
-  size.watch(s => paintView.resize(s.w, s.h));
-  size.watch(s => widthLabel.text = s.w.toString());
-  size.watch(s => heightLabel.text = s.h.toString());
-  size.watch(s => heightLabel.parent?.layoutTree());
+
+  widthLabel.setDataSource('text', paintView.getDataSource('width').adapt(n => n.toString()).reactive);
+  heightLabel.setDataSource('text', paintView.getDataSource('height').adapt(n => n.toString()).reactive);
+
+  widthLabel.getDataSource('text').watch(() => { widthLabel.parent?.layoutTree() });
+  heightLabel.getDataSource('text').watch(() => { heightLabel.parent?.layoutTree() });
 
   paintView.setDataSource('zoom', zoom);
 
@@ -54,7 +55,7 @@ export default function paint(sys: System, filepath?: string) {
           fn();
           const w = Math.floor(o.w / zoom.val);
           const h = Math.floor(o.h / zoom.val);
-          size.val = { w, h };
+          paintView.resize(w, h);
         }
       })
 
