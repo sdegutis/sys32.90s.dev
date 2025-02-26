@@ -54,6 +54,22 @@ export function demo(sys: System) {
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(Group, { gap: 2, background: 0x0000ff33 },
 
+      (() => {
+        const on = new Reactable(true);
+        const button = makeButton(() => { on.val = !on.val; });
+        let checkmark;
+        const group = sys.make(GroupX, { gap: 2, ...button.mouse },
+          sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
+            sys.make(Border, { all: 1 },
+              checkmark = sys.make(View, { passthrough: true, background: 0xffffffff, w: 2, h: 2 })
+            )
+          ),
+          sys.make(Label, { text: 'radio' }),
+        );
+        checkmark.useDataSource('visible', on);
+        return group;
+      })(),
+
       sys.make(GroupY, { gap: 4 },
 
         digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3, min: 2, max: 7 }), slider => {
