@@ -169,15 +169,21 @@ export function demo(sys: System) {
       sys.make(Group, { dir: 'y', gap: 1 },
         sys.make(Group, { dir: 'y', gap: 1 },
           sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' })),
-          sys.make(Button, { onClick: () => { console.log('button') } },
-            sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' }))
-          ),
+          (() => {
+            const button = makeButton(() => { console.log('clicked button1') });
+            return sys.make(Border, { ...button.all, background: 0x00000077, all: 3 },
+              sys.make(Label, { text: 'hello' })
+            )
+          })(),
         ),
         sys.make(Group, { dir: 'y', gap: 1 },
           sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' })),
-          sys.make(Button, { onClick: () => { console.log('button') } },
-            sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' }))
-          ),
+          (() => {
+            const button = makeButton(() => { console.log('clicked button2') });
+            return sys.make(Border, { ...button.all, background: 0x00000077, all: 3 },
+              sys.make(Label, { text: 'hello' })
+            )
+          })(),
         ),
       ),
 

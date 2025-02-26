@@ -109,8 +109,16 @@ export function makeButton(
     });
   };
 
+  const mouse: Partial<View> = {
+    onMouseEnter,
+    onMouseExit,
+    onMouseDown,
+    passthrough: false,
+  };
+
   return {
-    mouse: { onMouseEnter, onMouseExit, onMouseDown },
-    draw
+    draw,
+    mouse,
+    all: { draw, ...mouse },
   };
 }
