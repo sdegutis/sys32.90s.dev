@@ -85,10 +85,11 @@ export function demo(sys: System) {
 
         const radios = COLORS.map(c => {
           const button = makeButton(() => { currentColor.val = c; });
-
           const selected = currentColor.adapt(n => n === c).reactive;
+          const colorView = sys.make(View, { passthrough: true, background: c, w: 4, h: 4 });
+          const border = sys.make(Border, { borderColor: 0xffffff33, all: 1, ...button.mouse }, colorView);
 
-          const borderColor = multiplex({
+          border.useDataSource('borderColor', multiplex({
             selected: selected,
             hovered: button.hovered,
             pressed: button.pressed,
@@ -97,12 +98,7 @@ export function demo(sys: System) {
             if (data.pressed) return 0xffffff11;
             if (data.hovered) return 0xffffff22;
             return 0;
-          }).reactive;
-
-          const colorView = sys.make(View, { passthrough: true, background: c, w: 4, h: 4 });
-          const border = sys.make(Border, { borderColor: 0xffffff33, all: 1, ...button.mouse }, colorView);
-
-          border.useDataSource('borderColor', borderColor);
+          }).reactive);
 
           return border;
         });
@@ -166,18 +162,6 @@ export function demo(sys: System) {
           }),
         ),
 
-      ),
-
-      sys.make(Group, { dir: 'y', gap: 1 },
-        sys.make(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, sys.make(RadioButton, { group: group1, size: 2, padding: 2 }), sys.make(Label, { text: 'aaa' })),
-        sys.make(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, sys.make(RadioButton, { group: group1, size: 2, padding: 2 }), sys.make(Label, { text: 'bbb' })),
-        sys.make(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, sys.make(RadioButton, { group: group1, size: 2, padding: 2 }), sys.make(Label, { text: 'ccc' })),
-      ),
-
-      sys.make(Group, { dir: 'y', gap: 1 },
-        sys.make(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, sys.make(RadioButton, { group: group2, size: 2, padding: 0 }), sys.make(Label, { text: 'aaa' })),
-        sys.make(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, sys.make(RadioButton, { group: group2, size: 2, padding: 0 }), sys.make(Label, { text: 'bbb' })),
-        sys.make(Group, { gap: 1, ...wrapButton(view => view.firstChild!) }, sys.make(RadioButton, { group: group2, size: 2, padding: 0 }), sys.make(Label, { text: 'ccc' })),
       ),
 
       sys.make(Group, { dir: 'y', gap: 1 },
