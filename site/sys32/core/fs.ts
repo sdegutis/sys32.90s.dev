@@ -8,6 +8,9 @@ export interface Folder {
   putFile(name: string, content: string): Promise<void>;
   putFolder(name: string): Promise<Folder>;
 
+  delFile(name: string): Promise<void>;
+  delFolder(name: string): Promise<void>;
+
   list(): Promise<{ kind: 'file' | 'folder', name: string }[]>;
 
 }
@@ -52,6 +55,14 @@ class MemoryFolder implements Folder {
       const kind: 'file' | 'folder' = typeof name === 'string' ? 'file' : 'folder';
       return { name, kind };
     });
+  }
+
+  async delFile(name: string): Promise<void> {
+    delete this.#items[name];
+  }
+
+  async delFolder(name: string): Promise<void> {
+    delete this.#items[name];
   }
 
 }
@@ -133,6 +144,24 @@ class IndexedDbFolder implements Folder {
     }));
   }
 
+  async delFile(name: string): Promise<void> {
+    await this.#delitem(name);
+  }
+
+  async delFolder(name: string): Promise<void> {
+    await this.#delitem(name);
+  }
+
+  async #delitem(name: string): Promise<void> {
+    await new Promise<DbFile>(resolve => {
+      const t = this.#db.transaction('files', 'readonly');
+      const store = t.objectStore('files');
+      const r = store.delete(this.#prefix + name);
+      r.onerror = console.error;
+      r.onsuccess = (e: any) => resolve(e.target.result);
+    });
+  }
+
 }
 
 class UserFolder implements Folder {
@@ -176,6 +205,14 @@ class UserFolder implements Folder {
       list.push({ name, kind });
     }
     return list;
+  }
+
+  async delFile(name: string): Promise<void> {
+    this.#dir.removeEntry(name);
+  }
+
+  async delFolder(name: string): Promise<void> {
+    this.#dir.removeEntry(name);
   }
 
 }
