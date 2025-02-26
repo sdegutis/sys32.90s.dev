@@ -187,15 +187,37 @@ export class Panel extends View {
       this.w = this.#lastPos.w;
       this.h = this.#lastPos.h;
       this.#lastPos = undefined!;
+      this.layoutTree();
     }
     else {
       this.#lastPos = { x: this.x, y: this.y, w: this.w, h: this.h };
-      this.x = this.y = 0;
+
+      // const a = { ...this.#lastPos };
+      // const b = { x: 0, y: 0, w: this.parent!.w, h: this.parent!.h };
+
+      // let total = 100;
+      // let sofar = 0;
+
+      // const done = this.sys.onTick.watch(delta => {
+      //   sofar += delta;
+      //   if (sofar >= total) done();
+      //   let p = Math.min(1, Math.max(0, sofar / total));
+      //   p = -(Math.cos(Math.PI * p) - 1) / 2;
+
+      //   this.x = Math.round((b.x - a.x) * p + a.x);
+      //   this.y = Math.round((b.y - a.y) * p + a.y);
+      //   this.w = Math.round((b.w - a.w) * p + a.w);
+      //   this.h = Math.round((b.h - a.h) * p + a.h);
+      //   this.layoutTree();
+      // });
+
+      this.x = 0;
+      this.y = 0;
       this.w = this.parent!.w;
       this.h = this.parent!.h;
+      this.layoutTree();
     }
 
-    this.layoutTree();
   }
 
   show() {
