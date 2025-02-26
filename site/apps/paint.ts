@@ -161,29 +161,32 @@ export default function paint(sys: System, filepath?: string) {
 
 
 
-  filepath = 'b/test1.bitmap';
-
-  sys.fs.loadFile(filepath).then(s => {
-    paintView.loadBitmap(s);
-  });
 
 
-
-  // let file:
 
   panel.onKeyDown = (key) => {
-    if (key === 's' && sys.keys['Control']) {
+    if (key === 'o' && sys.keys['Control']) {
+
+      filepath = 'b/test1.bitmap';
+
+      sys.fs.loadFile(filepath).then(s => {
+        if (s) {
+          paintView.loadBitmap(s);
+        }
+      });
+
+
+    }
+    else if (key === 's' && sys.keys['Control']) {
       console.log('saving');
 
-      // filepath = '/test1.bitmap';
+      filepath = 'b/test1.bitmap';
 
       const bitmap = paintView.toBitmap();
 
-      // console.log(bitmap.toString());
-
-      // sys.fs.saveFile(filepath, bitmap.toString()).then(() => {
-      //   console.log('done')
-      // })
+      sys.fs.saveFile(filepath, bitmap.toString()).then(() => {
+        console.log('done')
+      })
 
       return true;
     }
@@ -263,7 +266,18 @@ class PaintView extends View {
 
   loadBitmap(s: string) {
     const b = Bitmap.fromString(s);
-    console.log(b)
+    this.resize(b.width, b.height);
+
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
+        const i = y * this.width + x;
+        const ci = b.pixels[i];
+        if (ci > 0) {
+          const c = b.colors[ci - 1];
+          this.#grid[i] = c;
+        }
+      }
+    }
   }
 
   toBitmap() {
