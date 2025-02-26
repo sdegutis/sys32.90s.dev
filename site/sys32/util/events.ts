@@ -53,4 +53,10 @@ export class Reactable<T> {
     return done;
   }
 
+  adapt<U>(fn: (data: T) => U) {
+    const r = new Reactable<U>(fn(this.val));
+    const done = this.watch(data => r.val = fn(data), false);
+    return r;
+  }
+
 }

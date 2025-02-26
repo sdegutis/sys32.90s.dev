@@ -102,7 +102,7 @@ export function demo(sys: System) {
           sys.make(Border, { all: 1 },
             sys.make(Border, {},
               digInto(sys.make(View, { passthrough: true, background: 0xffffffff, }), view => {
-                view.useDataSource('w', zoom);
+                view.useDataSource('w', zoom.adapt(n => n * 2));
                 view.useDataSource('h', zoom);
                 view.useDataSource('visible', on);
               })
