@@ -1,5 +1,5 @@
 import { Border } from "../sys32/containers/border.js";
-import { Group, GroupX, GroupY } from "../sys32/containers/group.js";
+import { GroupX, GroupY } from "../sys32/containers/group.js";
 import { makeButton } from "../sys32/controls/button.js";
 import { ImageView } from "../sys32/controls/image.js";
 import { Label } from "../sys32/controls/label.js";
@@ -159,15 +159,15 @@ export function demo(sys: System) {
 
       ),
 
-      sys.make(Group, { dir: 'y', gap: 1 },
+      sys.make(GroupY, { gap: 1 },
         sys.make(Border, { background: 0x000000ff, all: 0, ...passedFocus }, sys.make(TextField, { text: 'hi', length: 4 })),
         sys.make(Border, { background: 0x000000ff, all: 1, ...passedFocus }, sys.make(TextField, { text: 'hi', length: 4 })),
         sys.make(Border, { background: 0x000000ff, all: 2, ...passedFocus }, sys.make(TextField, { text: 'hi', length: 4 })),
         sys.make(Border, { background: 0x000099ff, all: 2, ...passedFocus }, sys.make(TextField, { text: 'hi', length: 4, cursorColor: 0xff000099, color: 0xffff00ff })),
       ),
 
-      sys.make(Group, { dir: 'y', gap: 1 },
-        sys.make(Group, { dir: 'y', gap: 1 },
+      sys.make(GroupY, { gap: 1 },
+        sys.make(GroupY, { gap: 1 },
           sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' })),
           (() => {
             const button = makeButton(() => { console.log('clicked button1') });
@@ -176,7 +176,7 @@ export function demo(sys: System) {
             )
           })(),
         ),
-        sys.make(Group, { dir: 'y', gap: 1 },
+        sys.make(GroupY, { gap: 1 },
           sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' })),
           (() => {
             const button = makeButton(() => { console.log('clicked button2') });
@@ -187,7 +187,7 @@ export function demo(sys: System) {
         ),
       ),
 
-      sys.make(Group, { dir: 'y', gap: 1 },
+      sys.make(GroupY, { gap: 1 },
         sys.make(ImageView, { image: new Bitmap([0x00000099, 0xffffffff], 3, [1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1,]) }),
         sys.make(ImageView, { image: new Bitmap([0x00000099, 0xffffffff], 5, [1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1,]) }),
         sys.make(Border, { background: 0x00000033, all: 1, },

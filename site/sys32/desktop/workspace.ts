@@ -1,6 +1,6 @@
 import { Border } from "../containers/border.js";
 import { Group } from "../containers/group.js";
-import { Paned } from "../containers/paned.js";
+import { PanedYB } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
 import { makeButton } from "../controls/button.js";
 import { Label } from "../controls/label.js";
@@ -62,7 +62,7 @@ export class Workspace {
     sys.root.childrenChanged = () => this.#stealPanels();
 
     sys.root.children = [
-      sys.make(Paned, { vacuum: 'b', dir: 'y' },
+      sys.make(PanedYB, {},
         this.#desktop,
         this.#taskbar
       )

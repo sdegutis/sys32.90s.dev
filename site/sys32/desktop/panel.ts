@@ -1,6 +1,6 @@
 import { Border } from "../containers/border.js";
 import { Group } from "../containers/group.js";
-import { Paned } from "../containers/paned.js";
+import { PanedYA } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
 import { makeButton } from "../controls/button.js";
 import { ImageView } from "../controls/image.js";
@@ -76,7 +76,7 @@ export class Panel extends View {
       },
 
 
-        this.sys.make(Paned, { dir: 'y', vacuum: 'a' },
+        this.sys.make(PanedYA, {},
 
           this.sys.make(Spaced, {
             onMouseDown: () => {

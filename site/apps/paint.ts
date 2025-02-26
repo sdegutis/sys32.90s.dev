@@ -2,7 +2,7 @@ import { Border } from "../sys32/containers/border.js";
 import { GroupX } from "../sys32/containers/group.js";
 import { PanedXB, PanedYB } from "../sys32/containers/paned.js";
 import { Scroll } from "../sys32/containers/scroll.js";
-import { Spaced } from "../sys32/containers/spaced.js";
+import { SpacedX } from "../sys32/containers/spaced.js";
 import { makeButton } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { Slider } from "../sys32/controls/slider.js";
@@ -127,7 +127,7 @@ export default function paint(sys: System, filepath?: string) {
     return t;
   }
 
-  const statusBar = sys.make(Spaced, { dir: 'x' },
+  const statusBar = sys.make(SpacedX, {},
     sys.make(GroupX, {},
       sys.make(Label, { color: 0xffffff33, text: 'w:' }), widthLabel,
       sys.make(Label, { color: 0xffffff33, text: ' h:' }), heightLabel,
