@@ -106,8 +106,8 @@ export class Workspace {
     this.#panels.addChild(button);
     this.#panels.layoutTree();
 
-    panel.getDataSource('title').watch(s => label.text = s);
-    label.getDataSource('text').watch(s => { this.#panels.layoutTree(); });
+    panel.watch('title', s => label.text = s);
+    label.watch('text', s => { this.#panels.layoutTree(); });
 
     panel.didClose.watch(() => {
       button.parent?.removeChild(button);

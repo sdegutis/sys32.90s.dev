@@ -26,16 +26,14 @@ export default function paint(sys: System, filepath?: string) {
   const zoomLabel = sys.make(Label, {});
 
 
-  paintView.getDataSource('width').watch(n => widthLabel.text = n.toString());
-  paintView.getDataSource('height').watch(n => heightLabel.text = n.toString());
+  paintView.watch('width', n => widthLabel.text = n.toString());
+  paintView.watch('height', n => heightLabel.text = n.toString());
 
-  widthLabel.getDataSource('text').watch(() => { widthLabel.parent?.layoutTree() });
-  heightLabel.getDataSource('text').watch(() => { heightLabel.parent?.layoutTree() });
+  widthLabel.watch('text', () => { widthLabel.parent?.layoutTree() });
+  heightLabel.watch('text', () => { heightLabel.parent?.layoutTree() });
 
-  const zoom = paintView.getDataSource('zoom');
-
-  zoom.watch(n => zoomLabel.text = n.toString());
-  zoom.watch(n => panel.layoutTree(), false);
+  paintView.watch('zoom', n => zoomLabel.text = n.toString());
+  paintView.watch('zoom', n => panel.layoutTree(), false);
 
   const resizer = sys.make(View, {
     background: 0x00000077,
@@ -51,8 +49,8 @@ export default function paint(sys: System, filepath?: string) {
       this.sys?.trackMouse({
         move: () => {
           fn();
-          const w = Math.floor(o.w / zoom.val);
-          const h = Math.floor(o.h / zoom.val);
+          const w = Math.floor(o.w / paintView.zoom);
+          const h = Math.floor(o.h / paintView.zoom);
           paintView.resize(w, h);
         }
       })
@@ -60,16 +58,14 @@ export default function paint(sys: System, filepath?: string) {
     }
   });
 
-  const toolRadios = paintView.getDataSource('tool');
-
   const pencilButton = makeButton(() => { paintView.tool = 'pencil' });
   const eraserButton = makeButton(() => { paintView.tool = 'eraser' });
 
   const pencilTool = sys.make(View, { w: 4, h: 4, ...pencilButton.all });
   const eraserTool = sys.make(View, { w: 4, h: 4, ...eraserButton.all });
 
-  toolRadios.watch(t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff);
-  toolRadios.watch(t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff);
+  paintView.watch('tool', t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff);
+  paintView.watch('tool', t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff);
 
   const colorField = sys.make(TextField, { length: 9, background: 0x111111ff });
   const toolArea = sys.make(View, {
@@ -133,7 +129,7 @@ export default function paint(sys: System, filepath?: string) {
     ),
     sys.make(GroupX, {},
       digInto(sys.make(Slider, { knobSize: 3, w: 20, min: 1, max: 12 }), slider => {
-        slider.setDataSource('val', zoom)
+        slider.setDataSource('val', paintView.getDataSource('zoom'))
       })
     )
   );

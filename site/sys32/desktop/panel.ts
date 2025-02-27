@@ -155,11 +155,8 @@ export class Panel extends View {
 
     ];
 
-    this.getDataSource('title').watch(s => titleLabel.text = s);
-
-    this.getDataSource('panelFocused').watch(b => {
-      this.border.borderColor = b ? 0x005599ff : 0;
-    });
+    this.watch('title', s => titleLabel.text = s);
+    this.watch('panelFocused', b => { this.border.borderColor = b ? 0x005599ff : 0; });
   }
 
   close() {
