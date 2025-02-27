@@ -22,7 +22,6 @@ export default (sys: System) => {
   const { $ } = sys;
 
   let root: PanedXA;
-  let gridButton: Button;
   let mapArea: View;
   let mapView: MapView;
 
@@ -31,13 +30,20 @@ export default (sys: System) => {
   const panel = $(Panel, { title: 'mapmaker', },
     $(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
 
-      root = $(PanedXA, {},
+      root = $(PanedXA, {
+        onScroll: (up) => {
+          if (up) {
+            map.currentTool.val--;
+            if (map.currentTool.val < 0) map.currentTool.val = 15;
+          }
+          else {
+            map.currentTool.val++;
+            if (map.currentTool.val === 16) map.currentTool.val = 0;
+          }
+        }
+      },
         $(PanedYA, { w: 19, background: 0x333333ff },
-          gridButton = $(Button, {
-            background: 0x00000033,
-            all: 2,
-            onClick: () => mapView.showGrid = !mapView.showGrid
-          },
+          $(Button, { background: 0x00000033, all: 2, onClick: () => mapView.showGrid = !mapView.showGrid },
             $(Label, { text: 'grid' })
           ),
           $(View, { layout: makeFlowLayoutY() },
@@ -75,34 +81,6 @@ export default (sys: System) => {
 
     )
   );
-
-
-
-  root.onScroll = (up) => {
-    if (up) {
-      map.currentTool.val--;
-      if (map.currentTool.val < 0) map.currentTool.val = 15;
-    }
-    else {
-      map.currentTool.val++;
-      if (map.currentTool.val === 16) map.currentTool.val = 0;
-    }
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   sys.root.addChild(panel);
 
