@@ -11,6 +11,7 @@ sys.crt.autoscale();
   await ws.addProgram('mapmaker', import.meta.resolve('./apps/mapmaker.js'));
   await ws.addProgram('painter', import.meta.resolve('./apps/painter.js'));
   await ws.addProgram('writer', import.meta.resolve('./apps/writer.js'));
+  await ws.addProgram('fontmaker', import.meta.resolve('./apps/fontmaker.js'));
 
-  ws.launch('writer')
+  ws.launch('fontmaker')
 })()
