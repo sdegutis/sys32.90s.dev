@@ -36,12 +36,6 @@ export class Reactive<T> {
     return done;
   }
 
-  adapt<U>(fn: (data: T) => U) {
-    const reactive = new Reactive<U>(fn(this.val));
-    const disconnect = this.watch(data => reactive.val = fn(data), false);
-    return { reactive, disconnect };
-  }
-
 }
 
 export function multiplex<T extends Record<string, any>>(reactives: { [K in keyof T]: Reactive<T[K]> }): Reactive<T> {

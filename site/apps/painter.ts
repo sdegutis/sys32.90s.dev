@@ -93,20 +93,19 @@ export default function paint(sys: System, filepath?: string) {
 
   function makeColorButton(color: number) {
     const button = makeButton(() => { paintView.color = color; });
-    const selected = currentColor.adapt(n => paintView.color === color).reactive;
     const colorView = sys.make(View, { passthrough: true, w: 4, h: 4, background: color, });
     const border = sys.make(Border, { all: 1, ...button.all }, colorView);
 
     multiplex({
-      selected: selected,
+      currentColor,
       hovered: button.hovered,
       pressed: button.pressed,
     }).watch(data => {
-      let color = 0;
-      if (data.selected) color = 0xffffff77;
-      else if (data.pressed) color = 0xffffff11;
-      else if (data.hovered) color = 0xffffff33;
-      border.borderColor = color;
+      let c = 0;
+      if (data.currentColor === color) c = 0xffffff77;
+      else if (data.pressed) c = 0xffffff11;
+      else if (data.hovered) c = 0xffffff33;
+      border.borderColor = c;
     });
 
     toolArea.addChild(border);
@@ -134,17 +133,7 @@ export default function paint(sys: System, filepath?: string) {
     ),
     sys.make(GroupX, {},
       digInto(sys.make(Slider, { knobSize: 3, w: 20, min: 1, max: 12 }), slider => {
-
-        // slider.watch('val', d => {
-
-        // });
-
         slider.setDataSource('val', zoom)
-
-        // slider.getDataSource('val').watch(n => zoom.val = n, false);
-
-        // zoom.watch(n => slider.val = n, false);
-
       })
     )
   );

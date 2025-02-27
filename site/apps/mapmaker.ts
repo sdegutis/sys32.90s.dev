@@ -56,19 +56,18 @@ export function mapmaker(sys: System) {
         ...COLORS.map((col, i) => {
 
           const button = makeButton(() => { currentTool.val = i; });
-          const selected = currentTool.adapt(n => n === i).reactive;
 
           const border = sys.make(Border, { all: 1, ...button.all },
             sys.make(View, { passthrough: true, w: 4, h: 4, background: col })
           );
 
           multiplex({
-            selected: selected,
+            currentTool,
             hovered: button.hovered,
             pressed: button.pressed,
           }).watch(data => {
             let color = 0;
-            if (data.selected) color = 0xffffff77;
+            if (data.currentTool === i) color = 0xffffff77;
             else if (data.pressed) color = 0xffffff11;
             else if (data.hovered) color = 0xffffff33;
             border.borderColor = color;
