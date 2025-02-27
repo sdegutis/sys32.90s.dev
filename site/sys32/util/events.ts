@@ -13,6 +13,10 @@ export class Listener<T = void, U = void> {
     return () => { this.#list.delete(fn); };
   }
 
+  destroy() {
+    this.#list.clear();
+  }
+
 }
 
 export class Reactive<T> {
@@ -34,6 +38,10 @@ export class Reactive<T> {
     const done = this.#changed.watch(fn);
     if (initial) this.#changed.dispatch(this.val);
     return done;
+  }
+
+  destroy() {
+    this.#changed.destroy();
   }
 
 }
