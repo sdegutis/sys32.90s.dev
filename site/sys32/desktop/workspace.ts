@@ -122,14 +122,24 @@ export class Workspace {
     return panel;
   }
 
-  addProgram(title: string, launch: (sys: System) => void) {
+  async addProgram(name: string, path: string) {
+    const mod = await import(path);
+    const launch: (sys: System) => void = mod.default;
+
+    this.#programs.set(name, launch);
 
     const { $ } = this.sys;
 
     this.#icons.addChild($(Button, { all: 2, onClick: () => launch(this.sys) },
-      $(Label, { text: title })
+      $(Label, { text: name })
     ));
     this.sys.layoutTree();
   }
+
+  launch(name: string) {
+    this.#programs.get(name)?.(this.sys);
+  }
+
+  #programs = new Map<string, (sys: System) => void>();
 
 }
