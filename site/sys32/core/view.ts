@@ -35,8 +35,6 @@ export class View {
   mouse = { x: 0, y: 0 };
   cursor: Cursor | undefined;
 
-  trackingArea?: { x: number, y: number, w: number, h: number };
-
   parent?: View;
   sys: System;
 

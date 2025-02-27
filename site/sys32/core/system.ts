@@ -233,12 +233,6 @@ export class System {
     let ty = 0;
     let tw = node.w;
     let th = node.h;
-    if (node.trackingArea) {
-      tx = node.trackingArea.x;
-      ty = node.trackingArea.y;
-      tw = tx + node.trackingArea.w;
-      th = ty + node.trackingArea.h;
-    }
 
     const inThis = (x >= tx && y >= ty && x < tw && y < th);
     if (!inThis) return null;

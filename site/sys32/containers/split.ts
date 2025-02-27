@@ -36,22 +36,22 @@ class SplitDivider extends View {
     this.cursor = this.split.dir === 'x' ? xresize : yresize;
   }
 
-  override layout(): void {
+  override draw(): void {
+    super.draw();
+
     const dx = this.split.dir;
     const dw = dx === 'x' ? 'w' : 'h';
 
-    this.trackingArea = { x: 0, y: 0, w: this.w, h: this.h };
-    this.trackingArea[dx] = -3;
-    this.trackingArea[dw] = this.split.dividerWidth + 6;
-  }
+    const x = dx === 'x' ? Math.round((this[dw] - this.split.dividerWidth) / 2) : 0;
+    const y = dx === 'y' ? Math.round((this[dw] - this.split.dividerWidth) / 2) : 0;
+    const w = dx === 'x' ? this.split.dividerWidth : this.w;
+    const h = dx === 'y' ? this.split.dividerWidth : this.h;
 
-  override draw(): void {
-    super.draw();
     if (this.pressed) {
-      this.sys.crt.rectFill(0, 0, this.w, this.h, this.split.dividerColorPress);
+      this.sys.crt.rectFill(x, y, w, h, this.split.dividerColorPress);
     }
     else if (this.#hovered) {
-      this.sys.crt.rectFill(0, 0, this.w, this.h, this.split.dividerColorHover);
+      this.sys.crt.rectFill(x, y, w, h, this.split.dividerColorHover);
     }
   }
 
@@ -140,8 +140,8 @@ export class Split extends View {
       this.#resizer.w = this.w;
       this.#resizer.h = this.h;
 
-      this.#resizer[dx] = this.pos;
-      this.#resizer[dw] = this.dividerWidth;
+      this.#resizer[dx] = this.pos - 1;
+      this.#resizer[dw] = this.dividerWidth + 2;
     }
   }
 
