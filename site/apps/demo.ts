@@ -26,26 +26,6 @@ export default (sys: System) => {
 };
 
 export function demo(sys: System) {
-  const on = new Reactive(true);
-  on.watch(b => console.log({ b }))
-  // setInterval(() => { on.val = !on.val; }, 1000);
-  const button = makeButton(() => { on.val = !on.val; });
-
-  function digInto<T>(t: T, fn: (t: T) => void) {
-    fn(t);
-    return t;
-  }
-
-  const zoom = new Reactive(3);
-  zoom.watch(n => main.parent?.layoutTree(), false)
-
-  const zoom2 = zoom.adapt(n => n * 2);
-  zoom2.reactive.watch(n => main.parent?.layoutTree(), false)
-
-  setTimeout(() => {
-    zoom2.disconnect();
-  }, 1000);
-
   function makeDemoCheckmark(text: string, reverse = false) {
     let checkmark: View;
     const button = makeButton(() => { checkmark.visible = !checkmark.visible; });
@@ -75,88 +55,10 @@ export function demo(sys: System) {
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(GroupX, { align: 'n', gap: 4, background: 0x0000ff33 },
 
-      (() => {
-        const currentColor = new Reactive(COLORS[3]);
-
-        const radios = COLORS.map(c => {
-          const button = makeButton(() => { currentColor.val = c; });
-          const selected = currentColor.adapt(n => n === c).reactive;
-          const colorView = sys.make(View, { passthrough: true, background: c, w: 4, h: 4 });
-          const border = sys.make(Border, { borderColor: 0xffffff33, all: 1, ...button.mouse }, colorView);
-
-          border.setDataSource('borderColor', multiplex({
-            selected: selected,
-            hovered: button.hovered,
-            pressed: button.pressed,
-          }).adapt<number>(data => {
-            if (data.selected) return 0xffffffff;
-            if (data.pressed) return 0xffffff11;
-            if (data.hovered) return 0xffffff22;
-            return 0;
-          }).reactive);
-
-          return border;
-        });
-
-        return sys.make(GroupY, { gap: -1 }, ...radios);
-      })(),
-
       sys.make(GroupY, { gap: 2 },
         makeDemoCheckmark('aaa'),
         makeDemoCheckmark('bbb', true),
         makeDemoCheckmark('ccc'),
-      ),
-
-      sys.make(GroupY, { gap: 4 },
-
-        digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3, min: 2, max: 7 }), slider => {
-          slider.setDataSource('val', zoom);
-        }),
-
-        sys.make(GroupX, { gap: 1, ...button.mouse },
-          digInto(sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
-            sys.make(Border, { all: 1 },
-              sys.make(Border, {},
-                digInto(sys.make(View, { passthrough: true, background: 0xffffffff, }), view => {
-                  view.setDataSource('w', zoom2.reactive);
-                  view.setDataSource('h', zoom);
-                  view.setDataSource('visible', on);
-                })
-              )
-            )
-          ), border => {
-            border.setDataSource('r', zoom);
-          }),
-          digInto(sys.make(Label, { text: 'hey' }), label => {
-            const r = zoom2.reactive.adapt(n => n.toString()).reactive;
-            label.setDataSource('text', r)
-          }),
-        ),
-
-        digInto(sys.make(Slider, { knobSize: 3, w: 20, val: 3, min: 2, max: 7 }), slider => {
-          slider.setDataSource('val', zoom);
-        }),
-
-        sys.make(GroupX, { gap: 1, ...button.mouse },
-          digInto(sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
-            sys.make(Border, { all: 1 },
-              sys.make(Border, {},
-                digInto(sys.make(View, { passthrough: true, background: 0xffffffff, }), view => {
-                  view.setDataSource('w', zoom2.reactive);
-                  view.setDataSource('h', zoom);
-                  view.setDataSource('visible', on);
-                })
-              )
-            )
-          ), border => {
-            border.setDataSource('r', zoom);
-          }),
-          digInto(sys.make(Label, { text: 'hey' }), label => {
-            const r = zoom2.reactive.adapt(n => n.toString()).reactive;
-            label.setDataSource('text', r)
-          }),
-        ),
-
       ),
 
       sys.make(GroupY, { gap: 1 },
