@@ -144,18 +144,18 @@ class MapView extends View {
   showGrid = true;
   map!: Map;
 
+  #drawTerrain: ((x: number, y: number) => void)[] = [];
+  #tilesel: TileSelection | null = null;
+
   override init(): void {
 
-    const drawTerrain: ((x: number, y: number) => void)[] = [];
-
-
     for (let i = 0; i < 16; i++) {
-      drawTerrain.push((x, y) => {
+      this.#drawTerrain.push((x, y) => {
         this.sys.crt.rectFill(x, y, 4, 4, COLORS[i]);
       });
     }
 
-    drawTerrain.push((x, y) => {
+    this.#drawTerrain.push((x, y) => {
       this.sys.crt.rectFill(x, y, 4, 4, COLORS[3]);
     });
 
@@ -171,99 +171,99 @@ class MapView extends View {
     // sys.rectFill(sys.mouse.x - 2, sys.mouse.y, 5, 1, 0x00000077);
     // sys.pset(sys.mouse.x, sys.mouse.y, 0xffffffff);
 
-    let tilesel: TileSelection | null = null;
+  }
 
-    this.onMouseDown = () => {
-      if (this.sys.keys[' ']) {
-        this.sys.trackMouse({ move: dragMove(this.sys, this) });
-      }
-      else if (this.sys.keys['Control']) {
-        tilesel = new TileSelection(this, 4);
+  override onMouseDown(): void {
+    if (this.sys.keys[' ']) {
+      this.sys.trackMouse({ move: dragMove(this.sys, this) });
+    }
+    else if (this.sys.keys['Control']) {
+      this.#tilesel = new TileSelection(this, 4);
 
-        this.sys.trackMouse({
-          move: () => {
-            tilesel!.update();
+      this.sys.trackMouse({
+        move: () => {
+          this.#tilesel!.update();
 
-            const tx1 = Math.max(tilesel!.tx1, 0);
-            const ty1 = Math.max(tilesel!.ty1, 0);
-            const tx2 = Math.min(tilesel!.tx2, this.map.width);
-            const ty2 = Math.min(tilesel!.ty2, this.map.height);
+          const tx1 = Math.max(this.#tilesel!.tx1, 0);
+          const ty1 = Math.max(this.#tilesel!.ty1, 0);
+          const tx2 = Math.min(this.#tilesel!.tx2, this.map.width);
+          const ty2 = Math.min(this.#tilesel!.ty2, this.map.height);
 
-            for (let y = ty1; y < ty2; y++) {
-              for (let x = tx1; x < tx2; x++) {
-                this.map.useTool(x, y);
-              }
+          for (let y = ty1; y < ty2; y++) {
+            for (let x = tx1; x < tx2; x++) {
+              this.map.useTool(x, y);
             }
+          }
 
-          },
-          up() {
-            tilesel = null;
-          },
-        });
-      }
-      else if (this.sys.keys['Alt']) {
-        this.sys.trackMouse({
-          move: () => {
-            const x = Math.floor(this.mouse.x / 4);
-            const y = Math.floor(this.mouse.y / 4);
-            this.map.useTool(x + 0, y + 0);
-            this.map.useTool(x + 1, y + 0);
-            this.map.useTool(x - 1, y + 0);
-            this.map.useTool(x + 0, y + 1);
-            this.map.useTool(x + 0, y - 1);
-          },
-        });
-      }
-      else {
-        this.sys.trackMouse({
-          move: () => {
-            const x = Math.floor(this.mouse.x / 4);
-            const y = Math.floor(this.mouse.y / 4);
-            this.map.useTool(x, y);
-          },
-        });
-      }
-    };
+        },
+        up: () => {
+          this.#tilesel = null;
+        },
+      });
+    }
+    else if (this.sys.keys['Alt']) {
+      this.sys.trackMouse({
+        move: () => {
+          const x = Math.floor(this.mouse.x / 4);
+          const y = Math.floor(this.mouse.y / 4);
+          this.map.useTool(x + 0, y + 0);
+          this.map.useTool(x + 1, y + 0);
+          this.map.useTool(x - 1, y + 0);
+          this.map.useTool(x + 0, y + 1);
+          this.map.useTool(x + 0, y - 1);
+        },
+      });
+    }
+    else {
+      this.sys.trackMouse({
+        move: () => {
+          const x = Math.floor(this.mouse.x / 4);
+          const y = Math.floor(this.mouse.y / 4);
+          this.map.useTool(x, y);
+        },
+      });
+    }
 
-    this.draw = () => {
-      // for (let i = 0; i < 300; i++)
+  }
+
+  override draw(): void {
+    // for (let i = 0; i < 300; i++)
+    for (let y = 0; y < this.map.height; y++) {
+      for (let x = 0; x < this.map.width; x++) {
+        const i = y * this.map.width + x;
+        const t = this.map.terrain[i];
+        this.#drawTerrain[t](x * 4, y * 4);
+      }
+    }
+
+    if (this.showGrid) {
+      for (let x = 0; x < this.map.width; x++) {
+        this.sys.crt.rectFill(x * 4, 0, 1, this.map.height * 4, 0x00000011);
+      }
+
       for (let y = 0; y < this.map.height; y++) {
-        for (let x = 0; x < this.map.width; x++) {
-          const i = y * this.map.width + x;
-          const t = this.map.terrain[i];
-          drawTerrain[t](x * 4, y * 4);
-        }
+        this.sys.crt.rectFill(0, y * 4, this.map.width * 4, 1, 0x00000011);
       }
+    }
 
-      if (this.showGrid) {
-        for (let x = 0; x < this.map.width; x++) {
-          this.sys.crt.rectFill(x * 4, 0, 1, this.map.height * 4, 0x00000011);
-        }
+    if (this.hovered) {
+      const tx = Math.floor(this.mouse.x / 4);
+      const ty = Math.floor(this.mouse.y / 4);
+      this.sys.crt.rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);
 
-        for (let y = 0; y < this.map.height; y++) {
-          this.sys.crt.rectFill(0, y * 4, this.map.width * 4, 1, 0x00000011);
-        }
+      if (this.sys.keys['Alt']) {
+        this.sys.crt.rectFill((tx + 0) * 4, (ty + 1) * 4, 4, 4, 0x0000ff77);
+        this.sys.crt.rectFill((tx + 0) * 4, (ty - 1) * 4, 4, 4, 0x0000ff77);
+        this.sys.crt.rectFill((tx + 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
+        this.sys.crt.rectFill((tx - 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
       }
+    }
 
-      if (this.hovered) {
-        const tx = Math.floor(this.mouse.x / 4);
-        const ty = Math.floor(this.mouse.y / 4);
-        this.sys.crt.rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);
+    if (this.#tilesel) {
+      const { tx1, tx2, ty1, ty2 } = this.#tilesel;
 
-        if (this.sys.keys['Alt']) {
-          this.sys.crt.rectFill((tx + 0) * 4, (ty + 1) * 4, 4, 4, 0x0000ff77);
-          this.sys.crt.rectFill((tx + 0) * 4, (ty - 1) * 4, 4, 4, 0x0000ff77);
-          this.sys.crt.rectFill((tx + 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
-          this.sys.crt.rectFill((tx - 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
-        }
-      }
-
-      if (tilesel) {
-        const { tx1, tx2, ty1, ty2 } = tilesel;
-
-        this.sys.crt.rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
-        this.sys.crt.rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
-      }
+      this.sys.crt.rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
+      this.sys.crt.rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
     }
 
   }
