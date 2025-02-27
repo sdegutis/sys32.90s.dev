@@ -3,7 +3,7 @@ import { GroupX, GroupY } from "../sys32/containers/group.js";
 import { PanedYB } from "../sys32/containers/paned.js";
 import { Scroll } from "../sys32/containers/scroll.js";
 import { SplitX } from "../sys32/containers/split.js";
-import { makeButton } from "../sys32/controls/button.js";
+import { Button } from "../sys32/controls/button.js";
 import { ImageView } from "../sys32/controls/image.js";
 import { Label } from "../sys32/controls/label.js";
 import { TextField } from "../sys32/controls/textfield.js";
@@ -66,23 +66,23 @@ export default (sys: System) => {
     files.sort(sortBy(f => (f.kind === 'folder' ? 1 : 2) + f.name));
 
     filelist.children = files.map(file => {
-      const button = makeButton(() => {
+      return $(Button, {
+        all: 2, onClick: () => {
 
-        if (file.kind === 'folder') {
-          folder.getFolder(file.name).then(folder => {
-            showfiles(folder!);
-          })
-        }
-        else {
-          if (file.name.endsWith('.bitmap')) {
-            paint(sys, folder.path + file.name);
+          if (file.kind === 'folder') {
+            folder.getFolder(file.name).then(folder => {
+              showfiles(folder!);
+            })
           }
+          else {
+            if (file.name.endsWith('.bitmap')) {
+              paint(sys, folder.path + file.name);
+            }
+          }
+
+          console.log('clicked', file)
         }
-
-        console.log('clicked', file)
-      });
-
-      return $(Border, { all: 2, ...button.all },
+      },
         $(GroupX, { passthrough: true, gap: 2 },
           $(ImageView, { image: file.kind === 'file' ? fileIcon : folderIcon }),
           $(Label, { text: file.name }),
@@ -95,11 +95,11 @@ export default (sys: System) => {
 
   sys.fs.drives.then(drives => {
     for (const key of Object.keys(drives)) {
-      const button = makeButton(async () => {
-        showfiles((await sys.fs.getFolder(key))!);
-      });
-
-      sidelist.addChild($(Border, { all: 2, background: 0xff000033, ...button.all },
+      sidelist.addChild($(Button, {
+        all: 2, background: 0xff000033, onClick: async () => {
+          showfiles((await sys.fs.getFolder(key))!);
+        }
+      },
         $(Label, { text: `drive: ${key}` })
       ));
       sidelist.parent?.layoutTree();
