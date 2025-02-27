@@ -3,13 +3,11 @@ import { GroupX, GroupY } from "../sys32/containers/group.js";
 import { makeButton } from "../sys32/controls/button.js";
 import { ImageView } from "../sys32/controls/image.js";
 import { Label } from "../sys32/controls/label.js";
-import { Slider } from "../sys32/controls/slider.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
-import { multiplex, Reactive } from "../sys32/util/events.js";
 import { centerLayout } from "../sys32/util/layouts.js";
 import { passedFocus } from "../sys32/util/unsure.js";
 
