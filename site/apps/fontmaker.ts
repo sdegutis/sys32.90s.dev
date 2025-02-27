@@ -3,7 +3,8 @@ import { GroupX, GroupY } from "../sys32/containers/group.js";
 import { PanedYB } from "../sys32/containers/paned.js";
 import { Label } from "../sys32/controls/label.js";
 import { Slider } from "../sys32/controls/slider.js";
-import type { System } from "../sys32/core/system.js";
+import { Bitmap } from "../sys32/core/bitmap.js";
+import type { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { Reactive } from "../sys32/util/events.js";
@@ -21,9 +22,7 @@ export default (sys: System) => {
     ` .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`,
   ].join('\n');
 
-  const mapping = Object.fromEntries([...charset].map(ch => {
-    return [ch, ch];
-  }));
+  const data: Record<string, any> = {};
 
   const $width = new Reactive(4);
   const $height = new Reactive(5);
@@ -33,7 +32,7 @@ export default (sys: System) => {
     $(PanedYB, {},
       $(View, { layout: makeFlowLayout(1, 1), background: 0x44444433 },
         ...[...charset].map(ch => {
-          const view = $(CharView, { background: 0x99000099 });
+          const view = $(CharView, {});
           view.setDataSource('width', $width);
           view.setDataSource('height', $height);
           view.setDataSource('zoom', $zoom);
@@ -86,13 +85,50 @@ export default (sys: System) => {
 
 class CharView extends View {
 
+  override cursor: Cursor = { bitmap: new Bitmap([], 0, []), offset: [0, 0] };
+
   width = 4;
   height = 5;
   zoom = 1;
 
+  spots: Record<string, boolean> = {};
+
+  override background = 0x000000ff;
+
   override adjust(): void {
     this.w = this.width * this.zoom;
     this.h = this.height * this.zoom;
+  }
+
+  override draw(): void {
+    super.draw();
+
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
+        const tx = x * this.zoom;
+        const ty = y * this.zoom;
+        const key = `${x},${y}`;
+
+        if (this.spots[key]) {
+          this.sys.crt.rectFill(tx, ty, this.zoom, this.zoom, 0xffffffff);
+        }
+      }
+    }
+
+    if (this.hovered) {
+      const tx = Math.floor(this.mouse.x / this.zoom) * this.zoom;
+      const ty = Math.floor(this.mouse.y / this.zoom) * this.zoom;
+
+      this.sys.crt.rectFill(tx, ty, this.zoom, this.zoom, 0x0000ff99);
+    }
+  }
+
+  override onMouseDown(): void {
+    const tx = Math.floor(this.mouse.x / this.zoom);
+    const ty = Math.floor(this.mouse.y / this.zoom);
+
+    const key = `${tx},${ty}`;
+    this.spots[key] = !this.spots[key];
   }
 
 }
