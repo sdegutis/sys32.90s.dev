@@ -62,23 +62,19 @@ export function demo(sys: System) {
       sys.make(GroupY, { gap: 1 },
         sys.make(GroupY, { gap: 1 },
           sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' })),
-          (() => {
-            return sys.make(Button, { onClick: (t) => { console.log('clicked button1', t) } },
-              sys.make(Border, { background: 0x00000077, all: 3 },
-                sys.make(Label, { text: 'hello' })
-              )
+          sys.make(Button, { onClick: (t) => { console.log('clicked button1', t) } },
+            sys.make(Border, { background: 0x00000077, all: 3 },
+              sys.make(Label, { text: 'hello' })
             )
-          })(),
+          ),
         ),
         sys.make(GroupY, { gap: 1 },
           sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' })),
-          (() => {
-            return sys.make(Button, { onClick: (t) => { console.log('clicked button2', t) } },
-              sys.make(Border, { background: 0x00000077, all: 3 },
-                sys.make(Label, { text: 'hello' })
-              )
+          sys.make(Button, { onClick: (t) => { console.log('clicked button2', t) } },
+            sys.make(Border, { background: 0x00000077, all: 3 },
+              sys.make(Label, { text: 'hello' })
             )
-          })(),
+          ),
         ),
       ),
 
