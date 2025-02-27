@@ -26,7 +26,9 @@ export class Workspace {
 
     sys.root.layout = makeVacuumLayout();
 
-    this.#icons = sys.make(View, {
+    const { $ } = sys;
+
+    this.#icons = $(View, {
       background: 0x222222ff,
       layout: makeFlowLayout(3, 10),
       adjust: function () {
@@ -36,15 +38,15 @@ export class Workspace {
       }
     });
 
-    this.#desktop = sys.make(View, {}, this.#icons);
+    this.#desktop = $(View, {}, this.#icons);
 
-    this.#panels = sys.make(Group, { gap: 2 });
+    this.#panels = $(Group, { gap: 2 });
 
-    this.#taskbar = sys.make(Spaced, { background: 0x000000ff },
+    this.#taskbar = $(Spaced, { background: 0x000000ff },
       this.#panels,
-      sys.make(Group, {},
-        sys.make(Border, { all: 2 }, sys.make(Clock, {})),
-        sys.make(Border, {
+      $(Group, {},
+        $(Border, { all: 2 }, $(Clock, {})),
+        $(Border, {
           all: 2,
           background: 0x222222ff,
           ...makeButton(() => {
@@ -53,7 +55,7 @@ export class Workspace {
             sys.layoutTree();
           }).all
         },
-          sys.make(Label, { text: 'resize' })
+          $(Label, { text: 'resize' })
         )
       ),
     );
@@ -62,7 +64,7 @@ export class Workspace {
     sys.root.childrenChanged = () => this.#stealPanels();
 
     sys.root.children = [
-      sys.make(PanedYB, {},
+      $(PanedYB, {},
         this.#desktop,
         this.#taskbar
       )
@@ -92,8 +94,10 @@ export class Workspace {
 
     this.#desktop.addChild(panel);
 
-    const label = this.sys.make(Label, {});
-    const button = this.sys.make(Border, {
+    const { $ } = this.sys;
+
+    const label = $(Label, {});
+    const button = $(Border, {
       all: 2,
       background: 0x440000ff,
       ...makeButton(() => {
@@ -119,8 +123,11 @@ export class Workspace {
   }
 
   addProgram(title: string, launch: (sys: System) => void) {
-    this.#icons.addChild(this.sys.make(Border, { all: 2, ...makeButton(() => launch(this.sys)).all },
-      this.sys.make(Label, { text: title })
+
+    const { $ } = this.sys;
+
+    this.#icons.addChild($(Border, { all: 2, ...makeButton(() => launch(this.sys)).all },
+      $(Label, { text: title })
     ));
     this.sys.layoutTree();
   }

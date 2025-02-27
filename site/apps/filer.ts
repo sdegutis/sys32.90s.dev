@@ -20,9 +20,12 @@ const fileIcon = new Bitmap([0x000099ff], 1, [1]);
 
 
 export default (sys: System) => {
-  const mountLabel = sys.make(TextField, { length: 2, onEnter: mountNew });
-  const toolbar = sys.make(GroupX, {},
-    sys.make(Border, { all: 1, ...passedFocus, background: 0xffffff11 },
+
+  const { $ } = sys;
+
+  const mountLabel = $(TextField, { length: 2, onEnter: mountNew });
+  const toolbar = $(GroupX, {},
+    $(Border, { all: 1, ...passedFocus, background: 0xffffff11 },
       mountLabel
     )
   );
@@ -42,8 +45,8 @@ export default (sys: System) => {
 
   // })()
 
-  const sidelist = sys.make(GroupY, { gap: 1 });
-  const filelist = sys.make(GroupY, { align: 'a' });
+  const sidelist = $(GroupY, { gap: 1 });
+  const filelist = $(GroupY, { align: 'a' });
 
   function sortBy<T, U>(fn: (o: T) => U) {
     return (a: T, b: T) => {
@@ -79,10 +82,10 @@ export default (sys: System) => {
         console.log('clicked', file)
       });
 
-      return sys.make(Border, { all: 2, ...button.all },
-        sys.make(GroupX, { passthrough: true, gap: 2 },
-          sys.make(ImageView, { image: file.kind === 'file' ? fileIcon : folderIcon }),
-          sys.make(Label, { text: file.name }),
+      return $(Border, { all: 2, ...button.all },
+        $(GroupX, { passthrough: true, gap: 2 },
+          $(ImageView, { image: file.kind === 'file' ? fileIcon : folderIcon }),
+          $(Label, { text: file.name }),
         )
       );
     });
@@ -96,18 +99,18 @@ export default (sys: System) => {
         showfiles((await sys.fs.getFolder(key))!);
       });
 
-      sidelist.addChild(sys.make(Border, { all: 2, background: 0xff000033, ...button.all },
-        sys.make(Label, { text: `drive: ${key}` })
+      sidelist.addChild($(Border, { all: 2, background: 0xff000033, ...button.all },
+        $(Label, { text: `drive: ${key}` })
       ));
       sidelist.parent?.layoutTree();
     }
   });
 
-  const panel = sys.make(Panel, { title: 'files', w: 150, h: 100, },
-    sys.make(PanedYB, { gap: 2 },
-      sys.make(SplitX, { background: 0xffffff11, pos: 40, resizable: true, dividerColor: 0x33333300 },
-        sys.make(Scroll, { w: 40, background: 0x00000077, }, sidelist),
-        sys.make(Scroll, {}, filelist),
+  const panel = $(Panel, { title: 'files', w: 150, h: 100, },
+    $(PanedYB, { gap: 2 },
+      $(SplitX, { background: 0xffffff11, pos: 40, resizable: true, dividerColor: 0x33333300 },
+        $(Scroll, { w: 40, background: 0x00000077, }, sidelist),
+        $(Scroll, {}, filelist),
       ),
       toolbar,
     )

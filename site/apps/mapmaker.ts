@@ -19,10 +19,13 @@ const COLORS = [
 ];
 
 export default (sys: System) => {
-  const panel = sys.make(Panel, {
+
+  const { $ } = sys;
+
+  const panel = $(Panel, {
     title: 'mapmaker',
   },
-    sys.make(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
+    $(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
       mapmaker(sys)
     )
   );
@@ -33,32 +36,34 @@ export default (sys: System) => {
 export function mapmaker(sys: System) {
   let showGrid = true;
 
-  const gridButton = sys.make(Border, {
+  const { $ } = sys;
+
+  const gridButton = $(Border, {
     background: 0x00000033,
     all: 2,
     ...makeButton(() => showGrid = !showGrid).all,
   },
-    sys.make(Label, { text: 'grid' })
+    $(Label, { text: 'grid' })
   );
 
   let currentTool = new Reactive(5);
 
 
-  const mapArea = sys.make(View, {
+  const mapArea = $(View, {
     background: 0x222222ff,
     draw: makeStripeDrawer(sys, 4, 2)
   });
 
-  const root = sys.make(PanedXA, {},
-    sys.make(PanedYA, { w: 19, background: 0x333333ff },
+  const root = $(PanedXA, {},
+    $(PanedYA, { w: 19, background: 0x333333ff },
       gridButton,
-      sys.make(View, { layout: makeFlowLayoutY() },
+      $(View, { layout: makeFlowLayoutY() },
         ...COLORS.map((col, i) => {
 
           const button = makeButton(() => { currentTool.val = i; });
 
-          const border = sys.make(Border, { all: 1, ...button.all },
-            sys.make(View, { passthrough: true, w: 4, h: 4, background: col })
+          const border = $(Border, { all: 1, ...button.all },
+            $(View, { passthrough: true, w: 4, h: 4, background: col })
           );
 
           multiplex({
@@ -77,7 +82,7 @@ export function mapmaker(sys: System) {
         })
       )
     ),
-    sys.make(View, { background: 0x333344ff, layout: makeVacuumLayout() },
+    $(View, { background: 0x333344ff, layout: makeVacuumLayout() },
       mapArea
     )
   );
@@ -149,7 +154,7 @@ export function mapmaker(sys: System) {
 
 
 
-  const mapView = sys.make(View, {});
+  const mapView = $(View, {});
 
 
   mapView.w = map.width * 4;

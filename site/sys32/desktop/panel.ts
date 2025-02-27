@@ -53,6 +53,8 @@ export class Panel extends View {
     const content = this.children[0];
 
 
+    const { $ } = this.sys;
+
 
     const counter = new ClickCounter();
 
@@ -60,15 +62,15 @@ export class Panel extends View {
 
     this.children = [
 
-      this.border = this.sys.make(Border, {
+      this.border = $(Border, {
         all: 1,
         layout: makeVacuumLayout(1),
       },
 
 
-        this.sys.make(PanedYA, {},
+        $(PanedYA, {},
 
-          this.sys.make(Spaced, {
+          $(Spaced, {
             onMouseDown: () => {
               counter.increase();
               const drag = dragMove(this.sys, this);
@@ -88,17 +90,17 @@ export class Panel extends View {
               });
             },
           },
-            this.sys.make(Border, { l: pad },
-              titleLabel = this.sys.make(Label, { color: 0xaaaaaaff })
+            $(Border, { l: pad },
+              titleLabel = $(Label, { color: 0xaaaaaaff })
             ),
-            this.sys.make(Group, { gap: 0 },
-              this.sys.make(Border, { all: 2, ...makeButton(() => this.minimize(), 0xffffff33).all }, this.sys.make(ImageView, { image: minImage })),
-              this.sys.make(Border, { all: 2, ...makeButton(() => this.maximize(), 0xffffff33).all }, this.sys.make(ImageView, { image: maxImage })),
-              this.sys.make(Border, { all: 2, ...makeButton(() => this.close(), 0x770000ff, 0x440000ff).all }, this.sys.make(ImageView, { image: axeImage }))
+            $(Group, { gap: 0 },
+              $(Border, { all: 2, ...makeButton(() => this.minimize(), 0xffffff33).all }, $(ImageView, { image: minImage })),
+              $(Border, { all: 2, ...makeButton(() => this.maximize(), 0xffffff33).all }, $(ImageView, { image: maxImage })),
+              $(Border, { all: 2, ...makeButton(() => this.close(), 0x770000ff, 0x440000ff).all }, $(ImageView, { image: axeImage }))
             )
           ),
 
-          this.sys.make(Group, {
+          $(Group, {
             layout: function (this: View) {
               const c = this.firstChild!;
               c.x = pad;
@@ -110,7 +112,7 @@ export class Panel extends View {
 
         ),
 
-        this.sys.make(ImageView, {
+        $(ImageView, {
           passthrough: false,
           image: adjImage,
           cursor: adjCursor,

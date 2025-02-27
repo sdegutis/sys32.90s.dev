@@ -33,8 +33,10 @@ ws.addProgram('painter', painter);
 ws.addProgram('writer', writer);
 
 
+const { $ } = sys;
+
 function writer(sys: System) {
-  const textarea = sys.make(TextArea, { background: 0x00990033 });
+  const textarea = $(TextArea, { background: 0x00990033 });
 
   textarea.text = 'foo\nbar\n\nhello world'
 
@@ -43,9 +45,9 @@ function writer(sys: System) {
   // textarea.colors.length = 0
 
 
-  const panel = sys.make(Panel, { title: 'text test', w: 170, h: 150, },
-    sys.make(View, { layout: makeVacuumLayout(), background: 0x44444433 },
-      sys.make(Scroll, { background: 0x0000ff11 },
+  const panel = $(Panel, { title: 'text test', w: 170, h: 150, },
+    $(View, { layout: makeVacuumLayout(), background: 0x44444433 },
+      $(Scroll, { background: 0x0000ff11 },
         textarea
       )
     )

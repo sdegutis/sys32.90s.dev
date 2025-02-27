@@ -16,7 +16,9 @@ import { multiplex, Reactive } from "../sys32/util/events.js";
 import { makeFlowLayout } from "../sys32/util/layouts.js";
 import { dragResize } from "../sys32/util/selections.js";
 
-export default function paint(sys: System, filepath?: string) {
+export default (sys: System, filepath?: string) => {
+
+  const { $ } = sys;
 
   let paintArea: Scroll;
   let paintView: PaintView;
@@ -31,15 +33,15 @@ export default function paint(sys: System, filepath?: string) {
   let eraserTool: View;
   let colorField: TextField;
 
-  const panel = sys.make(Panel, { title: 'paint', minw: 50, w: 180, h: 70, },
-    sys.make(PanedXB, { gap: 1 },
-      sys.make(PanedYB, { gap: 1 },
-        paintArea = sys.make(Scroll, {
+  const panel = $(Panel, { title: 'paint', minw: 50, w: 180, h: 70, },
+    $(PanedXB, { gap: 1 },
+      $(PanedYB, { gap: 1 },
+        paintArea = $(Scroll, {
           background: 0x222222ff,
           draw: makeStripeDrawer(sys),
         },
-          paintView = sys.make(PaintView, { color: COLORS[3] }),
-          resizer = sys.make(View, {
+          paintView = $(PaintView, { color: COLORS[3] }),
+          resizer = $(View, {
             background: 0x00000077,
             w: 4, h: 4,
             layout: () => {
@@ -62,28 +64,28 @@ export default function paint(sys: System, filepath?: string) {
             }
           })
         ),
-        statusBar = sys.make(SpacedX, {},
-          sys.make(GroupX, {},
-            sys.make(Label, { color: 0xffffff33, text: 'w:' }), widthLabel = sys.make(Label, {}),
-            sys.make(Label, { color: 0xffffff33, text: ' h:' }), heightLabel = sys.make(Label, {}),
-            sys.make(Label, { color: 0xffffff33, text: ' c:' }), colorLabel = sys.make(Label, {}),
-            sys.make(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel = sys.make(Label, {}),
+        statusBar = $(SpacedX, {},
+          $(GroupX, {},
+            $(Label, { color: 0xffffff33, text: 'w:' }), widthLabel = $(Label, {}),
+            $(Label, { color: 0xffffff33, text: ' h:' }), heightLabel = $(Label, {}),
+            $(Label, { color: 0xffffff33, text: ' c:' }), colorLabel = $(Label, {}),
+            $(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel = $(Label, {}),
           ),
-          sys.make(GroupX, {},
-            digInto(sys.make(Slider, { knobSize: 3, w: 20, min: 1, max: 12 }), slider => {
+          $(GroupX, {},
+            digInto($(Slider, { knobSize: 3, w: 20, min: 1, max: 12 }), slider => {
               slider.setDataSource('val', paintView.getDataSource('zoom'))
             })
           )
         )
       ),
-      toolArea = sys.make(View, {
+      toolArea = $(View, {
         w: 36,
         background: 0x99000033,
         layout: makeFlowLayout(),
       },
-        pencilTool = sys.make(View, { w: 4, h: 4, ...makeButton(() => { paintView.tool = 'pencil'; }).all }),
-        eraserTool = sys.make(View, { w: 4, h: 4, ...makeButton(() => { paintView.tool = 'eraser'; }).all }),
-        colorField = sys.make(TextField, { length: 9, background: 0x111111ff }),
+        pencilTool = $(View, { w: 4, h: 4, ...makeButton(() => { paintView.tool = 'pencil'; }).all }),
+        eraserTool = $(View, { w: 4, h: 4, ...makeButton(() => { paintView.tool = 'eraser'; }).all }),
+        colorField = $(TextField, { length: 9, background: 0x111111ff }),
       ),
     ),
   );
@@ -109,8 +111,8 @@ export default function paint(sys: System, filepath?: string) {
 
   function makeColorButton(color: number) {
     const button = makeButton(() => { paintView.color = color; });
-    const colorView = sys.make(View, { passthrough: true, w: 4, h: 4, background: color, });
-    const border = sys.make(Border, { all: 1, ...button.all }, colorView);
+    const colorView = $(View, { passthrough: true, w: 4, h: 4, background: color, });
+    const border = $(Border, { all: 1, ...button.all }, colorView);
 
     multiplex({
       currentColor: paintView.getDataSource('color'),
