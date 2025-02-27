@@ -98,6 +98,10 @@ export class View {
     return this.#dataSources[k];
   }
 
+  watch<K extends keyof this, T>(k: K, fn: (d: T) => void) {
+    return this.#dataSources[k].watch(fn);
+  }
+
   setDataSource<K extends keyof this>(k: K, r: Reactive<this[K]>) {
     if (!(k in this.#dataSources)) {
       if (Object.getOwnPropertyDescriptor(this, k)?.get) return;

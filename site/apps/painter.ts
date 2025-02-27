@@ -17,8 +17,6 @@ import { makeFlowLayout } from "../sys32/util/layouts.js";
 import { dragResize } from "../sys32/util/selections.js";
 
 export default function paint(sys: System, filepath?: string) {
-  const zoom = new Reactive(4);
-
   const paintView = sys.make(PaintView, {});
 
   const widthLabel = sys.make(Label, {});
@@ -28,13 +26,13 @@ export default function paint(sys: System, filepath?: string) {
   const zoomLabel = sys.make(Label, {});
 
 
-  widthLabel.setDataSource('text', paintView.getDataSource('width').adapt(n => n.toString()).reactive);
-  heightLabel.setDataSource('text', paintView.getDataSource('height').adapt(n => n.toString()).reactive);
+  paintView.getDataSource('width').watch(n => widthLabel.text = n.toString());
+  paintView.getDataSource('height').watch(n => heightLabel.text = n.toString());
 
   widthLabel.getDataSource('text').watch(() => { widthLabel.parent?.layoutTree() });
   heightLabel.getDataSource('text').watch(() => { heightLabel.parent?.layoutTree() });
 
-  paintView.setDataSource('zoom', zoom);
+  const zoom = paintView.getDataSource('zoom');
 
   zoom.watch(n => zoomLabel.text = n.toString());
   zoom.watch(n => panel.layoutTree(), false);
@@ -70,8 +68,8 @@ export default function paint(sys: System, filepath?: string) {
   const pencilTool = sys.make(View, { w: 4, h: 4, ...pencilButton.all });
   const eraserTool = sys.make(View, { w: 4, h: 4, ...eraserButton.all });
 
-  pencilTool.setDataSource('background', toolRadios.adapt<number>(t => t === 'pencil' ? 0xffffffff : 0x333333ff).reactive);
-  eraserTool.setDataSource('background', toolRadios.adapt<number>(t => t === 'eraser' ? 0xffffffff : 0x333333ff).reactive);
+  toolRadios.watch(t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff);
+  toolRadios.watch(t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff);
 
   const colorField = sys.make(TextField, { length: 9, background: 0x111111ff });
   const toolArea = sys.make(View, {
@@ -99,16 +97,17 @@ export default function paint(sys: System, filepath?: string) {
     const colorView = sys.make(View, { passthrough: true, w: 4, h: 4, background: color, });
     const border = sys.make(Border, { all: 1, ...button.all }, colorView);
 
-    border.setDataSource('borderColor', multiplex({
+    multiplex({
       selected: selected,
       hovered: button.hovered,
       pressed: button.pressed,
-    }).adapt<number>(data => {
-      if (data.selected) return 0xffffff77;
-      if (data.pressed) return 0xffffff11;
-      if (data.hovered) return 0xffffff33;
-      return 0;
-    }).reactive);
+    }).watch(data => {
+      let color = 0;
+      if (data.selected) color = 0xffffff77;
+      else if (data.pressed) color = 0xffffff11;
+      else if (data.hovered) color = 0xffffff33;
+      border.borderColor = color;
+    });
 
     toolArea.addChild(border);
   }
@@ -119,9 +118,7 @@ export default function paint(sys: System, filepath?: string) {
 
   paintView.color = COLORS[3];
 
-  colorLabel.setDataSource('text',
-    currentColor.adapt(color => '0x' + color.toString(16).padStart(8, '0'))
-      .reactive)
+  currentColor.watch(color => colorLabel.text = '0x' + color.toString(16).padStart(8, '0'));
 
   function digInto<T>(t: T, fn: (t: T) => void) {
     fn(t);
@@ -136,8 +133,18 @@ export default function paint(sys: System, filepath?: string) {
       sys.make(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel,
     ),
     sys.make(GroupX, {},
-      digInto(sys.make(Slider, { knobSize: 3, w: 20 }), slider => {
-        slider.setDataSource('val', zoom);
+      digInto(sys.make(Slider, { knobSize: 3, w: 20, min: 1, max: 12 }), slider => {
+
+        // slider.watch('val', d => {
+
+        // });
+
+        slider.setDataSource('val', zoom)
+
+        // slider.getDataSource('val').watch(n => zoom.val = n, false);
+
+        // zoom.watch(n => slider.val = n, false);
+
       })
     )
   );
@@ -226,7 +233,7 @@ class PaintView extends View {
   width = 10;
   height = 10;
 
-  zoom = 4;
+  zoom = 1;
 
   color = 0xffffffff;
 

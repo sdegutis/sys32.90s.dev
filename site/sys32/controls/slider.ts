@@ -6,8 +6,8 @@ export class Slider extends View {
   onChange?(): void;
 
   min = 1;
-  max = 12;
-  val = 3;
+  max = 10;
+  val = 5;
 
   knobSize = 2;
   lineSize = 1;

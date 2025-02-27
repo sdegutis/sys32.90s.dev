@@ -62,16 +62,17 @@ export function mapmaker(sys: System) {
             sys.make(View, { passthrough: true, w: 4, h: 4, background: col })
           );
 
-          border.setDataSource('borderColor', multiplex({
+          multiplex({
             selected: selected,
             hovered: button.hovered,
             pressed: button.pressed,
-          }).adapt<number>(data => {
-            if (data.selected) return 0xffffff77;
-            if (data.pressed) return 0xffffff11;
-            if (data.hovered) return 0xffffff33;
-            return 0;
-          }).reactive);
+          }).watch(data => {
+            let color = 0;
+            if (data.selected) color = 0xffffff77;
+            else if (data.pressed) color = 0xffffff11;
+            else if (data.hovered) color = 0xffffff33;
+            border.borderColor = color;
+          });
 
           return border;
         })

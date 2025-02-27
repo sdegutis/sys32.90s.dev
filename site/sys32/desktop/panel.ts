@@ -155,10 +155,11 @@ export class Panel extends View {
 
     ];
 
-    const titleSource: Reactive<string> = this.getDataSource('title');
-    titleLabel.setDataSource('text', titleSource);
+    this.getDataSource('title').watch(s => titleLabel.text = s);
 
-    this.border.setDataSource('borderColor', this.getDataSource('panelFocused').adapt<number>(b => b ? 0x005599ff : 0).reactive);
+    this.getDataSource('panelFocused').watch(b => {
+      this.border.borderColor = b ? 0x005599ff : 0;
+    });
   }
 
   close() {
