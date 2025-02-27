@@ -92,6 +92,7 @@ export class Workspace {
 
     this.#desktop.addChild(panel);
 
+    const label = this.sys.make(Label, {});
     const button = this.sys.make(Border, {
       all: 2,
       background: 0x440000ff,
@@ -100,10 +101,15 @@ export class Workspace {
         panel.focus();
       }).all
     },
-      this.sys.make(Label, { text: panel.title })
+      label
     );
     this.#panels.addChild(button);
     this.#panels.layoutTree();
+
+    label.setDataSource('text', panel.getDataSource('title'));
+    label.getDataSource('text').watch(s => {
+      this.#panels.layoutTree();
+    });
 
     panel.didClose.watch(() => {
       button.parent?.removeChild(button);
