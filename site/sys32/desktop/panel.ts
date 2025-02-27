@@ -12,25 +12,10 @@ import { Listener, Reactive } from "../util/events.js";
 import { makeVacuumLayout } from "../util/layouts.js";
 import { dragMove, dragResize } from "../util/selections.js";
 
-const minImage = new Bitmap([0xaaaaaaff], 4, [
-  0, 0, 0, 0,
-  0, 0, 0, 0,
-  0, 0, 0, 0,
-  1, 1, 1, 1,]);
-const maxImage = new Bitmap([0xaaaaaaff], 4, [
-  1, 1, 1, 1,
-  1, 0, 0, 1,
-  1, 0, 0, 1,
-  1, 1, 1, 1,]);
-const axeImage = new Bitmap([0xaaaaaaff], 4, [
-  1, 0, 0, 1,
-  0, 1, 1, 0,
-  0, 1, 1, 0,
-  1, 0, 0, 1,]);
-const adjImage = new Bitmap([0xffffff77], 3, [
-  0, 0, 1,
-  0, 0, 1,
-  1, 1, 1,]);
+const minImage = new Bitmap([0xaaaaaaff], 4, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,]);
+const maxImage = new Bitmap([0xaaaaaaff], 4, [1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1,]);
+const axeImage = new Bitmap([0xaaaaaaff], 4, [1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,]);
+const adjImage = new Bitmap([0xffffff77], 3, [0, 0, 1, 0, 0, 1, 1, 1, 1,]);
 
 const adjCursor: Cursor = {
   bitmap: new Bitmap([0x000000cc, 0xffffffff], 5, [

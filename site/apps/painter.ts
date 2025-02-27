@@ -215,7 +215,6 @@ export default function paint(sys: System, filepath?: string) {
   };
 
   sys.root.addChild(panel);
-  panel.focus();
 }
 
 
