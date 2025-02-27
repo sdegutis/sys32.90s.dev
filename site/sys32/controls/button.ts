@@ -47,7 +47,7 @@ export class Button extends Border {
     this.addChild(this.overlay);
   }
 
-  #changebg?: Reactive<any> | undefined;
+  #changebg: Reactive<any> | undefined;
 
   override adopted(): void {
     this.#changebg = multiplex({
@@ -71,7 +71,6 @@ export class Button extends Border {
   override onMouseDown(): void {
     this.pressed = true;
     this.#counter.increase();
-    console.log('do')
     const cancel = this.sys.trackMouse({
       move: () => {
         if (!this.hovered) {

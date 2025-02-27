@@ -6,6 +6,8 @@ export class Group extends View {
   dir: 'x' | 'y' = 'x';
   align: 'a' | 'n' | 'z' = 'n';
 
+  override passthrough = true;
+
   override adjust(): void {
     const dw = this.dir === 'x' ? 'w' : 'h';
     const dh = this.dir === 'x' ? 'h' : 'w';

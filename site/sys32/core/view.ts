@@ -57,6 +57,7 @@ export class View {
   }
 
   addChild(child: View, pos?: number) {
+    child.parent?.removeChild(child);
     const i = pos ?? this.#children.length;
     this.#children.splice(i, 0, child);
     child.parent = this;
