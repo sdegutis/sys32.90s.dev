@@ -21,21 +21,7 @@ export default (sys: System) => {
 
   const { $ } = sys;
 
-  const panel = $(Panel, {
-    title: 'mapmaker',
-  },
-    $(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
-      mapmaker(sys)
-    )
-  );
-  sys.root.addChild(panel);
-  panel.focus();
-};
-
-export function mapmaker(sys: System) {
   let showGrid = true;
-
-  const { $ } = sys;
 
   const gridButton = $(Button, {
     background: 0x00000033,
@@ -262,5 +248,15 @@ export function mapmaker(sys: System) {
     }
   }
 
-  return root;
+
+  const panel = $(Panel, { title: 'mapmaker', },
+    $(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
+
+      root
+
+    )
+  );
+
+  sys.root.addChild(panel);
+
 }
