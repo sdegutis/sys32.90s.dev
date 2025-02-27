@@ -13,7 +13,17 @@ export default (sys: System) => {
 
   const { $ } = sys;
 
-  const letters = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`.split('');
+  const charset = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`;
+
+  const sampleText = [
+    'the quick brown fox',
+    `abcdefghijklmnopqrstuvwxyz`,
+    ` .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`,
+  ].join('\n');
+
+  const mapping = Object.fromEntries([...charset].map(ch => {
+    return [ch, ch];
+  }));
 
   const $width = new Reactive(4);
   const $height = new Reactive(5);
@@ -22,7 +32,7 @@ export default (sys: System) => {
   const panel = $(Panel, { title: 'fontmaker', },
     $(PanedYB, {},
       $(View, { layout: makeFlowLayout(1, 1), background: 0x44444433 },
-        ...letters.map(ch => {
+        ...[...charset].map(ch => {
           const view = $(CharView, { background: 0x99000099 });
           view.setDataSource('width', $width);
           view.setDataSource('height', $height);
@@ -33,23 +43,23 @@ export default (sys: System) => {
       $(Border, { background: 0x000000ff, u: 2 },
         $(GroupY, { gap: 3, align: 'a' },
 
-          $(Label, { text: 'the quick brown fox' }),
+          $(Label, { text: sampleText, color: 0x999900ff }),
 
           $(GroupX, { gap: 10, },
             $(GroupX, { gap: 2 },
-              $(Label, { text: 'width:' }),
-              $(Label, { id: 'widthlabel' }),
-              $(Slider, { id: 'width', min: 1, max: 12, val: 4, w: 20, knobSize: 3 }),
+              $(Label, { text: 'width:', color: 0xffffff33 }),
+              $(Label, { id: 'width-label' }),
+              $(Slider, { id: 'width-slider', min: 1, max: 12, w: 20, knobSize: 3 }),
             ),
             $(GroupX, { gap: 2 },
-              $(Label, { text: 'height:' }),
-              $(Label, { id: 'heightlabel' }),
-              $(Slider, { id: 'height', min: 1, max: 12, val: 4, w: 20, knobSize: 3 }),
+              $(Label, { text: 'height:', color: 0xffffff33 }),
+              $(Label, { id: 'height-label' }),
+              $(Slider, { id: 'height-slider', min: 1, max: 12, w: 20, knobSize: 3 }),
             ),
             $(GroupX, { gap: 2 },
-              $(Label, { text: 'zoom:' }),
-              $(Label, { id: 'zoomlabel' }),
-              $(Slider, { id: 'zoom', min: 1, max: 12, val: 4, w: 20, knobSize: 3 }),
+              $(Label, { text: 'zoom:', color: 0xffffff33 }),
+              $(Label, { id: 'zoom-label' }),
+              $(Slider, { id: 'zoom-slider', min: 1, max: 5, w: 20, knobSize: 3 }),
             ),
           )
 
@@ -58,17 +68,17 @@ export default (sys: System) => {
     )
   );
 
-  panel.find<Slider>('width')!.setDataSource('val', $width);
-  panel.find<Slider>('height')!.setDataSource('val', $height);
-  panel.find<Slider>('zoom')!.setDataSource('val', $zoom);
+  panel.find<Slider>('width-slider')!.setDataSource('val', $width);
+  panel.find<Slider>('height-slider')!.setDataSource('val', $height);
+  panel.find<Slider>('zoom-slider')!.setDataSource('val', $zoom);
 
   $width.watch(() => panel.layoutTree())
   $height.watch(() => panel.layoutTree())
   $zoom.watch(() => panel.layoutTree())
 
-  $width.watch((n) => { panel.find<Label>('widthlabel')!.text = n.toString(); panel.layoutTree() })
-  $height.watch((n) => { panel.find<Label>('heightlabel')!.text = n.toString(); panel.layoutTree() })
-  $zoom.watch((n) => { panel.find<Label>('zoomlabel')!.text = n.toString(); panel.layoutTree() })
+  $width.watch((n) => { panel.find<Label>('width-label')!.text = n.toString(); panel.layoutTree() })
+  $height.watch((n) => { panel.find<Label>('height-label')!.text = n.toString(); panel.layoutTree() })
+  $zoom.watch((n) => { panel.find<Label>('zoom-label')!.text = n.toString(); panel.layoutTree() })
 
   sys.root.addChild(panel);
 
