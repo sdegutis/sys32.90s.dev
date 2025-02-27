@@ -1,9 +1,8 @@
-import { Border } from "../sys32/containers/border.js";
 import { GroupX } from "../sys32/containers/group.js";
 import { PanedXB, PanedYB } from "../sys32/containers/paned.js";
 import { Scroll } from "../sys32/containers/scroll.js";
 import { SpacedX } from "../sys32/containers/spaced.js";
-import { makeButton } from "../sys32/controls/button.js";
+import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { Slider } from "../sys32/controls/slider.js";
 import { TextField } from "../sys32/controls/textfield.js";
@@ -83,8 +82,8 @@ export default (sys: System, filepath?: string) => {
         background: 0x99000033,
         layout: makeFlowLayout(),
       },
-        pencilTool = $(View, { w: 4, h: 4, ...makeButton(() => { paintView.tool = 'pencil'; }).all }),
-        eraserTool = $(View, { w: 4, h: 4, ...makeButton(() => { paintView.tool = 'eraser'; }).all }),
+        pencilTool = $(Button, { onClick: () => { paintView.tool = 'pencil'; } }, $(View, { passthrough: true, w: 4, h: 4 })),
+        eraserTool = $(Button, { onClick: () => { paintView.tool = 'eraser'; } }, $(View, { passthrough: true, w: 4, h: 4 })),
         colorField = $(TextField, { length: 9, background: 0x111111ff }),
       ),
     ),
@@ -110,14 +109,13 @@ export default (sys: System, filepath?: string) => {
   };
 
   function makeColorButton(color: number) {
-    const button = makeButton(() => { paintView.color = color; });
     const colorView = $(View, { passthrough: true, w: 4, h: 4, background: color, });
-    const border = $(Border, { all: 1, ...button.all }, colorView);
+    const border = $(Button, { all: 1, onClick: () => { paintView.color = color; } }, colorView);
 
     multiplex({
       currentColor: paintView.getDataSource('color'),
       hovered: border.getDataSource('hovered'),
-      pressed: button.pressed,
+      pressed: border.getDataSource('pressed'),
     }).watch(data => {
       let c = 0;
       if (data.currentColor === color) c = 0xffffff77;
