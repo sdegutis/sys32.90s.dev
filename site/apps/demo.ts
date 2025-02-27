@@ -23,6 +23,12 @@ export default (sys: System) => {
       $(Border, { all: 2, borderColor: 0x0000ff33 },
         $(GroupX, { align: 'n', gap: 4, background: 0x0000ff33 },
 
+          $(Label, {
+            init(this: Label) {
+              radios.watch(n => this.text = n.toString())
+            }
+          }),
+
           $(GroupY, { gap: 2 },
 
             $(Button, {
