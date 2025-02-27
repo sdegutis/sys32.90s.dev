@@ -8,7 +8,7 @@ import { Label } from "../sys32/controls/label.js";
 import { Slider } from "../sys32/controls/slider.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
-import { Cursor, System } from "../sys32/core/system.js";
+import { System, type Cursor } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeStripeDrawer } from "../sys32/util/draw.js";

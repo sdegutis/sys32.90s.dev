@@ -6,7 +6,7 @@ import { makeButton } from "../controls/button.js";
 import { ImageView } from "../controls/image.js";
 import { Label } from "../controls/label.js";
 import { Bitmap } from "../core/bitmap.js";
-import { Cursor, System } from "../core/system.js";
+import { type Cursor, System } from "../core/system.js";
 import { View } from "../core/view.js";
 import { Listener, Reactive } from "../util/events.js";
 import { makeVacuumLayout } from "../util/layouts.js";

@@ -16,6 +16,7 @@
     "noEmit": true,
     "moduleResolution": "Node",
     "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true,
     "strict": true,
     "noImplicitAny": true,
     // "downlevelIteration": true,

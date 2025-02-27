@@ -1,5 +1,5 @@
 import { Reactive } from "../util/events.js";
-import { Cursor, System } from "./system.js";
+import { type Cursor, System } from "./system.js";
 
 export class View {
 

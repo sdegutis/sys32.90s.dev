@@ -1,6 +1,6 @@
 import { Border } from "../sys32/containers/border.js";
 import { GroupX, GroupY } from "../sys32/containers/group.js";
-import { PanedXA, PanedYB } from "../sys32/containers/paned.js";
+import { PanedYB } from "../sys32/containers/paned.js";
 import { Scroll } from "../sys32/containers/scroll.js";
 import { SplitX } from "../sys32/containers/split.js";
 import { makeButton } from "../sys32/controls/button.js";
@@ -8,7 +8,7 @@ import { ImageView } from "../sys32/controls/image.js";
 import { Label } from "../sys32/controls/label.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
-import { Folder } from "../sys32/core/fs.js";
+import type { Folder } from "../sys32/core/fs.js";
 import { System } from "../sys32/core/system.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { passedFocus } from "../sys32/util/unsure.js";

@@ -1,5 +1,5 @@
 import { Bitmap } from "../core/bitmap.js";
-import { Cursor } from "../core/system.js";
+import type { Cursor } from "../core/system.js";
 import { View } from "../core/view.js";
 import { dragMove } from "../util/selections.js";
 
