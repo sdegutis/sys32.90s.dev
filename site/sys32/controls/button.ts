@@ -1,9 +1,8 @@
 import { Border } from "../containers/border.js";
-import { Group } from "../containers/group.js";
 import { View } from "../core/view.js";
 import { multiplex, Reactive } from "../util/events.js";
 
-class ClickCounter {
+export class ClickCounter {
 
   count = 0;
   #clear!: ReturnType<typeof setTimeout>;

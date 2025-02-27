@@ -2,7 +2,7 @@ import { Border } from "../containers/border.js";
 import { Group } from "../containers/group.js";
 import { PanedYA } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
-import { makeButton } from "../controls/button.js";
+import { ClickCounter, makeButton } from "../controls/button.js";
 import { ImageView } from "../controls/image.js";
 import { Label } from "../controls/label.js";
 import { Bitmap } from "../core/bitmap.js";
@@ -52,24 +52,6 @@ export class Panel extends View {
 
     const content = this.children[0];
 
-
-    class ClickCounter {
-
-      count = 0;
-      clear!: ReturnType<typeof setTimeout>;
-      #secDelay: number;
-
-      constructor(secDelay = 333) {
-        this.#secDelay = secDelay;
-      }
-
-      increase() {
-        this.count++;
-        clearTimeout(this.clear);
-        this.clear = setTimeout(() => this.count = 0, this.#secDelay);
-      }
-
-    }
 
 
     const counter = new ClickCounter();
