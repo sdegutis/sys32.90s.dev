@@ -60,7 +60,7 @@ export default (sys: System) => {
 
     console.log(folder.path);
 
-    files.sort(sortBy(f => f.name));
+    files.sort(sortBy(f => (f.kind === 'folder' ? 1 : 2) + f.name));
 
     filelist.children = files.map(file => {
       const button = makeButton(() => {
