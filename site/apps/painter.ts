@@ -218,7 +218,7 @@ class PaintView extends View {
   width = 10;
   height = 10;
 
-  zoom = 1;
+  zoom = 4;
 
   color = 0xffffffff;
 
