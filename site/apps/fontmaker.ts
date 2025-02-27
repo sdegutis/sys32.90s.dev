@@ -1,5 +1,5 @@
 import { Border } from "../sys32/containers/border.js";
-import { GroupX } from "../sys32/containers/group.js";
+import { GroupX, GroupY } from "../sys32/containers/group.js";
 import { PanedYB } from "../sys32/containers/paned.js";
 import { Label } from "../sys32/controls/label.js";
 import { Slider } from "../sys32/controls/slider.js";
@@ -31,22 +31,28 @@ export default (sys: System) => {
         })
       ),
       $(Border, { background: 0x000000ff, u: 2 },
-        $(GroupX, { gap: 10, },
-          $(GroupX, { gap: 2 },
-            $(Label, { text: 'width:' }),
-            $(Label, { id: 'widthlabel' }),
-            $(Slider, { id: 'width', min: 1, max: 12, val: 4, w: 20 }),
-          ),
-          $(GroupX, { gap: 2 },
-            $(Label, { text: 'height:' }),
-            $(Label, { id: 'heightlabel' }),
-            $(Slider, { id: 'height', min: 1, max: 12, val: 4, w: 20 }),
-          ),
-          $(GroupX, { gap: 2 },
-            $(Label, { text: 'zoom:' }),
-            $(Label, { id: 'zoomlabel' }),
-            $(Slider, { id: 'zoom', min: 1, max: 12, val: 4, w: 20 }),
-          ),
+        $(GroupY, { gap: 3, align: 'a' },
+
+          $(Label, { text: 'the quick brown fox' }),
+
+          $(GroupX, { gap: 10, },
+            $(GroupX, { gap: 2 },
+              $(Label, { text: 'width:' }),
+              $(Label, { id: 'widthlabel' }),
+              $(Slider, { id: 'width', min: 1, max: 12, val: 4, w: 20, knobSize: 3 }),
+            ),
+            $(GroupX, { gap: 2 },
+              $(Label, { text: 'height:' }),
+              $(Label, { id: 'heightlabel' }),
+              $(Slider, { id: 'height', min: 1, max: 12, val: 4, w: 20, knobSize: 3 }),
+            ),
+            $(GroupX, { gap: 2 },
+              $(Label, { text: 'zoom:' }),
+              $(Label, { id: 'zoomlabel' }),
+              $(Slider, { id: 'zoom', min: 1, max: 12, val: 4, w: 20, knobSize: 3 }),
+            ),
+          )
+
         )
       )
     )
