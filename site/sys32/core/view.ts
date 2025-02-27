@@ -16,6 +16,8 @@ export class View {
   abandoned?(): void;
   childrenChanged?(): void;
 
+  id = '';
+
   x = 0;
   y = 0;
   w = 0;
@@ -90,6 +92,15 @@ export class View {
 
   remove() {
     this.parent?.removeChild(this);
+  }
+
+  find(id: string): View | null {
+    if (this.id === id) return this;
+    for (const child of this.#children) {
+      const found = child.find(id);
+      if (found) return found;
+    }
+    return null;
   }
 
   #dataSources: Record<any, Reactive<any>> = {};

@@ -43,9 +43,6 @@ export function demo(sys: System) {
     return group;
   }
 
-  let checkmark: View;
-  let checkbox: View;
-
   const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
     sys.make(GroupX, { align: 'n', gap: 4, background: 0x0000ff33 },
 
@@ -58,18 +55,18 @@ export function demo(sys: System) {
 
         sys.make(Button, {
           init() {
+            const checkbox = this.find!('checkbox')!;
             checkbox.addChild(this.overlay!);
-
           },
-          onClick: () => {
-            console.log('hmm')
+          onClick() {
+            const checkmark = this.find!('checkmark')!;
             checkmark.visible = !checkmark.visible
           }
         },
           sys.make(GroupX, { gap: 2, },
-            checkbox = sys.make(Border, { borderColor: 0xffffff33, all: 1, },
+            sys.make(Border, { id: 'checkbox', borderColor: 0xffffff33, all: 1, },
               sys.make(Border, { all: 1 },
-                checkmark = sys.make(View, { passthrough: true, background: 0xffffffff, w: 2, h: 2 })
+                sys.make(View, { id: 'checkmark', passthrough: true, background: 0xffffffff, w: 2, h: 2 })
               )
             ),
             sys.make(Label, { text: 'ddd' })
