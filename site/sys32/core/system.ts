@@ -153,6 +153,8 @@ export class System {
     return view;
   }
 
+  $ = this.make.bind(this);
+
   #enableDataSources(view: View) {
     for (let [key, val] of Object.entries(view)) {
       if (typeof val === 'function') continue;
