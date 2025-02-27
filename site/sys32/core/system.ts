@@ -155,7 +155,10 @@ export class System {
 
   #enableDataSources(view: View) {
     for (let [key, val] of Object.entries(view)) {
-      if (key === 'dataSources') continue;
+      if (typeof val === 'function') continue;
+      if (val instanceof Listener) continue;
+      if (val instanceof Array) continue;
+      if (key === 'sys') continue;
       view.setDataSource(key as keyof View, new Reactive(val));
     }
   }

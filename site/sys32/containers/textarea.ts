@@ -2,7 +2,7 @@ import { Label } from "../controls/label.js";
 
 export class TextArea extends Label {
 
-  pos = { row: 0, col: 0 };
+  // pos = { row: 0, col: 0 };
   colors: number[] = [];
 
   override passthrough = false;
