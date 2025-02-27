@@ -43,17 +43,19 @@ export function demo(sys: System) {
     return group;
   }
 
-  const main = sys.make(Border, { all: 2, borderColor: 0x0000ff33 },
-    sys.make(GroupX, { align: 'n', gap: 4, background: 0x0000ff33 },
+  const $ = sys.make.bind(sys);
 
-      sys.make(GroupY, { gap: 2 },
+  const main = $(Border, { all: 2, borderColor: 0x0000ff33 },
+    $(GroupX, { align: 'n', gap: 4, background: 0x0000ff33 },
+
+      $(GroupY, { gap: 2 },
         makeDemoCheckmark('aaa'),
         makeDemoCheckmark('bbb', true),
         makeDemoCheckmark('ccc'),
 
-        sys.make(View, { h: 4 }),
+        $(View, { h: 4 }),
 
-        sys.make(Button, {
+        $(Button, {
           init() {
             const checkbox = this.find!('checkbox')!;
             checkbox.addChild(this.overlay!);
@@ -63,48 +65,48 @@ export function demo(sys: System) {
             checkmark.visible = !checkmark.visible
           }
         },
-          sys.make(GroupX, { gap: 2, },
-            sys.make(Border, { id: 'checkbox', borderColor: 0xffffff33, all: 1, },
-              sys.make(Border, { all: 1 },
-                sys.make(View, { id: 'checkmark', passthrough: true, background: 0xffffffff, w: 2, h: 2 })
+          $(GroupX, { gap: 2, },
+            $(Border, { id: 'checkbox', borderColor: 0xffffff33, all: 1, },
+              $(Border, { all: 1 },
+                $(View, { id: 'checkmark', passthrough: true, background: 0xffffffff, w: 2, h: 2 })
               )
             ),
-            sys.make(Label, { text: 'ddd' })
+            $(Label, { text: 'ddd' })
           )
         )
       ),
 
-      sys.make(GroupY, { gap: 1 },
-        sys.make(Border, { background: 0x000000ff, all: 0, ...passedFocus }, sys.make(TextField, { text: 'hi', length: 4 })),
-        sys.make(Border, { background: 0x000000ff, all: 1, ...passedFocus }, sys.make(TextField, { text: 'hi', length: 4 })),
-        sys.make(Border, { background: 0x000000ff, all: 2, ...passedFocus }, sys.make(TextField, { text: 'hi', length: 4 })),
-        sys.make(Border, { background: 0x000099ff, all: 2, ...passedFocus }, sys.make(TextField, { text: 'hi', length: 4, cursorColor: 0xff000099, color: 0xffff00ff })),
+      $(GroupY, { gap: 1 },
+        $(Border, { background: 0x000000ff, all: 0, ...passedFocus }, $(TextField, { text: 'hi', length: 4 })),
+        $(Border, { background: 0x000000ff, all: 1, ...passedFocus }, $(TextField, { text: 'hi', length: 4 })),
+        $(Border, { background: 0x000000ff, all: 2, ...passedFocus }, $(TextField, { text: 'hi', length: 4 })),
+        $(Border, { background: 0x000099ff, all: 2, ...passedFocus }, $(TextField, { text: 'hi', length: 4, cursorColor: 0xff000099, color: 0xffff00ff })),
       ),
 
-      sys.make(GroupY, { gap: 1 },
-        sys.make(GroupY, { gap: 1 },
-          sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' })),
-          sys.make(Button, { onClick: (t) => { console.log('clicked button1', t) } },
-            sys.make(Border, { background: 0x00000077, all: 3 },
-              sys.make(Label, { text: 'hello' })
+      $(GroupY, { gap: 1 },
+        $(GroupY, { gap: 1 },
+          $(Border, { background: 0x00000077, all: 3 }, $(Label, { text: 'hello' })),
+          $(Button, { onClick: (t) => { console.log('clicked button1', t) } },
+            $(Border, { background: 0x00000077, all: 3 },
+              $(Label, { text: 'hello' })
             )
           ),
         ),
-        sys.make(GroupY, { gap: 1 },
-          sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' })),
-          sys.make(Button, { onClick: (t) => { console.log('clicked button2', t) } },
-            sys.make(Border, { background: 0x00000077, all: 3 },
-              sys.make(Label, { text: 'hello' })
+        $(GroupY, { gap: 1 },
+          $(Border, { background: 0x00000077, all: 3 }, $(Label, { text: 'hello' })),
+          $(Button, { onClick: (t) => { console.log('clicked button2', t) } },
+            $(Border, { background: 0x00000077, all: 3 },
+              $(Label, { text: 'hello' })
             )
           ),
         ),
       ),
 
-      sys.make(GroupY, { gap: 1 },
-        sys.make(ImageView, { image: new Bitmap([0x00000099, 0xffffffff], 3, [1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1,]) }),
-        sys.make(ImageView, { image: new Bitmap([0x00000099, 0xffffffff], 5, [1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1,]) }),
-        sys.make(Border, { background: 0x00000033, all: 1, },
-          sys.make(ImageView, { image: new Bitmap([0xffffffff], 4, [1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,]) }),
+      $(GroupY, { gap: 1 },
+        $(ImageView, { image: new Bitmap([0x00000099, 0xffffffff], 3, [1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1,]) }),
+        $(ImageView, { image: new Bitmap([0x00000099, 0xffffffff], 5, [1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1,]) }),
+        $(Border, { background: 0x00000033, all: 1, },
+          $(ImageView, { image: new Bitmap([0xffffffff], 4, [1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,]) }),
         )
       ),
 
