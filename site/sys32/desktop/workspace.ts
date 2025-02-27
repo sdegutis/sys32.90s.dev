@@ -94,6 +94,7 @@ export class Workspace {
 
     const button = this.sys.make(Border, {
       all: 2,
+      background: 0x440000ff,
       ...makeButton(() => {
         panel.show();
         panel.focus();

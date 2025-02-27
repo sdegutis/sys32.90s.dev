@@ -160,11 +160,16 @@ export default function paint(sys: System, filepath?: string) {
     ),
   );
 
-  // const titleSource = new Reactive('');
+  const filesource = new Reactive('');
 
+  setTimeout(() => {
+    filesource.val = 'foo.bitmap';
+  }, 1000);
 
-
-  // panel.setDataSource('title', titleSource);
+  filesource.watch(s => {
+    panel.title = s.length === 0 ? `paint: [no file]` : `paint: ${s}`;
+    panel.layoutTree();
+  });
 
 
   if (filepath) {

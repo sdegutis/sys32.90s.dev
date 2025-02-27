@@ -8,7 +8,7 @@ import { Label } from "../controls/label.js";
 import { Bitmap } from "../core/bitmap.js";
 import { Cursor, System } from "../core/system.js";
 import { View } from "../core/view.js";
-import { Listener } from "../util/events.js";
+import { Listener, Reactive } from "../util/events.js";
 import { makeVacuumLayout } from "../util/layouts.js";
 import { dragMove, dragResize } from "../util/selections.js";
 
@@ -89,6 +89,8 @@ export class Panel extends View {
 
     const counter = new ClickCounter();
 
+    let titleLabel: Label;
+
     this.children = [
 
       this.border = this.sys.make(Border, {
@@ -120,7 +122,7 @@ export class Panel extends View {
             },
           },
             this.sys.make(Border, { l: pad },
-              this.sys.make(Label, { text: this.title, color: 0xaaaaaaff })
+              titleLabel = this.sys.make(Label, { color: 0xaaaaaaff })
             ),
             this.sys.make(Group, { gap: 0 },
               this.sys.make(Border, { all: 2, ...makeButton(() => this.minimize(), 0xffffff33).all }, this.sys.make(ImageView, { image: minImage })),
@@ -167,6 +169,9 @@ export class Panel extends View {
       )
 
     ];
+
+    const titleSource: Reactive<string> = this.getDataSource('title');
+    titleLabel.setDataSource('text', titleSource);
 
     this.border.setDataSource('borderColor', this.getDataSource('panelFocused').adapt<number>(b => b ? 0x005599ff : 0).reactive);
   }
