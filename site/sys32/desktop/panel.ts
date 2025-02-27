@@ -2,13 +2,13 @@ import { Border } from "../containers/border.js";
 import { Group } from "../containers/group.js";
 import { PanedYA } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
-import { ClickCounter, makeButton } from "../controls/button.js";
+import { Button, ClickCounter } from "../controls/button.js";
 import { ImageView } from "../controls/image.js";
 import { Label } from "../controls/label.js";
 import { Bitmap } from "../core/bitmap.js";
 import { type Cursor, System } from "../core/system.js";
 import { View } from "../core/view.js";
-import { Listener, Reactive } from "../util/events.js";
+import { Listener } from "../util/events.js";
 import { makeVacuumLayout } from "../util/layouts.js";
 import { dragMove, dragResize } from "../util/selections.js";
 
@@ -94,9 +94,9 @@ export class Panel extends View {
               titleLabel = $(Label, { color: 0xaaaaaaff })
             ),
             $(Group, { gap: 0 },
-              $(Border, { all: 2, ...makeButton(() => this.minimize(), 0xffffff33).all }, $(ImageView, { image: minImage })),
-              $(Border, { all: 2, ...makeButton(() => this.maximize(), 0xffffff33).all }, $(ImageView, { image: maxImage })),
-              $(Border, { all: 2, ...makeButton(() => this.close(), 0x770000ff, 0x440000ff).all }, $(ImageView, { image: axeImage }))
+              $(Button, { all: 2, onClick: () => this.minimize() }, $(ImageView, { image: minImage })),
+              $(Button, { all: 2, onClick: () => this.maximize() }, $(ImageView, { image: maxImage })),
+              $(Button, { all: 2, onClick: () => this.close(), hoverColor: 0x99000099, pressColor: 0x44000099 }, $(ImageView, { image: axeImage }))
             )
           ),
 
