@@ -2,7 +2,7 @@ import { Border } from "../containers/border.js";
 import { Group } from "../containers/group.js";
 import { PanedYB } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
-import { makeButton } from "../controls/button.js";
+import { Button } from "../controls/button.js";
 import { Label } from "../controls/label.js";
 import { System } from "../core/system.js";
 import { View } from "../core/view.js";
@@ -46,14 +46,14 @@ export class Workspace {
       this.#panels,
       $(Group, {},
         $(Border, { all: 2 }, $(Clock, {})),
-        $(Border, {
+        $(Button, {
           all: 2,
           background: 0x222222ff,
-          ...makeButton(() => {
+          onClick: () => {
             big = !big;
             sys.resize(320 * (+big + 1), 180 * (+big + 1));
             sys.layoutTree();
-          }).all
+          }
         },
           $(Label, { text: 'resize' })
         )
@@ -97,13 +97,13 @@ export class Workspace {
     const { $ } = this.sys;
 
     const label = $(Label, {});
-    const button = $(Border, {
+    const button = $(Button, {
       all: 2,
       background: 0x440000ff,
-      ...makeButton(() => {
+      onClick: () => {
         panel.show();
         panel.focus();
-      }).all
+      }
     },
       label
     );
@@ -126,7 +126,7 @@ export class Workspace {
 
     const { $ } = this.sys;
 
-    this.#icons.addChild($(Border, { all: 2, ...makeButton(() => launch(this.sys)).all },
+    this.#icons.addChild($(Button, { all: 2, onClick: () => launch(this.sys) },
       $(Label, { text: title })
     ));
     this.sys.layoutTree();
