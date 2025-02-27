@@ -17,14 +17,76 @@ import { makeFlowLayout } from "../sys32/util/layouts.js";
 import { dragResize } from "../sys32/util/selections.js";
 
 export default function paint(sys: System, filepath?: string) {
-  const paintView = sys.make(PaintView, {});
 
-  const widthLabel = sys.make(Label, {});
-  const heightLabel = sys.make(Label, {});
+  let paintArea: Scroll;
+  let paintView: PaintView;
+  let resizer: View;
+  let statusBar: SpacedX;
+  let widthLabel: Label;
+  let heightLabel: Label;
+  let colorLabel: Label;
+  let zoomLabel: Label;
+  let toolArea: View;
+  let pencilTool: View;
+  let eraserTool: View;
+  let colorField: TextField;
 
-  const colorLabel = sys.make(Label, {});
-  const zoomLabel = sys.make(Label, {});
+  const panel = sys.make(Panel, { title: 'paint', minw: 50, w: 180, h: 70, },
+    sys.make(PanedXB, { gap: 1 },
+      sys.make(PanedYB, { gap: 1 },
+        paintArea = sys.make(Scroll, {
+          background: 0x222222ff,
+          draw: makeStripeDrawer(sys),
+        },
+          paintView = sys.make(PaintView, { color: COLORS[3] }),
+          resizer = sys.make(View, {
+            background: 0x00000077,
+            w: 4, h: 4,
+            layout: () => {
+              resizer.x = paintView.w;
+              resizer.y = paintView.h;
+            },
+            onMouseDown() {
+              const o = { w: paintView.w, h: paintView.h };
+              const fn = dragResize(sys, o);
 
+              this.sys?.trackMouse({
+                move: () => {
+                  fn();
+                  const w = Math.floor(o.w / paintView.zoom);
+                  const h = Math.floor(o.h / paintView.zoom);
+                  paintView.resize(w, h);
+                }
+              })
+
+            }
+          })
+        ),
+        statusBar = sys.make(SpacedX, {},
+          sys.make(GroupX, {},
+            sys.make(Label, { color: 0xffffff33, text: 'w:' }), widthLabel = sys.make(Label, {}),
+            sys.make(Label, { color: 0xffffff33, text: ' h:' }), heightLabel = sys.make(Label, {}),
+            sys.make(Label, { color: 0xffffff33, text: ' c:' }), colorLabel = sys.make(Label, {}),
+            sys.make(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel = sys.make(Label, {}),
+          ),
+          sys.make(GroupX, {},
+            digInto(sys.make(Slider, { knobSize: 3, w: 20, min: 1, max: 12 }), slider => {
+              slider.setDataSource('val', paintView.getDataSource('zoom'))
+            })
+          )
+        )
+      ),
+      toolArea = sys.make(View, {
+        w: 36,
+        background: 0x99000033,
+        layout: makeFlowLayout(),
+      },
+        pencilTool = sys.make(View, { w: 4, h: 4, ...makeButton(() => { paintView.tool = 'pencil'; }).all }),
+        eraserTool = sys.make(View, { w: 4, h: 4, ...makeButton(() => { paintView.tool = 'eraser'; }).all }),
+        colorField = sys.make(TextField, { length: 9, background: 0x111111ff }),
+      ),
+    ),
+  );
 
   paintView.watch('width', n => widthLabel.text = n.toString());
   paintView.watch('height', n => heightLabel.text = n.toString());
@@ -33,50 +95,10 @@ export default function paint(sys: System, filepath?: string) {
   heightLabel.watch('text', () => { heightLabel.parent?.layoutTree() });
 
   paintView.watch('zoom', n => zoomLabel.text = n.toString());
-  paintView.watch('zoom', n => panel.layoutTree(), false);
-
-  const resizer = sys.make(View, {
-    background: 0x00000077,
-    w: 4, h: 4,
-    layout: () => {
-      resizer.x = paintView.w;
-      resizer.y = paintView.h;
-    },
-    onMouseDown() {
-      const o = { w: paintView.w, h: paintView.h };
-      const fn = dragResize(sys, o);
-
-      this.sys?.trackMouse({
-        move: () => {
-          fn();
-          const w = Math.floor(o.w / paintView.zoom);
-          const h = Math.floor(o.h / paintView.zoom);
-          paintView.resize(w, h);
-        }
-      })
-
-    }
-  });
-
-  const pencilButton = makeButton(() => { paintView.tool = 'pencil' });
-  const eraserButton = makeButton(() => { paintView.tool = 'eraser' });
-
-  const pencilTool = sys.make(View, { w: 4, h: 4, ...pencilButton.all });
-  const eraserTool = sys.make(View, { w: 4, h: 4, ...eraserButton.all });
+  paintView.watch('zoom', n => panel.layoutTree());
 
   paintView.watch('tool', t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff);
   paintView.watch('tool', t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff);
-
-  const colorField = sys.make(TextField, { length: 9, background: 0x111111ff });
-  const toolArea = sys.make(View, {
-    w: 36,
-    background: 0x99000033,
-    layout: makeFlowLayout(),
-  },
-    pencilTool,
-    eraserTool,
-    colorField,
-  );
 
   colorField.onEnter = () => {
     const color = parseInt('0x' + colorField.text, 16);
@@ -85,15 +107,13 @@ export default function paint(sys: System, filepath?: string) {
     toolArea.parent?.layoutTree();
   };
 
-  const currentColor = paintView.getDataSource('color');
-
   function makeColorButton(color: number) {
     const button = makeButton(() => { paintView.color = color; });
     const colorView = sys.make(View, { passthrough: true, w: 4, h: 4, background: color, });
     const border = sys.make(Border, { all: 1, ...button.all }, colorView);
 
     multiplex({
-      currentColor,
+      currentColor: paintView.getDataSource('color'),
       hovered: button.hovered,
       pressed: button.pressed,
     }).watch(data => {
@@ -111,46 +131,12 @@ export default function paint(sys: System, filepath?: string) {
     makeColorButton(color);
   }
 
-  paintView.color = COLORS[3];
-
-  currentColor.watch(color => colorLabel.text = '0x' + color.toString(16).padStart(8, '0'));
+  paintView.watch('color', color => colorLabel.text = '0x' + color.toString(16).padStart(8, '0'));
 
   function digInto<T>(t: T, fn: (t: T) => void) {
     fn(t);
     return t;
   }
-
-  const statusBar = sys.make(SpacedX, {},
-    sys.make(GroupX, {},
-      sys.make(Label, { color: 0xffffff33, text: 'w:' }), widthLabel,
-      sys.make(Label, { color: 0xffffff33, text: ' h:' }), heightLabel,
-      sys.make(Label, { color: 0xffffff33, text: ' c:' }), colorLabel,
-      sys.make(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel,
-    ),
-    sys.make(GroupX, {},
-      digInto(sys.make(Slider, { knobSize: 3, w: 20, min: 1, max: 12 }), slider => {
-        slider.setDataSource('val', paintView.getDataSource('zoom'))
-      })
-    )
-  );
-
-  const paintArea = sys.make(Scroll, {
-    background: 0x222222ff,
-    draw: makeStripeDrawer(sys),
-  },
-    paintView,
-    resizer
-  );
-
-  const panel = sys.make(Panel, { title: 'paint', minw: 50, w: 180, h: 70, },
-    sys.make(PanedXB, { gap: 1 },
-      sys.make(PanedYB, { gap: 1 },
-        paintArea,
-        statusBar
-      ),
-      toolArea,
-    ),
-  );
 
   const filesource = new Reactive('');
 
