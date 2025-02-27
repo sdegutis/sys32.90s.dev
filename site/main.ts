@@ -20,7 +20,7 @@ sys.crt.autoscale();
 
 // mapmaker(sys);
 // filer(sys)
-// demo(sys)
+demo(sys)
 painter(sys);
 // texttest(sys);
 sys.layoutTree()

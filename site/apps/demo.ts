@@ -1,6 +1,6 @@
 import { Border } from "../sys32/containers/border.js";
 import { GroupX, GroupY } from "../sys32/containers/group.js";
-import { makeButton } from "../sys32/controls/button.js";
+import { Button, makeButton } from "../sys32/controls/button.js";
 import { ImageView } from "../sys32/controls/image.js";
 import { Label } from "../sys32/controls/label.js";
 import { TextField } from "../sys32/controls/textfield.js";
@@ -63,18 +63,20 @@ export function demo(sys: System) {
         sys.make(GroupY, { gap: 1 },
           sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' })),
           (() => {
-            const button = makeButton(() => { console.log('clicked button1') });
-            return sys.make(Border, { ...button.all, background: 0x00000077, all: 3 },
-              sys.make(Label, { text: 'hello' })
+            return sys.make(Button, { onClick: (t) => { console.log('clicked button1', t) } },
+              sys.make(Border, { background: 0x00000077, all: 3 },
+                sys.make(Label, { text: 'hello' })
+              )
             )
           })(),
         ),
         sys.make(GroupY, { gap: 1 },
           sys.make(Border, { background: 0x00000077, all: 3 }, sys.make(Label, { text: 'hello' })),
           (() => {
-            const button = makeButton(() => { console.log('clicked button2') });
-            return sys.make(Border, { ...button.all, background: 0x00000077, all: 3 },
-              sys.make(Label, { text: 'hello' })
+            return sys.make(Button, { onClick: (t) => { console.log('clicked button2', t) } },
+              sys.make(Border, { background: 0x00000077, all: 3 },
+                sys.make(Label, { text: 'hello' })
+              )
             )
           })(),
         ),
