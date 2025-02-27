@@ -8,8 +8,6 @@ export class View {
   onKeyDown?(key: string): boolean;
   onMouseDown?(): void;
   onMouseMove?(): void;
-  onMouseEnter?(): void;
-  onMouseExit?(): void;
   onFocus?(): void;
   onBlur?(): void;
   layout?(): void;
@@ -26,6 +24,7 @@ export class View {
   passthrough = false;
   visible = true;
   focused = false;
+  hovered = false;
 
   #children: View[] = [];
   get children(): ReadonlyArray<View> { return this.#children; }

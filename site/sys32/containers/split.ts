@@ -26,7 +26,6 @@ const yresize: Cursor = {
 class SplitDivider extends View {
 
   pressed = false;
-  #hovered = false;
   split: Split;
 
   constructor(split: Split) {
@@ -50,7 +49,7 @@ class SplitDivider extends View {
     if (this.pressed) {
       this.sys.crt.rectFill(x, y, w, h, this.split.dividerColorPress);
     }
-    else if (this.#hovered) {
+    else if (this.hovered) {
       this.sys.crt.rectFill(x, y, w, h, this.split.dividerColorHover);
     }
   }
@@ -76,16 +75,6 @@ class SplitDivider extends View {
       },
       up: () => this.pressed = false,
     });
-  }
-
-  override onMouseEnter(): void {
-    super.onMouseEnter?.();
-    this.#hovered = true;
-  }
-
-  override onMouseExit(): void {
-    super.onMouseExit?.();
-    this.#hovered = false;
   }
 
 }

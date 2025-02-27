@@ -63,7 +63,7 @@ export function mapmaker(sys: System) {
 
           multiplex({
             currentTool,
-            hovered: button.hovered,
+            hovered: border.getDataSource('hovered'),
             pressed: button.pressed,
           }).watch(data => {
             let color = 0;
@@ -152,10 +152,6 @@ export function mapmaker(sys: System) {
   const mapView = sys.make(View, {});
 
 
-  let hovered = false;
-  mapView.onMouseEnter = () => hovered = true;
-  mapView.onMouseExit = () => hovered = false;
-
   mapView.w = map.width * 4;
   mapView.h = map.height * 4;
   mapArea.addChild(mapView);
@@ -243,7 +239,7 @@ export function mapmaker(sys: System) {
       }
     }
 
-    if (hovered) {
+    if (mapView.hovered) {
       const tx = Math.floor(mapView.mouse.x / 4);
       const ty = Math.floor(mapView.mouse.y / 4);
       sys.crt.rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);

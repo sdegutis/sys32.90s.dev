@@ -114,7 +114,7 @@ export default function paint(sys: System, filepath?: string) {
 
     multiplex({
       currentColor: paintView.getDataSource('color'),
-      hovered: button.hovered,
+      hovered: border.getDataSource('hovered'),
       pressed: button.pressed,
     }).watch(data => {
       let c = 0;
@@ -242,7 +242,7 @@ class PaintView extends View {
       }
     }
 
-    if (this.#hovered) {
+    if (this.hovered) {
       const px = Math.floor(this.mouse.x / this.zoom) * this.zoom;
       const py = Math.floor(this.mouse.y / this.zoom) * this.zoom;
       this.sys.crt.rectFill(px, py, this.zoom, this.zoom, 0x0000ff77);
@@ -315,18 +315,6 @@ class PaintView extends View {
     }
 
     this.parent?.layoutTree();
-  }
-
-  #hovered = false;
-
-  override onMouseEnter(): void {
-    super.onMouseEnter?.();
-    this.#hovered = true;
-  }
-
-  override onMouseExit(): void {
-    super.onMouseExit?.();
-    this.#hovered = false;
   }
 
 }

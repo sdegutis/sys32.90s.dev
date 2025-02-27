@@ -7,25 +7,22 @@ export function makeButton(
   pressColor = 0xffffff11,
 ) {
   const pressed = new Reactive(false);
-  const hovered = new Reactive(false);
 
   function draw(this: View) {
     (Object.getPrototypeOf(this) as View).draw.call(this);
     if (pressed.val) {
       this.sys.crt.rectFill(0, 0, this.w, this.h, pressColor);
     }
-    else if (hovered.val) {
+    else if (this.hovered) {
       this.sys.crt.rectFill(0, 0, this.w, this.h, hoverColor);
     }
   }
 
-  const onMouseEnter = () => hovered.val = true;
-  const onMouseExit = () => hovered.val = false;
   const onMouseDown = function (this: View) {
     pressed.val = true;
     const cancel = this.sys.trackMouse({
       move: () => {
-        if (!hovered.val) {
+        if (!this.hovered) {
           pressed.val = false;
           cancel();
         }
@@ -38,8 +35,6 @@ export function makeButton(
   };
 
   const mouse: Partial<View> = {
-    onMouseEnter,
-    onMouseExit,
     onMouseDown,
     passthrough: false,
   };
@@ -49,6 +44,5 @@ export function makeButton(
     mouse,
     all: { draw, ...mouse },
     pressed,
-    hovered,
   };
 }

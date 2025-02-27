@@ -203,9 +203,9 @@ export class System {
     const activeHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
 
     if (this.#hovered !== activeHovered) {
-      this.#hovered.onMouseExit?.();
+      this.#hovered.hovered = false;
       this.#hovered = activeHovered;
-      this.#hovered.onMouseEnter?.();
+      this.#hovered.hovered = true;
     }
   }
 
