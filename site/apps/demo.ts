@@ -8,6 +8,7 @@ import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
+import { Reactive } from "../sys32/util/events.js";
 import { centerLayout } from "../sys32/util/layouts.js";
 import { passedFocus } from "../sys32/util/unsure.js";
 
@@ -24,46 +25,69 @@ export default (sys: System) => {
 };
 
 export function demo(sys: System) {
-  function makeDemoCheckmark(text: string, reverse = false) {
-    let checkmark: View;
-    const button = makeButton(() => { checkmark.visible = !checkmark.visible; });
-    const group = sys.make(GroupX, { gap: 2, ...button.mouse },
-      sys.make(Border, { borderColor: 0xffffff33, all: 1, draw: button.draw },
-        sys.make(Border, { all: 1 },
-          checkmark = sys.make(View, { passthrough: true, background: 0xffffffff, w: 2, h: 2 })
-        )
-      ),
-      sys.make(Label, { text })
-    );
-    if (reverse) {
-      const child = group.children[0];
-      child.remove();
-      group.addChild(child);
-    }
-    return group;
-  }
 
   const $ = sys.make.bind(sys);
+
+  const radios = new Reactive(3);
 
   const main = $(Border, { all: 2, borderColor: 0x0000ff33 },
     $(GroupX, { align: 'n', gap: 4, background: 0x0000ff33 },
 
       $(GroupY, { gap: 2 },
-        makeDemoCheckmark('aaa'),
-        makeDemoCheckmark('bbb', true),
-        makeDemoCheckmark('ccc'),
-
-        $(View, { h: 4 }),
 
         $(Button, {
-          init() {
-            const checkbox = this.find!('checkbox')!;
-            checkbox.addChild(this.overlay!);
-          },
-          onClick() {
-            const checkmark = this.find!('checkmark')!;
-            checkmark.visible = !checkmark.visible
-          }
+          init(this: Button) { this.find('checkbox')!.addChild(this.overlay!); },
+          onClick(this: Button) { radios.val = 0 }
+        },
+          $(GroupX, { gap: 2, },
+            $(Label, { text: 'aaa' }),
+            $(Border, { id: 'checkbox', borderColor: 0xffffff33, all: 1, },
+              $(Border, { all: 1 },
+                $(View, {
+                  id: 'checkmark', passthrough: true, background: 0xffffffff, w: 2, h: 2,
+                  init(this: View) { radios.watch(r => this.visible = r === 0) },
+                })
+              )
+            ),
+          )
+        ),
+
+        $(Button, {
+          init(this: Button) { this.find('checkbox')!.addChild(this.overlay!); },
+          onClick(this: Button) { radios.val = 1 }
+        },
+          $(GroupX, { gap: 2, },
+            $(Border, { id: 'checkbox', borderColor: 0xffffff33, all: 1, },
+              $(Border, { all: 1 },
+                $(View, {
+                  id: 'checkmark', passthrough: true, background: 0xffffffff, w: 2, h: 2,
+                  init(this: View) { radios.watch(r => this.visible = r === 1) },
+                })
+              )
+            ),
+            $(Label, { text: 'bbb' }),
+          )
+        ),
+
+        $(View, { h: 3 }),
+
+        $(Button, {
+          init(this: Button) { this.find('checkbox')!.addChild(this.overlay!); },
+          onClick(this: Button) { this.find('checkmark')!.visible = !this.find('checkmark')!.visible }
+        },
+          $(GroupX, { gap: 2, },
+            $(Label, { text: 'ccc' }),
+            $(Border, { id: 'checkbox', borderColor: 0xffffff33, all: 1, },
+              $(Border, { all: 1 },
+                $(View, { id: 'checkmark', passthrough: true, background: 0xffffffff, w: 2, h: 2 })
+              )
+            ),
+          )
+        ),
+
+        $(Button, {
+          init(this: Button) { this.find('checkbox')!.addChild(this.overlay!); },
+          onClick(this: Button) { this.find('checkmark')!.visible = !this.find('checkmark')!.visible }
         },
           $(GroupX, { gap: 2, },
             $(Border, { id: 'checkbox', borderColor: 0xffffff33, all: 1, },
@@ -71,9 +95,10 @@ export function demo(sys: System) {
                 $(View, { id: 'checkmark', passthrough: true, background: 0xffffffff, w: 2, h: 2 })
               )
             ),
-            $(Label, { text: 'ddd' })
+            $(Label, { text: 'ddd' }),
           )
-        )
+        ),
+
       ),
 
       $(GroupY, { gap: 1 },
@@ -86,7 +111,7 @@ export function demo(sys: System) {
       $(GroupY, { gap: 1 },
         $(GroupY, { gap: 1 },
           $(Border, { background: 0x00000077, all: 3 }, $(Label, { text: 'hello' })),
-          $(Button, { onClick: (t) => { console.log('clicked button1', t) } },
+          $(Button, { onClick: (t) => { console.log('clicked button1', t); radios.val = 3 } },
             $(Border, { background: 0x00000077, all: 3 },
               $(Label, { text: 'hello' })
             )
