@@ -163,7 +163,7 @@ export default function paint(sys: System, filepath?: string) {
   const filesource = new Reactive('');
 
   setTimeout(() => {
-    filesource.val = 'foo.bitmap';
+    filesource.val = 'b/foo.bitmap';
   }, 1000);
 
   filesource.watch(s => {
