@@ -18,10 +18,10 @@ sys.crt.autoscale();
 // sys.root.background = 0x003300ff;
 // sys.root.layout = makeVacuumLayout()
 
-// mapmaker(sys);
+mapmaker(sys);
 // filer(sys)
 // demo(sys)
-painter(sys);
+// painter(sys);
 // texttest(sys);
 sys.layoutTree()
 

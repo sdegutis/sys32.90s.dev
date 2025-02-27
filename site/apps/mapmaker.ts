@@ -1,6 +1,5 @@
-import { Border } from "../sys32/containers/border.js";
 import { PanedXA, PanedYA } from "../sys32/containers/paned.js";
-import { makeButton } from "../sys32/controls/button.js";
+import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
 import { System } from "../sys32/core/system.js";
@@ -38,10 +37,10 @@ export function mapmaker(sys: System) {
 
   const { $ } = sys;
 
-  const gridButton = $(Border, {
+  const gridButton = $(Button, {
     background: 0x00000033,
     all: 2,
-    ...makeButton(() => showGrid = !showGrid).all,
+    onClick: () => showGrid = !showGrid
   },
     $(Label, { text: 'grid' })
   );
@@ -60,16 +59,14 @@ export function mapmaker(sys: System) {
       $(View, { layout: makeFlowLayoutY() },
         ...COLORS.map((col, i) => {
 
-          const button = makeButton(() => { currentTool.val = i; });
-
-          const border = $(Border, { all: 1, ...button.all },
+          const border = $(Button, { all: 1, onClick: () => { currentTool.val = i; } },
             $(View, { passthrough: true, w: 4, h: 4, background: col })
           );
 
           multiplex({
             currentTool,
             hovered: border.getDataSource('hovered'),
-            pressed: button.pressed,
+            pressed: border.getDataSource('pressed'),
           }).watch(data => {
             let color = 0;
             if (data.currentTool === i) color = 0xffffff77;
