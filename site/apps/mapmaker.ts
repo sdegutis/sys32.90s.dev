@@ -50,23 +50,23 @@ export default (sys: System) => {
           $(View, { layout: makeFlowLayoutY() },
             ...COLORS.map((col, i) => {
 
-              const border = $(Button, { all: 1, onClick: () => { map.currentTool.val = i; } },
+              const button = $(Button, { all: 1, onClick: () => { map.currentTool.val = i; } },
                 $(View, { passthrough: true, w: 4, h: 4, background: col })
               );
 
               multiplex({
                 currentTool: map.currentTool,
-                hovered: border.getDataSource('hovered'),
-                pressed: border.getDataSource('pressed'),
+                hovered: button.getDataSource('hovered'),
+                pressed: button.getDataSource('pressed'),
               }).watch(data => {
                 let color = 0;
                 if (data.currentTool === i) color = 0xffffff77;
                 else if (data.pressed) color = 0xffffff11;
                 else if (data.hovered) color = 0xffffff33;
-                border.borderColor = color;
+                button.borderColor = color;
               });
 
-              return border;
+              return button;
             })
           )
         ),
@@ -132,7 +132,6 @@ class MapView extends View {
   };
 
   override init(): void {
-
     for (let i = 0; i < 16; i++) {
       this.#drawTerrain.push((x, y) => {
         this.sys.crt.rectFill(x, y, 4, 4, COLORS[i]);
@@ -145,11 +144,6 @@ class MapView extends View {
 
     this.w = this.map.width * 4;
     this.h = this.map.height * 4;
-
-    // sys.rectFill(sys.mouse.x, sys.mouse.y - 2, 1, 5, 0x00000077);
-    // sys.rectFill(sys.mouse.x - 2, sys.mouse.y, 5, 1, 0x00000077);
-    // sys.pset(sys.mouse.x, sys.mouse.y, 0xffffffff);
-
   }
 
   override onMouseDown(): void {
@@ -244,6 +238,10 @@ class MapView extends View {
       this.sys.crt.rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
       this.sys.crt.rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
     }
+
+    // this.sys.crt.rectFill(this.mouse.x, this.mouse.y - 2, 1, 5, 0x00000077);
+    // this.sys.crt.rectFill(this.mouse.x - 2, this.mouse.y, 5, 1, 0x00000077);
+    // this.sys.crt.pset(this.mouse.x, this.mouse.y, 0xffffffff);
 
   }
 
