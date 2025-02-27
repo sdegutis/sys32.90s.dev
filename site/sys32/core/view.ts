@@ -94,10 +94,10 @@ export class View {
     this.parent?.removeChild(this);
   }
 
-  find(id: string): View | null {
-    if (this.id === id) return this;
+  find<T extends View>(id: string): T | null {
+    if (this.id === id) return this as unknown as T;
     for (const child of this.#children) {
-      const found = child.find(id);
+      const found = child.find<T>(id);
       if (found) return found;
     }
     return null;

@@ -21,16 +21,12 @@ export default (sys: System) => {
 
   const { $ } = sys;
 
-  let root: PanedXA;
-  let mapArea: View;
-  let mapView: MapView;
-
   const map = new Map(50, 40);
 
   const panel = $(Panel, { title: 'mapmaker', },
     $(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
 
-      root = $(PanedXA, {
+      $(PanedXA, {
         onScroll: (up) => {
           if (up) {
             map.currentTool.val--;
@@ -43,7 +39,12 @@ export default (sys: System) => {
         }
       },
         $(PanedYA, { w: 19, background: 0x333333ff },
-          $(Button, { background: 0x00000033, all: 2, onClick: () => mapView.showGrid = !mapView.showGrid },
+          $(Button, {
+            background: 0x00000033, all: 2, onClick: () => {
+              const mapView = panel.find<MapView>('mapview')!;
+              return mapView.showGrid = !mapView.showGrid;
+            }
+          },
             $(Label, { text: 'grid' })
           ),
           $(View, { layout: makeFlowLayoutY() },
@@ -70,11 +71,11 @@ export default (sys: System) => {
           )
         ),
         $(View, { background: 0x333344ff, layout: makeVacuumLayout() },
-          mapArea = $(View, {
+          $(View, {
             background: 0x222222ff,
             draw: makeStripeDrawer(sys, 4, 2)
           },
-            mapView = $(MapView, { map })
+            $(MapView, { id: 'mapview', map })
           )
         )
       )
