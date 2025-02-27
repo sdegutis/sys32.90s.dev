@@ -21,94 +21,75 @@ export default (sys: System) => {
 
   const { $ } = sys;
 
-  let showGrid = true;
+  let root: PanedXA;
+  let gridButton: Button;
+  let mapArea: View;
 
-  const gridButton = $(Button, {
-    background: 0x00000033,
-    all: 2,
-    onClick: () => showGrid = !showGrid
-  },
-    $(Label, { text: 'grid' })
-  );
+  const map = new Map(50, 40);
 
-  let currentTool = new Reactive(5);
+  const panel = $(Panel, { title: 'mapmaker', },
+    $(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
 
+      root = $(PanedXA, {},
+        $(PanedYA, { w: 19, background: 0x333333ff },
+          gridButton = $(Button, {
+            background: 0x00000033,
+            all: 2,
+            onClick: () => showGrid = !showGrid
+          },
+            $(Label, { text: 'grid' })
+          ),
+          $(View, { layout: makeFlowLayoutY() },
+            ...COLORS.map((col, i) => {
 
-  const mapArea = $(View, {
-    background: 0x222222ff,
-    draw: makeStripeDrawer(sys, 4, 2)
-  });
+              const border = $(Button, { all: 1, onClick: () => { map.currentTool.val = i; } },
+                $(View, { passthrough: true, w: 4, h: 4, background: col })
+              );
 
-  const root = $(PanedXA, {},
-    $(PanedYA, { w: 19, background: 0x333333ff },
-      gridButton,
-      $(View, { layout: makeFlowLayoutY() },
-        ...COLORS.map((col, i) => {
+              multiplex({
+                currentTool: map.currentTool,
+                hovered: border.getDataSource('hovered'),
+                pressed: border.getDataSource('pressed'),
+              }).watch(data => {
+                let color = 0;
+                if (data.currentTool === i) color = 0xffffff77;
+                else if (data.pressed) color = 0xffffff11;
+                else if (data.hovered) color = 0xffffff33;
+                border.borderColor = color;
+              });
 
-          const border = $(Button, { all: 1, onClick: () => { currentTool.val = i; } },
-            $(View, { passthrough: true, w: 4, h: 4, background: col })
-          );
-
-          multiplex({
-            currentTool,
-            hovered: border.getDataSource('hovered'),
-            pressed: border.getDataSource('pressed'),
-          }).watch(data => {
-            let color = 0;
-            if (data.currentTool === i) color = 0xffffff77;
-            else if (data.pressed) color = 0xffffff11;
-            else if (data.hovered) color = 0xffffff33;
-            border.borderColor = color;
-          });
-
-          return border;
-        })
+              return border;
+            })
+          )
+        ),
+        $(View, { background: 0x333344ff, layout: makeVacuumLayout() },
+          mapArea = $(View, {
+            background: 0x222222ff,
+            draw: makeStripeDrawer(sys, 4, 2)
+          })
+        )
       )
-    ),
-    $(View, { background: 0x333344ff, layout: makeVacuumLayout() },
-      mapArea
+
     )
   );
+
+  let showGrid = true;
+
 
 
   root.onScroll = (up) => {
     if (up) {
-      currentTool.val--;
-      if (currentTool.val < 0) currentTool.val = 15;
+      map.currentTool.val--;
+      if (map.currentTool.val < 0) map.currentTool.val = 15;
     }
     else {
-      currentTool.val++;
-      if (currentTool.val === 16) currentTool.val = 0;
+      map.currentTool.val++;
+      if (map.currentTool.val === 16) map.currentTool.val = 0;
     }
   };
 
 
 
-
-  class Map {
-
-    width: number;
-    height: number;
-
-    terrain: number[] = [];
-    units: number[] = [];
-
-    constructor(w: number, h: number) {
-      this.width = w;
-      this.height = h;
-      this.terrain = Array(this.width * this.height).fill(3);
-      this.units = Array(this.width * this.height).fill(0);
-    }
-
-    useTool(tx: number, ty: number) {
-      if (tx < 0 || ty < 0 || tx >= this.width || ty >= this.height) return;
-      const ti = ty * this.width + tx;
-      this.terrain[ti] = currentTool.val;
-    }
-
-  }
-
-  const map = new Map(50, 40);
 
   const drawTerrain: ((x: number, y: number) => void)[] = [];
 
@@ -249,14 +230,33 @@ export default (sys: System) => {
   }
 
 
-  const panel = $(Panel, { title: 'mapmaker', },
-    $(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
-
-      root
-
-    )
-  );
-
   sys.root.addChild(panel);
+
+}
+
+class Map {
+
+  currentTool = new Reactive(5);
+
+  width: number;
+  height: number;
+
+  terrain: number[] = [];
+  units: number[] = [];
+
+  constructor(w: number, h: number) {
+    this.width = w;
+    this.height = h;
+    this.terrain = Array(this.width * this.height).fill(3);
+    this.units = Array(this.width * this.height).fill(0);
+
+
+  }
+
+  useTool(tx: number, ty: number) {
+    if (tx < 0 || ty < 0 || tx >= this.width || ty >= this.height) return;
+    const ti = ty * this.width + tx;
+    this.terrain[ti] = this.currentTool.val;
+  }
 
 }
