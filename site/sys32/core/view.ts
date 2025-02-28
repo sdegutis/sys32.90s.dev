@@ -1,5 +1,6 @@
 import { Reactive } from "../util/events.js";
-import { type Cursor, System } from "./system.js";
+import { crt } from "./crt.js";
+import { sys, type Cursor } from "./system.js";
 
 export class View {
 
@@ -37,11 +38,6 @@ export class View {
   cursor: Cursor | undefined;
 
   parent?: View;
-  sys: System;
-
-  constructor(sys: System) {
-    this.sys = sys;
-  }
 
   set children(children: View[]) {
     for (const child of this.#children) {
@@ -78,16 +74,16 @@ export class View {
 
   draw() {
     if ((this.background & 0x000000ff) > 0) {
-      this.sys.crt.rectFill(0, 0, this.w, this.h, this.background);
+      crt.rectFill(0, 0, this.w, this.h, this.background);
     }
   }
 
   focus() {
-    this.sys.focus(this);
+    sys.focus(this);
   }
 
   layoutTree() {
-    this.sys.layoutTree(this);
+    sys.layoutTree(this);
   }
 
   remove() {

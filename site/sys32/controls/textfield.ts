@@ -1,4 +1,5 @@
 import { Font } from "../core/font.js";
+import { sys } from "../core/system.js";
 import { View } from "../core/view.js";
 import { Label } from "./label.js";
 
@@ -10,10 +11,10 @@ export class TextField extends View {
   #text = '';
   length = 10;
 
-  #field = this.sys.make(Label, { text: '' });
-  #cursor = this.sys.make(Label, { visible: false, text: '_', color: 0x1177ffff });
+  #field = sys.make(Label, { text: '' });
+  #cursor = sys.make(Label, { visible: false, text: '_', color: 0x1177ffff });
 
-  #font = this.sys.font;
+  #font = sys.font;
   get font() { return this.#font; }
   set font(font: Font) {
     this.#font = font;
@@ -61,13 +62,13 @@ export class TextField extends View {
   }
 
   override onKeyDown(key: string): boolean {
-    if (key === 'v' && this.sys.keys['Control']) {
+    if (key === 'v' && sys.keys['Control']) {
       navigator.clipboard.readText().then(s => {
         this.text += s;
         this.onChange?.();
       });
     }
-    else if (key === 'c' && this.sys.keys['Control']) {
+    else if (key === 'c' && sys.keys['Control']) {
       navigator.clipboard.writeText(this.text);
     }
     else if (key === 'Enter') {
@@ -92,7 +93,7 @@ export class TextField extends View {
     this.#cursor.visible = true;
     this.#blink = setInterval(() => {
       this.#cursor.visible = !this.#cursor.visible;
-      this.sys.needsRedraw = true;
+      sys.needsRedraw = true;
     }, 500);
   }
 

@@ -6,7 +6,7 @@ import { Button, ClickCounter } from "../controls/button.js";
 import { ImageView } from "../controls/image.js";
 import { Label } from "../controls/label.js";
 import { Bitmap } from "../core/bitmap.js";
-import { type Cursor, System } from "../core/system.js";
+import { $, type Cursor, sys, System } from "../core/system.js";
 import { View } from "../core/view.js";
 import { Listener } from "../util/events.js";
 import { makeVacuumLayout } from "../util/layouts.js";
@@ -53,8 +53,6 @@ export class Panel extends View {
     const content = this.children[0];
 
 
-    const { $ } = this.sys;
-
 
     const counter = new ClickCounter();
 
@@ -73,8 +71,8 @@ export class Panel extends View {
           $(Spaced, {
             onMouseDown: () => {
               counter.increase();
-              const drag = dragMove(this.sys, this);
-              this.sys.trackMouse({
+              const drag = dragMove(this);
+              sys.trackMouse({
                 move: () => {
                   const moved = drag();
                   if (Math.hypot(moved.x, moved.y) > 1) {
@@ -122,8 +120,8 @@ export class Panel extends View {
           },
           onMouseDown: () => {
             this.#lastPos = undefined!;
-            const resize = dragResize(this.sys, this);
-            this.sys.trackMouse({
+            const resize = dragResize(this);
+            sys.trackMouse({
               move: () => {
                 resize();
                 if (this.w < this.minw) this.w = this.minw;
@@ -170,7 +168,7 @@ export class Panel extends View {
       // let total = 100;
       // let sofar = 0;
 
-      // const done = this.sys.onTick.watch(delta => {
+      // const done = sys.onTick.watch(delta => {
       //   sofar += delta;
       //   if (sofar >= total) done();
       //   let p = Math.min(1, Math.max(0, sofar / total));
@@ -201,12 +199,12 @@ export class Panel extends View {
   }
 
   override onFocus(): void {
-    const old = focusedPanel.get(this.sys);
+    const old = focusedPanel.get(sys);
     if (old === this) return;
 
     if (old) old.#unfocus();
 
-    focusedPanel.set(this.sys, this);
+    focusedPanel.set(sys, this);
     this.#focus();
   }
 

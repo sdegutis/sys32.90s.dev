@@ -5,16 +5,14 @@ import { ImageView } from "../sys32/controls/image.js";
 import { Label } from "../sys32/controls/label.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
-import { System } from "../sys32/core/system.js";
+import { $, sys } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { Reactive } from "../sys32/util/events.js";
 import { centerLayout } from "../sys32/util/layouts.js";
 import { passedFocus } from "../sys32/util/unsure.js";
 
-export default (sys: System) => {
-  const { $ } = sys;
-
+export default () => {
   const radios = new Reactive(3);
 
   const panel = $(Panel, { title: 'demo', },

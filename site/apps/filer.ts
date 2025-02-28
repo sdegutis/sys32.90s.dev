@@ -8,21 +8,19 @@ import { ImageView } from "../sys32/controls/image.js";
 import { Label } from "../sys32/controls/label.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
-import type { Folder } from "../sys32/core/fs.js";
-import { System } from "../sys32/core/system.js";
+import { fs, type Folder } from "../sys32/core/fs.js";
+import { $, sys } from "../sys32/core/system.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { passedFocus } from "../sys32/util/unsure.js";
-import painter from "./painter.js";
 import fontmaker from "./fontmaker.js";
+import painter from "./painter.js";
 
 
 const folderIcon = new Bitmap([0x990000ff], 1, [1]);
 const fileIcon = new Bitmap([0x000099ff], 1, [1]);
 
 
-export default (sys: System) => {
-
-  const { $ } = sys;
+export default () => {
 
   const mountLabel = $(TextField, { length: 2, onEnter: mountNew });
   const toolbar = $(GroupX, {},
@@ -77,10 +75,10 @@ export default (sys: System) => {
           }
           else {
             if (file.name.endsWith('.bitmap')) {
-              painter(sys, folder.path + file.name);
+              painter(folder.path + file.name);
             }
             if (file.name.endsWith('.font')) {
-              fontmaker(sys, folder.path + file.name);
+              fontmaker(folder.path + file.name);
             }
           }
 
@@ -97,11 +95,11 @@ export default (sys: System) => {
     filelist.layoutTree();
   }
 
-  sys.fs.drives.then(drives => {
+  fs.drives.then(drives => {
     for (const key of Object.keys(drives)) {
       sidelist.addChild($(Button, {
         all: 2, background: 0xff000033, onClick: async () => {
-          showfiles((await sys.fs.getFolder(key))!);
+          showfiles((await fs.getFolder(key))!);
         }
       },
         $(Label, { text: `drive: ${key}` })
@@ -129,7 +127,7 @@ export default (sys: System) => {
 
     const folder = await window.showDirectoryPicker();
     await folder.requestPermission({ mode: 'readwrite' });
-    await sys.fs.mountUserFolder(drive, folder);
+    await fs.mountUserFolder(drive, folder);
   }
 
 };

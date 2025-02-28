@@ -1,4 +1,5 @@
 import { Bitmap } from "../core/bitmap.js";
+import { crt } from "../core/crt.js";
 import { View } from "../core/view.js";
 
 export class ImageView extends View {
@@ -13,7 +14,7 @@ export class ImageView extends View {
 
   override draw(): void {
     super.draw();
-    this.image?.draw(this.sys.crt, 0, 0);
+    this.image?.draw(crt, 0, 0);
   }
 
 }

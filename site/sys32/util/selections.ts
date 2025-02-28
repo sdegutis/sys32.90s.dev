@@ -1,4 +1,4 @@
-import { System } from "../core/system.js";
+import { sys } from "../core/system.js";
 import { View } from "../core/view.js";
 
 export class Selection {
@@ -18,14 +18,14 @@ export class Selection {
     this.view = view;
     this.x1 = this.view.mouse.x;
     this.y1 = this.view.mouse.y;
-    this.ox = this.view.sys.mouse.x - this.x1;
-    this.oy = this.view.sys.mouse.y - this.y1;
+    this.ox = sys.mouse.x - this.x1;
+    this.oy = sys.mouse.y - this.y1;
     this.update();
   }
 
   update() {
-    const x2 = this.view.sys.mouse.x - this.ox;
-    const y2 = this.view.sys.mouse.y - this.oy;
+    const x2 = sys.mouse.x - this.ox;
+    const y2 = sys.mouse.y - this.oy;
     this.x = this.x1 < x2 ? this.x1 : x2;
     this.y = this.y1 < y2 ? this.y1 : y2;
     this.w = (this.x1 < x2 ? x2 - this.x1 : this.x1 - x2) + 1;
@@ -58,7 +58,7 @@ export class TileSelection extends Selection {
 
 }
 
-export function dragMove(sys: System, view: { x: number, y: number }) {
+export function dragMove(view: { x: number, y: number }) {
   const startPos = { x: view.x, y: view.y };
   const offx = sys.mouse.x - startPos.x;
   const offy = sys.mouse.y - startPos.y;
@@ -71,7 +71,7 @@ export function dragMove(sys: System, view: { x: number, y: number }) {
   };
 }
 
-export function dragResize(sys: System, view: { w: number, h: number }) {
+export function dragResize(view: { w: number, h: number }) {
   const startSize = { w: view.w, h: view.h };
   const offx = sys.mouse.x - startSize.w;
   const offy = sys.mouse.y - startSize.h;

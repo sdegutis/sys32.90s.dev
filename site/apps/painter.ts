@@ -7,7 +7,9 @@ import { Label } from "../sys32/controls/label.js";
 import { Slider } from "../sys32/controls/slider.js";
 import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
-import { System, type Cursor } from "../sys32/core/system.js";
+import { crt } from "../sys32/core/crt.js";
+import { fs } from "../sys32/core/fs.js";
+import { $, sys, type Cursor } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeStripeDrawer } from "../sys32/util/draw.js";
@@ -15,9 +17,7 @@ import { multiplex, Reactive } from "../sys32/util/events.js";
 import { makeFlowLayout } from "../sys32/util/layouts.js";
 import { dragResize } from "../sys32/util/selections.js";
 
-export default (sys: System, filepath?: string) => {
-
-  const { $ } = sys;
+export default (filepath?: string) => {
 
   let paintArea: Scroll;
   let paintView: PaintView;
@@ -37,7 +37,7 @@ export default (sys: System, filepath?: string) => {
       $(PanedYB, { gap: 1 },
         paintArea = $(Scroll, {
           background: 0x222222ff,
-          draw: makeStripeDrawer(sys),
+          draw: makeStripeDrawer(),
         },
           paintView = $(PaintView, { color: COLORS[3] }),
           resizer = $(View, {
@@ -49,9 +49,9 @@ export default (sys: System, filepath?: string) => {
             },
             onMouseDown() {
               const o = { w: paintView.w, h: paintView.h };
-              const fn = dragResize(sys, o);
+              const fn = dragResize(o);
 
-              this.sys?.trackMouse({
+              sys.trackMouse({
                 move: () => {
                   fn();
                   const w = Math.floor(o.w / paintView.zoom);
@@ -152,7 +152,7 @@ export default (sys: System, filepath?: string) => {
 
   if (filepath) {
 
-    sys.fs.loadFile(filepath!).then(s => {
+    fs.loadFile(filepath!).then(s => {
       if (s) {
         paintView.loadBitmap(s);
       }
@@ -183,7 +183,7 @@ export default (sys: System, filepath?: string) => {
 
       const bitmap = paintView.toBitmap();
 
-      sys.fs.saveFile(filepath, bitmap.toString()).then(() => {
+      fs.saveFile(filepath, bitmap.toString()).then(() => {
         console.log('done')
       })
 
@@ -224,10 +224,10 @@ class PaintView extends View {
     super.draw();
 
     for (let x = 0; x < this.width; x++) {
-      this.sys.crt.rectFill(x * this.zoom, 0, 1, this.h, 0x00000033);
+      crt.rectFill(x * this.zoom, 0, 1, this.h, 0x00000033);
     }
     for (let y = 0; y < this.height; y++) {
-      this.sys.crt.rectFill(0, y * this.zoom, this.w, 1, 0x00000033);
+      crt.rectFill(0, y * this.zoom, this.w, 1, 0x00000033);
     }
 
     for (let y = 0; y < this.height; y++) {
@@ -237,7 +237,7 @@ class PaintView extends View {
         if (c !== undefined) {
           const px = x * this.zoom;
           const py = y * this.zoom;
-          this.sys.crt.rectFill(px, py, this.zoom, this.zoom, c);
+          crt.rectFill(px, py, this.zoom, this.zoom, c);
         }
       }
     }
@@ -245,13 +245,13 @@ class PaintView extends View {
     if (this.hovered) {
       const px = Math.floor(this.mouse.x / this.zoom) * this.zoom;
       const py = Math.floor(this.mouse.y / this.zoom) * this.zoom;
-      this.sys.crt.rectFill(px, py, this.zoom, this.zoom, 0x0000ff77);
+      crt.rectFill(px, py, this.zoom, this.zoom, 0x0000ff77);
     }
   }
 
   override onMouseDown(): void {
     if (this.tool === 'pencil' || this.tool === 'eraser') {
-      this.sys.trackMouse({
+      sys.trackMouse({
         move: () => {
           const x = Math.floor(this.mouse.x / this.zoom);
           const y = Math.floor(this.mouse.y / this.zoom);

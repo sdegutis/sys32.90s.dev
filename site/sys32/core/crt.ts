@@ -4,8 +4,8 @@ export class CRT {
   clip = { cx: 0, cy: 0, x1: 0, y1: 0, x2: 0, y2: 0 };
   raw = false;
 
-  #canvas: HTMLCanvasElement;
-  #context: CanvasRenderingContext2D;
+  #canvas!: HTMLCanvasElement;
+  #context!: CanvasRenderingContext2D;
   #imgdata!: ImageData;
 
   #autoscaling = false;
@@ -13,14 +13,15 @@ export class CRT {
   width = 0;
   height = 0;
 
-  constructor(canvas: HTMLCanvasElement) {
+  init(canvas: HTMLCanvasElement) {
+    this.#canvas = canvas;
+    this.#context = canvas.getContext('2d')!;
+
     canvas.style.imageRendering = 'pixelated';
     canvas.style.backgroundColor = '#000';
     canvas.style.outline = 'none';
     canvas.style.cursor = 'none';
 
-    this.#canvas = canvas;
-    this.#context = canvas.getContext('2d')!;
     this.resize(canvas.width, canvas.height);
   }
 
@@ -127,3 +128,5 @@ export class CRT {
   }
 
 }
+
+export const crt = new CRT();

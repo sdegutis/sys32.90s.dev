@@ -1,5 +1,6 @@
 import { Bitmap } from "../core/bitmap.js";
-import type { Cursor } from "../core/system.js";
+import { crt } from "../core/crt.js";
+import { sys, type Cursor } from "../core/system.js";
 import { View } from "../core/view.js";
 import { dragMove } from "../util/selections.js";
 
@@ -29,7 +30,7 @@ class SplitDivider extends View {
   split: Split;
 
   constructor(split: Split) {
-    super(split.sys);
+    super();
     this.split = split;
     this.background = split.dividerColor;
     this.cursor = this.split.dir === 'x' ? xresize : yresize;
@@ -47,10 +48,10 @@ class SplitDivider extends View {
     const h = dx === 'y' ? this.split.dividerWidth : this.h;
 
     if (this.pressed) {
-      this.sys.crt.rectFill(x, y, w, h, this.split.dividerColorPress);
+      crt.rectFill(x, y, w, h, this.split.dividerColorPress);
     }
     else if (this.hovered) {
-      this.sys.crt.rectFill(x, y, w, h, this.split.dividerColorHover);
+      crt.rectFill(x, y, w, h, this.split.dividerColorHover);
     }
   }
 
@@ -64,8 +65,8 @@ class SplitDivider extends View {
 
     this.pressed = true;
 
-    const drag = dragMove(this.sys, b);
-    this.sys.trackMouse({
+    const drag = dragMove(b);
+    sys.trackMouse({
       move: () => {
         drag();
         s.pos = b[dx];
@@ -95,7 +96,7 @@ export class Split extends View {
 
   override init(): void {
     while (this.children.length < 2) {
-      this.addChild(this.sys.make(View, {}));
+      this.addChild(sys.make(View, {}));
     }
   }
 

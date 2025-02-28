@@ -2,7 +2,8 @@ import { PanedXA, PanedYA } from "../sys32/containers/paned.js";
 import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
-import { System, type Cursor } from "../sys32/core/system.js";
+import { crt } from "../sys32/core/crt.js";
+import { $, sys, type Cursor } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeStripeDrawer } from "../sys32/util/draw.js";
@@ -17,9 +18,7 @@ const COLORS = [
   0x29ADFFff, 0x83769Cff, 0xFF77A8ff, 0xFFCCAAff,
 ];
 
-export default (sys: System) => {
-
-  const { $ } = sys;
+export default () => {
 
   const map = new Map(50, 40);
 
@@ -73,7 +72,7 @@ export default (sys: System) => {
         $(View, { background: 0x333344ff, layout: makeVacuumLayout() },
           $(View, {
             background: 0x222222ff,
-            draw: makeStripeDrawer(sys, 4, 2)
+            draw: makeStripeDrawer(4, 2)
           },
             $(MapView, { id: 'mapview', map })
           )
@@ -134,12 +133,12 @@ class MapView extends View {
   override init(): void {
     for (let i = 0; i < 16; i++) {
       this.#drawTerrain.push((x, y) => {
-        this.sys.crt.rectFill(x, y, 4, 4, COLORS[i]);
+        crt.rectFill(x, y, 4, 4, COLORS[i]);
       });
     }
 
     this.#drawTerrain.push((x, y) => {
-      this.sys.crt.rectFill(x, y, 4, 4, COLORS[3]);
+      crt.rectFill(x, y, 4, 4, COLORS[3]);
     });
 
     this.w = this.map.width * 4;
@@ -147,13 +146,13 @@ class MapView extends View {
   }
 
   override onMouseDown(): void {
-    if (this.sys.keys[' ']) {
-      this.sys.trackMouse({ move: dragMove(this.sys, this) });
+    if (sys.keys[' ']) {
+      sys.trackMouse({ move: dragMove(this) });
     }
-    else if (this.sys.keys['Control']) {
+    else if (sys.keys['Control']) {
       this.#tilesel = new TileSelection(this, 4);
 
-      this.sys.trackMouse({
+      sys.trackMouse({
         move: () => {
           this.#tilesel!.update();
 
@@ -174,8 +173,8 @@ class MapView extends View {
         },
       });
     }
-    else if (this.sys.keys['Alt']) {
-      this.sys.trackMouse({
+    else if (sys.keys['Alt']) {
+      sys.trackMouse({
         move: () => {
           const x = Math.floor(this.mouse.x / 4);
           const y = Math.floor(this.mouse.y / 4);
@@ -188,7 +187,7 @@ class MapView extends View {
       });
     }
     else {
-      this.sys.trackMouse({
+      sys.trackMouse({
         move: () => {
           const x = Math.floor(this.mouse.x / 4);
           const y = Math.floor(this.mouse.y / 4);
@@ -211,37 +210,37 @@ class MapView extends View {
 
     if (this.showGrid) {
       for (let x = 0; x < this.map.width; x++) {
-        this.sys.crt.rectFill(x * 4, 0, 1, this.map.height * 4, 0x00000011);
+        crt.rectFill(x * 4, 0, 1, this.map.height * 4, 0x00000011);
       }
 
       for (let y = 0; y < this.map.height; y++) {
-        this.sys.crt.rectFill(0, y * 4, this.map.width * 4, 1, 0x00000011);
+        crt.rectFill(0, y * 4, this.map.width * 4, 1, 0x00000011);
       }
     }
 
     if (this.hovered) {
       const tx = Math.floor(this.mouse.x / 4);
       const ty = Math.floor(this.mouse.y / 4);
-      this.sys.crt.rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);
+      crt.rectFill(tx * 4, ty * 4, 4, 4, 0x0000ff77);
 
-      if (this.sys.keys['Alt']) {
-        this.sys.crt.rectFill((tx + 0) * 4, (ty + 1) * 4, 4, 4, 0x0000ff77);
-        this.sys.crt.rectFill((tx + 0) * 4, (ty - 1) * 4, 4, 4, 0x0000ff77);
-        this.sys.crt.rectFill((tx + 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
-        this.sys.crt.rectFill((tx - 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
+      if (sys.keys['Alt']) {
+        crt.rectFill((tx + 0) * 4, (ty + 1) * 4, 4, 4, 0x0000ff77);
+        crt.rectFill((tx + 0) * 4, (ty - 1) * 4, 4, 4, 0x0000ff77);
+        crt.rectFill((tx + 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
+        crt.rectFill((tx - 1) * 4, (ty + 0) * 4, 4, 4, 0x0000ff77);
       }
     }
 
     if (this.#tilesel) {
       const { tx1, tx2, ty1, ty2 } = this.#tilesel;
 
-      this.sys.crt.rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
-      this.sys.crt.rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
+      crt.rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
+      crt.rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
     }
 
-    // this.sys.crt.rectFill(this.mouse.x, this.mouse.y - 2, 1, 5, 0x00000077);
-    // this.sys.crt.rectFill(this.mouse.x - 2, this.mouse.y, 5, 1, 0x00000077);
-    // this.sys.crt.pset(this.mouse.x, this.mouse.y, 0xffffffff);
+    // crt.rectFill(this.mouse.x, this.mouse.y - 2, 1, 5, 0x00000077);
+    // crt.rectFill(this.mouse.x - 2, this.mouse.y, 5, 1, 0x00000077);
+    // crt.pset(this.mouse.x, this.mouse.y, 0xffffffff);
 
   }
 

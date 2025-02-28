@@ -1,3 +1,4 @@
+import { sys } from "../core/system.js";
 import { View } from "../core/view.js";
 
 export class Scroll extends View {
@@ -15,7 +16,7 @@ export class Scroll extends View {
   }
 
   override onScroll(up: boolean): void {
-    const sy = this.sys.keys['Shift'] ? 'scrollx' : 'scrolly';
+    const sy = sys.keys['Shift'] ? 'scrollx' : 'scrolly';
     this[sy] += up ? -this.amount : this.amount;
 
     this.#adjust();

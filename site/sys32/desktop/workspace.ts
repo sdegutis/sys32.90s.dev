@@ -4,7 +4,7 @@ import { PanedYB } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
 import { Button } from "../controls/button.js";
 import { Label } from "../controls/label.js";
-import { System } from "../core/system.js";
+import { $, sys } from "../core/system.js";
 import { View } from "../core/view.js";
 import { makeFlowLayout, makeVacuumLayout } from "../util/layouts.js";
 import { Clock } from "./clock.js";
@@ -12,21 +12,16 @@ import { Panel } from "./panel.js";
 
 export class Workspace {
 
-  sys: System;
-
   #icons: View;
   #desktop: View;
   #taskbar: View;
   #panels: View;
 
-  constructor(sys: System) {
-    this.sys = sys;
+  constructor() {
 
     let big = false;
 
     sys.root.layout = makeVacuumLayout();
-
-    const { $ } = sys;
 
     this.#icons = $(View, {
       background: 0x222222ff,
@@ -75,17 +70,17 @@ export class Workspace {
 
   #stealPanels() {
     let did = false;
-    let i = this.sys.root.children.length;
+    let i = sys.root.children.length;
     while (i--) {
-      const child = this.sys.root.children[i];
+      const child = sys.root.children[i];
       if (child instanceof Panel) {
-        this.sys.root.removeChild(child);
+        sys.root.removeChild(child);
         this.#addPanel(child);
         child.focus();
         did = true;
       }
     }
-    if (did) this.sys.layoutTree();
+    if (did) sys.layoutTree();
   }
 
   #addPanel(panel: Panel) {
@@ -93,8 +88,6 @@ export class Workspace {
     panel.y = 20;
 
     this.#desktop.addChild(panel);
-
-    const { $ } = this.sys;
 
     const label = $(Label, {});
     const button = $(Button, {
@@ -124,22 +117,20 @@ export class Workspace {
 
   async addProgram(name: string, path: string) {
     const mod = await import(path);
-    const launch: (sys: System) => void = mod.default;
+    const launch: () => void = mod.default;
 
     this.#programs.set(name, launch);
 
-    const { $ } = this.sys;
-
-    this.#icons.addChild($(Button, { all: 2, onClick: () => launch(this.sys) },
+    this.#icons.addChild($(Button, { all: 2, onClick: () => launch() },
       $(Label, { text: name })
     ));
-    this.sys.layoutTree();
+    sys.layoutTree();
   }
 
   launch(name: string) {
-    this.#programs.get(name)?.(this.sys);
+    this.#programs.get(name)?.();
   }
 
-  #programs = new Map<string, (sys: System) => void>();
+  #programs = new Map<string, () => void>();
 
 }

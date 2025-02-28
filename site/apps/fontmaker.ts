@@ -4,12 +4,13 @@ import { PanedYB } from "../sys32/containers/paned.js";
 import { Label } from "../sys32/controls/label.js";
 import { Slider } from "../sys32/controls/slider.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
+import { crt } from "../sys32/core/crt.js";
 import { Font } from "../sys32/core/font.js";
-import type { Cursor, System } from "../sys32/core/system.js";
+import { fs } from "../sys32/core/fs.js";
+import { $, sys, type Cursor } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { Listener, multiplex, Reactive } from "../sys32/util/events.js";
-import { makeFlowLayout } from "../sys32/util/layouts.js";
 
 const CHARSET = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`;
 
@@ -22,9 +23,7 @@ const SAMPLE_TEXT = [
   ` .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`,
 ].join('\n');
 
-export default async (sys: System, filename?: string) => {
-
-  const { $ } = sys;
+export default async (filename?: string) => {
 
   const $width = new Reactive(4);
   const $height = new Reactive(5);
@@ -37,7 +36,7 @@ export default async (sys: System, filename?: string) => {
   let chars: Record<string, Bitmap> = {};
 
   if (filename) {
-    const s = (await sys.fs.loadFile(filename))!;
+    const s = (await fs.loadFile(filename))!;
 
     const keys = [...CHARSET].sort();
     const vals = s.split('===\n').map(s => Bitmap.fromString(s));
@@ -152,7 +151,7 @@ export default async (sys: System, filename?: string) => {
     if (key === 's' && sys.keys['Control']) {
       const orderedChars = Object.keys(chars).sort();
       const saveData = orderedChars.map(ch => chars[ch].toString()).join('===\n');
-      sys.fs.saveFile('e/font1.font', saveData);
+      fs.saveFile('e/font1.font', saveData);
       return true;
     }
     return false;
@@ -222,7 +221,7 @@ class CharView extends View {
         const key = `${x},${y}`;
 
         if (this.spots[key]) {
-          this.sys.crt.rectFill(tx, ty, this.zoom, this.zoom, 0xffffffff);
+          crt.rectFill(tx, ty, this.zoom, this.zoom, 0xffffffff);
         }
       }
     }
@@ -231,18 +230,18 @@ class CharView extends View {
       const tx = Math.floor(this.mouse.x / this.zoom) * this.zoom;
       const ty = Math.floor(this.mouse.y / this.zoom) * this.zoom;
 
-      this.sys.crt.rectFill(tx, ty, this.zoom, this.zoom, 0x0000ff99);
+      crt.rectFill(tx, ty, this.zoom, this.zoom, 0x0000ff99);
     }
   }
 
   override onMouseDown(): void {
-    this.sys.trackMouse({
+    sys.trackMouse({
       move: () => {
         const tx = Math.floor(this.mouse.x / this.zoom);
         const ty = Math.floor(this.mouse.y / this.zoom);
 
         const key = `${tx},${ty}`;
-        this.spots[key] = this.sys.mouse.button === 0;
+        this.spots[key] = sys.mouse.button === 0;
         this.rebuidBitmap();
         this.rebuilt.dispatch(this);
       }

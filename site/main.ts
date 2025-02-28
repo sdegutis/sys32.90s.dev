@@ -1,11 +1,12 @@
-import { System } from "./sys32/core/system.js";
+import { crt } from "./sys32/core/crt.js";
+import { sys } from "./sys32/core/system.js";
 import { Workspace } from "./sys32/desktop/workspace.js";
 
-const sys = new System(document.querySelector('canvas')!);
-sys.crt.autoscale();
+sys.init(document.querySelector('canvas')!);
+crt.autoscale();
 
 (async function () {
-  const ws = new Workspace(sys);
+  const ws = new Workspace();
   await ws.addProgram('demo', import.meta.resolve('./apps/demo.js'));
   await ws.addProgram('filer', import.meta.resolve('./apps/filer.js'));
   await ws.addProgram('mapmaker', import.meta.resolve('./apps/mapmaker.js'));

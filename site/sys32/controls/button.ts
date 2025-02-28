@@ -1,4 +1,5 @@
 import { Border } from "../containers/border.js";
+import { sys } from "../core/system.js";
 import { View } from "../core/view.js";
 import { multiplex, Reactive } from "../util/events.js";
 
@@ -30,7 +31,7 @@ export class Button extends Border {
 
   override passthrough = false;
 
-  overlay = this.sys.make(View, {
+  overlay = sys.make(View, {
     passthrough: true,
     layout() {
       if (!this.parent) return;
@@ -70,7 +71,7 @@ export class Button extends Border {
   override onMouseDown(): void {
     this.pressed = true;
     this.#counter.increase();
-    const cancel = this.sys.trackMouse({
+    const cancel = sys.trackMouse({
       move: () => {
         if (!this.hovered) {
           this.pressed = false;

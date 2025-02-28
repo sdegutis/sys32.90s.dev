@@ -1,3 +1,5 @@
+import { crt } from "../core/crt.js";
+import { sys } from "../core/system.js";
 import { View } from "../core/view.js";
 import { dragMove } from "../util/selections.js";
 
@@ -18,9 +20,9 @@ export class Slider extends View {
 
   override onMouseDown(): void {
     const o = { x: this.mouse.x, y: 0 };
-    const fn = dragMove(this.sys, o);
+    const fn = dragMove(o);
 
-    this.sys.trackMouse({
+    sys.trackMouse({
       move: () => {
         const oldval = this.val;
 
@@ -40,11 +42,11 @@ export class Slider extends View {
   override draw(): void {
     super.draw();
     const y1 = Math.floor(this.h / 2);
-    this.sys.crt.rectFill(0, y1, this.w, 1, 0xffffff33);
+    crt.rectFill(0, y1, this.w, 1, 0xffffff33);
     const p = (this.val - this.min) / (this.max - this.min);
     const x = Math.floor(p * (this.w - this.knobSize));
     const y = Math.round(this.h / 2 - this.knobSize / 2);
-    this.sys.crt.rectFill(x, y, this.knobSize, this.knobSize, 0xffffffff);
+    crt.rectFill(x, y, this.knobSize, this.knobSize, 0xffffffff);
   }
 
 }

@@ -1,13 +1,11 @@
 import { Scroll } from "../sys32/containers/scroll.js";
 import { TextArea } from "../sys32/containers/textarea.js";
-import type { System } from "../sys32/core/system.js";
+import { $, sys } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeVacuumLayout } from "../sys32/util/layouts.js";
 
-export default (sys: System) => {
-
-  const { $ } = sys;
+export default () => {
 
   const textarea = $(TextArea, { background: 0x00990033 });
 

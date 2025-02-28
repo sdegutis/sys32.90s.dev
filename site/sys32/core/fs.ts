@@ -327,3 +327,5 @@ type DbFile = {
   prefix: string,
   content?: string,
 };
+
+export const fs = new FS();

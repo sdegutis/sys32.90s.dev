@@ -1,32 +1,28 @@
 import { Listener, Reactive } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
-import { CRT } from "./crt.js";
+import { crt } from "./crt.js";
 import { Font } from "./font.js";
-import { FS } from "./fs.js";
 import { View } from "./view.js";
 
 export class System {
 
-  readonly root: View;
-  focused: View;
+  root!: View;
+  focused!: View;
   font = Font.crt2025;
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0, button: 0 };
-  crt: CRT;
 
   onTick = new Listener<number>();
 
   needsRedraw = true;
 
-  #hovered: View;
+  #hovered!: View;
   #trackingMouse?: { move: () => void, up?: () => void };
 
   #destroyer = new AbortController();
 
-  fs = new FS();
-
-  constructor(canvas: HTMLCanvasElement) {
-    this.crt = new CRT(canvas);
+  init(canvas: HTMLCanvasElement) {
+    crt.init(canvas);
     canvas.tabIndex = 0;
     canvas.focus();
 
@@ -128,9 +124,9 @@ export class System {
           this.#draw(this.root);
 
           const cursor = this.#hovered.cursor ?? pointer;
-          cursor.bitmap.draw(this.crt, this.mouse.x - cursor.offset[0], this.mouse.y - cursor.offset[1]);
+          cursor.bitmap.draw(crt, this.mouse.x - cursor.offset[0], this.mouse.y - cursor.offset[1]);
 
-          this.crt.blit();
+          crt.blit();
         }
         last = t;
       }
@@ -153,8 +149,6 @@ export class System {
     return view;
   }
 
-  $ = this.make.bind(this);
-
   #enableDataSources(view: View) {
     for (let [key, val] of Object.entries(view)) {
       if (typeof val === 'function') continue;
@@ -176,7 +170,7 @@ export class System {
     this.root.h = h;
     this.mouse.x = 0;
     this.mouse.y = 0;
-    this.crt.resize(w, h);
+    crt.resize(w, h);
     this.layoutTree();
   }
 
@@ -260,19 +254,19 @@ export class System {
   #draw(node: View) {
     if (!node.visible) return;
 
-    const cx1 = this.crt.clip.x1;
-    const cx2 = this.crt.clip.x2;
-    const cy1 = this.crt.clip.y1;
-    const cy2 = this.crt.clip.y2;
+    const cx1 = crt.clip.x1;
+    const cx2 = crt.clip.x2;
+    const cy1 = crt.clip.y1;
+    const cy2 = crt.clip.y2;
 
     // TODO: skip drawing if entirely clipped?
 
-    this.crt.clip.cx += node.x;
-    this.crt.clip.cy += node.y;
-    this.crt.clip.x1 = Math.max(cx1, this.crt.clip.cx);
-    this.crt.clip.y1 = Math.max(cy1, this.crt.clip.cy);
-    this.crt.clip.x2 = Math.min(cx2, (this.crt.clip.cx + node.w - 1));
-    this.crt.clip.y2 = Math.min(cy2, (this.crt.clip.cy + node.h - 1));
+    crt.clip.cx += node.x;
+    crt.clip.cy += node.y;
+    crt.clip.x1 = Math.max(cx1, crt.clip.cx);
+    crt.clip.y1 = Math.max(cy1, crt.clip.cy);
+    crt.clip.x2 = Math.min(cx2, (crt.clip.cx + node.w - 1));
+    crt.clip.y2 = Math.min(cy2, (crt.clip.cy + node.h - 1));
 
     node.draw?.();
 
@@ -280,13 +274,13 @@ export class System {
       this.#draw(node.children[i]);
     }
 
-    this.crt.clip.cx -= node.x;
-    this.crt.clip.cy -= node.y;
+    crt.clip.cx -= node.x;
+    crt.clip.cy -= node.y;
 
-    this.crt.clip.x1 = cx1;
-    this.crt.clip.x2 = cx2;
-    this.crt.clip.y1 = cy1;
-    this.crt.clip.y2 = cy2;
+    crt.clip.x1 = cx1;
+    crt.clip.x2 = cx2;
+    crt.clip.y1 = cy1;
+    crt.clip.y2 = cy2;
   }
 
 }
@@ -305,3 +299,7 @@ export interface Cursor {
   bitmap: Bitmap,
   offset: [number, number],
 }
+
+export const sys = new System();
+
+export const $ = sys.make.bind(sys);
