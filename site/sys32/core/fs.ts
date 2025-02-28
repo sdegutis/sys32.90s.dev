@@ -1,3 +1,5 @@
+import { Listener } from "../util/events.js";
+
 export interface Folder {
 
   path: string;
@@ -260,6 +262,16 @@ export class FS {
     if (!file) return;
 
     file.folder.putFile(file.base, content);
+
+    this.#watchers.get(path)?.dispatch(content);
+  }
+
+  #watchers = new Map<string, Listener<string>>();
+
+  watchTree(path: string, fn: (content: string) => void) {
+    let watcher = this.#watchers.get(path);
+    if (!watcher) this.#watchers.set(path, watcher = new Listener());
+    watcher.watch(fn);
   }
 
   async #getdir(path: string) {

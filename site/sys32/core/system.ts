@@ -1,4 +1,4 @@
-import { Listener } from "../util/events.js";
+import { Listener, Reactive } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { crt } from "./crt.js";
 import { Cursor } from "./cursor.js";
@@ -7,7 +7,13 @@ import { fs } from "./fs.js";
 import { $, View } from "./view.js";
 
 const crt2025 = Font.fromString((await fs.loadFile('sys/font1.font'))!);
-const pointer = Cursor.fromBitmap(Bitmap.fromString((await fs.loadFile('sys/pointer.bitmap'))!));
+
+const pointer = new Reactive(Cursor.fromBitmap(Bitmap.fromString((await fs.loadFile('sys/pointer.bitmap'))!)));
+
+fs.watchTree('sys/pointer.bitmap', (content) => {
+  console.log('cahgned', content)
+  pointer.val = Cursor.fromBitmap(Bitmap.fromString(content));
+})
 
 export class System {
 
@@ -129,7 +135,7 @@ export class System {
 
           this.#draw(this.root);
 
-          const cursor = this.#hovered.cursor ?? pointer;
+          const cursor = this.#hovered.cursor ?? pointer.val;
           cursor.draw(this.mouse.x, this.mouse.y);
 
           crt.blit();
