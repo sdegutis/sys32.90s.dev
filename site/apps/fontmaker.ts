@@ -15,6 +15,9 @@ const CHARSET = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}
 
 const SAMPLE_TEXT = [
   'the quick brown fox',
+  "how quickly daft jumping zebras vex!",
+  "the five boxing wizards jump quickly.",
+  "the quick brown fox, jumps over the lazy dog.",
   `abcdefghijklmnopqrstuvwxyz`,
   ` .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`,
 ].join('\n');
