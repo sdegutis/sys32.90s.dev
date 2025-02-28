@@ -14,5 +14,5 @@ crt.autoscale();
   await ws.addProgram('writer', import.meta.resolve('./apps/writer.js'));
   await ws.addProgram('fontmaker', import.meta.resolve('./apps/fontmaker.js'));
 
-  ws.launch('fontmaker')
+  ws.launch('filer')
 })()

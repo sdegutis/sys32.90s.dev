@@ -31,21 +31,21 @@ export default () => {
   );
 
   // (async () => {
-  //   // console.log(await sys.fs.getFolder('b'))
-  //   // // await sys.fs.#drives['b'].putFile('foo', 'bar')
-  //   // // await sys.fs.#drives['b'].putFolder('qux')
-  //   // const b = await sys.fs.getFolder('b');
-  //   // await b!.putFolder('qux')
-  //   // await sys.fs.saveFile('b/qux/hmm3', 'bar123es')
-  //   // // console.log(await sys.fs.loadFile('b/qux/hmm'))
-  //   const dir = await (await sys.fs.getFolder('b/qux'))?.list() ?? [];
+  //   console.log(await fs.getFolder('user'))
+  //   // await fs.#drives['b'].putFile('foo', 'bar')
+  //   // await fs.#drives['b'].putFolder('qux')
+  //   const b = await fs.getFolder('user');
+  //   await b!.putFolder('qux')
+  //   await fs.saveFile('user/qux/hmm3', 'bar123es')
+  //   // console.log(await fs.loadFile('b/qux/hmm'))
+  //   const dir = await (await fs.getFolder('user/qux'))?.list() ?? [];
   //   for (const f of dir) {
   //     console.log(f);
   //   }
 
   // })()
 
-  const sidelist = $(GroupY, { gap: 1 });
+  const sidelist = $(GroupY, { align: 'a', gap: 1 });
   const filelist = $(GroupY, { align: 'a' });
 
   function sortBy<T, U>(fn: (o: T) => U) {
@@ -102,14 +102,14 @@ export default () => {
         showfiles((await fs.getFolder(key))!);
       }
     },
-      $(Label, { text: `drive: ${key}` })
+      $(Label, { text: `drive:${key}` })
     ));
     sidelist.parent?.layoutTree();
   }
 
   const panel = $(Panel, { title: 'files', w: 150, h: 100, },
     $(PanedYB, { gap: 2 },
-      $(SplitX, { background: 0xffffff11, pos: 40, resizable: true, dividerColor: 0x33333300 },
+      $(SplitX, { background: 0xffffff11, pos: 50, resizable: true, dividerColor: 0x33333300 },
         $(Scroll, { w: 40, background: 0x00000077, }, sidelist),
         $(Scroll, {}, filelist),
       ),
