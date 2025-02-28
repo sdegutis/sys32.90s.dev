@@ -348,6 +348,74 @@ async function loadUserDrives() {
     r.onsuccess = (e) => resolve(r.result);
   });
   for (const { drive, folder } of found) {
+    const observer = new FileSystemObserver((records) => {
+      console.log(records)
+    });
+
+    observer.observe(folder, { recursive: true });
+
     fs.drives[drive] = new UserFolder(folder, drive + '/');
+  }
+}
+
+declare global {
+  type FileSystemObserverRecordCommon = {};
+
+  type FileSystemObserverRecordAppeared = {
+    type: 'appeared',
+    root: FileSystemHandle,
+    changedHandle: FileSystemHandle | null,
+    relativePathComponents: string[],
+  };
+
+  type FileSystemObserverRecordDisappeared = {
+    type: 'disappeared',
+    root: FileSystemHandle,
+    changedHandle: null,
+    relativePathComponents: string[],
+  };
+
+  type FileSystemObserverRecordModified = {
+    type: 'modified',
+    root: FileSystemHandle,
+    changedHandle: FileSystemHandle | null,
+    relativePathComponents: string[],
+  };
+
+  type FileSystemObserverRecordMoved = {
+    type: 'moved',
+    root: FileSystemHandle,
+    changedHandle: FileSystemHandle | null,
+    relativePathComponents: string[],
+    relativePathMovedFrom: string[],
+  };
+
+  type FileSystemObserverRecordUnknown = {
+    type: 'unknown',
+    root: FileSystemHandle,
+    changedHandle: null,
+    relativePathComponents: string[],
+  };
+
+  type FileSystemObserverRecordErrored = {
+    type: 'errored',
+    root: FileSystemHandle,
+    changedHandle: null,
+    relativePathComponents: string[],
+  };
+
+  type FileSystemObserverRecord =
+    | FileSystemObserverRecordAppeared
+    | FileSystemObserverRecordDisappeared
+    | FileSystemObserverRecordModified
+    | FileSystemObserverRecordMoved
+    | FileSystemObserverRecordUnknown
+    | FileSystemObserverRecordErrored;
+
+  class FileSystemObserver {
+    constructor(callback: (records: FileSystemObserverRecord[], observer: FileSystemObserver) => void);
+    observe(fileHandle: FileSystemHandle): void;
+    observe(fileHandle: FileSystemDirectoryHandle, options?: { recursive: boolean }): void;
+    unobserve(fileHandle: FileSystemHandle): void;
   }
 }
