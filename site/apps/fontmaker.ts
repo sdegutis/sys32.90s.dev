@@ -31,11 +31,10 @@ export default (sys: System) => {
   const chars = new Map<string, CharView>();
   for (const char of [...CHARSET]) {
     const view = $(CharView, { char, rebuilt });
-    chars.set(char, view);
-
     view.setDataSource('width', $width);
     view.setDataSource('height', $height);
     view.setDataSource('zoom', $zoom);
+    chars.set(char, view);
   }
 
   const panel = $(Panel, { title: 'fontmaker', },
