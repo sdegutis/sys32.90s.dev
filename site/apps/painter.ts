@@ -23,34 +23,9 @@ export default (filepath?: string) => {
   const panel = $(Panel, { title: 'painter', minw: 50, w: 180, h: 70, },
     $(PanedXB, { gap: 1 },
       $(PanedYB, { gap: 1 },
-        $(Scroll, {
-          background: 0x222222ff,
-          draw: makeStripeDrawer(),
-        },
+        $(Scroll, { background: 0x222222ff, draw: makeStripeDrawer(), },
           $(PaintView, { id: 'paintView', color: COLORS[3] }),
-          $(View, {
-            id: 'resizer',
-            background: 0x00000077,
-            w: 4, h: 4,
-            layout: () => {
-              resizer.x = paintView.w;
-              resizer.y = paintView.h;
-            },
-            onMouseDown() {
-              const o = { w: paintView.w, h: paintView.h };
-              const fn = dragResize(o);
-
-              sys.trackMouse({
-                move: () => {
-                  fn();
-                  const w = Math.floor(o.w / paintView.zoom);
-                  const h = Math.floor(o.h / paintView.zoom);
-                  paintView.resize(w, h);
-                }
-              })
-
-            }
-          })
+          $(ResizerView, { id: 'resizer', background: 0x00000077, w: 4, h: 4, })
         ),
         $(SpacedX, {},
           $(GroupX, {},
@@ -64,12 +39,7 @@ export default (filepath?: string) => {
           )
         )
       ),
-      $(View, {
-        id: 'toolArea',
-        w: 36,
-        background: 0x99000033,
-        layout: makeFlowLayout(),
-      },
+      $(View, { id: 'toolArea', w: 36, background: 0x99000033, layout: makeFlowLayout(), },
         $(Button, { id: 'pencilTool', onClick: () => { paintView.tool = 'pencil'; } }, $(View, { passthrough: true, w: 4, h: 4 })),
         $(Button, { id: 'eraserTool', onClick: () => { paintView.tool = 'eraser'; } }, $(View, { passthrough: true, w: 4, h: 4 })),
         $(TextField, { id: 'colorField', length: 9, background: 0x111111ff }),
@@ -334,6 +304,38 @@ class PaintView extends View {
     }
 
     this.parent?.layoutTree();
+  }
+
+}
+
+class ResizerView extends View {
+
+  previousSibling<T extends View>() {
+    if (!this.parent) return null;
+    const i = this.parent.children.indexOf(this);
+    if (i < 1) return null;
+    return this.parent.children[i - 1] as T;
+  }
+
+  override layout() {
+    const paintView = this.previousSibling()!;
+    this.x = paintView.w;
+    this.y = paintView.h;
+  };
+
+  override onMouseDown() {
+    const paintView = this.previousSibling<PaintView>()!;
+    const o = { w: paintView.w, h: paintView.h };
+    const fn = dragResize(o);
+
+    sys.trackMouse({
+      move: () => {
+        fn();
+        const w = Math.floor(o.w / paintView.zoom);
+        const h = Math.floor(o.h / paintView.zoom);
+        paintView.resize(w, h);
+      }
+    })
   }
 
 }
