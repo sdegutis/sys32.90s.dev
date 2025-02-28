@@ -129,7 +129,7 @@ export class View {
 export function $<T extends View>(
   ctor: { new(): T; },
   config: Partial<T>,
-  ...children: any[]
+  ...children: View[]
 ): T {
   const view = new ctor();
   Object.assign(view, { children }, config);
