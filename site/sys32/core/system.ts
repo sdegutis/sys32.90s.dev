@@ -8,6 +8,13 @@ import { $, View } from "./view.js";
 
 const crt2025 = Font.fromString(((await fs.loadFile('sys/font1.font'))!));
 
+const pointer = Cursor.fromBitmap(new Bitmap([0x000000cc, 0xffffffff, 0xfffffffe], 4, [
+  1, 1, 1, 1,
+  1, 3, 2, 1,
+  1, 2, 1, 1,
+  1, 1, 1, 0,
+]));
+
 export class System {
 
   root!: View;
@@ -266,15 +273,5 @@ export class System {
   }
 
 }
-
-const pointer = new Cursor(
-  new Bitmap([0x000000cc, 0xffffffff], 4, [
-    1, 1, 1, 1,
-    1, 2, 2, 1,
-    1, 2, 1, 1,
-    1, 1, 1, 0,
-  ]),
-  [1, 1],
-);
 
 export const sys = new System();
