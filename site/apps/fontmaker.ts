@@ -117,11 +117,9 @@ export default (sys: System) => {
 
   panel.onKeyDown = (key) => {
     if (key === 's' && sys.keys['Control']) {
-
-
-
-      console.log('sav')
-
+      const orderedChars = Object.keys(chars).sort();
+      const saveData = orderedChars.map(ch => chars[ch].toString()).join('===\n');
+      sys.fs.saveFile('e/font1.font', saveData);
       return true;
     }
     return false;
@@ -173,7 +171,7 @@ class CharView extends View {
       }
     }
 
-    this.bitmap = new Bitmap([1], this.width, pixels);
+    this.bitmap = new Bitmap([0x000000ff], this.width, pixels);
   }
 
   override adjust(): void {
