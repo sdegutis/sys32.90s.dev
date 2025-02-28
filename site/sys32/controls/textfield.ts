@@ -67,23 +67,32 @@ export class TextField extends View {
         this.text += s;
         this.onChange?.();
       });
+      this.#restartBlinking();
+      return true;
     }
     else if (key === 'c' && sys.keys['Control']) {
       navigator.clipboard.writeText(this.text);
+      this.#restartBlinking();
+      return true;
     }
     else if (key === 'Enter') {
       this.onEnter?.();
+      this.#restartBlinking();
+      return true;
     }
     else if (key === 'Backspace') {
       this.text = this.text.slice(0, -1);
       this.onChange?.();
+      this.#restartBlinking();
+      return true;
     }
     else if (key.length === 1) {
       this.text += key;
       this.onChange?.();
+      this.#restartBlinking();
+      return true;
     }
-    this.#restartBlinking();
-    return true;
+    return false;
   };
 
   #blink?: ReturnType<typeof setInterval>;

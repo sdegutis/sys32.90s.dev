@@ -10,8 +10,9 @@ import { TextField } from "../../sys32/controls/textfield.js";
 import { Bitmap } from "../../sys32/core/bitmap.js";
 import { fs, type Folder } from "../../sys32/core/fs.js";
 import { sys } from "../../sys32/core/system.js";
-import { $ } from "../../sys32/core/view.js";
+import { $, View } from "../../sys32/core/view.js";
 import { Panel } from "../../sys32/desktop/panel.js";
+import { centerLayout } from "../../sys32/util/layouts.js";
 import { passedFocus } from "../../sys32/util/unsure.js";
 import fontmaker from "../fontmaker/fontmaker.js";
 import painter from "../painter/painter.js";
@@ -22,13 +23,6 @@ const fileIcon = new Bitmap([0x000099ff], 1, [1]);
 
 
 export default () => {
-
-  const mountLabel = $(TextField, { length: 2, onEnter: mountNew });
-  const toolbar = $(GroupX, {},
-    $(Border, { all: 1, ...passedFocus, background: 0xffffff11 },
-      mountLabel
-    )
-  );
 
   // (async () => {
   //   console.log(await fs.getFolder('user'))
@@ -47,6 +41,74 @@ export default () => {
 
   const sidelist = $(GroupY, { align: 'a', gap: 1 });
   const filelist = $(GroupY, { align: 'a' });
+
+  async function showPrompt(text: string) {
+    const p = Promise.withResolvers<string>();
+
+    function expandToFitContainer(this: View) {
+      this.x = 0;
+      this.y = 0;
+      this.w = this.parent!.w;
+      this.h = this.parent!.h;
+    }
+
+    const dialog = $(View, {
+      adjust: expandToFitContainer,
+      layout: centerLayout,
+      background: 0x00000033,
+      onKeyDown(key) {
+        if (key === 'Escape') {
+          cancel();
+          return true;
+        }
+        return false;
+      }
+    },
+      $(Border, { all: 1, borderColor: 0x99000099, passthrough: false },
+        $(Border, { all: 3, background: 0x000000ff },
+          $(GroupY, { gap: 3, align: 'a', },
+            $(Label, { text }),
+            $(Border, { all: 2, background: 0x222222ff, ...passedFocus },
+              $(TextField, { id: 'field', onEnter: accept, })
+            ),
+            $(GroupX, { gap: 2 },
+              $(Button, { all: 3, onClick: accept }, $(Label, { text: 'ok' })),
+              $(Button, { all: 3, onClick: cancel }, $(Label, { text: 'cancel' })),
+            )
+          )
+        )
+      )
+    );
+
+    function accept() { p.resolve(dialog.find<TextField>('field')!.text); }
+    function cancel() { p.resolve(''); }
+
+    sys.root.addChild(dialog);
+    dialog.find('field')!.focus();
+    dialog.layoutTree();
+
+    p.promise.then(() => dialog.remove());
+
+    return p.promise;
+  }
+
+  const mountButton = $(Button, {
+    all: 3,
+    onClick: async () => {
+      const drive = await showPrompt('what shall the name be?');
+      if (!drive) return;
+      try {
+        const folder = await window.showDirectoryPicker();
+        await folder.requestPermission({ mode: 'readwrite' });
+        await fs.mountUserFolder(drive, folder);
+      }
+      catch { }
+      // TODO: add to sidebar...
+      panel.layoutTree();
+    }
+  }, $(Label, { text: 'mount' }));
+
+  sidelist.addChild(mountButton);
 
   function sortBy<T, U>(fn: (o: T) => U) {
     return (a: T, b: T) => {
@@ -103,30 +165,18 @@ export default () => {
       }
     },
       $(Label, { text: `drive:${key}` })
-    ));
+    ), sidelist.children.indexOf(mountButton));
     sidelist.parent?.layoutTree();
   }
 
   const panel = $(Panel, { title: 'filer', w: 150, h: 100, },
-    $(PanedYB, { gap: 2 },
-      $(SplitX, { background: 0xffffff11, pos: 50, resizable: true, dividerColor: 0x33333300 },
-        $(Scroll, { w: 40, background: 0x00000077, }, sidelist),
-        $(Scroll, {}, filelist),
-      ),
-      toolbar,
+    $(SplitX, { background: 0xffffff11, pos: 50, resizable: true, dividerColor: 0x33333300 },
+      $(Scroll, { w: 40, background: 0x00000077, }, sidelist),
+      $(Scroll, {}, filelist),
     )
   )
   sys.root.addChild(panel);
   panel.focus();
 
-
-  async function mountNew() {
-    const drive = mountLabel.text;
-    mountLabel.text = '';
-
-    const folder = await window.showDirectoryPicker();
-    await folder.requestPermission({ mode: 'readwrite' });
-    await fs.mountUserFolder(drive, folder);
-  }
 
 };
