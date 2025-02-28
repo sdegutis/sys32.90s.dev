@@ -35,6 +35,8 @@ export default (sys: System) => {
 
   let loading = true;
   if (loading) {
+    $width.val = sys.font.width;
+    $height.val = sys.font.height;
     chars = new Map(Object.entries(sys.font.chars));
   }
 
@@ -49,7 +51,7 @@ export default (sys: System) => {
 
   const panel = $(Panel, { title: 'fontmaker', },
     $(PanedYB, {},
-      $(View, { layout: makeFlowLayout(1, 1), background: 0x44444433 },
+      $(View, { layout: makeFlowLayout(3, 3), background: 0x44444433 },
         ...charViews.values()
       ),
       $(Border, { background: 0x000000ff, u: 2 },
@@ -90,10 +92,9 @@ export default (sys: System) => {
   $height.watch((n) => { panel.find<Label>('height-label')!.text = n.toString(); });
   $zoom.watch((n) => { panel.find<Label>('zoom-label')!.text = n.toString(); });
 
-  $width.watch(() => panel.layoutTree());
-  $height.watch(() => panel.layoutTree());
-  $zoom.watch(() => panel.layoutTree());
-  $hovered.watch(() => panel.layoutTree());
+  multiplex({ w: $width, h: $height, z: $zoom, o: $hovered }).watch(() => {
+    panel.layoutTree();
+  });
 
   multiplex({ w: $width, h: $height }).watch(() => {
     for (const v of charViews.values()) {

@@ -106,21 +106,10 @@ export class Font {
 
       const map = this.chars[ch];
 
-      const px = x + (posx * 4);
-      const py = y + (posy * 6);
+      const px = x + (posx * (this.width + 1));
+      const py = y + (posy * (this.height + 2));
 
       map.draw(crt, px, py, c);
-
-      // for (let yy = 0; yy < 4; yy++) {
-      //   for (let xx = 0; xx < 3; xx++) {
-      //     const px = x + (posx * 4) + xx;
-      //     const py = y + (posy * 6) + yy;
-
-      //     if (map[yy][xx]) {
-      //       crt.pset(px, py, c);
-      //     }
-      //   }
-      // }
 
       posx++;
     }
