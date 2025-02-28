@@ -4,6 +4,7 @@ import { PanedYB } from "../sys32/containers/paned.js";
 import { Label } from "../sys32/controls/label.js";
 import { Slider } from "../sys32/controls/slider.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
+import { Font } from "../sys32/core/font.js";
 import type { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
@@ -28,23 +29,27 @@ export default (sys: System) => {
 
   const rebuilt = new Listener<CharView>();
 
-  const chars = new Map<string, CharView>();
+  const chars = new Map<string, Bitmap>();
+
+  let myfont: Font;
+
+  const charViews = new Map<string, CharView>();
   for (const char of [...CHARSET]) {
     const view = $(CharView, { char, rebuilt });
     view.setDataSource('width', $width);
     view.setDataSource('height', $height);
     view.setDataSource('zoom', $zoom);
-    chars.set(char, view);
+    charViews.set(char, view);
   }
 
   const panel = $(Panel, { title: 'fontmaker', },
     $(PanedYB, {},
       $(View, { layout: makeFlowLayout(1, 1), background: 0x44444433 },
-        ...chars.values()
+        ...charViews.values()
       ),
       $(Border, { background: 0x000000ff, u: 2 },
         $(GroupY, { gap: 3, align: 'a' },
-          $(Label, { text: SAMPLE_TEXT, color: 0x999900ff }),
+          $(Label, { id: 'sample', text: SAMPLE_TEXT, color: 0x999900ff }),
           $(GroupX, { gap: 10, },
             $(GroupX, { gap: 2 },
               $(Label, { text: 'width:', color: 0xffffff33 }),
@@ -80,7 +85,7 @@ export default (sys: System) => {
   $zoom.watch(() => panel.layoutTree());
 
   multiplex({ w: $width, h: $height }).watch(() => {
-    for (const v of chars.values()) {
+    for (const v of charViews.values()) {
       v.rebuidBitmap();
     }
     rebuildWhole();
@@ -88,11 +93,12 @@ export default (sys: System) => {
 
   function rebuildWhole() {
     console.log('rebuild whole font')
+    for (const v of charViews.values()) {
+      chars.set(v.char, v.bitmap);
+    }
 
-    // for (const v of chars.values()) {
-    //   console.log(v.bitmap)
-    // }
-
+    myfont = new Font(Object.fromEntries(chars));
+    panel.find<Label>('sample')!.font = myfont;
   }
 
   rebuilt.watch((view) => { rebuildWhole(); })
