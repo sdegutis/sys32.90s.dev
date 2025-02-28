@@ -33,7 +33,7 @@ export default (filepath?: string) => {
   let eraserTool: View;
   let colorField: TextField;
 
-  const panel = $(Panel, { title: 'paint', minw: 50, w: 180, h: 70, },
+  const panel = $(Panel, { title: 'painter', minw: 50, w: 180, h: 70, },
     $(PanedXB, { gap: 1 },
       $(PanedYB, { gap: 1 },
         paintArea = $(Scroll, {
@@ -146,7 +146,7 @@ export default (filepath?: string) => {
   }, 1000);
 
   filesource.watch(s => {
-    panel.title = s.length === 0 ? `paint: [no file]` : `paint: ${s}`;
+    panel.title = s.length === 0 ? `painter: [no file]` : `painter: ${s}`;
     panel.layoutTree();
   });
 

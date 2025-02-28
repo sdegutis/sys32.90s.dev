@@ -107,7 +107,7 @@ export default () => {
     sidelist.parent?.layoutTree();
   }
 
-  const panel = $(Panel, { title: 'files', w: 150, h: 100, },
+  const panel = $(Panel, { title: 'filer', w: 150, h: 100, },
     $(PanedYB, { gap: 2 },
       $(SplitX, { background: 0xffffff11, pos: 50, resizable: true, dividerColor: 0x33333300 },
         $(Scroll, { w: 40, background: 0x00000077, }, sidelist),
