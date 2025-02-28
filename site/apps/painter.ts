@@ -70,9 +70,7 @@ export default (filepath?: string) => {
             $(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel = $(Label, {}),
           ),
           $(GroupX, {},
-            digInto($(Slider, { knobSize: 3, w: 20, min: 1, max: 12 }), slider => {
-              slider.setDataSource('val', paintView.getDataSource('zoom'))
-            })
+            $(Slider, { id: 'zoom-slider', knobSize: 3, w: 20, min: 1, max: 12 })
           )
         )
       ),
@@ -87,6 +85,8 @@ export default (filepath?: string) => {
       ),
     ),
   );
+
+  panel.find<Slider>('zoom-slider')!.setDataSource('val', paintView.getDataSource('zoom'));
 
   paintView.watch('width', n => widthLabel.text = n.toString());
   paintView.watch('height', n => heightLabel.text = n.toString());
@@ -135,11 +135,6 @@ export default (filepath?: string) => {
   }
 
   paintView.watch('color', color => colorLabel.text = '0x' + color.toString(16).padStart(8, '0'));
-
-  function digInto<T>(t: T, fn: (t: T) => void) {
-    fn(t);
-    return t;
-  }
 
   const filesource = new Reactive('');
 
