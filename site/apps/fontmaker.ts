@@ -19,7 +19,7 @@ const SAMPLE_TEXT = [
   ` .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`,
 ].join('\n');
 
-export default (sys: System) => {
+export default async (sys: System, filename?: string) => {
 
   const { $ } = sys;
 
@@ -33,11 +33,18 @@ export default (sys: System) => {
   const charViews = new Map<string, CharView>();
   let chars: Record<string, Bitmap> = {};
 
-  let loading = true;
-  if (loading) {
-    $width.val = sys.font.width;
-    $height.val = sys.font.height;
-    chars = sys.font.chars;
+  if (filename) {
+    const s = (await sys.fs.loadFile(filename))!;
+
+    const keys = [...CHARSET].sort();
+    const vals = s.split('===\n').map(s => Bitmap.fromString(s));
+    keys.forEach((k, i) => { chars[k] = vals[i] });
+    $width.val = vals[0].width;
+    $height.val = vals[0].height;
+
+    // $width.val = sys.font.width;
+    // $height.val = sys.font.height;
+    // chars = sys.font.chars;
   }
 
   for (const char of [...CHARSET]) {

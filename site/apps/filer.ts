@@ -12,7 +12,8 @@ import type { Folder } from "../sys32/core/fs.js";
 import { System } from "../sys32/core/system.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { passedFocus } from "../sys32/util/unsure.js";
-import paint from "./painter.js";
+import painter from "./painter.js";
+import fontmaker from "./fontmaker.js";
 
 
 const folderIcon = new Bitmap([0x990000ff], 1, [1]);
@@ -76,7 +77,10 @@ export default (sys: System) => {
           }
           else {
             if (file.name.endsWith('.bitmap')) {
-              paint(sys, folder.path + file.name);
+              painter(sys, folder.path + file.name);
+            }
+            if (file.name.endsWith('.font')) {
+              fontmaker(sys, folder.path + file.name);
             }
           }
 
