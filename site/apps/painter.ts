@@ -34,7 +34,10 @@ export default (filepath?: string) => {
             $(Label, { color: 0xffffff33, text: ' c:' }), $(Label, { id: 'colorLabel' }),
             $(Label, { color: 0xffffff33, text: ' z:' }), $(Label, { id: 'zoomLabel' }),
           ),
-          $(GroupX, {},
+          $(GroupX, { gap: 1 },
+            $(Button, { id: 'grid-button', onClick() { paintView.showGrid = !paintView.showGrid } },
+              $(Label, { text: 'grid' })
+            ),
             $(Slider, { id: 'zoom-slider', knobSize: 3, w: 20, min: 1, max: 12 })
           )
         )
@@ -180,6 +183,8 @@ export default (filepath?: string) => {
 
 class PaintView extends View {
 
+  showGrid = true;
+
   width = 10;
   height = 10;
 
@@ -202,11 +207,13 @@ class PaintView extends View {
   override draw(): void {
     super.draw();
 
-    for (let x = 0; x < this.width; x++) {
-      crt.rectFill(x * this.zoom, 0, 1, this.h, 0x00000033);
-    }
-    for (let y = 0; y < this.height; y++) {
-      crt.rectFill(0, y * this.zoom, this.w, 1, 0x00000033);
+    if (this.showGrid) {
+      for (let x = 0; x < this.width; x++) {
+        crt.rectFill(x * this.zoom, 0, 1, this.h, 0x00000033);
+      }
+      for (let y = 0; y < this.height; y++) {
+        crt.rectFill(0, y * this.zoom, this.w, 1, 0x00000033);
+      }
     }
 
     for (let y = 0; y < this.height; y++) {
