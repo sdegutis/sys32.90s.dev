@@ -129,32 +129,3 @@ export class View {
   }
 
 }
-
-type NotWatchable =
-  | 'sys'
-  | 'mouse'
-  | 'init'
-  | 'onScroll'
-  | 'onKeyDown'
-  | 'onMouseDown'
-  | 'onMouseMove'
-  | 'onMouseEnter'
-  | 'onMouseExit'
-  | 'onFocus'
-  | 'onBlur'
-  | 'layout'
-  | 'adjust'
-  | 'adopted'
-  | 'abandoned'
-  | 'childrenChanged'
-  | 'children'
-  | 'addChild'
-  | 'removeChild'
-  | 'draw'
-  | 'focus'
-  | 'layoutTree'
-  | 'remove'
-  | 'getDataSource'
-  | 'setDataSource'
-  | 'watch'
-  ;
