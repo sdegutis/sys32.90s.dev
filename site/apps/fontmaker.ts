@@ -150,7 +150,6 @@ class CharView extends View {
   }
 
   rebuidBitmap() {
-    console.log('rebu')
     const pixels: number[] = [];
 
     let i = 0;

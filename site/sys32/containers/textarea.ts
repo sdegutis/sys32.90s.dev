@@ -8,7 +8,7 @@ export class TextArea extends Label {
   override passthrough = false;
 
   override draw(): void {
-    super.draw();
+    // super.draw();
 
     let c = this.color;
 
@@ -32,18 +32,11 @@ export class TextArea extends Label {
         continue;
       }
 
+      const px = x + (posx * 4);
+      const py = y + (posy * 6);
+
       const map = font.chars[ch];
-
-      // for (let yy = 0; yy < 4; yy++) {
-      //   for (let xx = 0; xx < 3; xx++) {
-      //     const px = x + (posx * 4) + xx;
-      //     const py = y + (posy * 6) + yy;
-
-      //     if (map[yy][xx]) {
-      //       this.sys.crt.pset(px, py, c);
-      //     }
-      //   }
-      // }
+      map.draw(this.sys.crt, px, py, c);
 
       posx++;
 
