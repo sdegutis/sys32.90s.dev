@@ -13,8 +13,8 @@ import { sys } from "../../sys32/core/system.js";
 import { $ } from "../../sys32/core/view.js";
 import { Panel } from "../../sys32/desktop/panel.js";
 import { passedFocus } from "../../sys32/util/unsure.js";
-import fontmaker from "../fontmaker/main.js";
-import painter from "../painter/main.js";
+import fontmaker from "../fontmaker/fontmaker.js";
+import painter from "../painter/painter.js";
 
 
 const folderIcon = new Bitmap([0x990000ff], 1, [1]);
