@@ -2,8 +2,10 @@ import { Bitmap } from "./bitmap.js";
 import { crt } from "./crt.js";
 
 export class Cursor {
+
   #bitmap: Bitmap;
-  #offset: [number, number];
+  #ox;
+  #oy;
 
   static fromBitmap(bitmap: Bitmap) {
     for (let i = 0; i < bitmap.pixels.length; i++) {
@@ -14,20 +16,21 @@ export class Cursor {
         if (a === 0xfe) {
           let x = i % bitmap.width;
           let y = Math.floor(i / bitmap.width);
-          return new Cursor(bitmap, [x, y]);
+          return new Cursor(bitmap, x, y);
         }
       }
     }
-    return new Cursor(bitmap, [0, 0]);
+    return new Cursor(bitmap, 0, 0);
   }
 
-  constructor(bitmap: Bitmap, offset: [number, number]) {
+  constructor(bitmap: Bitmap, ox: number, oy: number) {
     this.#bitmap = bitmap;
-    this.#offset = offset;
+    this.#ox = ox;
+    this.#oy = oy;
   }
 
   draw(x: number, y: number) {
-    this.#bitmap.draw(crt, x - this.#offset[0], y - this.#offset[1]);
+    this.#bitmap.draw(crt, x - this.#ox, y - this.#oy);
   }
 
 }
