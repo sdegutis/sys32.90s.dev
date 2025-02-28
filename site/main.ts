@@ -7,7 +7,6 @@ crt.autoscale();
 
 (async function () {
   const ws = new Workspace();
-  await ws.addProgram('demo', import.meta.resolve('./apps/demo.js'));
   await ws.addProgram('filer', import.meta.resolve('./apps/filer.js'));
   await ws.addProgram('mapmaker', import.meta.resolve('./apps/mapmaker.js'));
   await ws.addProgram('painter', import.meta.resolve('./apps/painter.js'));
