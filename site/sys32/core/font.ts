@@ -1,63 +1,20 @@
 import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
+import { fs } from "./fs.js";
+
+export const CHARSET = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`;
 
 export class Font {
-
-  static crt2025 = Font.fromString(3, 4, 16,
-    `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`,
-    `
-| xxx | xx  | xxx | xx  | xxx | xxx | xxx | x x | xxx | xxx | x x | x   | xxx | xxx | xxx | xxx |
-| x x | xxx | x   | x x | xx  | xx  | x   | xxx |  x  |  x  | xx  | x   | xxx | x x | x x | x x |
-| xxx | x x | x   | x x | x   | x   | x x | x x |  x  |  x  | xx  | x   | x x | x x | x x | xx  |
-| x x | xxx | xxx | xx  | xxx | x   | xxx | x x | xxx | xx  | x x | xxx | x x | x x | xxx | x   |
-|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
-| xxx | xxx | xxx | xxx | x x | x x | x x | x x | x x | xxx |     |     |     | xx  |  x  | xxx |
-| x x | x x | x   |  x  | x x | x x | x x |  x  | x x |  xx |     |     |     |  x  |  x  | x x |
-| xxx | xx  |  xx |  x  | x x | x x | xxx |  x  |  x  | x   |     |     |  x  |     |     |     |
-|   x | x x | xxx |  x  | xxx |  x  | xxx | x x |  x  | xxx |     |  x  | x   |     |  x  |   x |
-|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
-| xx  | xx  | xxx | x x | xxx | xxx | xxx | xxx | xxx |  x  |     |  x  |   x |   x |  x  | x x |
-|  x  |   x |  xx | x x | xx  | x   |   x | xxx | x x | x x | xxx | xxx |  x  |  x  |   x | x x |
-|  x  |  x  |   x | xxx |   x | xxx |   x | x x |  xx | x x |     |  x  |  x  |  x  |   x |     |
-| xxx | xxx | xxx |   x | xx  | xxx |   x | xxx | xx  |  x  |     |     | x   |   x |  x  |     |
-|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
-| x   |  x  |  x  | x x | xx  | xx  | xx  |  x  | x   |     | xxx | xxx |  x  |  xx | xx  | x   |
-|     |     |     |  x  |     | x   |  x  | x   |  x  |     | x x | xxx |  x  | xx  |  xx |  x  |
-| x   |  x  | xxx | x x | xx  | x   |  x  |  x  | x   |     | xx  | xxx |  x  | xx  |  xx |     |
-|     | x   |  x  |     |     | xx  | xx  |     |     | xxx | xxx |     |  x  |  xx | xx  |     |
-|     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |
-|  x  |  xx | xx  |  x  | x   |     |     |     |     |     |     |     |     |     |     |     |
-| x   | x x |  xx | x x |  x  |     |     |     |     |     |     |     |     |     |     |     |
-|  x  | x   |     |     |  x  |     |     |     |     |     |     |     |     |     |     |     |
-| x   |  xx |     |     |   x |     |     |     |     |     |     |     |     |     |     |     |
-  `);
 
   chars: Record<string, Bitmap> = {};
   width: number;
   height: number;
 
-  static fromString(width: number, height: number, perRow: number, map: string, bits: string) {
-    bits = bits.replace(/\|?\n/g, '');
-
-    const chars: Record<string, Bitmap> = {};
-
-    for (let i = 0; i < map.length; i++) {
-      const ch = map[i];
-
-      const pixels: number[] = [];
-
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const rw = width + 3;
-          const py = (Math.floor(i / perRow) * rw * perRow * (height + 1)) + y * rw * perRow;
-          const px = (i % perRow) * rw + 2 + x;
-          pixels.push(bits[px + py] !== ' ' ? 1 : 0);
-        }
-      }
-
-      chars[ch] = new Bitmap([1], width, pixels);
-    }
-
+  static fromString(s: string) {
+    let chars: Record<string, Bitmap> = {};
+    const keys = [...CHARSET].sort();
+    const vals = s.split('===\n').map(s => Bitmap.fromString(s));
+    keys.forEach((k, i) => { chars[k] = vals[i] });
     return new Font(chars);
   }
 
@@ -115,4 +72,8 @@ export class Font {
     }
   }
 
+  static crt2025: Font;
+
 }
+
+Font.crt2025 = Font.fromString(((await fs.loadFile('sys/font1.font'))!));

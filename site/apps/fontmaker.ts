@@ -5,14 +5,12 @@ import { Label } from "../sys32/controls/label.js";
 import { Slider } from "../sys32/controls/slider.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
 import { crt } from "../sys32/core/crt.js";
-import { Font } from "../sys32/core/font.js";
+import { CHARSET, Font } from "../sys32/core/font.js";
 import { fs } from "../sys32/core/fs.js";
 import { emptyCursor, sys } from "../sys32/core/system.js";
 import { $, View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { Listener, multiplex, Reactive } from "../sys32/util/events.js";
-
-const CHARSET = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`;
 
 const SAMPLE_TEXT = [
   'the quick brown fox',
