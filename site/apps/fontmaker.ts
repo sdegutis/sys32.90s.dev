@@ -31,17 +31,17 @@ export default (sys: System) => {
   const rebuilt = new Listener<CharView>();
 
   const charViews = new Map<string, CharView>();
-  let chars = new Map<string, Bitmap>();
+  let chars: Record<string, Bitmap> = {};
 
   let loading = true;
   if (loading) {
     $width.val = sys.font.width;
     $height.val = sys.font.height;
-    chars = new Map(Object.entries(sys.font.chars));
+    chars = sys.font.chars;
   }
 
   for (const char of [...CHARSET]) {
-    const view = $(CharView, { char, rebuilt, initial: chars.get(char) });
+    const view = $(CharView, { char, rebuilt, initial: chars[char] });
     view.setDataSource('width', $width);
     view.setDataSource('height', $height);
     view.setDataSource('zoom', $zoom);
@@ -105,15 +105,27 @@ export default (sys: System) => {
 
   function rebuildWhole() {
     for (const v of charViews.values()) {
-      chars.set(v.char, v.bitmap);
+      chars[v.char] = v.bitmap;
     }
 
-    let myfont = new Font(Object.fromEntries(chars));
+    let myfont = new Font(chars);
     panel.find<Label>('sample')!.font = myfont;
   }
 
   rebuilt.watch((view) => { rebuildWhole(); })
   rebuildWhole();
+
+  panel.onKeyDown = (key) => {
+    if (key === 's' && sys.keys['Control']) {
+
+
+
+      console.log('sav')
+
+      return true;
+    }
+    return false;
+  }
 
   sys.root.addChild(panel);
 
