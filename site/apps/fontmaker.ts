@@ -122,15 +122,15 @@ export default async (sys: System, filename?: string) => {
   $height.watch((n) => { panel.find<Label>('height-label')!.text = n.toString(); });
   $zoom.watch((n) => { panel.find<Label>('zoom-label')!.text = n.toString(); });
 
-  multiplex({ w: $width, h: $height, z: $zoom, o: $hovered }).watch(() => {
-    panel.layoutTree();
-  });
-
   multiplex({ w: $width, h: $height }).watch(() => {
     for (const v of charViews.values()) {
       v.rebuidBitmap();
     }
     rebuildWhole();
+  });
+
+  multiplex({ w: $width, h: $height, z: $zoom, o: $hovered }).watch(() => {
+    panel.layoutTree();
   });
 
   function rebuildWhole() {
