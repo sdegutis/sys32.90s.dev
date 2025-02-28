@@ -1,6 +1,5 @@
 import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
-import { fs } from "./fs.js";
 
 export const CHARSET = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`;
 
@@ -72,8 +71,4 @@ export class Font {
     }
   }
 
-  static crt2025: Font;
-
 }
-
-Font.crt2025 = Font.fromString(((await fs.loadFile('sys/font1.font'))!));

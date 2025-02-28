@@ -2,13 +2,16 @@ import { Listener } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { crt } from "./crt.js";
 import { Font } from "./font.js";
+import { fs } from "./fs.js";
 import { $, View } from "./view.js";
+
+const crt2025 = Font.fromString(((await fs.loadFile('sys/font1.font'))!));
 
 export class System {
 
   root!: View;
   focused!: View;
-  font = Font.crt2025;
+  font = crt2025;
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0, button: 0 };
 
