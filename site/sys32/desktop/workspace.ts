@@ -116,7 +116,6 @@ export class Workspace {
   }
 
   async addProgram(name: string, path: string) {
-    console.log(path.split('/').at(-2))
     const mod = await import(path + path.split('/').at(-2) + '.js');
     const launch: () => void = mod.default;
 
