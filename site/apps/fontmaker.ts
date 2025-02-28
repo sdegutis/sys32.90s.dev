@@ -7,43 +7,45 @@ import { Bitmap } from "../sys32/core/bitmap.js";
 import type { Cursor, System } from "../sys32/core/system.js";
 import { View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
-import { Reactive } from "../sys32/util/events.js";
+import { Listener, multiplex, Reactive } from "../sys32/util/events.js";
 import { makeFlowLayout } from "../sys32/util/layouts.js";
+
+const CHARSET = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`;
+
+const SAMPLE_TEXT = [
+  'the quick brown fox',
+  `abcdefghijklmnopqrstuvwxyz`,
+  ` .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`,
+].join('\n');
 
 export default (sys: System) => {
 
   const { $ } = sys;
 
-  const charset = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`;
-
-  const sampleText = [
-    'the quick brown fox',
-    `abcdefghijklmnopqrstuvwxyz`,
-    ` .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`,
-  ].join('\n');
-
-  const data: Record<string, any> = {};
-
   const $width = new Reactive(4);
   const $height = new Reactive(5);
   const $zoom = new Reactive(1);
 
+  const rebuilt = new Listener<CharView>();
+
+  const chars = new Map<string, CharView>();
+  for (const char of [...CHARSET]) {
+    const view = $(CharView, { char, rebuilt });
+    chars.set(char, view);
+
+    view.setDataSource('width', $width);
+    view.setDataSource('height', $height);
+    view.setDataSource('zoom', $zoom);
+  }
+
   const panel = $(Panel, { title: 'fontmaker', },
     $(PanedYB, {},
       $(View, { layout: makeFlowLayout(1, 1), background: 0x44444433 },
-        ...[...charset].map(ch => {
-          const view = $(CharView, {});
-          view.setDataSource('width', $width);
-          view.setDataSource('height', $height);
-          view.setDataSource('zoom', $zoom);
-          return view;
-        })
+        ...chars.values()
       ),
       $(Border, { background: 0x000000ff, u: 2 },
         $(GroupY, { gap: 3, align: 'a' },
-
-          $(Label, { text: sampleText, color: 0x999900ff }),
-
+          $(Label, { text: SAMPLE_TEXT, color: 0x999900ff }),
           $(GroupX, { gap: 10, },
             $(GroupX, { gap: 2 },
               $(Label, { text: 'width:', color: 0xffffff33 }),
@@ -61,7 +63,6 @@ export default (sys: System) => {
               $(Slider, { id: 'zoom-slider', min: 1, max: 5, w: 20, knobSize: 3 }),
             ),
           )
-
         )
       )
     )
@@ -71,13 +72,26 @@ export default (sys: System) => {
   panel.find<Slider>('height-slider')!.setDataSource('val', $height);
   panel.find<Slider>('zoom-slider')!.setDataSource('val', $zoom);
 
-  $width.watch(() => panel.layoutTree())
-  $height.watch(() => panel.layoutTree())
-  $zoom.watch(() => panel.layoutTree())
+  $width.watch((n) => { panel.find<Label>('width-label')!.text = n.toString(); });
+  $height.watch((n) => { panel.find<Label>('height-label')!.text = n.toString(); });
+  $zoom.watch((n) => { panel.find<Label>('zoom-label')!.text = n.toString(); });
 
-  $width.watch((n) => { panel.find<Label>('width-label')!.text = n.toString(); panel.layoutTree() })
-  $height.watch((n) => { panel.find<Label>('height-label')!.text = n.toString(); panel.layoutTree() })
-  $zoom.watch((n) => { panel.find<Label>('zoom-label')!.text = n.toString(); panel.layoutTree() })
+  $width.watch(() => panel.layoutTree());
+  $height.watch(() => panel.layoutTree());
+  $zoom.watch(() => panel.layoutTree());
+
+  multiplex({ w: $width, h: $height }).watch(() => {
+    for (const v of chars.values()) {
+      v.rebuidBitmap();
+    }
+  });
+
+  function rebuildWhole() {
+    console.log('rebuild whole font')
+  }
+
+  rebuilt.watch((view) => { rebuildWhole(); })
+  rebuildWhole();
 
   sys.root.addChild(panel);
 
@@ -85,15 +99,23 @@ export default (sys: System) => {
 
 class CharView extends View {
 
+  char!: string;
+  rebuilt!: Listener<CharView>;
+
   override cursor: Cursor = { bitmap: new Bitmap([], 0, []), offset: [0, 0] };
 
-  width = 4;
-  height = 5;
+  width = 2;
+  height = 2;
   zoom = 1;
 
   spots: Record<string, boolean> = {};
 
   override background = 0x000000ff;
+
+  rebuidBitmap() {
+    console.log('rebuilding', this.width, this.height, this.char)
+    this.rebuilt.dispatch(this);
+  }
 
   override adjust(): void {
     this.w = this.width * this.zoom;
@@ -129,6 +151,7 @@ class CharView extends View {
 
     const key = `${tx},${ty}`;
     this.spots[key] = !this.spots[key];
+    this.rebuidBitmap();
   }
 
 }
