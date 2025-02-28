@@ -5,25 +5,19 @@ import { sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
 import { dragMove } from "../util/selections.js";
 
-const xresize = new Cursor(
-  new Bitmap([0x00000099, 0xffffffff], 5, [
-    1, 1, 1, 1, 1,
-    1, 2, 2, 2, 1,
-    1, 1, 1, 1, 1,
-  ]),
-  [2, 1],
-);
+const xresize = Cursor.fromBitmap(new Bitmap([0x00000099, 0xffffffff, 0xfffffffe], 5, [
+  1, 1, 1, 1, 1,
+  1, 2, 3, 2, 1,
+  1, 1, 1, 1, 1,
+]));
 
-const yresize = new Cursor(
-  new Bitmap([0x00000099, 0xffffffff], 3, [
-    1, 1, 1,
-    1, 2, 1,
-    1, 2, 1,
-    1, 2, 1,
-    1, 1, 1,
-  ]),
-  [1, 2],
-);
+const yresize = Cursor.fromBitmap(new Bitmap([0x00000099, 0xffffffff, 0xfffffffe], 3, [
+  1, 1, 1,
+  1, 2, 1,
+  1, 3, 1,
+  1, 2, 1,
+  1, 1, 1,
+]));
 
 class SplitDivider extends View {
 

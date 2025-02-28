@@ -26,4 +26,4 @@ export class Cursor {
   }
 }
 
-export const emptyCursor = new Cursor(new Bitmap([], 0, []), [0, 0]);
+export const emptyCursor = Cursor.fromBitmap(new Bitmap([], 0, []));
