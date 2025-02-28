@@ -2,7 +2,7 @@ import { CRT } from "./crt.js";
 
 export class Font {
 
-  static crt2025 = new Font(3, 4, 16,
+  static crt2025 = Font.fromString(3, 4, 16,
     `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`,
     `
 | xxx | xx  | xxx | xx  | xxx | xxx | xxx | x x | xxx | xxx | x x | x   | xxx | xxx | xxx | xxx |
@@ -35,17 +35,16 @@ export class Font {
   width: number;
   height: number;
 
-  constructor(width: number, height: number, perRow: number, map: string, bits: string) {
-    this.width = width;
-    this.height = height;
-
+  static fromString(width: number, height: number, perRow: number, map: string, bits: string) {
     bits = bits.replace(/\|?\n/g, '');
+
+    const chars: Record<string, boolean[][]> = {};
 
     for (let i = 0; i < map.length; i++) {
       const ch = map[i];
 
       const grid: boolean[][] = [];
-      this.chars[ch] = grid;
+      chars[ch] = grid;
 
       for (let y = 0; y < height; y++) {
         const row: boolean[] = [];
@@ -59,6 +58,14 @@ export class Font {
         }
       }
     }
+
+    return new Font(width, height, chars);
+  }
+
+  constructor(width: number, height: number, chars: Record<string, boolean[][]>) {
+    this.width = width;
+    this.height = height;
+    this.chars = chars;
   }
 
   calcSize(text: string) {

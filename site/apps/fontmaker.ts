@@ -87,6 +87,11 @@ export default (sys: System) => {
 
   function rebuildWhole() {
     console.log('rebuild whole font')
+
+    // for (const v of chars.values()) {
+    //   console.log(v.bitmap)
+    // }
+
   }
 
   rebuilt.watch((view) => { rebuildWhole(); })
@@ -107,12 +112,25 @@ class CharView extends View {
   height = 2;
   zoom = 1;
 
+  bitmap!: Bitmap;
+
   spots: Record<string, boolean> = {};
 
   override background = 0x000000ff;
 
   rebuidBitmap() {
-    console.log('rebuilding', this.width, this.height, this.char)
+    const pixels: number[] = [];
+
+    let i = 0;
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
+        const key = `${x},${y}`;
+        pixels.push(this.spots[key] ? 1 : 0);
+      }
+    }
+
+    this.bitmap = new Bitmap([1], this.width, pixels);
+
     this.rebuilt.dispatch(this);
   }
 
