@@ -20,17 +20,6 @@ import { dragResize } from "../sys32/util/selections.js";
 
 export default (filepath?: string) => {
 
-  let paintView: PaintView;
-  let resizer: View;
-  let widthLabel: Label;
-  let heightLabel: Label;
-  let colorLabel: Label;
-  let zoomLabel: Label;
-  let toolArea: View;
-  let pencilTool: View;
-  let eraserTool: View;
-  let colorField: TextField;
-
   const panel = $(Panel, { title: 'painter', minw: 50, w: 180, h: 70, },
     $(PanedXB, { gap: 1 },
       $(PanedYB, { gap: 1 },
@@ -38,8 +27,9 @@ export default (filepath?: string) => {
           background: 0x222222ff,
           draw: makeStripeDrawer(),
         },
-          paintView = $(PaintView, { color: COLORS[3] }),
-          resizer = $(View, {
+          $(PaintView, { id: 'paintView', color: COLORS[3] }),
+          $(View, {
+            id: 'resizer',
             background: 0x00000077,
             w: 4, h: 4,
             layout: () => {
@@ -64,27 +54,41 @@ export default (filepath?: string) => {
         ),
         $(SpacedX, {},
           $(GroupX, {},
-            $(Label, { color: 0xffffff33, text: 'w:' }), widthLabel = $(Label, {}),
-            $(Label, { color: 0xffffff33, text: ' h:' }), heightLabel = $(Label, {}),
-            $(Label, { color: 0xffffff33, text: ' c:' }), colorLabel = $(Label, {}),
-            $(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel = $(Label, {}),
+            $(Label, { color: 0xffffff33, text: 'w:' }), $(Label, { id: 'widthLabel' }),
+            $(Label, { color: 0xffffff33, text: ' h:' }), $(Label, { id: 'heightLabel' }),
+            $(Label, { color: 0xffffff33, text: ' c:' }), $(Label, { id: 'colorLabel' }),
+            $(Label, { color: 0xffffff33, text: ' z:' }), $(Label, { id: 'zoomLabel' }),
           ),
           $(GroupX, {},
             $(Slider, { id: 'zoom-slider', knobSize: 3, w: 20, min: 1, max: 12 })
           )
         )
       ),
-      toolArea = $(View, {
+      $(View, {
+        id: 'toolArea',
         w: 36,
         background: 0x99000033,
         layout: makeFlowLayout(),
       },
-        pencilTool = $(Button, { onClick: () => { paintView.tool = 'pencil'; } }, $(View, { passthrough: true, w: 4, h: 4 })),
-        eraserTool = $(Button, { onClick: () => { paintView.tool = 'eraser'; } }, $(View, { passthrough: true, w: 4, h: 4 })),
-        colorField = $(TextField, { length: 9, background: 0x111111ff }),
+        $(Button, { id: 'pencilTool', onClick: () => { paintView.tool = 'pencil'; } }, $(View, { passthrough: true, w: 4, h: 4 })),
+        $(Button, { id: 'eraserTool', onClick: () => { paintView.tool = 'eraser'; } }, $(View, { passthrough: true, w: 4, h: 4 })),
+        $(TextField, { id: 'colorField', length: 9, background: 0x111111ff }),
       ),
     ),
   );
+
+  const paintView = panel.find<PaintView>('paintView')!;
+  const resizer = panel.find<View>('resizer')!;
+
+  const widthLabel = panel.find<Label>('widthLabel')!;
+  const heightLabel = panel.find<Label>('heightLabel')!;
+  const colorLabel = panel.find<Label>('colorLabel')!;
+  const zoomLabel = panel.find<Label>('zoomLabel')!;
+
+  const toolArea = panel.find<View>('toolArea')!;
+  const pencilTool = panel.find<View>('pencilTool')!;
+  const eraserTool = panel.find<View>('eraserTool')!;
+  const colorField = panel.find<TextField>('colorField')!;
 
   panel.find<Slider>('zoom-slider')!.setDataSource('val', paintView.getDataSource('zoom'));
 
