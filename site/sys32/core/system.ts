@@ -38,8 +38,9 @@ export class System {
     this.resize(canvas.width, canvas.height);
 
     canvas.addEventListener('keydown', (e) => {
+      if (e.key.length > 1 && e.key[0] === 'F') return;
+
       e.preventDefault();
-      if (e.key === 'F5') location.reload();
       this.keys[e.key] = true;
 
       let node: View | undefined = this.focused;
