@@ -6,7 +6,6 @@ import { ImageView } from "../../sys32/controls/image.js";
 import { Label } from "../../sys32/controls/label.js";
 import { Bitmap } from "../../sys32/core/bitmap.js";
 import { fs, type Folder } from "../../sys32/core/fs.js";
-import { sys } from "../../sys32/core/system.js";
 import { $ } from "../../sys32/core/view.js";
 import { Panel } from "../../sys32/desktop/panel.js";
 import { showPrompt } from "../../sys32/util/dialog.js";
@@ -121,8 +120,7 @@ export default () => {
       $(Scroll, {}, filelist),
     )
   )
-  sys.root.addChild(panel);
-  panel.focus();
+  panel.show();
 
 
 };

@@ -172,7 +172,7 @@ export default (filepath?: string) => {
     }
   });
 
-  sys.root.addChild(panel);
+  panel.show();
 }
 
 

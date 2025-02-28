@@ -180,6 +180,7 @@ export class Panel extends View {
   }
 
   show() {
+    sys.root.addChild(this);
     this.visible = true;
   }
 

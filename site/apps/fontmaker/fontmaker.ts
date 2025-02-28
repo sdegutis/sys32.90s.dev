@@ -156,7 +156,7 @@ export default async (filename?: string) => {
     return false;
   }
 
-  sys.root.addChild(panel);
+  panel.show();
 
 };
 
