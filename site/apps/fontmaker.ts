@@ -26,18 +26,20 @@ export default (sys: System) => {
   const $width = new Reactive(4);
   const $height = new Reactive(5);
   const $zoom = new Reactive(1);
+  const $hovered = new Reactive('');
 
   const rebuilt = new Listener<CharView>();
 
-  const chars = new Map<string, Bitmap>();
-
-  let myfont: Font;
-
-  const $hovered = new Reactive('');
-
   const charViews = new Map<string, CharView>();
+  let chars = new Map<string, Bitmap>();
+
+  let loading = true;
+  if (loading) {
+    chars = new Map(Object.entries(sys.font.chars));
+  }
+
   for (const char of [...CHARSET]) {
-    const view = $(CharView, { char, rebuilt });
+    const view = $(CharView, { char, rebuilt, initial: chars.get(char) });
     view.setDataSource('width', $width);
     view.setDataSource('height', $height);
     view.setDataSource('zoom', $zoom);
@@ -101,12 +103,11 @@ export default (sys: System) => {
   });
 
   function rebuildWhole() {
-    console.log('rebuild whole font')
     for (const v of charViews.values()) {
       chars.set(v.char, v.bitmap);
     }
 
-    myfont = new Font(Object.fromEntries(chars));
+    let myfont = new Font(Object.fromEntries(chars));
     panel.find<Label>('sample')!.font = myfont;
   }
 
@@ -115,12 +116,11 @@ export default (sys: System) => {
 
   sys.root.addChild(panel);
 
-  // panel.find<Label>('width-label')!
-
 };
 
 class CharView extends View {
 
+  initial: Bitmap | undefined;
   char!: string;
   rebuilt!: Listener<CharView>;
 
@@ -136,7 +136,21 @@ class CharView extends View {
 
   override background = 0x000000ff;
 
+  override init(): void {
+    if (this.initial) {
+      for (let y = 0; y < this.initial.height; y++) {
+        for (let x = 0; x < this.initial.width; x++) {
+          let k = `${x},${y}`;
+          if (this.initial.pixels[y * this.initial.width + x] > 0) {
+            this.spots[k] = true;
+          }
+        }
+      }
+    }
+  }
+
   rebuidBitmap() {
+    console.log('rebu')
     const pixels: number[] = [];
 
     let i = 0;

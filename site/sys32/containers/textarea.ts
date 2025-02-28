@@ -34,16 +34,16 @@ export class TextArea extends Label {
 
       const map = font.chars[ch];
 
-      for (let yy = 0; yy < 4; yy++) {
-        for (let xx = 0; xx < 3; xx++) {
-          const px = x + (posx * 4) + xx;
-          const py = y + (posy * 6) + yy;
+      // for (let yy = 0; yy < 4; yy++) {
+      //   for (let xx = 0; xx < 3; xx++) {
+      //     const px = x + (posx * 4) + xx;
+      //     const py = y + (posy * 6) + yy;
 
-          if (map[yy][xx]) {
-            this.sys.crt.pset(px, py, c);
-          }
-        }
-      }
+      //     if (map[yy][xx]) {
+      //       this.sys.crt.pset(px, py, c);
+      //     }
+      //   }
+      // }
 
       posx++;
 
