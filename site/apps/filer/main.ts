@@ -1,20 +1,20 @@
-import { Border } from "../sys32/containers/border.js";
-import { GroupX, GroupY } from "../sys32/containers/group.js";
-import { PanedYB } from "../sys32/containers/paned.js";
-import { Scroll } from "../sys32/containers/scroll.js";
-import { SplitX } from "../sys32/containers/split.js";
-import { Button } from "../sys32/controls/button.js";
-import { ImageView } from "../sys32/controls/image.js";
-import { Label } from "../sys32/controls/label.js";
-import { TextField } from "../sys32/controls/textfield.js";
-import { Bitmap } from "../sys32/core/bitmap.js";
-import { fs, type Folder } from "../sys32/core/fs.js";
-import { sys } from "../sys32/core/system.js";
-import { $ } from "../sys32/core/view.js";
-import { Panel } from "../sys32/desktop/panel.js";
-import { passedFocus } from "../sys32/util/unsure.js";
-import fontmaker from "./fontmaker.js";
-import painter from "./painter.js";
+import { Border } from "../../sys32/containers/border.js";
+import { GroupX, GroupY } from "../../sys32/containers/group.js";
+import { PanedYB } from "../../sys32/containers/paned.js";
+import { Scroll } from "../../sys32/containers/scroll.js";
+import { SplitX } from "../../sys32/containers/split.js";
+import { Button } from "../../sys32/controls/button.js";
+import { ImageView } from "../../sys32/controls/image.js";
+import { Label } from "../../sys32/controls/label.js";
+import { TextField } from "../../sys32/controls/textfield.js";
+import { Bitmap } from "../../sys32/core/bitmap.js";
+import { fs, type Folder } from "../../sys32/core/fs.js";
+import { sys } from "../../sys32/core/system.js";
+import { $ } from "../../sys32/core/view.js";
+import { Panel } from "../../sys32/desktop/panel.js";
+import { passedFocus } from "../../sys32/util/unsure.js";
+import fontmaker from "../fontmaker/main.js";
+import painter from "../painter/main.js";
 
 
 const folderIcon = new Bitmap([0x990000ff], 1, [1]);

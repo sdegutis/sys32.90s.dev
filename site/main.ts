@@ -7,11 +7,11 @@ crt.autoscale();
 
 (async function () {
   const ws = new Workspace();
-  await ws.addProgram('filer', import.meta.resolve('./apps/filer.js'));
-  await ws.addProgram('mapmaker', import.meta.resolve('./apps/mapmaker.js'));
-  await ws.addProgram('painter', import.meta.resolve('./apps/painter.js'));
-  await ws.addProgram('writer', import.meta.resolve('./apps/writer.js'));
-  await ws.addProgram('fontmaker', import.meta.resolve('./apps/fontmaker.js'));
+  await ws.addProgram('filer', import.meta.resolve('./apps/filer/'));
+  await ws.addProgram('mapmaker', import.meta.resolve('./apps/mapmaker/'));
+  await ws.addProgram('painter', import.meta.resolve('./apps/painter/'));
+  await ws.addProgram('writer', import.meta.resolve('./apps/writer/'));
+  await ws.addProgram('fontmaker', import.meta.resolve('./apps/fontmaker/'));
 
   ws.launch('painter')
 })()

@@ -116,7 +116,7 @@ export class Workspace {
   }
 
   async addProgram(name: string, path: string) {
-    const mod = await import(path);
+    const mod = await import(path + 'main.js');
     const launch: () => void = mod.default;
 
     this.#programs.set(name, launch);
