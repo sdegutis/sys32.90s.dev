@@ -43,8 +43,6 @@ export class Panel extends View {
 
   #lastPos?: { x: number, y: number, w: number, h: number };
 
-  border!: Border;
-
   override init(): void {
     const pad = 2;
 
@@ -74,13 +72,11 @@ export class Panel extends View {
 
     let titleLabel: Label;
 
+    let border: Border;
+
     this.children = [
 
-      this.border = $(Border, {
-        all: 1,
-        layout: makeVacuumLayout(1),
-      },
-
+      border = $(Border, { all: 1, layout: makeVacuumLayout(1), },
 
         $(PanedYA, {},
 
@@ -135,7 +131,7 @@ export class Panel extends View {
     ];
 
     this.watch('title', s => titleLabel.text = s);
-    this.watch('panelFocused', b => { this.border.borderColor = b ? 0x005599ff : 0; });
+    this.watch('panelFocused', b => { border.borderColor = b ? 0x005599ff : 0; });
   }
 
   close() {
