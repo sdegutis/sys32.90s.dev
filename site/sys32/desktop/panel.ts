@@ -70,19 +70,15 @@ export class Panel extends View {
       });
     };
 
-    let titleLabel: Label;
-
-    let border: Border;
-
     this.children = [
 
-      border = $(Border, { all: 1, layout: makeVacuumLayout(1), },
+      $(Border, { id: 'border', all: 1, layout: makeVacuumLayout(1), },
 
         $(PanedYA, {},
 
           $(Spaced, { onMouseDown: titleBarMouseDown, },
             $(Border, { l: pad },
-              titleLabel = $(Label, { color: 0xaaaaaaff })
+              $(Label, { id: 'titleLabel', color: 0xaaaaaaff })
             ),
             $(Group, { gap: 0 },
               $(Button, { all: 2, onClick: () => this.minimize() }, $(ImageView, { image: minImage })),
@@ -130,8 +126,8 @@ export class Panel extends View {
 
     ];
 
-    this.watch('title', s => titleLabel.text = s);
-    this.watch('panelFocused', b => { border.borderColor = b ? 0x005599ff : 0; });
+    this.watch('title', s => this.find<Label>('titleLabel')!.text = s);
+    this.watch('panelFocused', b => { this.find<Border>('border')!.borderColor = b ? 0x005599ff : 0; });
   }
 
   close() {
