@@ -1,6 +1,7 @@
 import { Listener } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { crt } from "./crt.js";
+import { Cursor } from "./cursor.js";
 import { Font } from "./font.js";
 import { fs } from "./fs.js";
 import { $, View } from "./view.js";
@@ -265,21 +266,6 @@ export class System {
   }
 
 }
-
-export class Cursor {
-  bitmap: Bitmap;
-  offset: [number, number];
-
-  constructor(
-    bitmap: Bitmap,
-    offset: [number, number],
-  ) {
-    this.bitmap = bitmap;
-    this.offset = offset;
-  }
-}
-
-export const emptyCursor = new Cursor(new Bitmap([], 0, []), [0, 0]);
 
 const pointer = new Cursor(
   new Bitmap([0x000000cc, 0xffffffff], 4, [

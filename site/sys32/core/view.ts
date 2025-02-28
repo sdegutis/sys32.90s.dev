@@ -1,6 +1,7 @@
 import { Listener, Reactive } from "../util/events.js";
 import { crt } from "./crt.js";
-import { sys, type Cursor } from "./system.js";
+import { type Cursor } from "./cursor.js";
+import { sys } from "./system.js";
 
 export class View {
 

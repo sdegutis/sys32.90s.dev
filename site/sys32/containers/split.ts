@@ -1,6 +1,7 @@
 import { Bitmap } from "../core/bitmap.js";
 import { crt } from "../core/crt.js";
-import { Cursor, sys } from "../core/system.js";
+import { Cursor } from "../core/cursor.js";
+import { sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
 import { dragMove } from "../util/selections.js";
 
