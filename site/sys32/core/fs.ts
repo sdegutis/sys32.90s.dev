@@ -266,7 +266,7 @@ export class FS {
     const segments = path.split('/');
 
     const drive = segments.shift()!;
-    let folder: Folder = (await this.drives)[drive];
+    let folder: Folder = this.drives[drive];
 
     while (segments.length > 1) {
       const nextName = segments.shift()!;
