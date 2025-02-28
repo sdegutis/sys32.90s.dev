@@ -33,6 +33,8 @@ export default (sys: System) => {
 
   let myfont: Font;
 
+  const $hovered = new Reactive('');
+
   const charViews = new Map<string, CharView>();
   for (const char of [...CHARSET]) {
     const view = $(CharView, { char, rebuilt });
@@ -40,6 +42,7 @@ export default (sys: System) => {
     view.setDataSource('height', $height);
     view.setDataSource('zoom', $zoom);
     charViews.set(char, view);
+    view.watch('hovered', (h) => { if (h) $hovered.val = char; });
   }
 
   const panel = $(Panel, { title: 'fontmaker', },
@@ -66,6 +69,10 @@ export default (sys: System) => {
               $(Label, { id: 'zoom-label' }),
               $(Slider, { id: 'zoom-slider', min: 1, max: 5, w: 20, knobSize: 3 }),
             ),
+            $(GroupX, { gap: 2 },
+              $(Label, { text: 'hover:', color: 0xffffff33 }),
+              $(Label, { id: 'hover-label' }),
+            ),
           )
         )
       )
@@ -75,6 +82,7 @@ export default (sys: System) => {
   panel.find<Slider>('width-slider')!.setDataSource('val', $width);
   panel.find<Slider>('height-slider')!.setDataSource('val', $height);
   panel.find<Slider>('zoom-slider')!.setDataSource('val', $zoom);
+  panel.find<Label>('hover-label')!.setDataSource('text', $hovered);
 
   $width.watch((n) => { panel.find<Label>('width-label')!.text = n.toString(); });
   $height.watch((n) => { panel.find<Label>('height-label')!.text = n.toString(); });
@@ -83,6 +91,7 @@ export default (sys: System) => {
   $width.watch(() => panel.layoutTree());
   $height.watch(() => panel.layoutTree());
   $zoom.watch(() => panel.layoutTree());
+  $hovered.watch(() => panel.layoutTree());
 
   multiplex({ w: $width, h: $height }).watch(() => {
     for (const v of charViews.values()) {
@@ -105,6 +114,8 @@ export default (sys: System) => {
   rebuildWhole();
 
   sys.root.addChild(panel);
+
+  // panel.find<Label>('width-label')!
 
 };
 
@@ -168,13 +179,17 @@ class CharView extends View {
   }
 
   override onMouseDown(): void {
-    const tx = Math.floor(this.mouse.x / this.zoom);
-    const ty = Math.floor(this.mouse.y / this.zoom);
+    this.sys.trackMouse({
+      move: () => {
+        const tx = Math.floor(this.mouse.x / this.zoom);
+        const ty = Math.floor(this.mouse.y / this.zoom);
 
-    const key = `${tx},${ty}`;
-    this.spots[key] = !this.spots[key];
-    this.rebuidBitmap();
-    this.rebuilt.dispatch(this);
+        const key = `${tx},${ty}`;
+        this.spots[key] = this.sys.mouse.button === 0;
+        this.rebuidBitmap();
+        this.rebuilt.dispatch(this);
+      }
+    });
   }
 
 }
