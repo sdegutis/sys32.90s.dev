@@ -134,12 +134,6 @@ export function $<T extends View>(
 ): T {
   const view = new ctor();
   Object.assign(view, { children }, config);
-  enableDataSources(view);
-  view.init?.();
-  return view;
-}
-
-function enableDataSources(view: View) {
   for (let [key, val] of Object.entries(view)) {
     if (typeof val === 'function') continue;
     if (val instanceof Listener) continue;
@@ -147,4 +141,6 @@ function enableDataSources(view: View) {
     if (key === 'sys') continue;
     view.setDataSource(key as keyof View, new Reactive(val));
   }
+  view.init?.();
+  return view;
 }
