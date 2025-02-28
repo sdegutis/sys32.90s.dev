@@ -20,10 +20,8 @@ import { dragResize } from "../sys32/util/selections.js";
 
 export default (filepath?: string) => {
 
-  let paintArea: Scroll;
   let paintView: PaintView;
   let resizer: View;
-  let statusBar: SpacedX;
   let widthLabel: Label;
   let heightLabel: Label;
   let colorLabel: Label;
@@ -36,7 +34,7 @@ export default (filepath?: string) => {
   const panel = $(Panel, { title: 'painter', minw: 50, w: 180, h: 70, },
     $(PanedXB, { gap: 1 },
       $(PanedYB, { gap: 1 },
-        paintArea = $(Scroll, {
+        $(Scroll, {
           background: 0x222222ff,
           draw: makeStripeDrawer(),
         },
@@ -64,7 +62,7 @@ export default (filepath?: string) => {
             }
           })
         ),
-        statusBar = $(SpacedX, {},
+        $(SpacedX, {},
           $(GroupX, {},
             $(Label, { color: 0xffffff33, text: 'w:' }), widthLabel = $(Label, {}),
             $(Label, { color: 0xffffff33, text: ' h:' }), heightLabel = $(Label, {}),
@@ -109,7 +107,11 @@ export default (filepath?: string) => {
     toolArea.parent?.layoutTree();
   };
 
+  const colorsWithButtons = new Set<number>();
+
   function makeColorButton(color: number) {
+    colorsWithButtons.add(color);
+
     const colorView = $(View, { passthrough: true, w: 4, h: 4, background: color, });
     const border = $(Button, { all: 1, onClick: () => { paintView.color = color; } }, colorView);
 
@@ -192,6 +194,13 @@ export default (filepath?: string) => {
     }
     return false;
   };
+
+  paintView.watch('color', color => {
+    if (!colorsWithButtons.has(color)) {
+      makeColorButton(color);
+      toolArea.parent?.layoutTree();
+    }
+  });
 
   sys.root.addChild(panel);
 }
