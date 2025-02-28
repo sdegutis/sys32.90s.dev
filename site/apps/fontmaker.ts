@@ -58,7 +58,30 @@ export default async (sys: System, filename?: string) => {
 
   const panel = $(Panel, { title: 'fontmaker', },
     $(PanedYB, {},
-      $(View, { layout: makeFlowLayout(3, 3), background: 0x44444433 },
+      $(View, {
+        layout: function (this: View) {
+          const padding = 1 * $zoom.val;
+          const gap = 1 * $zoom.val;
+
+          let x = padding;
+          let y = padding;
+          let h = 0;
+          for (let i = 0; i < this.children.length; i++) {
+            const child = this.children[i];
+
+            if (x + child.w > this.w && i > 0) {
+              x = padding;
+              y += h + gap;
+              h = 0;
+            }
+
+            child.x = x;
+            child.y = y;
+            x += child.w + gap;
+            if (child.h > h) h = child.h;
+          }
+        }, background: 0x44444433
+      },
         ...charViews.values()
       ),
       $(Border, { background: 0x000000ff, u: 2 },
