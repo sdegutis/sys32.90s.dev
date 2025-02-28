@@ -83,6 +83,7 @@ export default (sys: System) => {
     for (const v of chars.values()) {
       v.rebuidBitmap();
     }
+    rebuildWhole();
   });
 
   function rebuildWhole() {
@@ -130,8 +131,6 @@ class CharView extends View {
     }
 
     this.bitmap = new Bitmap([1], this.width, pixels);
-
-    this.rebuilt.dispatch(this);
   }
 
   override adjust(): void {
@@ -169,6 +168,7 @@ class CharView extends View {
     const key = `${tx},${ty}`;
     this.spots[key] = !this.spots[key];
     this.rebuidBitmap();
+    this.rebuilt.dispatch(this);
   }
 
 }

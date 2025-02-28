@@ -58,12 +58,12 @@ export class Font {
       chars[ch] = new Bitmap([1], width, pixels);
     }
 
-    return new Font(width, height, chars);
+    return new Font(chars);
   }
 
-  constructor(width: number, height: number, chars: Record<string, Bitmap>) {
-    this.width = width;
-    this.height = height;
+  constructor(chars: Record<string, Bitmap>) {
+    this.width = chars['a'].width;
+    this.height = chars['a'].height;
     this.chars = chars;
   }
 
