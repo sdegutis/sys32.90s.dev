@@ -14,12 +14,12 @@ export class Bitmap {
     this.height = this.pixels.length / w;
   }
 
-  draw(crt: CRT, px: number, py: number) {
+  draw(crt: CRT, px: number, py: number, c?: number) {
     let i = 0;
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
         const ci = this.pixels[i++];
-        if (ci > 0) crt.pset(px + x, py + y, this.colors[ci - 1]);
+        if (ci > 0) crt.pset(px + x, py + y, c ?? this.colors[ci - 1]);
       }
     }
   }

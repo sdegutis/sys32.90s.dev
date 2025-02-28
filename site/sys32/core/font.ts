@@ -1,3 +1,4 @@
+import { Bitmap } from "./bitmap.js";
 import { CRT } from "./crt.js";
 
 export class Font {
@@ -31,38 +32,36 @@ export class Font {
 | x   |  xx |     |     |   x |     |     |     |     |     |     |     |     |     |     |     |
   `);
 
-  chars: Record<string, boolean[][]> = {};
+  chars: Record<string, Bitmap> = {};
   width: number;
   height: number;
 
   static fromString(width: number, height: number, perRow: number, map: string, bits: string) {
     bits = bits.replace(/\|?\n/g, '');
 
-    const chars: Record<string, boolean[][]> = {};
+    const chars: Record<string, Bitmap> = {};
 
     for (let i = 0; i < map.length; i++) {
       const ch = map[i];
 
-      const grid: boolean[][] = [];
-      chars[ch] = grid;
+      const pixels: number[] = [];
 
       for (let y = 0; y < height; y++) {
-        const row: boolean[] = [];
-        grid.push(row);
-
         for (let x = 0; x < width; x++) {
           const rw = width + 3;
           const py = (Math.floor(i / perRow) * rw * perRow * (height + 1)) + y * rw * perRow;
           const px = (i % perRow) * rw + 2 + x;
-          row.push(bits[px + py] !== ' ');
+          pixels.push(bits[px + py] !== ' ' ? 1 : 0);
         }
       }
+
+      chars[ch] = new Bitmap([1], width, pixels);
     }
 
     return new Font(width, height, chars);
   }
 
-  constructor(width: number, height: number, chars: Record<string, boolean[][]>) {
+  constructor(width: number, height: number, chars: Record<string, Bitmap>) {
     this.width = width;
     this.height = height;
     this.chars = chars;
@@ -107,16 +106,21 @@ export class Font {
 
       const map = this.chars[ch];
 
-      for (let yy = 0; yy < 4; yy++) {
-        for (let xx = 0; xx < 3; xx++) {
-          const px = x + (posx * 4) + xx;
-          const py = y + (posy * 6) + yy;
+      const px = x + (posx * 4);
+      const py = y + (posy * 6);
 
-          if (map[yy][xx]) {
-            crt.pset(px, py, c);
-          }
-        }
-      }
+      map.draw(crt, px, py, c);
+
+      // for (let yy = 0; yy < 4; yy++) {
+      //   for (let xx = 0; xx < 3; xx++) {
+      //     const px = x + (posx * 4) + xx;
+      //     const py = y + (posy * 6) + yy;
+
+      //     if (map[yy][xx]) {
+      //       crt.pset(px, py, c);
+      //     }
+      //   }
+      // }
 
       posx++;
     }
