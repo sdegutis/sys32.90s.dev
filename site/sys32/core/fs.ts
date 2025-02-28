@@ -314,7 +314,18 @@ const db = await new Promise<IDBDatabase>(resolve => {
 
 
 export const fs = new FS();
+await loadSystemData();
 await loadUserDrives();
+
+
+async function loadSystemData() {
+  const files = await fetch(import.meta.resolve('./data.json')).then(r => r.json());
+  for (const file of files) {
+    const data = await fetch(file).then(r => r.text());
+    const path = `sys/` + file.slice('/sys32/data/'.length);
+    await fs.saveFile(path, data);
+  }
+}
 
 async function loadUserDrives() {
   const found = await new Promise<DbMount[]>(resolve => {
