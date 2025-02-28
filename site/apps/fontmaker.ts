@@ -7,7 +7,7 @@ import { Bitmap } from "../sys32/core/bitmap.js";
 import { crt } from "../sys32/core/crt.js";
 import { Font } from "../sys32/core/font.js";
 import { fs } from "../sys32/core/fs.js";
-import { sys, type Cursor } from "../sys32/core/system.js";
+import { emptyCursor, sys } from "../sys32/core/system.js";
 import { $, View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { Listener, multiplex, Reactive } from "../sys32/util/events.js";
@@ -167,7 +167,7 @@ class CharView extends View {
   char!: string;
   rebuilt!: Listener<CharView>;
 
-  override cursor: Cursor = { bitmap: new Bitmap([], 0, []), offset: [0, 0] };
+  override cursor = emptyCursor;
 
   width = 2;
   height = 2;

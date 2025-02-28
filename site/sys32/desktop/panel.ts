@@ -6,7 +6,7 @@ import { Button, ClickCounter } from "../controls/button.js";
 import { ImageView } from "../controls/image.js";
 import { Label } from "../controls/label.js";
 import { Bitmap } from "../core/bitmap.js";
-import { type Cursor, sys, System } from "../core/system.js";
+import { Cursor, sys, System } from "../core/system.js";
 import { $, View } from "../core/view.js";
 import { Listener } from "../util/events.js";
 import { makeVacuumLayout } from "../util/layouts.js";
@@ -17,16 +17,16 @@ const maxImage = new Bitmap([0xaaaaaaff], 4, [1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1
 const axeImage = new Bitmap([0xaaaaaaff], 4, [1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,]);
 const adjImage = new Bitmap([0xffffff77], 3, [0, 0, 1, 0, 0, 1, 1, 1, 1,]);
 
-const adjCursor: Cursor = {
-  bitmap: new Bitmap([0x000000cc, 0xffffffff], 5, [
+const adjCursor = new Cursor(
+  new Bitmap([0x000000cc, 0xffffffff], 5, [
     0, 1, 1, 1, 0,
     1, 1, 2, 1, 1,
     1, 2, 2, 2, 1,
     1, 1, 2, 1, 1,
     0, 1, 1, 1, 0,
   ]),
-  offset: [2, 2],
-};
+  [2, 2],
+);
 
 export class Panel extends View {
 

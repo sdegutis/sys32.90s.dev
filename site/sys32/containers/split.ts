@@ -1,28 +1,28 @@
 import { Bitmap } from "../core/bitmap.js";
 import { crt } from "../core/crt.js";
-import { sys, type Cursor } from "../core/system.js";
+import { Cursor, sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
 import { dragMove } from "../util/selections.js";
 
-const xresize: Cursor = {
-  bitmap: new Bitmap([0x00000099, 0xffffffff], 5, [
+const xresize = new Cursor(
+  new Bitmap([0x00000099, 0xffffffff], 5, [
     1, 1, 1, 1, 1,
     1, 2, 2, 2, 1,
     1, 1, 1, 1, 1,
   ]),
-  offset: [2, 1],
-};
+  [2, 1],
+);
 
-const yresize: Cursor = {
-  bitmap: new Bitmap([0x00000099, 0xffffffff], 3, [
+const yresize = new Cursor(
+  new Bitmap([0x00000099, 0xffffffff], 3, [
     1, 1, 1,
     1, 2, 1,
     1, 2, 1,
     1, 2, 1,
     1, 1, 1,
   ]),
-  offset: [1, 2],
-};
+  [1, 2],
+);
 
 class SplitDivider extends View {
 

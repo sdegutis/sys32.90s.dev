@@ -263,19 +263,29 @@ export class System {
 
 }
 
-const pointer: Cursor = {
-  bitmap: new Bitmap([0x000000cc, 0xffffffff], 4, [
+export class Cursor {
+  bitmap: Bitmap;
+  offset: [number, number];
+
+  constructor(
+    bitmap: Bitmap,
+    offset: [number, number],
+  ) {
+    this.bitmap = bitmap;
+    this.offset = offset;
+  }
+}
+
+export const emptyCursor = new Cursor(new Bitmap([], 0, []), [0, 0]);
+
+const pointer = new Cursor(
+  new Bitmap([0x000000cc, 0xffffffff], 4, [
     1, 1, 1, 1,
     1, 2, 2, 1,
     1, 2, 1, 1,
     1, 1, 1, 0,
   ]),
-  offset: [1, 1],
-};
-
-export interface Cursor {
-  bitmap: Bitmap,
-  offset: [number, number],
-}
+  [1, 1],
+);
 
 export const sys = new System();

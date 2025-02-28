@@ -9,7 +9,7 @@ import { TextField } from "../sys32/controls/textfield.js";
 import { Bitmap } from "../sys32/core/bitmap.js";
 import { crt } from "../sys32/core/crt.js";
 import { fs } from "../sys32/core/fs.js";
-import { sys, type Cursor } from "../sys32/core/system.js";
+import { emptyCursor, sys } from "../sys32/core/system.js";
 import { $, View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeStripeDrawer } from "../sys32/util/draw.js";
@@ -211,7 +211,7 @@ class PaintView extends View {
   tool: 'pencil' | 'eraser' = 'pencil';
 
   override background = 0xffffff33;
-  override cursor: Cursor = { bitmap: new Bitmap([], 0, []), offset: [0, 0] };
+  override cursor = emptyCursor;
 
   #grid: number[] = [];
 

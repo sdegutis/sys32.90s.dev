@@ -1,9 +1,8 @@
 import { PanedXA, PanedYA } from "../sys32/containers/paned.js";
 import { Button } from "../sys32/controls/button.js";
 import { Label } from "../sys32/controls/label.js";
-import { Bitmap } from "../sys32/core/bitmap.js";
 import { crt } from "../sys32/core/crt.js";
-import { sys, type Cursor } from "../sys32/core/system.js";
+import { emptyCursor, sys } from "../sys32/core/system.js";
 import { $, View } from "../sys32/core/view.js";
 import { Panel } from "../sys32/desktop/panel.js";
 import { makeStripeDrawer } from "../sys32/util/draw.js";
@@ -125,10 +124,7 @@ class MapView extends View {
   #drawTerrain: ((x: number, y: number) => void)[] = [];
   #tilesel: TileSelection | null = null;
 
-  override cursor: Cursor = {
-    bitmap: new Bitmap([], 0, []),
-    offset: [0, 0],
-  };
+  override cursor = emptyCursor;
 
   override init(): void {
     for (let i = 0; i < 16; i++) {
