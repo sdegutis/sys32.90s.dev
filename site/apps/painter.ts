@@ -51,7 +51,6 @@ export default (filepath?: string) => {
   );
 
   const paintView = panel.find<PaintView>('paintView')!;
-  const resizer = panel.find<View>('resizer')!;
 
   const widthLabel = panel.find<Label>('widthLabel')!;
   const heightLabel = panel.find<Label>('heightLabel')!;

@@ -53,6 +53,24 @@ export class Panel extends View {
 
 
     const counter = new ClickCounter();
+    const titleBarMouseDown = () => {
+      counter.increase();
+      const drag = dragMove(this);
+      sys.trackMouse({
+        move: () => {
+          const moved = drag();
+          if (Math.hypot(moved.x, moved.y) > 1) {
+            counter.count = 0;
+            this.#lastPos = undefined!;
+          }
+        },
+        up: () => {
+          if (counter.count >= 2) {
+            this.maximize();
+          }
+        },
+      });
+    };
 
     let titleLabel: Label;
 
@@ -66,26 +84,7 @@ export class Panel extends View {
 
         $(PanedYA, {},
 
-          $(Spaced, {
-            onMouseDown: () => {
-              counter.increase();
-              const drag = dragMove(this);
-              sys.trackMouse({
-                move: () => {
-                  const moved = drag();
-                  if (Math.hypot(moved.x, moved.y) > 1) {
-                    counter.count = 0;
-                    this.#lastPos = undefined!;
-                  }
-                },
-                up: () => {
-                  if (counter.count >= 2) {
-                    this.maximize();
-                  }
-                },
-              });
-            },
-          },
+          $(Spaced, { onMouseDown: titleBarMouseDown, },
             $(Border, { l: pad },
               titleLabel = $(Label, { color: 0xaaaaaaff })
             ),
