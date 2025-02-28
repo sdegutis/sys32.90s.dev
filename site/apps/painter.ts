@@ -263,7 +263,9 @@ class PaintView extends View {
       const x = Math.floor(this.mouse.x / this.zoom);
       const y = Math.floor(this.mouse.y / this.zoom);
       const i = y * this.width + x;
-      this.color = this.#grid[i];
+      let colorUnderMouse = this.#grid[i];
+      if (colorUnderMouse === undefined) colorUnderMouse = 0x00000000;
+      this.color = colorUnderMouse;
       return;
     }
 
