@@ -81,7 +81,7 @@ export default async (filename?: string) => {
             x += child.w + gap;
             if (child.h > h) h = child.h;
           }
-        }, background: 0x44444433
+        }, background: 0x44444499
       },
         ...charViews.values()
       ),
