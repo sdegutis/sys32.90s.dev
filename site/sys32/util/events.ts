@@ -30,6 +30,7 @@ export class Reactive<T> {
 
   get val() { return this.#data; }
   set val(data: T) {
+    if (data === this.#data) return;
     this.#data = data;
     this.#changed.dispatch(data);
   }
