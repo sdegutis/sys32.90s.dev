@@ -1,6 +1,6 @@
 import { Font } from "../core/font.js";
 import { sys } from "../core/system.js";
-import { View } from "../core/view.js";
+import { $, View } from "../core/view.js";
 import { Label } from "./label.js";
 
 export class TextField extends View {
@@ -11,8 +11,8 @@ export class TextField extends View {
   #text = '';
   length = 10;
 
-  #field = sys.make(Label, { text: '' });
-  #cursor = sys.make(Label, { visible: false, text: '_', color: 0x1177ffff });
+  #field = $(Label, { text: '' });
+  #cursor = $(Label, { visible: false, text: '_', color: 0x1177ffff });
 
   #font = sys.font;
   get font() { return this.#font; }

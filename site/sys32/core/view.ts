@@ -1,4 +1,4 @@
-import { Reactive } from "../util/events.js";
+import { Listener, Reactive } from "../util/events.js";
 import { crt } from "./crt.js";
 import { sys, type Cursor } from "./system.js";
 
@@ -124,4 +124,26 @@ export class View {
     return this.#dataSources[k].watch(...args);
   }
 
+}
+
+export function $<T extends View>(
+  ctor: { new(): T; },
+  config: Partial<T>,
+  ...children: any[]
+): T {
+  const view = new ctor();
+  Object.assign(view, { children }, config);
+  enableDataSources(view);
+  view.init?.();
+  return view;
+}
+
+function enableDataSources(view: View) {
+  for (let [key, val] of Object.entries(view)) {
+    if (typeof val === 'function') continue;
+    if (val instanceof Listener) continue;
+    if (val instanceof Array) continue;
+    if (key === 'sys') continue;
+    view.setDataSource(key as keyof View, new Reactive(val));
+  }
 }

@@ -1,6 +1,6 @@
 import { Border } from "../containers/border.js";
 import { sys } from "../core/system.js";
-import { View } from "../core/view.js";
+import { $, View } from "../core/view.js";
 import { multiplex, Reactive } from "../util/events.js";
 
 export class ClickCounter {
@@ -31,7 +31,7 @@ export class Button extends Border {
 
   override passthrough = false;
 
-  overlay = sys.make(View, {
+  overlay = $(View, {
     passthrough: true,
     layout() {
       if (!this.parent) return;

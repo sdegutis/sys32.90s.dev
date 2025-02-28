@@ -1,8 +1,8 @@
-import { Listener, Reactive } from "../util/events.js";
+import { Listener } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { crt } from "./crt.js";
 import { Font } from "./font.js";
-import { View } from "./view.js";
+import { $, View } from "./view.js";
 
 export class System {
 
@@ -26,7 +26,7 @@ export class System {
     canvas.tabIndex = 0;
     canvas.focus();
 
-    this.root = this.make(View, { background: 0x00000000 });
+    this.root = $(View, { background: 0x00000000 });
     this.focused = this.root;
     this.#hovered = this.root;
 
@@ -135,28 +135,6 @@ export class System {
       }
     };
     requestAnimationFrame(update);
-  }
-
-  make<T extends View>(
-    ctor: { new(sys: System): T },
-    config: Partial<T>,
-    ...children: any[]
-  ): T {
-    const view = new ctor(this);
-    Object.assign(view, { children }, config);
-    this.#enableDataSources(view);
-    view.init?.();
-    return view;
-  }
-
-  #enableDataSources(view: View) {
-    for (let [key, val] of Object.entries(view)) {
-      if (typeof val === 'function') continue;
-      if (val instanceof Listener) continue;
-      if (val instanceof Array) continue;
-      if (key === 'sys') continue;
-      view.setDataSource(key as keyof View, new Reactive(val));
-    }
   }
 
   trackMouse(fns: { move: () => void; up?: () => void; }) {
@@ -301,5 +279,3 @@ export interface Cursor {
 }
 
 export const sys = new System();
-
-export const $ = sys.make.bind(sys);

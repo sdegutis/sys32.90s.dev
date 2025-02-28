@@ -1,7 +1,7 @@
 import { Bitmap } from "../core/bitmap.js";
 import { crt } from "../core/crt.js";
 import { sys, type Cursor } from "../core/system.js";
-import { View } from "../core/view.js";
+import { $, View } from "../core/view.js";
 import { dragMove } from "../util/selections.js";
 
 const xresize: Cursor = {
@@ -96,7 +96,7 @@ export class Split extends View {
 
   override init(): void {
     while (this.children.length < 2) {
-      this.addChild(sys.make(View, {}));
+      this.addChild($(View, {}));
     }
   }
 
