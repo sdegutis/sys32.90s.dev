@@ -5,7 +5,6 @@ import { SpacedX } from "../../sys32/containers/spaced.js";
 import { Button } from "../../sys32/controls/button.js";
 import { Label } from "../../sys32/controls/label.js";
 import { Slider } from "../../sys32/controls/slider.js";
-import { TextField } from "../../sys32/controls/textfield.js";
 import { Bitmap } from "../../sys32/core/bitmap.js";
 import { crt } from "../../sys32/core/crt.js";
 import { emptyCursor } from "../../sys32/core/cursor.js";
@@ -13,6 +12,7 @@ import { fs } from "../../sys32/core/fs.js";
 import { sys } from "../../sys32/core/system.js";
 import { $, View } from "../../sys32/core/view.js";
 import { Panel } from "../../sys32/desktop/panel.js";
+import { showPrompt } from "../../sys32/util/dialog.js";
 import { makeStripeDrawer } from "../../sys32/util/draw.js";
 import { multiplex, Reactive } from "../../sys32/util/events.js";
 import { makeFlowLayout } from "../../sys32/util/layouts.js";
@@ -45,7 +45,7 @@ export default (filepath?: string) => {
       $(View, { id: 'toolArea', w: 36, background: 0x99000033, layout: makeFlowLayout(), },
         $(Button, { id: 'pencilTool', onClick: () => { paintView.tool = 'pencil'; } }, $(View, { passthrough: true, w: 4, h: 4 })),
         $(Button, { id: 'eraserTool', onClick: () => { paintView.tool = 'eraser'; } }, $(View, { passthrough: true, w: 4, h: 4 })),
-        $(TextField, { id: 'colorField', length: 9, background: 0x111111ff }),
+        $(Button, { onClick: () => { addColor(); } }, $(Label, { text: '+' })),
       ),
     ),
   );
@@ -60,7 +60,6 @@ export default (filepath?: string) => {
   const toolArea = panel.find<View>('toolArea')!;
   const pencilTool = panel.find<View>('pencilTool')!;
   const eraserTool = panel.find<View>('eraserTool')!;
-  const colorField = panel.find<TextField>('colorField')!;
 
   panel.find<Slider>('zoom-slider')!.setDataSource('val', paintView.getDataSource('zoom'));
 
@@ -76,12 +75,12 @@ export default (filepath?: string) => {
   paintView.watch('tool', t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff);
   paintView.watch('tool', t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff);
 
-  colorField.onEnter = () => {
-    const color = parseInt('0x' + colorField.text, 16);
-    colorField.text = '';
+  async function addColor() {
+    const colorCode = await showPrompt('enter color code:');
+    const color = parseInt('0x' + colorCode, 16);
     makeColorButton(color);
     toolArea.parent?.layoutTree();
-  };
+  }
 
   const colorsWithButtons = new Set<number>();
 

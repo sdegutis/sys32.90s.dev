@@ -1,19 +1,15 @@
-import { Border } from "../../sys32/containers/border.js";
 import { GroupX, GroupY } from "../../sys32/containers/group.js";
-import { PanedYB } from "../../sys32/containers/paned.js";
 import { Scroll } from "../../sys32/containers/scroll.js";
 import { SplitX } from "../../sys32/containers/split.js";
 import { Button } from "../../sys32/controls/button.js";
 import { ImageView } from "../../sys32/controls/image.js";
 import { Label } from "../../sys32/controls/label.js";
-import { TextField } from "../../sys32/controls/textfield.js";
 import { Bitmap } from "../../sys32/core/bitmap.js";
 import { fs, type Folder } from "../../sys32/core/fs.js";
 import { sys } from "../../sys32/core/system.js";
-import { $, View } from "../../sys32/core/view.js";
+import { $ } from "../../sys32/core/view.js";
 import { Panel } from "../../sys32/desktop/panel.js";
-import { centerLayout } from "../../sys32/util/layouts.js";
-import { passedFocus } from "../../sys32/util/unsure.js";
+import { showPrompt } from "../../sys32/util/dialog.js";
 import fontmaker from "../fontmaker/fontmaker.js";
 import painter from "../painter/painter.js";
 
@@ -41,56 +37,6 @@ export default () => {
 
   const sidelist = $(GroupY, { align: 'a', gap: 1 });
   const filelist = $(GroupY, { align: 'a' });
-
-  async function showPrompt(text: string) {
-    const p = Promise.withResolvers<string>();
-
-    function expandToFitContainer(this: View) {
-      this.x = 0;
-      this.y = 0;
-      this.w = this.parent!.w;
-      this.h = this.parent!.h;
-    }
-
-    const dialog = $(View, {
-      adjust: expandToFitContainer,
-      layout: centerLayout,
-      background: 0x00000033,
-      onKeyDown(key) {
-        if (key === 'Escape') {
-          cancel();
-          return true;
-        }
-        return false;
-      }
-    },
-      $(Border, { all: 1, borderColor: 0x99000099, passthrough: false },
-        $(Border, { all: 3, background: 0x000000ff },
-          $(GroupY, { gap: 3, align: 'a', },
-            $(Label, { text }),
-            $(Border, { all: 2, background: 0x222222ff, ...passedFocus },
-              $(TextField, { id: 'field', onEnter: accept, })
-            ),
-            $(GroupX, { gap: 2 },
-              $(Button, { all: 3, onClick: accept }, $(Label, { text: 'ok' })),
-              $(Button, { all: 3, onClick: cancel }, $(Label, { text: 'cancel' })),
-            )
-          )
-        )
-      )
-    );
-
-    function accept() { p.resolve(dialog.find<TextField>('field')!.text); }
-    function cancel() { p.resolve(''); }
-
-    sys.root.addChild(dialog);
-    dialog.find('field')!.focus();
-    dialog.layoutTree();
-
-    p.promise.then(() => dialog.remove());
-
-    return p.promise;
-  }
 
   const mountButton = $(Button, {
     all: 3,
