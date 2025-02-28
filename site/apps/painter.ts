@@ -251,6 +251,14 @@ class PaintView extends View {
   }
 
   override onMouseDown(): void {
+    if (sys.mouse.button !== 0) {
+      const x = Math.floor(this.mouse.x / this.zoom);
+      const y = Math.floor(this.mouse.y / this.zoom);
+      const i = y * this.width + x;
+      this.color = this.#grid[i];
+      return;
+    }
+
     if (this.tool === 'pencil' || this.tool === 'eraser') {
       sys.trackMouse({
         move: () => {
