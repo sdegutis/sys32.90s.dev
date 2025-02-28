@@ -353,6 +353,7 @@ async function loadUserDrives() {
     });
 
     observer.observe(folder, { recursive: true });
+    // observer.disconnect
 
     fs.drives[drive] = new UserFolder(folder, drive + '/');
   }
@@ -416,6 +417,7 @@ declare global {
     constructor(callback: (records: FileSystemObserverRecord[], observer: FileSystemObserver) => void);
     observe(fileHandle: FileSystemHandle): void;
     observe(fileHandle: FileSystemDirectoryHandle, options?: { recursive: boolean }): void;
-    unobserve(fileHandle: FileSystemHandle): void;
+    private unobserve(fileHandle: FileSystemHandle): void;
+    disconnect(): void;
   }
 }
