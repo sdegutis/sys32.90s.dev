@@ -70,12 +70,10 @@ class MemoryFolder implements Folder {
 class IndexedDbFolder implements Folder {
 
   path: string;
-  #db: IDBDatabase;
   #prefix: string;
 
-  constructor(db: IDBDatabase, prefix: string) {
+  constructor(prefix: string) {
     this.path = prefix;
-    this.#db = db;
     this.#prefix = prefix;
   }
 
@@ -86,12 +84,12 @@ class IndexedDbFolder implements Folder {
 
   async getFolder(name: string) {
     const item = await this.#getitem(name);
-    return item && new IndexedDbFolder(this.#db, this.#prefix + name + '/');
+    return item && new IndexedDbFolder(this.#prefix + name + '/');
   }
 
   async putFile(name: string, content: string) {
     return await new Promise<void>(resolve => {
-      const t = this.#db.transaction('files', 'readwrite');
+      const t = db.transaction('files', 'readwrite');
       const store = t.objectStore('files');
       const r = store.put({
         name,
@@ -106,7 +104,7 @@ class IndexedDbFolder implements Folder {
 
   async putFolder(name: string) {
     await new Promise<void>(resolve => {
-      const t = this.#db.transaction('files', 'readwrite');
+      const t = db.transaction('files', 'readwrite');
       const store = t.objectStore('files');
       const r = store.put({
         name,
@@ -116,12 +114,12 @@ class IndexedDbFolder implements Folder {
       r.onerror = console.error;
       r.onsuccess = res => resolve();
     });
-    return new IndexedDbFolder(this.#db, this.#prefix + name + '/');
+    return new IndexedDbFolder(this.#prefix + name + '/');
   }
 
   async #getitem(name: string) {
     return await new Promise<DbFile>(resolve => {
-      const t = this.#db.transaction('files', 'readonly');
+      const t = db.transaction('files', 'readonly');
       const store = t.objectStore('files');
       const r = store.get(this.#prefix + name);
       r.onerror = console.error;
@@ -131,7 +129,7 @@ class IndexedDbFolder implements Folder {
 
   async list(): Promise<{ kind: "file" | "folder"; name: string; }[]> {
     const list = await new Promise<DbFile[]>(resolve => {
-      const t = this.#db.transaction('files', 'readonly');
+      const t = db.transaction('files', 'readonly');
       const store = t.objectStore('files');
       const index = store.index('indexprefix');
       const r = index.getAll(this.#prefix);
@@ -154,7 +152,7 @@ class IndexedDbFolder implements Folder {
 
   async #delitem(name: string): Promise<void> {
     await new Promise<DbFile>(resolve => {
-      const t = this.#db.transaction('files', 'readonly');
+      const t = db.transaction('files', 'readonly');
       const store = t.objectStore('files');
       const r = store.delete(this.#prefix + name);
       r.onerror = console.error;
@@ -219,46 +217,17 @@ class UserFolder implements Folder {
 
 export class FS {
 
-  #db = new Promise<IDBDatabase>(resolve => {
-    const r = window.indexedDB.open('fs', 1);
-    r.onerror = console.error;
-    r.onupgradeneeded = () => {
-      const db = r.result;
-      db.createObjectStore('mounts', { keyPath: 'drive' });
-      const files = db.createObjectStore('files', { keyPath: 'path' });
-      files.createIndex('indexprefix', 'prefix', { unique: false });
-    };
-    r.onsuccess = e => {
-      const db = r.result;
-      resolve(db);
-    };
-  });
+  sys = new MemoryFolder('sys/');
+  user = new IndexedDbFolder('user/');
 
-  drives = new Promise<Record<string, Folder>>(async resolve => {
-    const db = await this.#db;
-    const drives = {
-      a: new MemoryFolder('a/'),
-      b: new IndexedDbFolder(db, 'b/'),
-    };
-    await this.#loadUserDrives(db, drives);
-    resolve(drives);
-  });
-
-  async #loadUserDrives(db: IDBDatabase, drives: Record<string, Folder>) {
-    const found = await new Promise<DbMount[]>(resolve => {
-      const t = db.transaction('mounts', 'readonly');
-      const store = t.objectStore('mounts');
-      const r = store.getAll();
-      r.onerror = console.error;
-      r.onsuccess = (e) => resolve(r.result);
-    });
-    for (const { drive, folder } of found) {
-      drives[drive] = new UserFolder(folder, drive + '/');
-    }
-  }
+  drives: Record<string, Folder> = {
+    sys: this.sys,
+    user: this.user,
+  };
 
   async mountUserFolder(drive: string, dir: FileSystemDirectoryHandle) {
-    const db = await this.#db;
+    if (drive in this.drives) return null;
+
     await new Promise<void>(resolve => {
       const t = db.transaction('mounts', 'readwrite');
       const store = t.objectStore('mounts');
@@ -267,7 +236,7 @@ export class FS {
       t.oncomplete = e => resolve();
     });
     const folder = new UserFolder(dir, drive + '/');
-    (await this.drives)[drive] = folder;
+    this.drives[drive] = folder;
     return folder;
   }
 
@@ -328,4 +297,34 @@ type DbFile = {
   content?: string,
 };
 
+const db = await new Promise<IDBDatabase>(resolve => {
+  const r = window.indexedDB.open('fs', 1);
+  r.onerror = console.error;
+  r.onupgradeneeded = () => {
+    const db = r.result;
+    db.createObjectStore('mounts', { keyPath: 'drive' });
+    const files = db.createObjectStore('files', { keyPath: 'path' });
+    files.createIndex('indexprefix', 'prefix', { unique: false });
+  };
+  r.onsuccess = e => {
+    const db = r.result;
+    resolve(db);
+  };
+});
+
+
 export const fs = new FS();
+await loadUserDrives();
+
+async function loadUserDrives() {
+  const found = await new Promise<DbMount[]>(resolve => {
+    const t = db.transaction('mounts', 'readonly');
+    const store = t.objectStore('mounts');
+    const r = store.getAll();
+    r.onerror = console.error;
+    r.onsuccess = (e) => resolve(r.result);
+  });
+  for (const { drive, folder } of found) {
+    fs.drives[drive] = new UserFolder(folder, drive + '/');
+  }
+}

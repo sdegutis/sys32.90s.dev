@@ -96,18 +96,16 @@ export default () => {
     filelist.layoutTree();
   }
 
-  fs.drives.then(drives => {
-    for (const key of Object.keys(drives)) {
-      sidelist.addChild($(Button, {
-        all: 2, background: 0xff000033, onClick: async () => {
-          showfiles((await fs.getFolder(key))!);
-        }
-      },
-        $(Label, { text: `drive: ${key}` })
-      ));
-      sidelist.parent?.layoutTree();
-    }
-  });
+  for (const key of Object.keys(fs.drives)) {
+    sidelist.addChild($(Button, {
+      all: 2, background: 0xff000033, onClick: async () => {
+        showfiles((await fs.getFolder(key))!);
+      }
+    },
+      $(Label, { text: `drive: ${key}` })
+    ));
+    sidelist.parent?.layoutTree();
+  }
 
   const panel = $(Panel, { title: 'files', w: 150, h: 100, },
     $(PanedYB, { gap: 2 },
