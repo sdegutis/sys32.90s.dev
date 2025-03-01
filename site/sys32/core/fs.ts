@@ -217,7 +217,7 @@ class UserFolder implements Folder {
 
 }
 
-export class FS {
+class FS {
 
   sys = new MemoryFolder('sys/');
   user = new IndexedDbFolder('user/');
