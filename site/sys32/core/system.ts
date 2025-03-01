@@ -6,9 +6,9 @@ import { Font } from "./font.js";
 import { fs } from "./fs.js";
 import { $, View } from "./view.js";
 
-const crt2025 = Font.fromString((await fs.loadFile('sys/font1.font'))!);
+const crt2025 = Font.fromString(fs.loadFile('sys/font1.font')!);
 
-const pointer = new Reactive(Cursor.fromBitmap(Bitmap.fromString((await fs.loadFile('sys/pointer.bitmap'))!)));
+const pointer = new Reactive(Cursor.fromBitmap(Bitmap.fromString(fs.loadFile('sys/pointer.bitmap')!)));
 
 fs.watchTree('sys/pointer.bitmap', (content) => {
   console.log('cahgned', content)

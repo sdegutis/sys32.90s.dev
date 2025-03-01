@@ -125,11 +125,11 @@ export default (filepath?: string) => {
 
   if (filepath) {
 
-    fs.loadFile(filepath!).then(s => {
-      if (s) {
-        paintView.loadBitmap(s);
-      }
-    });
+    const s = fs.loadFile(filepath);
+    if (s) {
+      paintView.loadBitmap(s);
+    }
+
 
   }
   else {
@@ -156,9 +156,8 @@ export default (filepath?: string) => {
 
       const bitmap = paintView.toBitmap();
 
-      fs.saveFile(filepath, bitmap.toString()).then(() => {
-        console.log('done')
-      })
+      fs.saveFile(filepath, bitmap.toString());
+      console.log('done')
 
       return true;
     }

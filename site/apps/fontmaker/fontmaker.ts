@@ -35,7 +35,7 @@ export default async (filename?: string) => {
   let chars: Record<string, Bitmap> = {};
 
   if (filename) {
-    const s = (await fs.loadFile(filename))!;
+    const s = fs.loadFile(filename)!;
 
     const keys = [...CHARSET].sort();
     const vals = s.split('===\n').map(s => Bitmap.fromString(s));

@@ -251,7 +251,7 @@ class FS {
 
   #entries = new Map<string, string>();
 
-  async loadFile(path: string): Promise<string | null> {
+  loadFile(path: string): string | null {
     return this.#entries.get(path) ?? null;
     // const file = await this.#getdir(path);
     // if (!file) return null;
@@ -260,7 +260,7 @@ class FS {
     // return found ?? null;
   }
 
-  async saveFile(path: string, content: string) {
+  saveFile(path: string, content: string) {
     this.#entries.set(path, content);
     // const file = await this.#getdir(path);
     // if (!file) return;
@@ -364,7 +364,7 @@ async function loadSystemData() {
   for (const file of files) {
     const data = await fetch(file).then(r => r.text());
     const path = `sys/` + file.slice('/sys32/data/'.length);
-    await fs.saveFile(path, data);
+    fs.saveFile(path, data);
   }
 }
 
