@@ -251,8 +251,8 @@ class FS {
 
   #entries = new Map<string, string>();
 
-  loadFile(path: string): string | null {
-    return this.#entries.get(path) ?? null;
+  loadFile(path: string): string | undefined {
+    return this.#entries.get(path);
     // const file = await this.#getdir(path);
     // if (!file) return null;
 
