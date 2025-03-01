@@ -15,7 +15,7 @@ fs.watchTree('sys/pointer.bitmap', (content) => {
   pointer.val = Cursor.fromBitmap(Bitmap.fromString(content));
 })
 
-export class System {
+class System {
 
   root!: View;
   focused!: View;
