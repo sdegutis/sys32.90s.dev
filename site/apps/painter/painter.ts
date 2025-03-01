@@ -20,11 +20,13 @@ import { dragResize } from "../../sys32/util/selections.js";
 
 export default (filepath?: string) => {
 
+  const $zoom = new Reactive(4);
+
   const panel = $(Panel, { title: 'painter', minw: 50, w: 180, h: 70, },
     $(PanedXB, { gap: 1 },
       $(PanedYB, { gap: 1 },
         $(Scroll, { background: 0x222222ff, draw: makeStripeDrawer(), },
-          $(PaintView, { id: 'paintView', color: COLORS[3] }),
+          $(PaintView, { id: 'paintView', color: COLORS[3], $data: { zoom: $zoom } }),
           $(ResizerView, { id: 'resizer', background: 0x00000077, w: 4, h: 4, })
         ),
         $(SpacedX, {},
@@ -38,7 +40,7 @@ export default (filepath?: string) => {
             $(Button, { id: 'grid-button', onClick() { paintView.showGrid = !paintView.showGrid } },
               $(Label, { text: 'grid' })
             ),
-            $(Slider, { id: 'zoom-slider', knobSize: 3, w: 20, min: 1, max: 12 })
+            $(Slider, { knobSize: 3, w: 20, min: 1, max: 12, $data: { val: $zoom } })
           )
         )
       ),
@@ -60,8 +62,6 @@ export default (filepath?: string) => {
   const toolArea = panel.find<View>('toolArea')!;
   const pencilTool = panel.find<View>('pencilTool')!;
   const eraserTool = panel.find<View>('eraserTool')!;
-
-  panel.find<Slider>('zoom-slider')!.$data.val = paintView.$data.zoom;
 
   paintView.$data.width.watch(n => widthLabel.text = n.toString());
   paintView.$data.height.watch(n => heightLabel.text = n.toString());

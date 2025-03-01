@@ -49,10 +49,7 @@ export default async (filename?: string) => {
   }
 
   for (const char of [...CHARSET]) {
-    const view = $(CharView, { char, rebuilt, initial: chars[char] });
-    view.$data.width = $width;
-    view.$data.height = $height;
-    view.$data.zoom = $zoom;
+    const view = $(CharView, { char, rebuilt, initial: chars[char], $data: { width: $width, height: $height, zoom: $zoom } });
     charViews.set(char, view);
     view.$data.hovered.watch((h) => { if (h) $hovered.val = char; });
   }
@@ -92,32 +89,27 @@ export default async (filename?: string) => {
             $(GroupX, { gap: 2 },
               $(Label, { text: 'width:', color: 0xffffff33 }),
               $(Label, { id: 'width-label' }),
-              $(Slider, { id: 'width-slider', min: 1, max: 12, w: 20, knobSize: 3 }),
+              $(Slider, { min: 1, max: 12, w: 20, knobSize: 3, $data: { val: $width } }),
             ),
             $(GroupX, { gap: 2 },
               $(Label, { text: 'height:', color: 0xffffff33 }),
               $(Label, { id: 'height-label' }),
-              $(Slider, { id: 'height-slider', min: 1, max: 12, w: 20, knobSize: 3 }),
+              $(Slider, { min: 1, max: 12, w: 20, knobSize: 3, $data: { val: $height } }),
             ),
             $(GroupX, { gap: 2 },
               $(Label, { text: 'zoom:', color: 0xffffff33 }),
               $(Label, { id: 'zoom-label' }),
-              $(Slider, { id: 'zoom-slider', min: 1, max: 5, w: 20, knobSize: 3 }),
+              $(Slider, { min: 1, max: 5, w: 20, knobSize: 3, $data: { val: $zoom } }),
             ),
             $(GroupX, { gap: 2 },
               $(Label, { text: 'hover:', color: 0xffffff33 }),
-              $(Label, { id: 'hover-label' }),
+              $(Label, { $data: { text: $hovered } }),
             ),
           )
         )
       )
     )
   );
-
-  panel.find<Slider>('width-slider')!.$data.val = $width;
-  panel.find<Slider>('height-slider')!.$data.val = $height;
-  panel.find<Slider>('zoom-slider')!.$data.val = $zoom;
-  panel.find<Label>('hover-label')!.$data.text = $hovered;
 
   $width.watch((n) => { panel.find<Label>('width-label')!.text = n.toString(); });
   $height.watch((n) => { panel.find<Label>('height-label')!.text = n.toString(); });

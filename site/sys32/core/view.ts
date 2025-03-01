@@ -108,7 +108,7 @@ export class View {
 
 export function $<T extends View>(
   ctor: { new(): T; },
-  config: Partial<Omit<T, '$data'> & { $: Partial<T['$data']> }>,
+  config: Partial<Omit<T, '$data'> & { $data: Partial<T['$data']> }>,
   ...children: View[]
 ): T {
   const view = new ctor();
@@ -120,8 +120,7 @@ export function $<T extends View>(
     if (val instanceof Array) continue;
     if (Object.getOwnPropertyDescriptor(view, key)?.get) continue;
 
-    const r = new Reactive(view[key as keyof View]);
-    view.$data[key as keyof View['$data']] = r;
+    view.$data[key as keyof View['$data']] ??= new Reactive(view[key as keyof View]);
 
     Object.defineProperty(view, key, {
       enumerable: true,
