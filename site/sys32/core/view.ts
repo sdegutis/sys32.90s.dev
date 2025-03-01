@@ -100,44 +100,34 @@ export class View {
     return null;
   }
 
-  #dataSources: Record<any, Reactive<any>> = {};
-
-  getDataSource<K extends keyof this>(k: K): Reactive<this[K]> {
-    return this.#dataSources[k];
-  }
-
-  setDataSource<K extends keyof this>(k: K, r: Reactive<this[K]>) {
-    if (k in this.#dataSources) { this.#dataSources[k] = r; return; }
-    if (Object.getOwnPropertyDescriptor(this, k)?.get) return;
-
-    this.#dataSources[k] = new Reactive(this[k]);
-
-    Object.defineProperty(this, k, {
-      enumerable: true,
-      set: (v) => this.#dataSources[k].val = v,
-      get: () => this.#dataSources[k].val,
-    });
-  }
-
-  watch<K extends keyof this>(k: K, ...args: Parameters<Reactive<this[K]>['watch']>) {
-    return this.#dataSources[k].watch(...args);
-  }
+  $reactives = Object.create(null) as {
+    [K in Exclude<keyof this, '$reactives'>]: Reactive<any>
+  };
 
 }
 
 export function $<T extends View>(
   ctor: { new(): T; },
-  config: Partial<T>,
+  config: Partial<Omit<T, '$reactives'> & { $: Partial<T['$reactives']> }>,
   ...children: View[]
 ): T {
   const view = new ctor();
   Object.assign(view, { children }, config);
   for (let [key, val] of Object.entries(view)) {
+    if (key === '$reactives') continue;
     if (typeof val === 'function') continue;
     if (val instanceof Listener) continue;
     if (val instanceof Array) continue;
-    if (key === 'sys') continue;
-    view.setDataSource(key as keyof View, new Reactive(val));
+    if (Object.getOwnPropertyDescriptor(view, key)?.get) continue;
+
+    const r = new Reactive(view[key as keyof View]);
+    view.$reactives[key as keyof View['$reactives']] = r;
+
+    Object.defineProperty(view, key, {
+      enumerable: true,
+      set: (v) => view.$reactives[key as keyof View['$reactives']].val = v,
+      get: () => view.$reactives[key as keyof View['$reactives']].val,
+    });
   }
   view.init?.();
   return view;

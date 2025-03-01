@@ -51,8 +51,8 @@ export class Button extends Border {
 
   override adopted(): void {
     this.#changebg = multiplex({
-      pressed: this.getDataSource('pressed'),
-      hovered: this.getDataSource('hovered'),
+      pressed: this.$reactives.pressed,
+      hovered: this.$reactives.hovered,
     });
 
     this.#changebg.watch(data => {

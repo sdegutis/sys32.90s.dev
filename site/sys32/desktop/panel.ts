@@ -126,8 +126,8 @@ export class Panel extends View {
 
     ];
 
-    this.watch('title', s => this.find<Label>('titleLabel')!.text = s);
-    this.watch('panelFocused', b => { this.find<Border>('border')!.borderColor = b ? 0x005599ff : 0; });
+    this.$reactives.title.watch(s => this.find<Label>('titleLabel')!.text = s)
+    this.$reactives.panelFocused.watch(b => { this.find<Border>('border')!.borderColor = b ? 0x005599ff : 0; });
   }
 
   close() {

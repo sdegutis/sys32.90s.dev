@@ -50,11 +50,11 @@ export default async (filename?: string) => {
 
   for (const char of [...CHARSET]) {
     const view = $(CharView, { char, rebuilt, initial: chars[char] });
-    view.setDataSource('width', $width);
-    view.setDataSource('height', $height);
-    view.setDataSource('zoom', $zoom);
+    view.$reactives.width = $width;
+    view.$reactives.height = $height;
+    view.$reactives.zoom = $zoom;
     charViews.set(char, view);
-    view.watch('hovered', (h) => { if (h) $hovered.val = char; });
+    view.$reactives.hovered.watch((h) => { if (h) $hovered.val = char; });
   }
 
   const panel = $(Panel, { title: 'fontmaker', },
@@ -114,10 +114,10 @@ export default async (filename?: string) => {
     )
   );
 
-  panel.find<Slider>('width-slider')!.setDataSource('val', $width);
-  panel.find<Slider>('height-slider')!.setDataSource('val', $height);
-  panel.find<Slider>('zoom-slider')!.setDataSource('val', $zoom);
-  panel.find<Label>('hover-label')!.setDataSource('text', $hovered);
+  panel.find<Slider>('width-slider')!.$reactives.val = $width;
+  panel.find<Slider>('height-slider')!.$reactives.val = $height;
+  panel.find<Slider>('zoom-slider')!.$reactives.val = $zoom;
+  panel.find<Label>('hover-label')!.$reactives.text = $hovered;
 
   $width.watch((n) => { panel.find<Label>('width-label')!.text = n.toString(); });
   $height.watch((n) => { panel.find<Label>('height-label')!.text = n.toString(); });

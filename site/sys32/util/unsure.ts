@@ -1,6 +1,6 @@
 import { View } from "../core/view.js"
 
-export const passedFocus: Partial<View> = {
+export const passedFocus = {
   passthrough: false,
-  onFocus() { this.firstChild?.focus() },
+  onFocus(this: Partial<View>) { this.firstChild?.focus() },
 }
