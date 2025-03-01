@@ -107,18 +107,16 @@ export class View {
   }
 
   setDataSource<K extends keyof this>(k: K, r: Reactive<this[K]>) {
-    if (!(k in this.#dataSources)) {
-      if (Object.getOwnPropertyDescriptor(this, k)?.get) return;
-      this.#dataSources[k] = new Reactive(this[k]);
+    if (k in this.#dataSources) { this.#dataSources[k] = r; return; }
+    if (Object.getOwnPropertyDescriptor(this, k)?.get) return;
 
-      Object.defineProperty(this, k, {
-        enumerable: true,
-        set: (v) => this.#dataSources[k].val = v,
-        get: () => this.#dataSources[k].val,
-      });
-    }
+    this.#dataSources[k] = new Reactive(this[k]);
 
-    this.#dataSources[k] = r;
+    Object.defineProperty(this, k, {
+      enumerable: true,
+      set: (v) => this.#dataSources[k].val = v,
+      get: () => this.#dataSources[k].val,
+    });
   }
 
   watch<K extends keyof this>(k: K, ...args: Parameters<Reactive<this[K]>['watch']>) {
