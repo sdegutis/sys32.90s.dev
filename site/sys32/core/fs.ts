@@ -131,12 +131,12 @@ class FS {
     return Object.keys(this.#drives);
   }
 
-  list(fullpath: string): FolderEntry[] {
-    const [drive, path] = this.#split(fullpath)
-    console.log('list', drive, path, drive.entries)
-    // files.sort(sortBy(f => (f.kind === 'folder' ? 1 : 2) + f.name));
-    return [];
-  }
+  // list(fullpath: string): FolderEntry[] {
+  //   const [drive, path] = this.#split(fullpath)
+  //   console.log('list', drive, path, drive.entries)
+  //   // files.sort(sortBy(f => (f.kind === 'folder' ? 1 : 2) + f.name));
+  //   return [];
+  // }
 
   loadFile(fullpath: string): string | undefined {
     const [drive, path] = this.#split(fullpath)
