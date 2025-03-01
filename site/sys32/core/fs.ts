@@ -1,313 +1,317 @@
-import { Listener } from "../util/events.js";
+// import { Listener } from "../util/events.js";
 
-export interface Folder {
+// export interface Folder {
 
-  path: string;
+//   path: string;
 
-  getFile(name: string): Promise<string | undefined>;
-  getFolder(name: string): Promise<Folder | undefined>;
+//   getFile(name: string): Promise<string | undefined>;
+//   getFolder(name: string): Promise<Folder | undefined>;
 
-  putFile(name: string, content: string): Promise<void>;
-  putFolder(name: string): Promise<Folder>;
+//   putFile(name: string, content: string): Promise<void>;
+//   putFolder(name: string): Promise<Folder>;
 
-  delFile(name: string): Promise<void>;
-  delFolder(name: string): Promise<void>;
+//   delFile(name: string): Promise<void>;
+//   delFolder(name: string): Promise<void>;
 
-  list(): Promise<{ kind: 'file' | 'folder', name: string }[]>;
+//   list(): Promise<{ kind: 'file' | 'folder', name: string }[]>;
 
-}
+// }
 
-class MemoryFolder implements Folder {
+// class MemoryFolder implements Folder {
 
-  path: string;
-  constructor(path: string) {
-    this.path = path;
-  }
+//   path: string;
+//   constructor(path: string) {
+//     this.path = path;
+//   }
 
-  #items: Record<string, Folder | string> = {};
+//   #items: Record<string, Folder | string> = {};
 
-  async getFile(name: string) {
-    const f = this.#items[name];
-    if (typeof f !== 'string') {
-      throw new Error(`Expected file got folder [${name}]`);
-    }
-    return f;
-  }
+//   async getFile(name: string) {
+//     const f = this.#items[name];
+//     if (typeof f !== 'string') {
+//       throw new Error(`Expected file got folder [${name}]`);
+//     }
+//     return f;
+//   }
 
-  async getFolder(name: string) {
-    const f = this.#items[name];
-    if (typeof f === 'string') {
-      throw new Error(`Expected folder got file [${name}]`);
-    }
-    return f;
-  }
+//   async getFolder(name: string) {
+//     const f = this.#items[name];
+//     if (typeof f === 'string') {
+//       throw new Error(`Expected folder got file [${name}]`);
+//     }
+//     return f;
+//   }
 
-  async putFile(name: string, content: string) {
-    this.#items[name] = content;
-  }
+//   async putFile(name: string, content: string) {
+//     this.#items[name] = content;
+//   }
 
-  async putFolder(name: string) {
-    const f = new MemoryFolder(this.path + name + '/');
-    this.#items[name] = f;
-    return f;
-  }
+//   async putFolder(name: string) {
+//     const f = new MemoryFolder(this.path + name + '/');
+//     this.#items[name] = f;
+//     return f;
+//   }
 
-  async list() {
-    return Object.keys(this.#items).map(name => {
-      const kind: 'file' | 'folder' = typeof name === 'string' ? 'file' : 'folder';
-      return { name, kind };
-    });
-  }
+//   async list() {
+//     return Object.keys(this.#items).map(name => {
+//       const kind: 'file' | 'folder' = typeof name === 'string' ? 'file' : 'folder';
+//       return { name, kind };
+//     });
+//   }
 
-  async delFile(name: string): Promise<void> {
-    delete this.#items[name];
-  }
+//   async delFile(name: string): Promise<void> {
+//     delete this.#items[name];
+//   }
 
-  async delFolder(name: string): Promise<void> {
-    delete this.#items[name];
-  }
+//   async delFolder(name: string): Promise<void> {
+//     delete this.#items[name];
+//   }
 
-}
+// }
 
-class IndexedDbFolder implements Folder {
+// class IndexedDbFolder implements Folder {
 
-  path: string;
-  #prefix: string;
+//   path: string;
+//   #prefix: string;
 
-  constructor(prefix: string) {
-    this.path = prefix;
-    this.#prefix = prefix;
-  }
+//   constructor(prefix: string) {
+//     this.path = prefix;
+//     this.#prefix = prefix;
+//   }
 
-  async getFile(name: string) {
-    const item = await this.#getitem(name);
-    return item.content;
-  }
+//   async getFile(name: string) {
+//     const item = await this.#getitem(name);
+//     return item.content;
+//   }
 
-  async getFolder(name: string) {
-    const item = await this.#getitem(name);
-    return item && new IndexedDbFolder(this.#prefix + name + '/');
-  }
+//   async getFolder(name: string) {
+//     const item = await this.#getitem(name);
+//     return item && new IndexedDbFolder(this.#prefix + name + '/');
+//   }
 
-  async putFile(name: string, content: string) {
-    return await new Promise<void>(resolve => {
-      const t = db.transaction('files', 'readwrite');
-      const store = t.objectStore('files');
-      const r = store.put({
-        name,
-        prefix: this.#prefix,
-        path: this.#prefix + name,
-        content,
-      });
-      r.onerror = console.error;
-      r.onsuccess = res => resolve();
-    });
-  }
+//   async putFile(name: string, content: string) {
+//     return await new Promise<void>(resolve => {
+//       const t = db.transaction('files', 'readwrite');
+//       const store = t.objectStore('files');
+//       const r = store.put({
+//         name,
+//         prefix: this.#prefix,
+//         path: this.#prefix + name,
+//         content,
+//       });
+//       r.onerror = console.error;
+//       r.onsuccess = res => resolve();
+//     });
+//   }
 
-  async putFolder(name: string) {
-    await new Promise<void>(resolve => {
-      const t = db.transaction('files', 'readwrite');
-      const store = t.objectStore('files');
-      const r = store.put({
-        name,
-        prefix: this.#prefix,
-        path: this.#prefix + name,
-      });
-      r.onerror = console.error;
-      r.onsuccess = res => resolve();
-    });
-    return new IndexedDbFolder(this.#prefix + name + '/');
-  }
+//   async putFolder(name: string) {
+//     await new Promise<void>(resolve => {
+//       const t = db.transaction('files', 'readwrite');
+//       const store = t.objectStore('files');
+//       const r = store.put({
+//         name,
+//         prefix: this.#prefix,
+//         path: this.#prefix + name,
+//       });
+//       r.onerror = console.error;
+//       r.onsuccess = res => resolve();
+//     });
+//     return new IndexedDbFolder(this.#prefix + name + '/');
+//   }
 
-  async #getitem(name: string) {
-    return await new Promise<DbFile>(resolve => {
-      const t = db.transaction('files', 'readonly');
-      const store = t.objectStore('files');
-      const r = store.get(this.#prefix + name);
-      r.onerror = console.error;
-      r.onsuccess = (e: any) => resolve(e.target.result);
-    });
-  }
+//   async #getitem(name: string) {
+//     return await new Promise<DbFile>(resolve => {
+//       const t = db.transaction('files', 'readonly');
+//       const store = t.objectStore('files');
+//       const r = store.get(this.#prefix + name);
+//       r.onerror = console.error;
+//       r.onsuccess = (e: any) => resolve(e.target.result);
+//     });
+//   }
 
-  async list(): Promise<{ kind: "file" | "folder"; name: string; }[]> {
-    const list = await new Promise<DbFile[]>(resolve => {
-      const t = db.transaction('files', 'readonly');
-      const store = t.objectStore('files');
-      const index = store.index('indexprefix');
-      const r = index.getAll(this.#prefix);
-      r.onerror = console.error;
-      r.onsuccess = (e: any) => resolve(e.target.result);
-    });
-    return list.map(it => ({
-      name: it.name,
-      kind: it.content === undefined ? 'folder' : 'file',
-    }));
-  }
+//   async list(): Promise<{ kind: "file" | "folder"; name: string; }[]> {
+//     const list = await new Promise<DbFile[]>(resolve => {
+//       const t = db.transaction('files', 'readonly');
+//       const store = t.objectStore('files');
+//       const index = store.index('indexprefix');
+//       const r = index.getAll(this.#prefix);
+//       r.onerror = console.error;
+//       r.onsuccess = (e: any) => resolve(e.target.result);
+//     });
+//     return list.map(it => ({
+//       name: it.name,
+//       kind: it.content === undefined ? 'folder' : 'file',
+//     }));
+//   }
 
-  async delFile(name: string): Promise<void> {
-    await this.#delitem(name);
-  }
+//   async delFile(name: string): Promise<void> {
+//     await this.#delitem(name);
+//   }
 
-  async delFolder(name: string): Promise<void> {
-    await this.#delitem(name);
-  }
+//   async delFolder(name: string): Promise<void> {
+//     await this.#delitem(name);
+//   }
 
-  async #delitem(name: string): Promise<void> {
-    await new Promise<DbFile>(resolve => {
-      const t = db.transaction('files', 'readonly');
-      const store = t.objectStore('files');
-      const r = store.delete(this.#prefix + name);
-      r.onerror = console.error;
-      r.onsuccess = (e: any) => resolve(e.target.result);
-    });
-  }
+//   async #delitem(name: string): Promise<void> {
+//     await new Promise<DbFile>(resolve => {
+//       const t = db.transaction('files', 'readonly');
+//       const store = t.objectStore('files');
+//       const r = store.delete(this.#prefix + name);
+//       r.onerror = console.error;
+//       r.onsuccess = (e: any) => resolve(e.target.result);
+//     });
+//   }
 
-}
+// }
 
-class UserFolder implements Folder {
+// class UserFolder implements Folder {
 
-  path: string;
-  #dir: FileSystemDirectoryHandle;
+//   path: string;
+//   #dir: FileSystemDirectoryHandle;
 
-  constructor(dir: FileSystemDirectoryHandle, path: string) {
-    this.path = path;
-    this.#dir = dir;
-  }
+//   constructor(dir: FileSystemDirectoryHandle, path: string) {
+//     this.path = path;
+//     this.#dir = dir;
+//   }
 
-  async getFile(name: string) {
-    const h = await this.#dir.getFileHandle(name);
-    const f = await h.getFile();
-    return await f.text();
-  }
+//   async getFile(name: string) {
+//     const h = await this.#dir.getFileHandle(name);
+//     const f = await h.getFile();
+//     return await f.text();
+//   }
 
-  async getFolder(name: string) {
-    const h = await this.#dir.getDirectoryHandle(name);
-    return new UserFolder(h, this.path + name + '/');
-  }
+//   async getFolder(name: string) {
+//     const h = await this.#dir.getDirectoryHandle(name);
+//     return new UserFolder(h, this.path + name + '/');
+//   }
 
-  async putFile(name: string, content: string) {
-    const h = await this.#dir.getFileHandle(name, { create: true });
-    const w = await h.createWritable();
-    await w.write(content);
-    await w.close();
-  }
+//   async putFile(name: string, content: string) {
+//     const h = await this.#dir.getFileHandle(name, { create: true });
+//     const w = await h.createWritable();
+//     await w.write(content);
+//     await w.close();
+//   }
 
-  async putFolder(name: string) {
-    const h = await this.#dir.getDirectoryHandle(name, { create: true });
-    return new UserFolder(h, this.path + name + '/');
-  }
+//   async putFolder(name: string) {
+//     const h = await this.#dir.getDirectoryHandle(name, { create: true });
+//     return new UserFolder(h, this.path + name + '/');
+//   }
 
-  async list() {
-    const list = [];
-    const entries = this.#dir.entries();
-    for await (const [name, obj] of entries) {
-      const kind: 'folder' | 'file' = (obj.kind === 'directory') ? 'folder' : 'file';
-      list.push({ name, kind });
-    }
-    return list;
-  }
+//   async list() {
+//     const list = [];
+//     const entries = this.#dir.entries();
+//     for await (const [name, obj] of entries) {
+//       const kind: 'folder' | 'file' = (obj.kind === 'directory') ? 'folder' : 'file';
+//       list.push({ name, kind });
+//     }
+//     return list;
+//   }
 
-  async delFile(name: string): Promise<void> {
-    this.#dir.removeEntry(name);
-  }
+//   async delFile(name: string): Promise<void> {
+//     this.#dir.removeEntry(name);
+//   }
 
-  async delFolder(name: string): Promise<void> {
-    this.#dir.removeEntry(name);
-  }
+//   async delFolder(name: string): Promise<void> {
+//     this.#dir.removeEntry(name);
+//   }
 
-}
+// }
 
 class FS {
 
-  sys = new MemoryFolder('sys/');
-  user = new IndexedDbFolder('user/');
+  // sys = new MemoryFolder('sys/');
+  // user = new IndexedDbFolder('user/');
 
-  drives: Record<string, Folder> = {
-    sys: this.sys,
-    user: this.user,
-  };
+  // drives: Record<string, Folder> = {
+  //   // sys: this.sys,
+  //   // user: this.user,
+  // };
 
-  async mountUserFolder(drive: string, dir: FileSystemDirectoryHandle) {
-    if (drive in this.drives) return null;
+  // async mountUserFolder(drive: string, dir: FileSystemDirectoryHandle) {
+  //   // if (drive in this.drives) return null;
 
-    await new Promise<void>(resolve => {
-      const t = db.transaction('mounts', 'readwrite');
-      const store = t.objectStore('mounts');
-      store.add({ drive, folder: dir });
-      t.onerror = console.error;
-      t.oncomplete = e => resolve();
-    });
-    const folder = new UserFolder(dir, drive + '/');
-    this.drives[drive] = folder;
-    return folder;
-  }
+  //   // await new Promise<void>(resolve => {
+  //   //   const t = db.transaction('mounts', 'readwrite');
+  //   //   const store = t.objectStore('mounts');
+  //   //   store.add({ drive, folder: dir });
+  //   //   t.onerror = console.error;
+  //   //   t.oncomplete = e => resolve();
+  //   // });
+  //   // const folder = new UserFolder(dir, drive + '/');
+  //   // this.drives[drive] = folder;
+  //   // return folder;
+  // }
 
-  async getFolder(path: string) {
-    const found = await this.#getdir(path);
-    if (!found) return undefined;
-    if (!found.base) return found.folder;
-    return found.folder.getFolder(found.base);
-  }
+  // async getFolder(path: string) {
+  //   // const found = await this.#getdir(path);
+  //   // if (!found) return undefined;
+  //   // if (!found.base) return found.folder;
+  //   // return found.folder.getFolder(found.base);
+  // }
+
+  #entries = new Map<string, string>();
 
   async loadFile(path: string): Promise<string | null> {
-    const file = await this.#getdir(path);
-    if (!file) return null;
+    return this.#entries.get(path) ?? null;
+    // const file = await this.#getdir(path);
+    // if (!file) return null;
 
-    const found = await file.folder.getFile(file.base);
-    return found ?? null;
+    // const found = await file.folder.getFile(file.base);
+    // return found ?? null;
   }
 
   async saveFile(path: string, content: string) {
-    const file = await this.#getdir(path);
-    if (!file) return;
+    this.#entries.set(path, content);
+    // const file = await this.#getdir(path);
+    // if (!file) return;
 
-    file.folder.putFile(file.base, content);
+    // file.folder.putFile(file.base, content);
 
-    this.#watchers.get(path)?.dispatch(content);
+    // this.#watchers.get(path)?.dispatch(content);
   }
 
-  #watchers = new Map<string, Listener<string>>();
+  // #watchers = new Map<string, Listener<string>>();
 
   watchTree(path: string, fn: (content: string) => void) {
-    let watcher = this.#watchers.get(path);
-    if (!watcher) this.#watchers.set(path, watcher = new Listener());
-    watcher.watch(fn);
+    // let watcher = this.#watchers.get(path);
+    // if (!watcher) this.#watchers.set(path, watcher = new Listener());
+    // watcher.watch(fn);
   }
 
-  async #getdir(path: string) {
-    const segments = path.split('/');
+  // async #getdir(path: string) {
+  //   const segments = path.split('/');
 
-    const drive = segments.shift()!;
-    let folder: Folder = this.drives[drive];
+  //   const drive = segments.shift()!;
+  //   let folder: Folder = this.drives[drive];
 
-    while (segments.length > 1) {
-      const nextName = segments.shift()!;
-      const nextFolder = await folder.getFolder(nextName);
+  //   while (segments.length > 1) {
+  //     const nextName = segments.shift()!;
+  //     const nextFolder = await folder.getFolder(nextName);
 
-      if (!nextFolder) {
-        console.error(`No item in folder named "${nextName}"`);
-        return null;
-      }
+  //     if (!nextFolder) {
+  //       console.error(`No item in folder named "${nextName}"`);
+  //       return null;
+  //     }
 
-      folder = nextFolder;
-    }
+  //     folder = nextFolder;
+  //   }
 
-    return { folder, base: segments.pop()! };
-  }
+  //   return { folder, base: segments.pop()! };
+  // }
 
 }
 
-type DbMount = {
-  drive: string,
-  folder: FileSystemDirectoryHandle
-};
+// type DbMount = {
+//   drive: string,
+//   folder: FileSystemDirectoryHandle
+// };
 
-type DbFile = {
-  name: string,
-  path: string,
-  prefix: string,
-  content?: string,
-};
+// type DbFile = {
+//   name: string,
+//   path: string,
+//   prefix: string,
+//   content?: string,
+// };
 
 
 async function opendb<T>(dbname: string, key: keyof T & string) {
@@ -334,25 +338,25 @@ async function opendb<T>(dbname: string, key: keyof T & string) {
 }
 
 
-const db = await new Promise<IDBDatabase>(resolve => {
-  const r = window.indexedDB.open('fs', 1);
-  r.onerror = console.error;
-  r.onupgradeneeded = () => {
-    const db = r.result;
-    db.createObjectStore('mounts', { keyPath: 'drive' });
-    const files = db.createObjectStore('files', { keyPath: 'path' });
-    files.createIndex('indexprefix', 'prefix', { unique: false });
-  };
-  r.onsuccess = e => {
-    const db = r.result;
-    resolve(db);
-  };
-});
+// const db = await new Promise<IDBDatabase>(resolve => {
+//   const r = window.indexedDB.open('fs', 1);
+//   r.onerror = console.error;
+//   r.onupgradeneeded = () => {
+//     const db = r.result;
+//     db.createObjectStore('mounts', { keyPath: 'drive' });
+//     const files = db.createObjectStore('files', { keyPath: 'path' });
+//     files.createIndex('indexprefix', 'prefix', { unique: false });
+//   };
+//   r.onsuccess = e => {
+//     const db = r.result;
+//     resolve(db);
+//   };
+// });
 
 
 export const fs = new FS();
 await loadSystemData();
-await loadUserDrives();
+// await loadUserDrives();
 
 
 async function loadSystemData() {
@@ -364,22 +368,22 @@ async function loadSystemData() {
   }
 }
 
-async function loadUserDrives() {
-  const found = await new Promise<DbMount[]>(resolve => {
-    const t = db.transaction('mounts', 'readonly');
-    const store = t.objectStore('mounts');
-    const r = store.getAll();
-    r.onerror = console.error;
-    r.onsuccess = (e) => resolve(r.result);
-  });
-  for (const { drive, folder } of found) {
-    const observer = new FileSystemObserver((records) => {
-      console.log(records)
-    });
+// async function loadUserDrives() {
+//   const found = await new Promise<DbMount[]>(resolve => {
+//     const t = db.transaction('mounts', 'readonly');
+//     const store = t.objectStore('mounts');
+//     const r = store.getAll();
+//     r.onerror = console.error;
+//     r.onsuccess = (e) => resolve(r.result);
+//   });
+//   for (const { drive, folder } of found) {
+//     const observer = new FileSystemObserver((records) => {
+//       console.log(records)
+//     });
 
-    observer.observe(folder, { recursive: true });
-    // observer.disconnect
+//     observer.observe(folder, { recursive: true });
+//     // observer.disconnect
 
-    fs.drives[drive] = new UserFolder(folder, drive + '/');
-  }
-}
+//     fs.drives[drive] = new UserFolder(folder, drive + '/');
+//   }
+// }
