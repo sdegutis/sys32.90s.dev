@@ -1,55 +1,10 @@
-type FileSystemObserverRecordCommon = {};
-
-type FileSystemObserverRecordAppeared = {
-  type: 'appeared',
-  root: FileSystemHandle,
-  changedHandle: FileSystemHandle | null,
-  relativePathComponents: string[],
-};
-
-type FileSystemObserverRecordDisappeared = {
-  type: 'disappeared',
-  root: FileSystemHandle,
-  changedHandle: null,
-  relativePathComponents: string[],
-};
-
-type FileSystemObserverRecordModified = {
-  type: 'modified',
-  root: FileSystemHandle,
-  changedHandle: FileSystemHandle | null,
-  relativePathComponents: string[],
-};
-
-type FileSystemObserverRecordMoved = {
-  type: 'moved',
-  root: FileSystemHandle,
-  changedHandle: FileSystemHandle | null,
-  relativePathComponents: string[],
-  relativePathMovedFrom: string[],
-};
-
-type FileSystemObserverRecordUnknown = {
-  type: 'unknown',
-  root: FileSystemHandle,
-  changedHandle: null,
-  relativePathComponents: string[],
-};
-
-type FileSystemObserverRecordErrored = {
-  type: 'errored',
-  root: FileSystemHandle,
-  changedHandle: null,
-  relativePathComponents: string[],
-};
-
 type FileSystemObserverRecord =
-  | FileSystemObserverRecordAppeared
-  | FileSystemObserverRecordDisappeared
-  | FileSystemObserverRecordModified
-  | FileSystemObserverRecordMoved
-  | FileSystemObserverRecordUnknown
-  | FileSystemObserverRecordErrored;
+  | { root: FileSystemHandle, relativePathComponents: string[], type: 'appeared', changedHandle: FileSystemHandle }
+  | { root: FileSystemHandle, relativePathComponents: string[], type: 'disappeared', changedHandle: null }
+  | { root: FileSystemHandle, relativePathComponents: string[], type: 'modified', changedHandle: FileSystemHandle }
+  | { root: FileSystemHandle, relativePathComponents: string[], type: 'moved', changedHandle: FileSystemHandle, relativePathMovedFrom: string[] }
+  | { root: FileSystemHandle, relativePathComponents: string[], type: 'unknown', changedHandle: null }
+  | { root: FileSystemHandle, relativePathComponents: string[], type: 'errored', changedHandle: null };
 
 declare class FileSystemObserver {
   constructor(callback: (records: FileSystemObserverRecord[], observer: FileSystemObserver) => void);
