@@ -1,5 +1,4 @@
 import { Bitmap } from "./bitmap.js";
-import { CRT } from "./crt.js";
 
 export const CHARSET = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`;
 
@@ -45,7 +44,7 @@ export class Font {
     };
   }
 
-  print(crt: CRT, x: number, y: number, c: number, text: string) {
+  print(x: number, y: number, c: number, text: string) {
     text = text.toLowerCase();
 
     let posx = 0;
@@ -65,7 +64,7 @@ export class Font {
       const px = x + (posx * (this.width + 1));
       const py = y + (posy * (this.height + 2));
 
-      map.draw(crt, px, py, c);
+      map.draw(px, py, c);
 
       posx++;
     }

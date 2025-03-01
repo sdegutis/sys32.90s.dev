@@ -1,5 +1,4 @@
 import { Label } from "../controls/label.js";
-import { crt } from "../core/crt.js";
 
 export class TextArea extends Label {
 
@@ -37,7 +36,7 @@ export class TextArea extends Label {
       const py = y + (posy * 6);
 
       const map = font.chars[ch];
-      map.draw(crt, px, py, c);
+      map.draw(px, py, c);
 
       posx++;
 

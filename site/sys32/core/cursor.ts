@@ -1,5 +1,4 @@
 import { Bitmap } from "./bitmap.js";
-import { crt } from "./crt.js";
 
 export class Cursor {
 
@@ -30,7 +29,7 @@ export class Cursor {
   }
 
   draw(x: number, y: number) {
-    this.#bitmap.draw(crt, x - this.#ox, y - this.#oy);
+    this.#bitmap.draw(x - this.#ox, y - this.#oy);
   }
 
 }

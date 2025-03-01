@@ -1,4 +1,4 @@
-import { CRT } from "./crt.js";
+import { crt } from "./crt.js";
 
 export class Bitmap {
 
@@ -14,7 +14,7 @@ export class Bitmap {
     this.height = this.pixels.length / w;
   }
 
-  draw(crt: CRT, px: number, py: number, c?: number) {
+  draw(px: number, py: number, c?: number) {
     let i = 0;
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {

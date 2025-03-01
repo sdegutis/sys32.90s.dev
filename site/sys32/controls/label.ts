@@ -1,4 +1,3 @@
-import { crt } from "../core/crt.js";
 import { sys } from "../core/system.js";
 import { View } from "../core/view.js";
 
@@ -17,7 +16,7 @@ export class Label extends View {
 
   override draw() {
     super.draw();
-    this.font.print(crt, 0, 0, this.color, this.text);
+    this.font.print(0, 0, this.color, this.text);
   }
 
 }
