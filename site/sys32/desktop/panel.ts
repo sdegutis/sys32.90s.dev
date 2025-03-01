@@ -7,7 +7,7 @@ import { ImageView } from "../controls/image.js";
 import { Label } from "../controls/label.js";
 import { Bitmap } from "../core/bitmap.js";
 import { Cursor } from "../core/cursor.js";
-import { sys, System } from "../core/system.js";
+import { sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
 import { Listener } from "../util/events.js";
 import { makeVacuumLayout } from "../util/layouts.js";
@@ -189,16 +189,14 @@ export class Panel extends View {
   }
 
   override onFocus(): void {
-    const old = focusedPanel.get(sys);
-    if (old === this) return;
-
-    if (old) old.#unfocus();
-
-    focusedPanel.set(sys, this);
+    if (focusedPanel === this) return;
+    if (focusedPanel) focusedPanel.#unfocus();
+    focusedPanel = this;
     this.#focus();
   }
 
   #unfocus() {
+    focusedPanel = undefined;
     this.panelFocused = false;
   }
 
@@ -214,4 +212,4 @@ export class Panel extends View {
 
 }
 
-const focusedPanel = new WeakMap<System, Panel>();
+let focusedPanel: Panel | undefined;
