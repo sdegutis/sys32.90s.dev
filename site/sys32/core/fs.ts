@@ -1,168 +1,14 @@
-// import { Listener } from "../util/events.js";
+import { Listener } from "../util/events.js";
 
-// export interface Folder {
+const mounts = await opendb<{
+  drive: string,
+  dir: FileSystemDirectoryHandle,
+}>('mounts', 'drive');
 
-//   path: string;
-
-//   getFile(name: string): Promise<string | undefined>;
-//   getFolder(name: string): Promise<Folder | undefined>;
-
-//   putFile(name: string, content: string): Promise<void>;
-//   putFolder(name: string): Promise<Folder>;
-
-//   delFile(name: string): Promise<void>;
-//   delFolder(name: string): Promise<void>;
-
-//   list(): Promise<{ kind: 'file' | 'folder', name: string }[]>;
-
-// }
-
-// class MemoryFolder implements Folder {
-
-//   path: string;
-//   constructor(path: string) {
-//     this.path = path;
-//   }
-
-//   #items: Record<string, Folder | string> = {};
-
-//   async getFile(name: string) {
-//     const f = this.#items[name];
-//     if (typeof f !== 'string') {
-//       throw new Error(`Expected file got folder [${name}]`);
-//     }
-//     return f;
-//   }
-
-//   async getFolder(name: string) {
-//     const f = this.#items[name];
-//     if (typeof f === 'string') {
-//       throw new Error(`Expected folder got file [${name}]`);
-//     }
-//     return f;
-//   }
-
-//   async putFile(name: string, content: string) {
-//     this.#items[name] = content;
-//   }
-
-//   async putFolder(name: string) {
-//     const f = new MemoryFolder(this.path + name + '/');
-//     this.#items[name] = f;
-//     return f;
-//   }
-
-//   async list() {
-//     return Object.keys(this.#items).map(name => {
-//       const kind: 'file' | 'folder' = typeof name === 'string' ? 'file' : 'folder';
-//       return { name, kind };
-//     });
-//   }
-
-//   async delFile(name: string): Promise<void> {
-//     delete this.#items[name];
-//   }
-
-//   async delFolder(name: string): Promise<void> {
-//     delete this.#items[name];
-//   }
-
-// }
-
-// class IndexedDbFolder implements Folder {
-
-//   path: string;
-//   #prefix: string;
-
-//   constructor(prefix: string) {
-//     this.path = prefix;
-//     this.#prefix = prefix;
-//   }
-
-//   async getFile(name: string) {
-//     const item = await this.#getitem(name);
-//     return item.content;
-//   }
-
-//   async getFolder(name: string) {
-//     const item = await this.#getitem(name);
-//     return item && new IndexedDbFolder(this.#prefix + name + '/');
-//   }
-
-//   async putFile(name: string, content: string) {
-//     return await new Promise<void>(resolve => {
-//       const t = db.transaction('files', 'readwrite');
-//       const store = t.objectStore('files');
-//       const r = store.put({
-//         name,
-//         prefix: this.#prefix,
-//         path: this.#prefix + name,
-//         content,
-//       });
-//       r.onerror = console.error;
-//       r.onsuccess = res => resolve();
-//     });
-//   }
-
-//   async putFolder(name: string) {
-//     await new Promise<void>(resolve => {
-//       const t = db.transaction('files', 'readwrite');
-//       const store = t.objectStore('files');
-//       const r = store.put({
-//         name,
-//         prefix: this.#prefix,
-//         path: this.#prefix + name,
-//       });
-//       r.onerror = console.error;
-//       r.onsuccess = res => resolve();
-//     });
-//     return new IndexedDbFolder(this.#prefix + name + '/');
-//   }
-
-//   async #getitem(name: string) {
-//     return await new Promise<DbFile>(resolve => {
-//       const t = db.transaction('files', 'readonly');
-//       const store = t.objectStore('files');
-//       const r = store.get(this.#prefix + name);
-//       r.onerror = console.error;
-//       r.onsuccess = (e: any) => resolve(e.target.result);
-//     });
-//   }
-
-//   async list(): Promise<{ kind: "file" | "folder"; name: string; }[]> {
-//     const list = await new Promise<DbFile[]>(resolve => {
-//       const t = db.transaction('files', 'readonly');
-//       const store = t.objectStore('files');
-//       const index = store.index('indexprefix');
-//       const r = index.getAll(this.#prefix);
-//       r.onerror = console.error;
-//       r.onsuccess = (e: any) => resolve(e.target.result);
-//     });
-//     return list.map(it => ({
-//       name: it.name,
-//       kind: it.content === undefined ? 'folder' : 'file',
-//     }));
-//   }
-
-//   async delFile(name: string): Promise<void> {
-//     await this.#delitem(name);
-//   }
-
-//   async delFolder(name: string): Promise<void> {
-//     await this.#delitem(name);
-//   }
-
-//   async #delitem(name: string): Promise<void> {
-//     await new Promise<DbFile>(resolve => {
-//       const t = db.transaction('files', 'readonly');
-//       const store = t.objectStore('files');
-//       const r = store.delete(this.#prefix + name);
-//       r.onerror = console.error;
-//       r.onsuccess = (e: any) => resolve(e.target.result);
-//     });
-//   }
-
-// }
+const idbfs = await opendb<{
+  path: string,
+  content: string,
+}>('idbfs', 'path');
 
 // class UserFolder implements Folder {
 
@@ -217,102 +63,109 @@
 
 // }
 
-class FS {
+abstract class Drive {
 
-  // sys = new MemoryFolder('sys/');
-  // user = new IndexedDbFolder('user/');
+  entries = new Map<string, string>();
 
-  // drives: Record<string, Folder> = {
-  //   // sys: this.sys,
-  //   // user: this.user,
-  // };
-
-  // async mountUserFolder(drive: string, dir: FileSystemDirectoryHandle) {
-  //   // if (drive in this.drives) return null;
-
-  //   // await new Promise<void>(resolve => {
-  //   //   const t = db.transaction('mounts', 'readwrite');
-  //   //   const store = t.objectStore('mounts');
-  //   //   store.add({ drive, folder: dir });
-  //   //   t.onerror = console.error;
-  //   //   t.oncomplete = e => resolve();
-  //   // });
-  //   // const folder = new UserFolder(dir, drive + '/');
-  //   // this.drives[drive] = folder;
-  //   // return folder;
-  // }
-
-  // async getFolder(path: string) {
-  //   // const found = await this.#getdir(path);
-  //   // if (!found) return undefined;
-  //   // if (!found.base) return found.folder;
-  //   // return found.folder.getFolder(found.base);
-  // }
-
-  #entries = new Map<string, string>();
-
-  loadFile(path: string): string | undefined {
-    return this.#entries.get(path);
-    // const file = await this.#getdir(path);
-    // if (!file) return null;
-
-    // const found = await file.folder.getFile(file.base);
-    // return found ?? null;
-  }
-
-  saveFile(path: string, content: string) {
-    this.#entries.set(path, content);
-    // const file = await this.#getdir(path);
-    // if (!file) return;
-
-    // file.folder.putFile(file.base, content);
-
-    // this.#watchers.get(path)?.dispatch(content);
-  }
-
-  // #watchers = new Map<string, Listener<string>>();
-
-  watchTree(path: string, fn: (content: string) => void) {
-    // let watcher = this.#watchers.get(path);
-    // if (!watcher) this.#watchers.set(path, watcher = new Listener());
-    // watcher.watch(fn);
-  }
-
-  // async #getdir(path: string) {
-  //   const segments = path.split('/');
-
-  //   const drive = segments.shift()!;
-  //   let folder: Folder = this.drives[drive];
-
-  //   while (segments.length > 1) {
-  //     const nextName = segments.shift()!;
-  //     const nextFolder = await folder.getFolder(nextName);
-
-  //     if (!nextFolder) {
-  //       console.error(`No item in folder named "${nextName}"`);
-  //       return null;
-  //     }
-
-  //     folder = nextFolder;
-  //   }
-
-  //   return { folder, base: segments.pop()! };
-  // }
+  save?(path: string, content: string): void;
 
 }
 
-// type DbMount = {
-//   drive: string,
-//   folder: FileSystemDirectoryHandle
-// };
+class MemoryDrive extends Drive {
 
-// type DbFile = {
-//   name: string,
-//   path: string,
-//   prefix: string,
-//   content?: string,
-// };
+}
 
+class IdbDrive extends Drive {
+
+  override save(path: string, content: string): void {
+    idbfs.set({ path, content });
+  }
+
+}
+
+class MountedRealDrive extends Drive {
+
+  constructor(dir: FileSystemDirectoryHandle) {
+    super();
+  }
+
+  override save(path: string, content: string): void {
+
+  }
+
+}
+
+export type FolderEntry = { name: string, kind: 'file' | 'folder' };
+
+function sortBy<T, U>(fn: (o: T) => U) {
+  return (a: T, b: T) => {
+    const aa = fn(a);
+    const bb = fn(b);
+    if (aa < bb) return -1;
+    if (aa > bb) return +1;
+    return 0;
+  };
+}
+
+class FS {
+
+  #drives: Record<string, Drive> = {
+    sys: new MemoryDrive(),
+    user: new IdbDrive(),
+  };
+
+  mountUserFolder(drive: string, folder: FileSystemDirectoryHandle) {
+    if (drive in this.#drives) return;
+    mounts.set({ drive, dir: folder });
+    this.#drives[drive] = new MountedRealDrive(folder);
+
+    // const observer = new FileSystemObserver((records) => {
+    //   console.log(records)
+    // });
+    // observer.observe(folder, { recursive: true });
+    // // observer.disconnect
+
+  }
+
+  drives() {
+    return Object.keys(this.#drives);
+  }
+
+  list(fullpath: string): FolderEntry[] {
+    const [drive, path] = this.#split(fullpath)
+    console.log('list', drive, path, drive.entries)
+    // files.sort(sortBy(f => (f.kind === 'folder' ? 1 : 2) + f.name));
+    return [];
+  }
+
+  loadFile(fullpath: string): string | undefined {
+    const [drive, path] = this.#split(fullpath)
+    return drive.entries.get(path);
+  }
+
+  saveFile(fullpath: string, content: string) {
+    const [drive, path] = this.#split(fullpath)
+    drive.entries.set(path, content);
+    drive.save?.(path, content);
+    this.#watchers.get(path)?.dispatch(content);
+  }
+
+  #split<T>(fullpath: string) {
+    const i = fullpath.indexOf('/');
+    const drivename = fullpath.slice(0, i);
+    const drivepath = fullpath.slice(i);
+    return [this.#drives[drivename], drivepath] as const;
+  }
+
+  #watchers = new Map<string, Listener<string>>();
+
+  watchTree(path: string, fn: (content: string) => void) {
+    let watcher = this.#watchers.get(path);
+    if (!watcher) this.#watchers.set(path, watcher = new Listener());
+    watcher.watch(fn);
+  }
+
+}
 
 async function opendb<T>(dbname: string, key: keyof T & string) {
   const db = await new Promise<IDBDatabase>(resolve => {
@@ -337,28 +190,6 @@ async function opendb<T>(dbname: string, key: keyof T & string) {
   };
 }
 
-
-// const db = await new Promise<IDBDatabase>(resolve => {
-//   const r = window.indexedDB.open('fs', 1);
-//   r.onerror = console.error;
-//   r.onupgradeneeded = () => {
-//     const db = r.result;
-//     db.createObjectStore('mounts', { keyPath: 'drive' });
-//     const files = db.createObjectStore('files', { keyPath: 'path' });
-//     files.createIndex('indexprefix', 'prefix', { unique: false });
-//   };
-//   r.onsuccess = e => {
-//     const db = r.result;
-//     resolve(db);
-//   };
-// });
-
-
-export const fs = new FS();
-await loadSystemData();
-// await loadUserDrives();
-
-
 async function loadSystemData() {
   const files = await fetch(import.meta.resolve('./data.json')).then(r => r.json());
   for (const file of files) {
@@ -368,22 +199,19 @@ async function loadSystemData() {
   }
 }
 
-// async function loadUserDrives() {
-//   const found = await new Promise<DbMount[]>(resolve => {
-//     const t = db.transaction('mounts', 'readonly');
-//     const store = t.objectStore('mounts');
-//     const r = store.getAll();
-//     r.onerror = console.error;
-//     r.onsuccess = (e) => resolve(r.result);
-//   });
-//   for (const { drive, folder } of found) {
-//     const observer = new FileSystemObserver((records) => {
-//       console.log(records)
-//     });
+async function loadIdbDrive() {
+  for (const { path, content } of await idbfs.all()) {
+    fs.saveFile(`user${path}`, content);
+  }
+}
 
-//     observer.observe(folder, { recursive: true });
-//     // observer.disconnect
+async function loadMountedDrives() {
+  for (const { drive, dir } of await mounts.all()) {
+    fs.mountUserFolder(drive, dir);
+  }
+}
 
-//     fs.drives[drive] = new UserFolder(folder, drive + '/');
-//   }
-// }
+export const fs = new FS();
+await loadSystemData();
+await loadIdbDrive();
+await loadMountedDrives();

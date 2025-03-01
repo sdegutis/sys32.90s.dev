@@ -133,7 +133,7 @@ export default (filepath?: string) => {
 
   }
   else {
-    filepath = 'b/test1.bitmap';
+    filepath = 'user/test1.bitmap';
   }
 
 
