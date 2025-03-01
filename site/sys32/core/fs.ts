@@ -310,10 +310,10 @@ type DbFile = {
 };
 
 
-async function opendb<T extends { key: string }>(dbname: string) {
+async function opendb<T>(dbname: string, key: keyof T & string) {
   const db = await new Promise<IDBDatabase>(resolve => {
     const r = window.indexedDB.open(dbname, 1);
-    r.onupgradeneeded = () => { r.result.createObjectStore('kvs', { keyPath: 'key' }); };
+    r.onupgradeneeded = () => { r.result.createObjectStore('kvs', { keyPath: key }); };
     r.onsuccess = () => { resolve(r.result); };
   });
 
