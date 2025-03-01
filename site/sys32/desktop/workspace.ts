@@ -103,8 +103,8 @@ export class Workspace {
     this.#panels.addChild(button);
     this.#panels.layoutTree();
 
-    panel.$reactives.title.watch(s => label.text = s);
-    label.$reactives.text.watch(s => { this.#panels.layoutTree(); });
+    panel.$data.title.watch(s => label.text = s);
+    label.$data.text.watch(s => { this.#panels.layoutTree(); });
 
     panel.didClose.watch(() => {
       button.parent?.removeChild(button);

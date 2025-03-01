@@ -100,33 +100,33 @@ export class View {
     return null;
   }
 
-  $reactives = Object.create(null) as {
-    [K in Exclude<keyof this, '$reactives'>]: Reactive<any>
+  $data = Object.create(null) as {
+    [K in Exclude<keyof this, '$data'>]: Reactive<any>
   };
 
 }
 
 export function $<T extends View>(
   ctor: { new(): T; },
-  config: Partial<Omit<T, '$reactives'> & { $: Partial<T['$reactives']> }>,
+  config: Partial<Omit<T, '$data'> & { $: Partial<T['$data']> }>,
   ...children: View[]
 ): T {
   const view = new ctor();
   Object.assign(view, { children }, config);
   for (let [key, val] of Object.entries(view)) {
-    if (key === '$reactives') continue;
+    if (key === '$data') continue;
     if (typeof val === 'function') continue;
     if (val instanceof Listener) continue;
     if (val instanceof Array) continue;
     if (Object.getOwnPropertyDescriptor(view, key)?.get) continue;
 
     const r = new Reactive(view[key as keyof View]);
-    view.$reactives[key as keyof View['$reactives']] = r;
+    view.$data[key as keyof View['$data']] = r;
 
     Object.defineProperty(view, key, {
       enumerable: true,
-      set: (v) => view.$reactives[key as keyof View['$reactives']].val = v,
-      get: () => view.$reactives[key as keyof View['$reactives']].val,
+      set: (v) => view.$data[key as keyof View['$data']].val = v,
+      get: () => view.$data[key as keyof View['$data']].val,
     });
   }
   view.init?.();

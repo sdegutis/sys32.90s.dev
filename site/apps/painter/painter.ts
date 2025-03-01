@@ -61,19 +61,19 @@ export default (filepath?: string) => {
   const pencilTool = panel.find<View>('pencilTool')!;
   const eraserTool = panel.find<View>('eraserTool')!;
 
-  panel.find<Slider>('zoom-slider')!.$reactives.val = paintView.$reactives.zoom;
+  panel.find<Slider>('zoom-slider')!.$data.val = paintView.$data.zoom;
 
-  paintView.$reactives.width.watch(n => widthLabel.text = n.toString());
-  paintView.$reactives.height.watch(n => heightLabel.text = n.toString());
+  paintView.$data.width.watch(n => widthLabel.text = n.toString());
+  paintView.$data.height.watch(n => heightLabel.text = n.toString());
 
-  widthLabel.$reactives.text.watch(() => { widthLabel.parent?.layoutTree() });
-  heightLabel.$reactives.text.watch(() => { heightLabel.parent?.layoutTree() });
+  widthLabel.$data.text.watch(() => { widthLabel.parent?.layoutTree() });
+  heightLabel.$data.text.watch(() => { heightLabel.parent?.layoutTree() });
 
-  paintView.$reactives.zoom.watch(n => zoomLabel.text = n.toString());
-  paintView.$reactives.zoom.watch(n => panel.layoutTree());
+  paintView.$data.zoom.watch(n => zoomLabel.text = n.toString());
+  paintView.$data.zoom.watch(n => panel.layoutTree());
 
-  paintView.$reactives.tool.watch(t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff);
-  paintView.$reactives.tool.watch(t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff);
+  paintView.$data.tool.watch(t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff);
+  paintView.$data.tool.watch(t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff);
 
   async function addColor() {
     const colorCode = await showPrompt('enter color code:');
@@ -91,9 +91,9 @@ export default (filepath?: string) => {
     const border = $(Button, { all: 1, onClick: () => { paintView.color = color; } }, colorView);
 
     multiplex({
-      currentColor: paintView.$reactives.color,
-      hovered: border.$reactives.hovered,
-      pressed: border.$reactives.pressed,
+      currentColor: paintView.$data.color,
+      hovered: border.$data.hovered,
+      pressed: border.$data.pressed,
     }).watch(data => {
       let c = 0;
       if (data.currentColor === color) c = 0xffffff77;
@@ -109,7 +109,7 @@ export default (filepath?: string) => {
     makeColorButton(color);
   }
 
-  paintView.$reactives.color.watch(color => colorLabel.text = '0x' + color.toString(16).padStart(8, '0'));
+  paintView.$data.color.watch(color => colorLabel.text = '0x' + color.toString(16).padStart(8, '0'));
 
   const filesource = new Reactive('');
 
@@ -164,7 +164,7 @@ export default (filepath?: string) => {
     return false;
   };
 
-  paintView.$reactives.color.watch(color => {
+  paintView.$data.color.watch(color => {
     if (!colorsWithButtons.has(color)) {
       makeColorButton(color);
       toolArea.parent?.layoutTree();

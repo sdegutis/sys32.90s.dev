@@ -55,8 +55,8 @@ export default () => {
 
               multiplex({
                 currentTool: map.currentTool,
-                hovered: button.$reactives.hovered,
-                pressed: button.$reactives.pressed,
+                hovered: button.$data.hovered,
+                pressed: button.$data.pressed,
               }).watch(data => {
                 let color = 0;
                 if (data.currentTool === i) color = 0xffffff77;
