@@ -1,14 +1,14 @@
-import { GroupX, GroupY } from "../../sys32/containers/group.js";
-import { Scroll } from "../../sys32/containers/scroll.js";
-import { SplitX } from "../../sys32/containers/split.js";
-import { Button } from "../../sys32/controls/button.js";
-import { ImageView } from "../../sys32/controls/image.js";
-import { Label } from "../../sys32/controls/label.js";
-import { Bitmap } from "../../sys32/core/bitmap.js";
-import { fs, type FolderEntry } from "../../sys32/core/fs.js";
-import { $ } from "../../sys32/core/view.js";
-import { Panel } from "../../sys32/desktop/panel.js";
-import { showPrompt } from "../../sys32/util/dialog.js";
+import { GroupX, GroupY } from "../../os/containers/group.js";
+import { Scroll } from "../../os/containers/scroll.js";
+import { SplitX } from "../../os/containers/split.js";
+import { Button } from "../../os/controls/button.js";
+import { ImageView } from "../../os/controls/image.js";
+import { Label } from "../../os/controls/label.js";
+import { Bitmap } from "../../os/core/bitmap.js";
+import { fs, type FolderEntry } from "../../os/core/fs.js";
+import { $ } from "../../os/core/view.js";
+import { Panel } from "../../os/desktop/panel.js";
+import { showPrompt } from "../../os/util/dialog.js";
 import fontmaker from "../fontmaker/fontmaker.js";
 import painter from "../painter/painter.js";
 

@@ -1,6 +1,6 @@
-import { crt } from "./sys32/core/crt.js";
-import { sys } from "./sys32/core/system.js";
-import { Workspace } from "./sys32/desktop/workspace.js";
+import { crt } from "./os/core/crt.js";
+import { sys } from "./os/core/system.js";
+import { Workspace } from "./os/desktop/workspace.js";
 
 sys.init(document.querySelector('canvas')!);
 crt.autoscale();

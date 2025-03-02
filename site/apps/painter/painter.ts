@@ -1,22 +1,22 @@
-import { GroupX } from "../../sys32/containers/group.js";
-import { PanedXB, PanedYB } from "../../sys32/containers/paned.js";
-import { Scroll } from "../../sys32/containers/scroll.js";
-import { SpacedX } from "../../sys32/containers/spaced.js";
-import { Button } from "../../sys32/controls/button.js";
-import { Label } from "../../sys32/controls/label.js";
-import { Slider } from "../../sys32/controls/slider.js";
-import { Bitmap } from "../../sys32/core/bitmap.js";
-import { crt } from "../../sys32/core/crt.js";
-import { emptyCursor } from "../../sys32/core/cursor.js";
-import { fs } from "../../sys32/core/fs.js";
-import { sys } from "../../sys32/core/system.js";
-import { $, View } from "../../sys32/core/view.js";
-import { Panel } from "../../sys32/desktop/panel.js";
-import { showPrompt } from "../../sys32/util/dialog.js";
-import { makeStripeDrawer } from "../../sys32/util/draw.js";
-import { multiplex, Reactive } from "../../sys32/util/events.js";
-import { makeFlowLayout } from "../../sys32/util/layouts.js";
-import { dragResize } from "../../sys32/util/selections.js";
+import { GroupX } from "../../os/containers/group.js";
+import { PanedXB, PanedYB } from "../../os/containers/paned.js";
+import { Scroll } from "../../os/containers/scroll.js";
+import { SpacedX } from "../../os/containers/spaced.js";
+import { Button } from "../../os/controls/button.js";
+import { Label } from "../../os/controls/label.js";
+import { Slider } from "../../os/controls/slider.js";
+import { Bitmap } from "../../os/core/bitmap.js";
+import { crt } from "../../os/core/crt.js";
+import { emptyCursor } from "../../os/core/cursor.js";
+import { fs } from "../../os/core/fs.js";
+import { sys } from "../../os/core/system.js";
+import { $, View } from "../../os/core/view.js";
+import { Panel } from "../../os/desktop/panel.js";
+import { showPrompt } from "../../os/util/dialog.js";
+import { makeStripeDrawer } from "../../os/util/draw.js";
+import { multiplex, Reactive } from "../../os/util/events.js";
+import { makeFlowLayout } from "../../os/util/layouts.js";
+import { dragResize } from "../../os/util/selections.js";
 
 export default (filepath?: string) => {
 

@@ -1,15 +1,15 @@
-import { PanedXA, PanedYA } from "../../sys32/containers/paned.js";
-import { Button } from "../../sys32/controls/button.js";
-import { Label } from "../../sys32/controls/label.js";
-import { crt } from "../../sys32/core/crt.js";
-import { emptyCursor } from "../../sys32/core/cursor.js";
-import { sys } from "../../sys32/core/system.js";
-import { $, View } from "../../sys32/core/view.js";
-import { Panel } from "../../sys32/desktop/panel.js";
-import { makeStripeDrawer } from "../../sys32/util/draw.js";
-import { multiplex, Reactive } from "../../sys32/util/events.js";
-import { makeFlowLayoutY, makeVacuumLayout } from "../../sys32/util/layouts.js";
-import { dragMove, TileSelection } from "../../sys32/util/selections.js";
+import { PanedXA, PanedYA } from "../../os/containers/paned.js";
+import { Button } from "../../os/controls/button.js";
+import { Label } from "../../os/controls/label.js";
+import { crt } from "../../os/core/crt.js";
+import { emptyCursor } from "../../os/core/cursor.js";
+import { sys } from "../../os/core/system.js";
+import { $, View } from "../../os/core/view.js";
+import { Panel } from "../../os/desktop/panel.js";
+import { makeStripeDrawer } from "../../os/util/draw.js";
+import { multiplex, Reactive } from "../../os/util/events.js";
+import { makeFlowLayoutY, makeVacuumLayout } from "../../os/util/layouts.js";
+import { dragMove, TileSelection } from "../../os/util/selections.js";
 
 const COLORS = [
   0x000000ff, 0x1D2B53ff, 0x7E2553ff, 0x008751ff,

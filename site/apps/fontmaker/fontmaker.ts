@@ -1,17 +1,17 @@
-import { Border } from "../../sys32/containers/border.js";
-import { GroupX, GroupY } from "../../sys32/containers/group.js";
-import { PanedYB } from "../../sys32/containers/paned.js";
-import { Label } from "../../sys32/controls/label.js";
-import { Slider } from "../../sys32/controls/slider.js";
-import { Bitmap } from "../../sys32/core/bitmap.js";
-import { crt } from "../../sys32/core/crt.js";
-import { emptyCursor } from "../../sys32/core/cursor.js";
-import { CHARSET, Font } from "../../sys32/core/font.js";
-import { fs } from "../../sys32/core/fs.js";
-import { sys } from "../../sys32/core/system.js";
-import { $, View } from "../../sys32/core/view.js";
-import { Panel } from "../../sys32/desktop/panel.js";
-import { Listener, multiplex, Reactive } from "../../sys32/util/events.js";
+import { Border } from "../../os/containers/border.js";
+import { GroupX, GroupY } from "../../os/containers/group.js";
+import { PanedYB } from "../../os/containers/paned.js";
+import { Label } from "../../os/controls/label.js";
+import { Slider } from "../../os/controls/slider.js";
+import { Bitmap } from "../../os/core/bitmap.js";
+import { crt } from "../../os/core/crt.js";
+import { emptyCursor } from "../../os/core/cursor.js";
+import { CHARSET, Font } from "../../os/core/font.js";
+import { fs } from "../../os/core/fs.js";
+import { sys } from "../../os/core/system.js";
+import { $, View } from "../../os/core/view.js";
+import { Panel } from "../../os/desktop/panel.js";
+import { Listener, multiplex, Reactive } from "../../os/util/events.js";
 
 const SAMPLE_TEXT = [
   'the quick brown fox',
