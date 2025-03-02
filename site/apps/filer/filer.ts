@@ -6,12 +6,11 @@ import { Button } from "../../os/controls/button.js";
 import { ImageView } from "../../os/controls/image.js";
 import { Label } from "../../os/controls/label.js";
 import { Bitmap } from "../../os/core/bitmap.js";
-import { fs, type Folder } from "../../os/core/fs.js";
+import { fs } from "../../os/core/fs.js";
 import { $ } from "../../os/core/view.js";
 import { Panel } from "../../os/desktop/panel.js";
+import { ws } from "../../os/desktop/workspace.js";
 import { showPrompt } from "../../os/util/dialog.js";
-import fontmaker from "../fontmaker/fontmaker.js";
-import painter from "../painter/painter.js";
 
 
 const folderIcon = new Bitmap([0x990000ff], 1, [1]);
@@ -89,15 +88,7 @@ export default () => {
       ...dir.files.map(file => {
         return $(Button, {
           all: 2, onClick: () => {
-
-            //   if (file.name.endsWith('.bitmap')) {
-            //     painter(folder.path + file.name);
-            //   }
-            //   if (file.name.endsWith('.font')) {
-            //     fontmaker(folder.path + file.name);
-            //   }
-
-            console.log('clicked', [...base, file.name].join('/'))
+            ws.openFile([...base, file.name].join('/'));
           }
         },
           $(GroupX, { passthrough: true, gap: 2 },

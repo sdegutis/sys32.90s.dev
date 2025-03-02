@@ -127,11 +127,24 @@ class Workspace {
     sys.layoutTree();
   }
 
-  launch(name: string) {
-    this.#programs.get(name)?.();
+  launch(name: string, path?: string) {
+    this.#programs.get(name)?.(path);
   }
 
-  #programs = new Map<string, () => void>();
+  openFile(path: string) {
+    const progs: Record<string, string> = {
+      bitmap: 'painter',
+      font: 'fontmaker',
+    };
+    const ext = path.split('.').at(-1);
+    const prog = ext && progs[ext];
+
+    if (prog) {
+      this.launch(prog, path);
+    }
+  }
+
+  #programs = new Map<string, (string?: string) => void>();
 
 }
 
