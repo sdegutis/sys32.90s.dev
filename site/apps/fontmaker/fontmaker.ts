@@ -140,9 +140,14 @@ export default async (filename?: string) => {
 
   panel.onKeyDown = (key) => {
     if (key === 's' && sys.keys['Control']) {
-      const orderedChars = Object.keys(chars).sort();
-      const saveData = orderedChars.map(ch => chars[ch].toString()).join('===\n');
-      fs.saveFile('e/font1.font', saveData);
+
+      if (filename) {
+
+        const orderedChars = Object.keys(chars).sort();
+        const saveData = orderedChars.map(ch => chars[ch].toString()).join('===\n');
+        fs.saveFile(filename, saveData);
+      }
+
       return true;
     }
     return false;

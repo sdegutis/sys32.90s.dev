@@ -234,18 +234,26 @@ class FS {
     return dir.files.find(f => f.name === file)?.content;
   }
 
-  saveFile(fullpath: string, content: string) {
+  saveFile(filepath: string, content: string) {
     content = normalize(content);
 
+    const parts = filepath.split('/');
+    const file = parts.pop()!;
+    const dir = this.#nav(parts);
 
-
-    // this.#files.set(fullpath, content);
+    const existing = dir.files.find(f => f.name === file);
+    if (existing) {
+      existing.content = content;
+    }
+    else {
+      dir.files.push({ name: file, content });
+    }
 
     // const [drive, path] = this.#split(fullpath);
     // drive.push(path, content);
 
     for (const [watched, fn] of this.#watchers) {
-      if (watched.startsWith(fullpath)) {
+      if (watched.startsWith(filepath)) {
         fn.dispatch(content);
       }
     }

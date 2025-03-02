@@ -9,6 +9,10 @@ import { $, View } from "./view.js";
 
 const crt2025 = Font.fromString(fs.loadFile('sys/font1.font')!);
 
+// function livefile(path:string) {
+
+// }
+
 const pointer = new Reactive(Cursor.fromBitmap(Bitmap.fromString(fs.loadFile('sys/pointer.bitmap')!)));
 
 fs.watchTree('sys/pointer.bitmap', (content) => {
