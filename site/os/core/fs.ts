@@ -106,16 +106,6 @@ class MountedDrive implements Drive {
 
 export type FolderEntry = { name: string, kind: 'file' | 'folder' };
 
-function sortBy<T, U>(fn: (o: T) => U) {
-  return (a: T, b: T) => {
-    const aa = fn(a);
-    const bb = fn(b);
-    if (aa < bb) return -1;
-    if (aa > bb) return +1;
-    return 0;
-  };
-}
-
 class FS {
 
   #drives: Record<string, Drive> = {
@@ -190,6 +180,16 @@ class FS {
 
 function normalize(content: string): string {
   return content.replace(/\r\n/g, '\n');
+}
+
+function sortBy<T, U>(fn: (o: T) => U) {
+  return (a: T, b: T) => {
+    const aa = fn(a);
+    const bb = fn(b);
+    if (aa < bb) return -1;
+    if (aa > bb) return +1;
+    return 0;
+  };
 }
 
 async function opendb<T>(dbname: string, key: keyof T & string) {
