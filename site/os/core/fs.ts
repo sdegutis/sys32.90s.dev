@@ -1,14 +1,7 @@
 import { Listener } from "../util/events.js";
 
-const mounts = await opendb<{
-  drive: string,
-  dir: FileSystemDirectoryHandle,
-}>('mounts', 'drive');
-
-const idbfs = await opendb<{
-  path: string,
-  content: string,
-}>('idbfs', 'path');
+const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
+const idbfs = await opendb<{ path: string, content: string }>('idbfs', 'path');
 
 interface Drive {
   files: Map<string, string>;
@@ -115,7 +108,7 @@ class FS {
 
   async init() {
     for (const drive of Object.values(this.#drives)) {
-      drive.init();
+      await drive.init();
     }
     for (const { drive, dir } of await mounts.all()) {
       await this.mountUserFolder(drive, dir);
