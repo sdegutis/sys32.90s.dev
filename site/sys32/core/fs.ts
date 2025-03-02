@@ -144,6 +144,7 @@ class FS {
   }
 
   saveFile(fullpath: string, content: string) {
+    content = content.replace(/\r\n/g, '\n');
     const [drive, path] = this.#split(fullpath)
     drive.entries.set(path, content);
     drive.save?.(path, content);
