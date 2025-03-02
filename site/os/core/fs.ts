@@ -3,14 +3,16 @@ import { Listener } from "../util/events.js";
 const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
 const idbfs = await opendb<{ path: string, content: string }>('idbfs', 'path');
 
+type FileChanged = (path: string, content: string) => void;
+
 interface Drive {
-  init(addFile: (path: string, content: string) => void): Promise<void>;
+  init(addFile: FileChanged): Promise<void>;
   push(path: string, content: string): void;
 }
 
 class SysDrive implements Drive {
 
-  async init(addFile: (path: string, content: string) => void) {
+  async init(addFile: FileChanged) {
     const files = await fetch(import.meta.resolve('./data.json')).then(r => r.json());
     for (const file of files) {
       const data = await fetch(file).then(r => r.text());
@@ -25,7 +27,7 @@ class SysDrive implements Drive {
 
 class UserDrive implements Drive {
 
-  async init(addFile: (path: string, content: string) => void) {
+  async init(addFile: FileChanged) {
     for (const { path, content } of await idbfs.all()) {
       addFile(path, content);
     }
@@ -45,12 +47,12 @@ class MountedDrive implements Drive {
 
   changed;
 
-  constructor(dir: FileSystemDirectoryHandle, changed: (path: string, content: string) => void) {
+  constructor(dir: FileSystemDirectoryHandle, changed: FileChanged) {
     this.root = dir;
     this.changed = changed;
   }
 
-  async init(addFile: (path: string, content: string) => void) {
+  async init(addFile: FileChanged) {
     await this.#loaddir(this.root, '/', addFile);
 
     // const observer = new FileSystemObserver((records) => {
@@ -61,7 +63,7 @@ class MountedDrive implements Drive {
 
   }
 
-  async #loaddir(dir: FileSystemDirectoryHandle, path: string, addFile: (path: string, content: string) => void) {
+  async #loaddir(dir: FileSystemDirectoryHandle, path: string, addFile: FileChanged) {
     this.dhs.set(path, dir);
 
     for await (const [name, entry] of dir.entries()) {
