@@ -33,7 +33,7 @@ class System {
   root = $(View, { background: 0x00000000 });
   focused = this.root;
   keys: Record<string, boolean> = {};
-  mouse = { x: 0, y: 0, button: 0 };
+  mouse = { x: 0, y: 0 };
 
   onTick = new Listener<number>();
 
@@ -83,9 +83,8 @@ class System {
     canvas.addEventListener('mousedown', (e) => {
       canvas.focus();
       e.preventDefault();
-      this.mouse.button = e.button;
       this.#hovered.focus();
-      this.#hovered.onMouseDown?.();
+      this.#hovered.onMouseDown?.(e.button);
       this.needsRedraw = true;
     }, { signal: this.#destroyer.signal });
 

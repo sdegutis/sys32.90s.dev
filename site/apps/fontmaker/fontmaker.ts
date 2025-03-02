@@ -231,14 +231,14 @@ class CharView extends View {
     }
   }
 
-  override onMouseDown(): void {
+  override onMouseDown(button: number): void {
     sys.trackMouse({
       move: () => {
         const tx = Math.floor(this.mouse.x / this.zoom);
         const ty = Math.floor(this.mouse.y / this.zoom);
 
         const key = `${tx},${ty}`;
-        this.spots[key] = sys.mouse.button === 0;
+        this.spots[key] = button === 0;
         this.rebuidBitmap();
         this.rebuilt.dispatch(this);
       }
