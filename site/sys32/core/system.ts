@@ -10,7 +10,7 @@ const crt2025 = Font.fromString(fs.loadFile('sys/font1.font')!);
 
 const pointer = new Reactive(Cursor.fromBitmap(Bitmap.fromString(fs.loadFile('sys/pointer.bitmap')!)));
 
-fs.watchTree('sys/pointer.bitmap', (content) => {
+fs.watchFile('sys/pointer.bitmap', (content) => {
   console.log('cahgned', content)
   pointer.val = Cursor.fromBitmap(Bitmap.fromString(content));
 })

@@ -160,7 +160,7 @@ class FS {
 
   #watchers = new Map<string, Listener<string>>();
 
-  watchTree(path: string, fn: (content: string) => void) {
+  watchFile(path: string, fn: (content: string) => void) {
     let watcher = this.#watchers.get(path);
     if (!watcher) this.#watchers.set(path, watcher = new Listener());
     watcher.watch(fn);
