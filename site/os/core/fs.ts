@@ -45,11 +45,11 @@ class MountedDrive implements Drive {
   dhs = new Map<string, FileSystemDirectoryHandle>();
   fhs = new Map<string, FileSystemFileHandle>();
 
-  changed;
+  // changed: FileChanged;
 
-  constructor(dir: FileSystemDirectoryHandle, changed: FileChanged) {
+  constructor(dir: FileSystemDirectoryHandle) {
     this.root = dir;
-    this.changed = changed;
+    // this.changed = changed;
   }
 
   async init(addFile: FileChanged) {
@@ -117,9 +117,14 @@ class FS {
 
     mounts.set({ drive, dir: folder });
 
-    const mounted = new MountedDrive(folder, (path, content) => {
-      this.#watchers.get(drive + path)?.dispatch(content);
-    });
+    const mounted = new MountedDrive(folder
+      // , (path, content) => {
+      //   const fullpath = drive + path;
+      //   content = normalize(content);
+
+      //   // this.#files.set()
+      // }
+    );
 
     this.#drives[drive] = mounted;
 
@@ -127,7 +132,9 @@ class FS {
   }
 
   #addfile(drive: string, path: string, content: string) {
-    this.#files.set(drive + path, normalize(content));
+    content = normalize(content);
+
+    this.#files.set(drive + path, content);
   }
 
   drives() {
@@ -153,10 +160,17 @@ class FS {
 
   saveFile(fullpath: string, content: string) {
     content = normalize(content);
-    const [drive, path] = this.#split(fullpath)
+
     this.#files.set(fullpath, content);
+
+    const [drive, path] = this.#split(fullpath);
     drive.push(path, content);
-    this.#watchers.get(fullpath)?.dispatch(content);
+
+    for (const [watched, fn] of this.#watchers) {
+      if (watched.startsWith(fullpath)) {
+        fn.dispatch(content);
+      }
+    }
   }
 
   #split<T>(fullpath: string) {
@@ -168,10 +182,10 @@ class FS {
 
   #watchers = new Map<string, Listener<string>>();
 
-  watchFile(path: string, fn: (content: string) => void) {
+  watchTree(path: string, fn: (content: string) => void) {
     let watcher = this.#watchers.get(path);
     if (!watcher) this.#watchers.set(path, watcher = new Listener());
-    watcher.watch(fn);
+    return watcher.watch(fn);
   }
 
 }
