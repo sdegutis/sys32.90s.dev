@@ -88,7 +88,7 @@ class MountedDrive implements Drive {
     }
   }
 
-  push(path: string, content: string): void {
+  async push(path: string, content: string) {
     // const h = await this.#dir.getFileHandle(name, { create: true });
     // const w = await h.createWritable();
     // await w.write(content);
@@ -119,7 +119,7 @@ class FS {
     if (drive in this.#drives) return;
     mounts.set({ drive, dir: folder });
     const mounted = new MountedDrive(folder, (path, content) => {
-      this.#watchers.get(path)?.dispatch(content);
+      this.#watchers.get(drive + path)?.dispatch(content);
     });
     mounted
     this.#drives[drive] = mounted;
