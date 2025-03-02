@@ -23,7 +23,6 @@ export class View extends Dynamic {
   adjust?(): void;
   adopted?(): void;
   abandoned?(): void;
-  childrenChanged?(): void;
 
   id = '';
 
@@ -59,7 +58,6 @@ export class View extends Dynamic {
       child.parent = this;
       child.adopted?.();
     }
-    this.childrenChanged?.();
   }
 
   addChild(child: View, pos?: number) {
@@ -68,7 +66,6 @@ export class View extends Dynamic {
     this.#children.splice(i, 0, child);
     child.parent = this;
     child.adopted?.();
-    this.childrenChanged?.();
   }
 
   removeChild(child: View) {
@@ -77,7 +74,6 @@ export class View extends Dynamic {
     this.#children.splice(i, 1);
     child.parent = undefined!;
     child.abandoned?.();
-    this.childrenChanged?.();
   }
 
   draw() {

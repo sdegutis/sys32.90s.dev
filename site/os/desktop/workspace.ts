@@ -55,9 +55,6 @@ class Workspace {
       ),
     );
 
-    this.#stealPanels();
-    sys.root.childrenChanged = () => this.#stealPanels();
-
     sys.root.children = [
       $(PanedYB, {},
         this.#desktop,
@@ -68,22 +65,7 @@ class Workspace {
     sys.layoutTree();
   }
 
-  #stealPanels() {
-    let did = false;
-    let i = sys.root.children.length;
-    while (i--) {
-      const child = sys.root.children[i];
-      if (child instanceof Panel) {
-        sys.root.removeChild(child);
-        this.#addPanel(child);
-        child.focus();
-        did = true;
-      }
-    }
-    if (did) sys.layoutTree();
-  }
-
-  #addPanel(panel: Panel) {
+  addPanel(panel: Panel) {
     panel.x = 20;
     panel.y = 20;
 
@@ -112,7 +94,8 @@ class Workspace {
       this.#desktop.children.at(-1)?.focus();
     });
 
-    return panel;
+    panel.focus();
+    sys.layoutTree();
   }
 
   async addProgram(name: string, path: string) {

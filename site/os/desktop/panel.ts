@@ -12,6 +12,7 @@ import { $, View } from "../core/view.js";
 import { Listener } from "../util/events.js";
 import { makeVacuumLayout } from "../util/layouts.js";
 import { dragMove, dragResize } from "../util/selections.js";
+import { ws } from "./workspace.js";
 
 const minImage = new Bitmap([0xaaaaaaff], 4, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,]);
 const maxImage = new Bitmap([0xaaaaaaff], 4, [1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1,]);
@@ -180,7 +181,7 @@ export class Panel extends View {
   }
 
   show() {
-    sys.root.addChild(this);
+    ws.addPanel(this);
     this.visible = true;
   }
 
