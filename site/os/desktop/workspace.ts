@@ -66,6 +66,8 @@ class Workspace {
   }
 
   addPanel(panel: Panel) {
+    if (this.#desktop.children.includes(panel)) return;
+
     panel.x = 20;
     panel.y = 20;
 
