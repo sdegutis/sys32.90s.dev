@@ -120,22 +120,16 @@ class MountedDrive implements Drive {
   async init() {
     await this.#loaddir(this.root, '/');
 
-    console.log(this.dirs)
-    console.log(this.files)
-    console.log(this.entries)
-
-    // const observer = new FileSystemObserver((records) => {
-    //   console.log(records)
-    // });
-    // observer.observe(folder, { recursive: true });
-    // // observer.disconnect
+    const observer = new FileSystemObserver((records) => {
+      console.log(records)
+    });
+    observer.observe(this.root, { recursive: true });
+    // observer.disconnect
 
   }
 
   async #loaddir(dir: FileSystemDirectoryHandle, path: string) {
     this.dirs.set(path, dir);
-
-    console.log('loading dirs')
 
     for await (const [name, entry] of dir.entries()) {
       if (entry.kind === 'directory') {
@@ -202,12 +196,13 @@ class FS {
     return Object.keys(this.#drives);
   }
 
-  // list(fullpath: string): FolderEntry[] {
-  //   const [drive, path] = this.#split(fullpath)
-  //   console.log('list', drive, path, this.#entries)
-  //   // files.sort(sortBy(f => (f.kind === 'folder' ? 1 : 2) + f.name));
-  //   return [];
-  // }
+  list(fullpath: string): FolderEntry[] {
+    const [drive, path] = this.#split(fullpath)
+    // console.log(drive, path)
+    // console.log('list', drive, path, this.#entries)
+    // // files.sort(sortBy(f => (f.kind === 'folder' ? 1 : 2) + f.name));
+    return [];
+  }
 
   loadFile(fullpath: string): string | undefined {
     const [drive, path] = this.#split(fullpath);

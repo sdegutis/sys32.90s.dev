@@ -94,7 +94,7 @@ export default () => {
   for (const key of fs.drives()) {
     sidelist.addChild($(Button, {
       all: 2, background: 0xff000033, onClick: async () => {
-        // showfiles(fs.list(key + '/')!);
+        showfiles(fs.list(key + '/')!);
       }
     },
       $(Label, { text: `drive:${key}` })
