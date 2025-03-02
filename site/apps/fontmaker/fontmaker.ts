@@ -144,9 +144,19 @@ export default async (filename?: string) => {
 
       if (filename) {
 
+        for (let i = 0; i < 26; i++) {
+          const upcase = String.fromCharCode(65 + i);
+          chars[upcase] = chars[upcase.toLowerCase()];
+        }
+
         const orderedChars = Object.keys(chars).sort();
+
+        // const a = chars['a'];
+        // const b = new Bitmap(a.colors, a.width * 16, ));
+
+        console.log(chars);
         const saveData = orderedChars.map(ch => chars[ch].toString()).join('===\n');
-        fs.saveFile(filename, saveData);
+        // fs.saveFile(filename, saveData);
       }
 
       return true;
