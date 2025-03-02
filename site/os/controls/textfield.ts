@@ -1,5 +1,5 @@
 import { Font } from "../core/font.js";
-import { sys } from "../core/system.js";
+import { mem, sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
 import { Label } from "./label.js";
 
@@ -14,7 +14,7 @@ export class TextField extends View {
   #field = $(Label, { text: '' });
   #cursor = $(Label, { visible: false, text: '_', color: 0x1177ffff });
 
-  #font = sys.font;
+  #font = mem.font;
   get font() { return this.#font; }
   set font(font: Font) {
     this.#font = font;
@@ -45,6 +45,7 @@ export class TextField extends View {
   }
 
   override init(): void {
+    this.$data.font = mem.$data.font;
     this.children = [this.#field, this.#cursor];
   }
 

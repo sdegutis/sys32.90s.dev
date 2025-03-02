@@ -5,9 +5,19 @@ import { crt } from "./crt.js";
 import { Cursor } from "./cursor.js";
 import { Font } from "./font.js";
 import { fs } from "./fs.js";
-import { $, View } from "./view.js";
+import { $, Dynamic, makeDynamic, View } from "./view.js";
 
 const crt2025 = Font.fromString(fs.loadFile('sys/font1.font')!);
+
+class Memory extends Dynamic {
+  font = crt2025;
+}
+
+export const mem = new Memory();
+makeDynamic(mem);
+
+mem.$data.font = livefile('sys/font1.font', Font.fromString);
+
 
 function livefile<T>(path: string, to: (content: string) => T) {
   const s = fs.loadFile(path)!;
@@ -22,7 +32,6 @@ class System {
 
   root = $(View, { background: 0x00000000 });
   focused = this.root;
-  font = crt2025;
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0, button: 0 };
 

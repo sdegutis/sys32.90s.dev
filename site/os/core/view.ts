@@ -3,7 +3,15 @@ import { crt } from "./crt.js";
 import { type Cursor } from "./cursor.js";
 import { sys } from "./system.js";
 
-export class View {
+export class Dynamic {
+
+  $data = Object.create(null) as {
+    [K in Exclude<keyof this, '$data'>]: Reactive<any>
+  };
+
+}
+
+export class View extends Dynamic {
 
   init?(): void;
   onScroll?(up: boolean): void;
@@ -99,10 +107,6 @@ export class View {
     return null;
   }
 
-  $data = Object.create(null) as {
-    [K in Exclude<keyof this, '$data'>]: Reactive<any>
-  };
-
 }
 
 export function $<T extends View>(
@@ -112,21 +116,27 @@ export function $<T extends View>(
 ): T {
   const view = new ctor();
   Object.assign(view, { children }, config);
-  for (let [key, val] of Object.entries(view)) {
+  makeDynamic(view);
+  view.init?.();
+  return view;
+}
+
+export function makeDynamic<T extends Dynamic>(o: T) {
+  type K = Exclude<keyof T['$data'], '$data'>;
+
+  for (let [key, val] of Object.entries(o)) {
     if (key === '$data') continue;
     if (typeof val === 'function') continue;
     if (val instanceof Listener) continue;
     if (val instanceof Array) continue;
-    if (Object.getOwnPropertyDescriptor(view, key)?.get) continue;
+    if (Object.getOwnPropertyDescriptor(o, key)?.get) continue;
 
-    view.$data[key as keyof View['$data']] ??= new Reactive(view[key as keyof View]);
+    o.$data[key as K] ??= new Reactive(o[key as keyof T]);
 
-    Object.defineProperty(view, key, {
+    Object.defineProperty(o, key, {
       enumerable: true,
-      set: (v) => view.$data[key as keyof View['$data']].val = v,
-      get: () => view.$data[key as keyof View['$data']].val,
+      set: (v) => o.$data[key as K].val = v,
+      get: () => o.$data[key as K].val,
     });
   }
-  view.init?.();
-  return view;
 }
