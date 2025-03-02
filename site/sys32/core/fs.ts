@@ -65,8 +65,6 @@ const idbfs = await opendb<{
 
 abstract class Drive {
 
-  entries = new Map<string, string>();
-
   save?(path: string, content: string): void;
 
 }
@@ -109,6 +107,8 @@ function sortBy<T, U>(fn: (o: T) => U) {
 
 class FS {
 
+  #entries = new Map<string, string>();
+
   #drives: Record<string, Drive> = {
     sys: new MemoryDrive(),
     user: new IdbDrive(),
@@ -133,22 +133,24 @@ class FS {
 
   // list(fullpath: string): FolderEntry[] {
   //   const [drive, path] = this.#split(fullpath)
-  //   console.log('list', drive, path, drive.entries)
+  //   console.log('list', drive, path, this.#entries)
   //   // files.sort(sortBy(f => (f.kind === 'folder' ? 1 : 2) + f.name));
   //   return [];
   // }
 
   loadFile(fullpath: string): string | undefined {
-    const [drive, path] = this.#split(fullpath)
-    return drive.entries.get(path);
+    // const [drive, path] = this.#split(fullpath)
+    return this.#entries.get(fullpath);
   }
 
   saveFile(fullpath: string, content: string) {
     content = content.replace(/\r\n/g, '\n');
-    const [drive, path] = this.#split(fullpath)
-    drive.entries.set(path, content);
-    drive.save?.(path, content);
-    this.#watchers.get(path)?.dispatch(content);
+    this.#entries.set(fullpath, content);
+
+    // const [drive, path] = this.#split(fullpath)
+    // drive.save?.(path, content);
+
+    this.#watchers.get(fullpath)?.dispatch(content);
   }
 
   #split<T>(fullpath: string) {
