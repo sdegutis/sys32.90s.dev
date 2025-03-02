@@ -9,16 +9,14 @@ import { $, View } from "./view.js";
 
 const crt2025 = Font.fromString(fs.loadFile('sys/font1.font')!);
 
-// function livefile(path:string) {
+function livefile<T>(path: string, to: (content: string) => T) {
+  const s = fs.loadFile(path)!;
+  const r = new Reactive<T>(to(s));
+  fs.watchTree(path, s => r.val = to(s));
+  return r;
+}
 
-// }
-
-const pointer = new Reactive(Cursor.fromBitmap(Bitmap.fromString(fs.loadFile('sys/pointer.bitmap')!)));
-
-fs.watchTree('sys/pointer.bitmap', (content) => {
-  console.log('cahgned', content)
-  pointer.val = Cursor.fromBitmap(Bitmap.fromString(content));
-})
+const pointer = livefile('sys/pointer.bitmap', s => Cursor.fromBitmap(Bitmap.fromString(s)));
 
 class System {
 
