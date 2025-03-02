@@ -189,12 +189,12 @@ export class Panel extends View {
     this.visible = false;
   }
 
-  override onFocus(): void {
+  onPanelFocus(): void {
     this.parent?.addChild(this);
     this.panelFocused = true;
   }
 
-  override onBlur(): void {
+  onPanelBlur(): void {
     this.panelFocused = false;
   }
 

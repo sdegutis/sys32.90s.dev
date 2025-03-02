@@ -234,9 +234,9 @@ class System {
     }
 
     if (newFocusedPanel !== this.focusedPanel) {
-      this.focusedPanel?.onBlur();
+      this.focusedPanel?.onPanelBlur();
       this.focusedPanel = newFocusedPanel;
-      this.focusedPanel?.onFocus();
+      this.focusedPanel?.onPanelFocus();
     }
   }
 
