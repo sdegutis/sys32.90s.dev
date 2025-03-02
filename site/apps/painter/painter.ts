@@ -22,7 +22,7 @@ export default (filepath?: string) => {
 
   const $zoom = new Reactive(4);
 
-  const panel = $(Panel, { title: 'painter', minw: 50, w: 180, h: 70, },
+  const panel = $(Panel, { title: 'painter', minw: 50, w: 180, h: 120, },
     $(PanedXB, { gap: 1 },
       $(PanedYB, { gap: 1 },
         $(Scroll, { background: 0x222222ff, draw: makeStripeDrawer(), },
