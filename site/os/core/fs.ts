@@ -42,29 +42,58 @@ class UserDrive implements Drive {
 class MountedDrive implements Drive {
 
   root: FileSystemDirectoryHandle;
-  dhs = new Map<string, FileSystemDirectoryHandle>();
-  fhs = new Map<string, FileSystemFileHandle>();
+  // dhs = new Map<string, FileSystemDirectoryHandle>();
+  // fhs = new Map<string, FileSystemFileHandle>();
 
-  // changed: FileChanged;
+  changed: (change: FileSystemObserverRecord) => void;
 
-  constructor(dir: FileSystemDirectoryHandle) {
+  constructor(dir: FileSystemDirectoryHandle, changed: (change: FileSystemObserverRecord) => void) {
     this.root = dir;
-    // this.changed = changed;
+    this.changed = changed;
   }
 
   async init(addFile: FileChanged) {
     await this.#loaddir(this.root, '/', addFile);
 
-    // const observer = new FileSystemObserver((records) => {
-    //   console.log(records)
-    // });
-    // observer.observe(this.root, { recursive: true });
-    // observer.disconnect
+    const observer = new FileSystemObserver((records) => {
+      for (const change of records) {
+        const path = '/' + change.relativePathComponents.join('/');
 
+        // console.log(change.root)
+
+        if (change.type === 'appeared') {
+          if (change.changedHandle instanceof FileSystemDirectoryHandle) {
+            // change.changedHandle.
+          }
+          else {
+            // change.changedHandle.
+          }
+        }
+        else if (change.type === 'disappeared') {
+
+        }
+        else if (change.type === 'modified') {
+
+        }
+        else if (change.type === 'moved') {
+          // rename
+        }
+        else if (change.type === 'errored') {
+
+        }
+        else if (change.type === 'unknown') {
+
+        }
+
+        // this.changed(change);
+      }
+
+    });
+    observer.observe(this.root, { recursive: true });
   }
 
   async #loaddir(dir: FileSystemDirectoryHandle, path: string, addFile: FileChanged) {
-    this.dhs.set(path, dir);
+    // this.dhs.set(path, dir);
 
     for await (const [name, entry] of dir.entries()) {
       if (entry.kind === 'directory') {
@@ -72,7 +101,7 @@ class MountedDrive implements Drive {
       }
       else {
         const fullpath = `${path}${name}`;
-        this.fhs.set(fullpath, entry);
+        // this.fhs.set(fullpath, entry);
 
         const h = await dir.getFileHandle(name);
         const f = await h.getFile();
@@ -124,18 +153,46 @@ class FS {
 
     mounts.set({ drive, dir: folder });
 
-    const mounted = new MountedDrive(folder
-      // , (path, content) => {
-      //   const fullpath = drive + path;
-      //   content = normalize(content);
-
-      //   // this.#files.set()
-      // }
-    );
+    const mounted = new MountedDrive(folder, (change) => {
+      this.#reflectChanges(drive, change);
+    });
 
     this.#drives[drive] = mounted;
 
     await mounted.init(this.#addfile.bind(this, drive));
+  }
+
+  #reflectChanges(drive: string, change: FileSystemObserverRecord) {
+    const parts = [drive, ...change.relativePathComponents];
+
+    if (change.type === 'appeared') {
+      // change.
+    }
+    else if (change.type === 'disappeared') {
+
+    }
+    else if (change.type === 'errored') {
+
+    }
+    else if (change.type === 'modified') {
+
+    }
+    else if (change.type === 'moved') {
+
+    }
+    else if (change.type === 'unknown') {
+
+    }
+
+    console.log(change.type, change.relativePathComponents, change.changedHandle)
+
+    // const file = parts.pop()!;
+    // const dir = this.#nav(parts);
+
+
+
+    // content = normalize(content);
+
   }
 
   #addfile(drive: string, path: string, content: string) {
