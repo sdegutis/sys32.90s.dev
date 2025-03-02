@@ -1,3 +1,4 @@
+import { ws } from "../desktop/workspace.js";
 import { Listener, Reactive } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { crt } from "./crt.js";
@@ -17,8 +18,8 @@ fs.watchTree('sys/pointer.bitmap', (content) => {
 
 class System {
 
-  root!: View;
-  focused!: View;
+  root = $(View, { background: 0x00000000 });
+  focused = this.root;
   font = crt2025;
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0, button: 0 };
@@ -27,22 +28,20 @@ class System {
 
   needsRedraw = true;
 
-  #hovered!: View;
+  #hovered = this.root;
   #trackingMouse?: { move: () => void, up?: () => void };
 
   #destroyer = new AbortController();
 
   init(canvas: HTMLCanvasElement) {
     crt.init(canvas);
-    canvas.tabIndex = 0;
-    canvas.focus();
-
-    this.root = $(View, { background: 0x00000000 });
-    this.focused = this.root;
-    this.#hovered = this.root;
-
     this.resize(canvas.width, canvas.height);
+    this.#addListeners(canvas);
+    this.#startTicks();
+    ws.init();
+  }
 
+  #addListeners(canvas: HTMLCanvasElement) {
     canvas.addEventListener('keydown', (e) => {
       if (e.key.length > 1 && e.key[0] === 'F') return;
 
@@ -117,7 +116,9 @@ class System {
         node = node.parent;
       }
     }, { signal: this.#destroyer.signal })
+  }
 
+  #startTicks() {
     let alive = true;
     this.#destroyer.signal.addEventListener('abort', () => {
       alive = false;

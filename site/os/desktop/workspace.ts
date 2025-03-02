@@ -10,14 +10,14 @@ import { makeFlowLayout, makeVacuumLayout } from "../util/layouts.js";
 import { Clock } from "./clock.js";
 import { Panel } from "./panel.js";
 
-export class Workspace {
+class Workspace {
 
-  #icons: View;
-  #desktop: View;
-  #taskbar: View;
-  #panels: View;
+  #icons!: View;
+  #desktop!: View;
+  #taskbar!: View;
+  #panels!: View;
 
-  constructor() {
+  init() {
 
     let big = false;
 
@@ -134,3 +134,5 @@ export class Workspace {
   #programs = new Map<string, () => void>();
 
 }
+
+export const ws = new Workspace();

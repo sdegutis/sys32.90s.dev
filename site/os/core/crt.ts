@@ -17,6 +17,9 @@ class CRT {
     this.#canvas = canvas;
     this.#context = canvas.getContext('2d')!;
 
+    canvas.tabIndex = 0;
+    canvas.focus();
+
     canvas.style.imageRendering = 'pixelated';
     canvas.style.backgroundColor = '#000';
     canvas.style.outline = 'none';
