@@ -223,8 +223,7 @@ class FS {
     return Object.keys(this.#drives);
   }
 
-  list(path: string) {
-    console.log(path)
+  getFolder(path: string) {
     return this.#nav(path.split('/'));
   }
 

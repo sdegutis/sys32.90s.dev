@@ -1,4 +1,5 @@
 import { GroupX, GroupY } from "../../os/containers/group.js";
+import { PanedYA } from "../../os/containers/paned.js";
 import { Scroll } from "../../os/containers/scroll.js";
 import { SplitX } from "../../os/containers/split.js";
 import { Button } from "../../os/controls/button.js";
@@ -37,6 +38,8 @@ export default () => {
   const sidelist = $(GroupY, { align: 'a', gap: 1 });
   const filelist = $(GroupY, { align: 'a' });
 
+  const breadcrumbs = $(GroupX, { align: 'a', gap: 1, background: 0x00000099 });
+
   const mountButton = $(Button, {
     all: 3,
     onClick: async () => {
@@ -59,12 +62,22 @@ export default () => {
 
   sidelist.addChild(mountButton);
 
-  async function showfiles(base: string[], dir: Folder) {
+  async function showfiles(base: string[]) {
+    const dir = fs.getFolder(base.join('/'));
+
+    breadcrumbs.children = base.map((name, i) => {
+      return $(Button, {
+        all: 2,
+        onClick: () => { showfiles(base.slice(0, i + 1)) }
+      }, $(Label, { text: name }));
+    });
+    breadcrumbs.parent?.layoutTree();
+
     filelist.children = [
       ...dir.folders.map(file => {
         return $(Button, {
           all: 2, onClick: () => {
-            showfiles([...base, file.name], dir.folders.find(f => f.name === file.name)!);
+            showfiles([...base, file.name]);
           }
         },
           $(GroupX, { passthrough: true, gap: 2 },
@@ -101,7 +114,7 @@ export default () => {
   for (const key of fs.drives()) {
     sidelist.addChild($(Button, {
       all: 2, background: 0xff000033, onClick: async () => {
-        showfiles([key], fs.list(key));
+        showfiles([key]);
       }
     },
       $(Label, { text: `drive:${key}` })
@@ -112,7 +125,10 @@ export default () => {
   const panel = $(Panel, { title: 'filer', w: 150, h: 100, },
     $(SplitX, { background: 0xffffff11, pos: 50, resizable: true, dividerColor: 0x33333300 },
       $(Scroll, { w: 40, background: 0x00000077, }, sidelist),
-      $(Scroll, {}, filelist),
+      $(PanedYA, {},
+        breadcrumbs,
+        $(Scroll, {}, filelist),
+      )
     )
   )
   panel.show();
