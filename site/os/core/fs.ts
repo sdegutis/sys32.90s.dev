@@ -10,59 +10,6 @@ const idbfs = await opendb<{
   content: string,
 }>('idbfs', 'path');
 
-// class UserFolder implements Folder {
-
-//   path: string;
-//   #dir: FileSystemDirectoryHandle;
-
-//   constructor(dir: FileSystemDirectoryHandle, path: string) {
-//     this.path = path;
-//     this.#dir = dir;
-//   }
-
-//   async getFile(name: string) {
-//     const h = await this.#dir.getFileHandle(name);
-//     const f = await h.getFile();
-//     return await f.text();
-//   }
-
-//   async getFolder(name: string) {
-//     const h = await this.#dir.getDirectoryHandle(name);
-//     return new UserFolder(h, this.path + name + '/');
-//   }
-
-//   async putFile(name: string, content: string) {
-//     const h = await this.#dir.getFileHandle(name, { create: true });
-//     const w = await h.createWritable();
-//     await w.write(content);
-//     await w.close();
-//   }
-
-//   async putFolder(name: string) {
-//     const h = await this.#dir.getDirectoryHandle(name, { create: true });
-//     return new UserFolder(h, this.path + name + '/');
-//   }
-
-//   async list() {
-//     const list = [];
-//     const entries = this.#dir.entries();
-//     for await (const [name, obj] of entries) {
-//       const kind: 'folder' | 'file' = (obj.kind === 'directory') ? 'folder' : 'file';
-//       list.push({ name, kind });
-//     }
-//     return list;
-//   }
-
-//   async delFile(name: string): Promise<void> {
-//     this.#dir.removeEntry(name);
-//   }
-
-//   async delFolder(name: string): Promise<void> {
-//     this.#dir.removeEntry(name);
-//   }
-
-// }
-
 interface Drive {
   files: Map<string, string>;
   init(): Promise<void>;
@@ -80,12 +27,9 @@ class SysDrive implements Drive {
       const path = file.slice('/os/data'.length);
       this.files.set(path, data);
     }
-    // console.log(this.entries)
   }
 
-  push(path: string, content: string): void {
-
-  }
+  push(path: string, content: string): void { }
 
 }
 
@@ -152,7 +96,10 @@ class MountedDrive implements Drive {
   }
 
   push(path: string, content: string): void {
-
+    // const h = await this.#dir.getFileHandle(name, { create: true });
+    // const w = await h.createWritable();
+    // await w.write(content);
+    // await w.close();
   }
 
 }
