@@ -131,7 +131,7 @@ export function makeDynamic<T extends Dynamic>(o: T) {
     if (val instanceof Array) continue;
     if (Object.getOwnPropertyDescriptor(o, key)?.get) continue;
 
-    o.$data[key as K] ??= new Reactive(o[key as keyof T]);
+    o.$data[key as K] ??= new Reactive(val);
 
     Object.defineProperty(o, key, {
       enumerable: true,
