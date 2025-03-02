@@ -8,7 +8,7 @@ import { crt } from "../../os/core/crt.js";
 import { emptyCursor } from "../../os/core/cursor.js";
 import { CHARSET, Font } from "../../os/core/font.js";
 import { fs } from "../../os/core/fs.js";
-import { sys } from "../../os/core/system.js";
+import { mem, sys } from "../../os/core/system.js";
 import { $, View } from "../../os/core/view.js";
 import { Panel } from "../../os/desktop/panel.js";
 import { Listener, multiplex, Reactive } from "../../os/util/events.js";
@@ -23,6 +23,8 @@ const SAMPLE_TEXT = [
 ].join('\n');
 
 export default async (filename?: string) => {
+
+  const $myfont = new Reactive(mem.font);
 
   const $width = new Reactive(4);
   const $height = new Reactive(5);
@@ -84,7 +86,7 @@ export default async (filename?: string) => {
       ),
       $(Border, { background: 0x000000ff, u: 2 },
         $(GroupY, { gap: 3, align: 'a' },
-          $(Label, { id: 'sample', text: SAMPLE_TEXT, color: 0x999900ff }),
+          $(Label, { text: SAMPLE_TEXT, color: 0x999900ff, $data: { font: $myfont } }),
           $(GroupX, { gap: 10, },
             $(GroupX, { gap: 2 },
               $(Label, { text: 'width:', color: 0xffffff33 }),
@@ -131,8 +133,7 @@ export default async (filename?: string) => {
       chars[v.char] = v.bitmap;
     }
 
-    let myfont = new Font(chars);
-    panel.find<Label>('sample')!.font = myfont;
+    $myfont.val = new Font(chars);
   }
 
   rebuilt.watch((view) => { rebuildWhole(); })
