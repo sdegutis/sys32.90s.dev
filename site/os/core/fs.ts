@@ -133,7 +133,7 @@ class FS {
   }
 
   list(fullpath: string): FolderEntry[] {
-    const [drive, path] = this.#split(fullpath);
+    // const [drive, path] = this.#split(fullpath);
 
     // console.log(drive.files.entries().filter(([path, content])))
 
