@@ -4,21 +4,18 @@ const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('
 const idbfs = await opendb<{ path: string, content: string }>('idbfs', 'path');
 
 interface Drive {
-  files: Map<string, string>;
-  init(): Promise<void>;
+  init(addFile: (path: string, content: string) => void): Promise<void>;
   push(path: string, content: string): void;
 }
 
 class SysDrive implements Drive {
 
-  files = new Map<string, string>();
-
-  async init() {
+  async init(addFile: (path: string, content: string) => void) {
     const files = await fetch(import.meta.resolve('./data.json')).then(r => r.json());
     for (const file of files) {
-      const data = normalize(await fetch(file).then(r => r.text()));
+      const data = await fetch(file).then(r => r.text());
       const path = file.slice('/os/data'.length);
-      this.files.set(path, data);
+      addFile(path, data);
     }
   }
 
@@ -28,11 +25,9 @@ class SysDrive implements Drive {
 
 class UserDrive implements Drive {
 
-  files = new Map<string, string>();
-
-  async init() {
+  async init(addFile: (path: string, content: string) => void) {
     for (const { path, content } of await idbfs.all()) {
-      this.files.set(path, normalize(content));
+      addFile(path, content);
     }
   }
 
@@ -43,8 +38,6 @@ class UserDrive implements Drive {
 }
 
 class MountedDrive implements Drive {
-
-  files = new Map<string, string>();
 
   root: FileSystemDirectoryHandle;
   dhs = new Map<string, FileSystemDirectoryHandle>();
@@ -57,8 +50,8 @@ class MountedDrive implements Drive {
     this.changed = changed;
   }
 
-  async init() {
-    await this.#loaddir(this.root, '/');
+  async init(addFile: (path: string, content: string) => void) {
+    await this.#loaddir(this.root, '/', addFile);
 
     // const observer = new FileSystemObserver((records) => {
     //   console.log(records)
@@ -68,12 +61,12 @@ class MountedDrive implements Drive {
 
   }
 
-  async #loaddir(dir: FileSystemDirectoryHandle, path: string) {
+  async #loaddir(dir: FileSystemDirectoryHandle, path: string, addFile: (path: string, content: string) => void) {
     this.dhs.set(path, dir);
 
     for await (const [name, entry] of dir.entries()) {
       if (entry.kind === 'directory') {
-        await this.#loaddir(entry, `${path}${name}/`)
+        await this.#loaddir(entry, `${path}${name}/`, addFile)
       }
       else {
         const fullpath = `${path}${name}`;
@@ -83,7 +76,7 @@ class MountedDrive implements Drive {
         const f = await h.getFile();
         const data = await f.text();
 
-        this.files.set(fullpath, normalize(data));
+        addFile(fullpath, data);
       }
     }
   }
@@ -101,14 +94,16 @@ export type FolderEntry = { name: string, kind: 'file' | 'folder' };
 
 class FS {
 
+  #files = new Map<string, string>();
+
   #drives: Record<string, Drive> = {
     sys: new SysDrive(),
     user: new UserDrive(),
   };
 
   async init() {
-    for (const drive of Object.values(this.#drives)) {
-      await drive.init();
+    for (const [name, drive] of Object.entries(this.#drives)) {
+      await drive.init(this.#addfile.bind(this, name));
     }
     for (const { drive, dir } of await mounts.all()) {
       await this.mountUserFolder(drive, dir);
@@ -117,13 +112,20 @@ class FS {
 
   async mountUserFolder(drive: string, folder: FileSystemDirectoryHandle) {
     if (drive in this.#drives) return;
+
     mounts.set({ drive, dir: folder });
+
     const mounted = new MountedDrive(folder, (path, content) => {
       this.#watchers.get(drive + path)?.dispatch(content);
     });
-    mounted
+
     this.#drives[drive] = mounted;
-    await mounted.init();
+
+    await mounted.init(this.#addfile.bind(this, drive));
+  }
+
+  #addfile(drive: string, path: string, content: string) {
+    this.#files.set(drive + path, normalize(content));
   }
 
   drives() {
@@ -142,14 +144,15 @@ class FS {
   }
 
   loadFile(fullpath: string): string | undefined {
-    const [drive, path] = this.#split(fullpath);
-    return drive.files.get(path);
+    return this.#files.get(fullpath);
+    // const [drive, path] = this.#split(fullpath);
+    // return drive.files.get(path);
   }
 
   saveFile(fullpath: string, content: string) {
     content = normalize(content);
     const [drive, path] = this.#split(fullpath)
-    drive.files.set(fullpath, content);
+    this.#files.set(fullpath, content);
     drive.push(path, content);
     this.#watchers.get(fullpath)?.dispatch(content);
   }
