@@ -64,21 +64,21 @@ const idbfs = await opendb<{
 // }
 
 interface Drive {
-  entries: Map<string, string>;
+  files: Map<string, string>;
   init(): Promise<void>;
   push(path: string, content: string): void;
 }
 
 class SysDrive implements Drive {
 
-  entries = new Map<string, string>();
+  files = new Map<string, string>();
 
   async init() {
     const files = await fetch(import.meta.resolve('./data.json')).then(r => r.json());
     for (const file of files) {
       const data = normalize(await fetch(file).then(r => r.text()));
       const path = file.slice('/os/data'.length);
-      this.entries.set(path, data);
+      this.files.set(path, data);
     }
     // console.log(this.entries)
   }
@@ -91,11 +91,11 @@ class SysDrive implements Drive {
 
 class UserDrive implements Drive {
 
-  entries = new Map<string, string>();
+  files = new Map<string, string>();
 
   async init() {
     for (const { path, content } of await idbfs.all()) {
-      this.entries.set(path, normalize(content));
+      this.files.set(path, normalize(content));
     }
   }
 
@@ -107,11 +107,11 @@ class UserDrive implements Drive {
 
 class MountedDrive implements Drive {
 
-  entries = new Map<string, string>();
+  files = new Map<string, string>();
 
   root: FileSystemDirectoryHandle;
-  dirs = new Map<string, FileSystemDirectoryHandle>();
-  files = new Map<string, FileSystemFileHandle>();
+  dhs = new Map<string, FileSystemDirectoryHandle>();
+  fhs = new Map<string, FileSystemFileHandle>();
 
   constructor(dir: FileSystemDirectoryHandle) {
     this.root = dir;
@@ -129,7 +129,7 @@ class MountedDrive implements Drive {
   }
 
   async #loaddir(dir: FileSystemDirectoryHandle, path: string) {
-    this.dirs.set(path, dir);
+    this.dhs.set(path, dir);
 
     for await (const [name, entry] of dir.entries()) {
       if (entry.kind === 'directory') {
@@ -137,13 +137,13 @@ class MountedDrive implements Drive {
       }
       else {
         const fullpath = `${path}${name}`;
-        this.files.set(fullpath, entry);
+        this.fhs.set(fullpath, entry);
 
         const h = await dir.getFileHandle(name);
         const f = await h.getFile();
         const data = await f.text();
 
-        this.entries.set(fullpath, normalize(data));
+        this.files.set(fullpath, normalize(data));
       }
     }
   }
@@ -197,7 +197,10 @@ class FS {
   }
 
   list(fullpath: string): FolderEntry[] {
-    const [drive, path] = this.#split(fullpath)
+    const [drive, path] = this.#split(fullpath);
+
+    // console.log(drive.files.entries().filter(([path, content])))
+
     // console.log(drive, path)
     // console.log('list', drive, path, this.#entries)
     // // files.sort(sortBy(f => (f.kind === 'folder' ? 1 : 2) + f.name));
@@ -206,13 +209,13 @@ class FS {
 
   loadFile(fullpath: string): string | undefined {
     const [drive, path] = this.#split(fullpath);
-    return drive.entries.get(path);
+    return drive.files.get(path);
   }
 
   saveFile(fullpath: string, content: string) {
     content = normalize(content);
     const [drive, path] = this.#split(fullpath)
-    drive.entries.set(fullpath, content);
+    drive.files.set(fullpath, content);
     drive.push(path, content);
     this.#watchers.get(fullpath)?.dispatch(content);
   }
