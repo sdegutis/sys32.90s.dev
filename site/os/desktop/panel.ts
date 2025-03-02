@@ -190,27 +190,14 @@ export class Panel extends View {
   }
 
   override onFocus(): void {
-    if (focusedPanel === this) return;
-    if (focusedPanel) focusedPanel.#unfocus();
-    focusedPanel = this;
-    this.#focus();
-  }
-
-  #unfocus() {
-    focusedPanel = undefined;
-    this.panelFocused = false;
-  }
-
-  #focus() {
+    this.parent?.addChild(this);
     this.panelFocused = true;
+  }
 
-    const parent = this.parent!;
-    parent.removeChild(this);
-    parent.addChild(this);
+  override onBlur(): void {
+    this.panelFocused = false;
   }
 
   panelFocused = false;
 
 }
-
-let focusedPanel: Panel | undefined;

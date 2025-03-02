@@ -1,3 +1,4 @@
+import { Panel } from "../desktop/panel.js";
 import { ws } from "../desktop/workspace.js";
 import { Listener, Reactive } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
@@ -53,6 +54,7 @@ class System {
   }
 
   #addListeners(canvas: HTMLCanvasElement) {
+
     canvas.addEventListener('keydown', (e) => {
       if (e.key.length > 1 && e.key[0] === 'F') return;
 
@@ -81,8 +83,8 @@ class System {
     }, { signal: this.#destroyer.signal });
 
     canvas.addEventListener('mousedown', (e) => {
-      canvas.focus();
       e.preventDefault();
+      canvas.focus();
       this.#hovered.focus();
       this.#hovered.onMouseDown?.(e.button);
       this.needsRedraw = true;
@@ -125,7 +127,8 @@ class System {
         }
         node = node.parent;
       }
-    }, { signal: this.#destroyer.signal })
+    }, { signal: this.#destroyer.signal });
+
   }
 
   #startTicks() {
@@ -209,6 +212,8 @@ class System {
     this.#destroyer.abort();
   }
 
+  focusedPanel: Panel | undefined;
+
   focus(view: View) {
     if (view === this.focused) return;
 
@@ -218,10 +223,20 @@ class System {
     this.focused = view;
     this.focused.focused = true;
 
+    let newFocusedPanel;
     let node: View | undefined = view;
     while (node) {
-      node.onFocus?.();
+      if (node instanceof Panel) {
+        newFocusedPanel = node;
+        break;
+      }
       node = node.parent;
+    }
+
+    if (newFocusedPanel !== this.focusedPanel) {
+      this.focusedPanel?.onBlur();
+      this.focusedPanel = newFocusedPanel;
+      this.focusedPanel?.onFocus();
     }
   }
 
