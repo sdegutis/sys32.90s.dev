@@ -48,9 +48,8 @@ export default () => {
         folder = await window.showDirectoryPicker();
 
         await folder.requestPermission({ mode: 'readwrite' });
-        fs.mountUserFolder(drive, folder);
+        await fs.mountUserFolder(drive, folder);
 
-        // TODO: add to sidebar...
         panel.layoutTree();
       }
       catch { }

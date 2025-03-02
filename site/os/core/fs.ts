@@ -63,31 +63,87 @@ const idbfs = await opendb<{
 
 // }
 
-abstract class Drive {
+interface Drive {
+  entries: Map<string, string>;
+  init(): Promise<void>;
+  push(path: string, content: string): void;
+}
 
-  save?(path: string, content: string): void;
+class SysDrive implements Drive {
+
+  entries = new Map<string, string>();
+
+  async init() {
+    const files = await fetch(import.meta.resolve('./data.json')).then(r => r.json());
+    for (const file of files) {
+      const data = normalize(await fetch(file).then(r => r.text()));
+      const path = file.slice('/os/data'.length);
+      this.entries.set(path, data);
+    }
+    // console.log(this.entries)
+  }
+
+  push(path: string, content: string): void {
+
+  }
 
 }
 
-class MemoryDrive extends Drive {
+class UserDrive implements Drive {
 
-}
+  entries = new Map<string, string>();
 
-class IdbDrive extends Drive {
+  async init() {
+    for (const { path, content } of await idbfs.all()) {
+      this.entries.set(path, normalize(content));
+    }
+  }
 
-  override save(path: string, content: string): void {
+  push(path: string, content: string): void {
     idbfs.set({ path, content });
   }
 
 }
 
-class MountedRealDrive extends Drive {
+class MountedDrive implements Drive {
+
+  entries = new Map<string, string>();
+
+  root: FileSystemDirectoryHandle;
+  dirs = new Map<string, FileSystemDirectoryHandle>();
+  files = new Map<string, FileSystemFileHandle>();
 
   constructor(dir: FileSystemDirectoryHandle) {
-    super();
+    this.root = dir;
   }
 
-  override save(path: string, content: string): void {
+  async init() {
+    await this.#loaddir(this.root);
+
+    // const observer = new FileSystemObserver((records) => {
+    //   console.log(records)
+    // });
+    // observer.observe(folder, { recursive: true });
+    // // observer.disconnect
+
+  }
+
+  async #loaddir(dir: FileSystemDirectoryHandle) {
+    // console.log('me', dir.name)
+    for await (const [name, entry] of dir.entries()) {
+
+      if (entry.kind === 'directory') {
+        // this.dirs.set(path, )
+      }
+
+      // normalize
+
+      // console.log('child', name, entry)
+    }
+
+  }
+
+  push(path: string, content: string): void {
 
   }
 
@@ -107,24 +163,28 @@ function sortBy<T, U>(fn: (o: T) => U) {
 
 class FS {
 
-  #entries = new Map<string, string>();
+  #sys = new SysDrive();
+  #user = new UserDrive();
 
   #drives: Record<string, Drive> = {
-    sys: new MemoryDrive(),
-    user: new IdbDrive(),
+    sys: this.#sys,
+    user: this.#user,
   };
 
-  mountUserFolder(drive: string, folder: FileSystemDirectoryHandle) {
+  async init() {
+    await this.#sys.init();
+    await this.#user.init();
+    for (const { drive, dir } of await mounts.all()) {
+      await this.mountUserFolder(drive, dir);
+    }
+  }
+
+  async mountUserFolder(drive: string, folder: FileSystemDirectoryHandle) {
     if (drive in this.#drives) return;
     mounts.set({ drive, dir: folder });
-    this.#drives[drive] = new MountedRealDrive(folder);
-
-    // const observer = new FileSystemObserver((records) => {
-    //   console.log(records)
-    // });
-    // observer.observe(folder, { recursive: true });
-    // // observer.disconnect
-
+    const mounted = new MountedDrive(folder);
+    this.#drives[drive] = mounted;
+    await mounted.init();
   }
 
   drives() {
@@ -139,17 +199,15 @@ class FS {
   // }
 
   loadFile(fullpath: string): string | undefined {
-    // const [drive, path] = this.#split(fullpath)
-    return this.#entries.get(fullpath);
+    const [drive, path] = this.#split(fullpath);
+    return drive.entries.get(path);
   }
 
   saveFile(fullpath: string, content: string) {
-    content = content.replace(/\r\n/g, '\n');
-    this.#entries.set(fullpath, content);
-
-    // const [drive, path] = this.#split(fullpath)
-    // drive.save?.(path, content);
-
+    content = normalize(content);
+    const [drive, path] = this.#split(fullpath)
+    drive.entries.set(fullpath, content);
+    drive.push(path, content);
     this.#watchers.get(fullpath)?.dispatch(content);
   }
 
@@ -168,6 +226,10 @@ class FS {
     watcher.watch(fn);
   }
 
+}
+
+function normalize(content: string): string {
+  return content.replace(/\r\n/g, '\n');
 }
 
 async function opendb<T>(dbname: string, key: keyof T & string) {
@@ -193,28 +255,5 @@ async function opendb<T>(dbname: string, key: keyof T & string) {
   };
 }
 
-async function loadSystemData() {
-  const files = await fetch(import.meta.resolve('./data.json')).then(r => r.json());
-  for (const file of files) {
-    const data = await fetch(file).then(r => r.text());
-    const path = `sys/` + file.slice('/os/data/'.length);
-    fs.saveFile(path, data);
-  }
-}
-
-async function loadIdbDrive() {
-  for (const { path, content } of await idbfs.all()) {
-    fs.saveFile(`user${path}`, content);
-  }
-}
-
-async function loadMountedDrives() {
-  for (const { drive, dir } of await mounts.all()) {
-    fs.mountUserFolder(drive, dir);
-  }
-}
-
 export const fs = new FS();
-await loadSystemData();
-await loadIdbDrive();
-await loadMountedDrives();
+await fs.init();

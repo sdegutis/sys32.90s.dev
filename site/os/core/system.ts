@@ -248,8 +248,6 @@ class System {
     const cy1 = crt.clip.y1;
     const cy2 = crt.clip.y2;
 
-    // TODO: skip drawing if entirely clipped?
-
     crt.clip.cx += node.x;
     crt.clip.cy += node.y;
     crt.clip.x1 = Math.max(cx1, crt.clip.cx);
