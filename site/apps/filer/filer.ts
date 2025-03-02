@@ -5,7 +5,7 @@ import { Button } from "../../os/controls/button.js";
 import { ImageView } from "../../os/controls/image.js";
 import { Label } from "../../os/controls/label.js";
 import { Bitmap } from "../../os/core/bitmap.js";
-import { fs, type FolderEntry } from "../../os/core/fs.js";
+import { fs, type Folder } from "../../os/core/fs.js";
 import { $ } from "../../os/core/view.js";
 import { Panel } from "../../os/desktop/panel.js";
 import { showPrompt } from "../../os/util/dialog.js";
@@ -59,34 +59,41 @@ export default () => {
 
   sidelist.addChild(mountButton);
 
-  async function showfiles(files: FolderEntry[]) {
-    filelist.children = files.map(file => {
-      return $(Button, {
-        all: 2, onClick: () => {
+  async function showfiles(base: string[], dir: Folder) {
+    filelist.children = [
+      ...dir.folders.map(file => {
+        return $(Button, {
+          all: 2, onClick: () => {
+            showfiles([...base, file.name], dir.folders.find(f => f.name === file.name)!);
+          }
+        },
+          $(GroupX, { passthrough: true, gap: 2 },
+            $(ImageView, { image: folderIcon }),
+            $(Label, { text: file.name }),
+          )
+        );
+      }),
+      ...dir.files.map(file => {
+        return $(Button, {
+          all: 2, onClick: () => {
 
-          // if (file.kind === 'folder') {
-          //   folder.getFolder(file.name).then(folder => {
-          //     showfiles(folder!);
-          //   })
-          // }
-          // else {
-          //   if (file.name.endsWith('.bitmap')) {
-          //     painter(folder.path + file.name);
-          //   }
-          //   if (file.name.endsWith('.font')) {
-          //     fontmaker(folder.path + file.name);
-          //   }
-          // }
+            //   if (file.name.endsWith('.bitmap')) {
+            //     painter(folder.path + file.name);
+            //   }
+            //   if (file.name.endsWith('.font')) {
+            //     fontmaker(folder.path + file.name);
+            //   }
 
-          console.log('clicked', file)
-        }
-      },
-        $(GroupX, { passthrough: true, gap: 2 },
-          $(ImageView, { image: file.kind === 'file' ? fileIcon : folderIcon }),
-          $(Label, { text: file.name }),
-        )
-      );
-    });
+            console.log('clicked', [...base, file.name].join('/'))
+          }
+        },
+          $(GroupX, { passthrough: true, gap: 2 },
+            $(ImageView, { image: fileIcon }),
+            $(Label, { text: file.name }),
+          )
+        );
+      }),
+    ];
 
     filelist.layoutTree();
   }
@@ -94,7 +101,7 @@ export default () => {
   for (const key of fs.drives()) {
     sidelist.addChild($(Button, {
       all: 2, background: 0xff000033, onClick: async () => {
-        showfiles(fs.list(key + '/')!);
+        showfiles([key], fs.list(key));
       }
     },
       $(Label, { text: `drive:${key}` })

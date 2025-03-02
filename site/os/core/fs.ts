@@ -92,11 +92,15 @@ class MountedDrive implements Drive {
 
 }
 
-export type FolderEntry = { name: string, kind: 'file' | 'folder' };
+export type Folder = {
+  name: string;
+  folders: Folder[];
+  files: { name: string, content: string }[];
+};
 
 class FS {
 
-  #files = new Map<string, string>();
+  #root: Folder = { name: '[root]', folders: [], files: [] };
 
   #drives: Record<string, Drive> = {
     sys: new SysDrive(),
@@ -105,6 +109,7 @@ class FS {
 
   async init() {
     for (const [name, drive] of Object.entries(this.#drives)) {
+      this.#root.folders.push({ files: [], folders: [], name });
       await drive.init(this.#addfile.bind(this, name));
     }
     for (const { drive, dir } of await mounts.all()) {
@@ -114,6 +119,8 @@ class FS {
 
   async mountUserFolder(drive: string, folder: FileSystemDirectoryHandle) {
     if (drive in this.#drives) return;
+
+    this.#root.folders.push({ files: [], folders: [], name: drive });
 
     mounts.set({ drive, dir: folder });
 
@@ -134,37 +141,52 @@ class FS {
   #addfile(drive: string, path: string, content: string) {
     content = normalize(content);
 
-    this.#files.set(drive + path, content);
+    const parts = (drive + path).split('/');
+    const file = parts.pop()!;
+    const dir = this.#nav(parts, { mkdirp: true });
+    dir.files.push({ name: file, content });
+  }
+
+  #nav(parts: string[], opts?: { mkdirp?: boolean, pop?: boolean }) {
+    let current: Folder = this.#root;
+    while (parts.length > 0) {
+      const part = parts.shift()!;
+      let found = current.folders.find(f => f.name === part);
+      if (!found) {
+        if (!opts?.mkdirp) throw new Error(`Folder not found: [${parts.join('/')}]`);
+        found = { files: [], folders: [], name: part };
+        current.folders.push(found);
+      }
+      current = found;
+    }
+    return current;
   }
 
   drives() {
     return Object.keys(this.#drives);
   }
 
-  list(fullpath: string): FolderEntry[] {
-    // const [drive, path] = this.#split(fullpath);
-
-    // console.log(drive.files.entries().filter(([path, content])))
-
-    // console.log(drive, path)
-    // console.log('list', drive, path, this.#entries)
-    // // files.sort(sortBy(f => (f.kind === 'folder' ? 1 : 2) + f.name));
-    return [];
+  list(path: string) {
+    console.log(path)
+    return this.#nav(path.split('/'));
   }
 
-  loadFile(fullpath: string): string | undefined {
-    return this.#files.get(fullpath);
-    // const [drive, path] = this.#split(fullpath);
-    // return drive.files.get(path);
+  loadFile(path: string): string | undefined {
+    const parts = path.split('/');
+    const file = parts.pop()!;
+    const dir = this.#nav(parts);
+    return dir.files.find(f => f.name === file)?.content;
   }
 
   saveFile(fullpath: string, content: string) {
     content = normalize(content);
 
-    this.#files.set(fullpath, content);
 
-    const [drive, path] = this.#split(fullpath);
-    drive.push(path, content);
+
+    // this.#files.set(fullpath, content);
+
+    // const [drive, path] = this.#split(fullpath);
+    // drive.push(path, content);
 
     for (const [watched, fn] of this.#watchers) {
       if (watched.startsWith(fullpath)) {
@@ -173,12 +195,12 @@ class FS {
     }
   }
 
-  #split<T>(fullpath: string) {
-    const i = fullpath.indexOf('/');
-    const drivename = fullpath.slice(0, i);
-    const drivepath = fullpath.slice(i);
-    return [this.#drives[drivename], drivepath] as const;
-  }
+  // #split<T>(fullpath: string) {
+  //   const i = fullpath.indexOf('/');
+  //   const drivename = fullpath.slice(0, i);
+  //   const drivepath = fullpath.slice(i);
+  //   return [this.#drives[drivename], drivepath] as const;
+  // }
 
   #watchers = new Map<string, Listener<string>>();
 

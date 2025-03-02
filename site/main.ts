@@ -12,4 +12,4 @@ await ws.addProgram('painter', import.meta.resolve('./apps/painter/'));
 await ws.addProgram('writer', import.meta.resolve('./apps/writer/'));
 await ws.addProgram('fontmaker', import.meta.resolve('./apps/fontmaker/'));
 
-ws.launch('painter')
+ws.launch('filer')
