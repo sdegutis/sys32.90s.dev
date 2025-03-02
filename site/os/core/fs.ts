@@ -113,17 +113,20 @@ class MountedDrive implements Drive {
   dhs = new Map<string, FileSystemDirectoryHandle>();
   fhs = new Map<string, FileSystemFileHandle>();
 
-  constructor(dir: FileSystemDirectoryHandle) {
+  changed;
+
+  constructor(dir: FileSystemDirectoryHandle, changed: (path: string, content: string) => void) {
     this.root = dir;
+    this.changed = changed;
   }
 
   async init() {
     await this.#loaddir(this.root, '/');
 
-    const observer = new FileSystemObserver((records) => {
-      console.log(records)
-    });
-    observer.observe(this.root, { recursive: true });
+    // const observer = new FileSystemObserver((records) => {
+    //   console.log(records)
+    // });
+    // observer.observe(this.root, { recursive: true });
     // observer.disconnect
 
   }
@@ -168,17 +171,15 @@ function sortBy<T, U>(fn: (o: T) => U) {
 
 class FS {
 
-  #sys = new SysDrive();
-  #user = new UserDrive();
-
   #drives: Record<string, Drive> = {
-    sys: this.#sys,
-    user: this.#user,
+    sys: new SysDrive(),
+    user: new UserDrive(),
   };
 
   async init() {
-    await this.#sys.init();
-    await this.#user.init();
+    for (const drive of Object.values(this.#drives)) {
+      drive.init();
+    }
     for (const { drive, dir } of await mounts.all()) {
       await this.mountUserFolder(drive, dir);
     }
@@ -187,7 +188,10 @@ class FS {
   async mountUserFolder(drive: string, folder: FileSystemDirectoryHandle) {
     if (drive in this.#drives) return;
     mounts.set({ drive, dir: folder });
-    const mounted = new MountedDrive(folder);
+    const mounted = new MountedDrive(folder, (path, content) => {
+      this.#watchers.get(path)?.dispatch(content);
+    });
+    mounted
     this.#drives[drive] = mounted;
     await mounted.init();
   }
