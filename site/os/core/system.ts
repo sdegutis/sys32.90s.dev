@@ -93,7 +93,6 @@ class System {
       this.#checkUnderMouse();
 
       this.#trackingMouse?.move();
-      if (!this.#trackingMouse) this.#hovered.onMouseMove?.();
 
       this.needsRedraw = true;
     }, { signal: this.#destroyer.signal });
