@@ -8,7 +8,7 @@ import { Label } from "../../os/controls/label.js";
 import { Bitmap } from "../../os/core/bitmap.js";
 import { fs } from "../../os/core/fs.js";
 import { $ } from "../../os/core/view.js";
-import { Panel } from "../../os/desktop/panel.js";
+import { Panel } from "../../os/core/panel.js";
 import { ws } from "../../os/desktop/workspace.js";
 import { showPrompt } from "../../os/util/dialog.js";
 

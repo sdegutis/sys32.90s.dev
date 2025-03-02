@@ -8,7 +8,7 @@ import { sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
 import { makeFlowLayout, makeVacuumLayout } from "../util/layouts.js";
 import { Clock } from "./clock.js";
-import { Panel } from "./panel.js";
+import { Panel } from "../core/panel.js";
 
 class Workspace {
 

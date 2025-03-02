@@ -10,7 +10,7 @@ import { CHARSET, Font } from "../../os/core/font.js";
 import { fs } from "../../os/core/fs.js";
 import { mem, sys } from "../../os/core/system.js";
 import { $, View } from "../../os/core/view.js";
-import { Panel } from "../../os/desktop/panel.js";
+import { Panel } from "../../os/core/panel.js";
 import { Listener, multiplex, Reactive } from "../../os/util/events.js";
 
 const SAMPLE_TEXT = [

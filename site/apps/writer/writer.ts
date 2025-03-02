@@ -1,7 +1,7 @@
 import { Scroll } from "../../os/containers/scroll.js";
 import { TextArea } from "../../os/containers/textarea.js";
 import { $, View } from "../../os/core/view.js";
-import { Panel } from "../../os/desktop/panel.js";
+import { Panel } from "../../os/core/panel.js";
 import { makeVacuumLayout } from "../../os/util/layouts.js";
 
 export default () => {

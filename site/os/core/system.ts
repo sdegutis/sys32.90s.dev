@@ -1,4 +1,4 @@
-import { Panel } from "../desktop/panel.js";
+import { Panel } from "./panel.js";
 import { ws } from "../desktop/workspace.js";
 import { Listener, Reactive } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
