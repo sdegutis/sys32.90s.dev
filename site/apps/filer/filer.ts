@@ -40,7 +40,8 @@ export default () => {
   const breadcrumbs = $(GroupX, { align: 'a', gap: 1, background: 0x00000099 });
 
   const mountButton = $(Button, {
-    all: 3,
+    all: 2,
+    background: 0x99000099,
     onClick: async () => {
       const drive = await showPrompt('what shall the name be?');
       if (!drive) return;
@@ -104,12 +105,13 @@ export default () => {
 
   for (const key of fs.drives()) {
     sidelist.addChild($(Button, {
-      all: 2, background: 0xff000033, onClick: async () => {
-        showfiles([key]);
-      }
+      all: 2,
+      background: 0xff000033,
+      onClick: () => { showfiles([key]); },
     },
       $(Label, { text: `drive:${key}` })
     ), sidelist.children.indexOf(mountButton));
+
     sidelist.parent?.layoutTree();
   }
 
@@ -123,6 +125,5 @@ export default () => {
     )
   )
   panel.show();
-
 
 };
