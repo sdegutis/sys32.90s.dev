@@ -32,6 +32,8 @@ class Folder {
     this.parent = parent;
   }
 
+  async init() { }
+
   addFolder(folder: Folder) {
     this.folders.push(folder);
     this.folders.sort(sortBy(f => f.name));
@@ -70,15 +72,9 @@ class Folder {
 
 };
 
-interface Drive extends Folder {
+class SysDrive extends Folder {
 
-  init(): Promise<void>;
-
-}
-
-class SysDrive extends Folder implements Drive {
-
-  async init() {
+  override async init() {
     const paths = await fetch(import.meta.resolve('./data.json')).then<string[]>(r => r.json());
 
     for (const path of paths) {
@@ -105,9 +101,9 @@ class SysDrive extends Folder implements Drive {
 
 }
 
-class UserDrive extends Folder implements Drive {
+class UserDrive extends Folder {
 
-  async init() {
+  override async init() {
     for (const { path, content } of await idbfs.all()) {
       // addFile(path, content);
     }
@@ -136,7 +132,7 @@ class MountedFolder extends Folder {
     this.handle = handle;
   }
 
-  async loaddir() {
+  override async init() {
 
     // const observer = new FileSystemObserver((records) => {
     //   for (const change of records) {
@@ -147,7 +143,7 @@ class MountedFolder extends Folder {
       if (handle instanceof FileSystemDirectoryHandle) {
         const dir = new MountedFolder(name, this, handle);
         this.addFolder(dir);
-        await dir.loaddir();
+        await dir.init();
       }
       else {
         const file = new MountedFile(name, this, handle);
@@ -194,14 +190,6 @@ class MountedFile extends FolderFile {
 
 }
 
-class MountedDrive extends MountedFolder implements Drive {
-
-  async init() {
-    await this.loaddir();
-  }
-
-}
-
 class Root extends Folder {
 
   constructor() {
@@ -214,7 +202,7 @@ class Root extends Folder {
     mounts.del(child);
   }
 
-  async addDrive(drive: Drive) {
+  async addDrive(drive: Folder) {
     this.folders.push(drive);
     await drive.init();
   }
@@ -235,7 +223,7 @@ class FS {
 
   async mount(drive: string, folder: FileSystemDirectoryHandle) {
     mounts.set({ drive, dir: folder });
-    await this.#root.addDrive(new MountedDrive(drive, this.#root, folder));
+    await this.#root.addDrive(new MountedFolder(drive, this.#root, folder));
   }
 
   unmount(drive: string) {
