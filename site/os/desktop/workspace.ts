@@ -15,7 +15,7 @@ class Workspace {
   #icons!: View;
   #desktop!: View;
   #taskbar!: View;
-  #panels!: View;
+  #progbuttons!: View;
 
   init() {
 
@@ -35,10 +35,10 @@ class Workspace {
 
     this.#desktop = $(View, {}, this.#icons);
 
-    this.#panels = $(Group, { gap: 2 });
+    this.#progbuttons = $(Group, { gap: 2 });
 
     this.#taskbar = $(Spaced, { background: 0x000000ff },
-      this.#panels,
+      this.#progbuttons,
       $(Group, {},
         $(Border, { padding: 2 }, $(Clock, {})),
         $(Button, {
@@ -68,8 +68,10 @@ class Workspace {
   addPanel(panel: Panel) {
     if (this.#desktop.children.includes(panel)) return;
 
-    panel.x = 20;
-    panel.y = 20;
+    const topPanel = this.#desktop.children.at(-1);
+
+    panel.x = (topPanel?.x ?? 0) + 12;
+    panel.y = (topPanel?.y ?? 0) + 12;
 
     this.#desktop.addChild(panel);
 
@@ -84,15 +86,15 @@ class Workspace {
     },
       label
     );
-    this.#panels.addChild(button);
-    this.#panels.layoutTree();
+    this.#progbuttons.addChild(button);
+    this.#progbuttons.layoutTree();
 
     panel.$data.title.watch(s => label.text = s);
-    label.$data.text.watch(s => { this.#panels.layoutTree(); });
+    label.$data.text.watch(s => { this.#progbuttons.layoutTree(); });
 
     panel.didClose.watch(() => {
       button.parent?.removeChild(button);
-      this.#panels.layoutTree();
+      this.#progbuttons.layoutTree();
       this.#desktop.children.at(-1)?.focus();
     });
 
