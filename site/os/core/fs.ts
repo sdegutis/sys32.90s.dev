@@ -126,11 +126,15 @@ class MountedFolder extends Folder {
   constructor(name: string, handle: FileSystemDirectoryHandle, watch?: true) {
     super(name);
     this.handle = handle;
+
     if (watch) {
-      this.observer = new FileSystemObserver(async (records) => {
-        for (const change of records) {
-          await this.#handleChange(change);
-        }
+      let processChanges = Promise.resolve();
+      this.observer = new FileSystemObserver(changes => {
+        processChanges = processChanges.then(async () => {
+          for (const change of changes) {
+            await this.#handleChange(change);
+          }
+        });
       });
       this.observer.observe(this.handle, { recursive: true });
     }
@@ -138,16 +142,20 @@ class MountedFolder extends Folder {
 
   override async init() {
     for await (const [name, handle] of this.handle.entries()) {
-      if (handle instanceof FileSystemDirectoryHandle) {
-        const dir = new MountedFolder(name, handle);
-        await dir.init();
-        this.addFolder(dir);
-      }
-      else {
-        const file = new MountedFile(name, handle);
-        await file.pullData();
-        this.addFile(file);
-      }
+      await this.#addentry(name, handle);
+    }
+  }
+
+  async #addentry(name: string, handle: FileSystemDirectoryHandle | FileSystemFileHandle) {
+    if (handle instanceof FileSystemDirectoryHandle) {
+      const dir = new MountedFolder(name, handle);
+      await dir.init();
+      this.addFolder(dir);
+    }
+    else {
+      const file = new MountedFile(name, handle);
+      await file.pullData();
+      this.addFile(file);
     }
   }
 
@@ -156,20 +164,10 @@ class MountedFolder extends Folder {
   }
 
   async #handleChange(change: FileSystemObserverRecord) {
+    console.log(change.type, change.relativePathComponents)
+
     if (change.type === 'unknown') {
       console.warn('unknown fs event', change);
-
-      return;
-    }
-
-    if (change.type === 'modified') {
-      const parts = [...change.relativePathComponents];
-      const name = parts.pop()!;
-      const dir = this.find(parts);
-
-      const file = dir.files.find(f => f.name === name)!;
-      file.pullData();
-
       return;
     }
 
@@ -177,49 +175,38 @@ class MountedFolder extends Folder {
       const parts = [...change.relativePathMovedFrom];
       const name = parts.pop()!;
       const dir = this.find(parts);
-
       const isFile = change.changedHandle instanceof FileSystemFileHandle;
       const group = isFile ? dir.files : dir.folders;
       const f = group.find(f => f.name === name)!;
-
-      const newname = change.relativePathComponents.at(-1)!;
-      f.name = newname;
-
+      f.name = change.relativePathComponents.at(-1)!;
       return;
     }
+
+    const parts = [...change.relativePathComponents];
+    const name = parts.pop()!;
+    const dir = this.find(parts);
 
     if (change.type === 'appeared') {
-      console.log(change)
-
-      const parts = [...change.relativePathComponents];
-      const name = parts.pop()!;
-      const dir = this.find(parts);
-
-      const handle = change.changedHandle;
-      if (handle instanceof FileSystemFileHandle) {
-        const file = new MountedFile(name, handle);
-        await file.pullData();
-        dir.addFile(file);
-      }
-      else {
-        const folder = new MountedFolder(name, handle);
-        await folder.init();
-        dir.addFolder(folder);
-      }
-
+      await dir.#addentry(name, change.changedHandle);
       return;
     }
 
-    // const affected = change.relativePathComponents[0];
+    if (change.type === 'modified') {
+      console.log('pullig', dir.name, name)
+      const file = dir.files.find(f => f.name === name)!;
+      await file.pullData();
+      return;
+    }
 
-    // else if (change.type === 'disappeared' || change.type === 'errored') {
-    //   if (this.files.some(f => f.name === affected)) {
-    //     this.removeFile(affected);
-    //   }
-    //   else {
-    //     this.removeFolder(affected);
-    //   }
-    // }
+    if (change.type === 'disappeared' || change.type === 'errored') {
+      if (dir.files.some(f => f.name === name)) {
+        dir.removeFile(name);
+      }
+      else {
+        dir.removeFolder(name);
+      }
+      return;
+    }
   }
 
 }
