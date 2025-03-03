@@ -52,25 +52,28 @@ class MountedDrive implements Drive {
   async init(addFile: AddFileFn) {
     await this.#loaddir(this.root, '/', addFile);
 
-    const observer = new FileSystemObserver((records) => {
-      for (const change of records) {
-        const path = '/' + change.relativePathComponents.join('/');
-      }
+    // const observer = new FileSystemObserver((records) => {
+    //   for (const change of records) {
+    //     const path = '/' + change.relativePathComponents.join('/');
+    //   }
 
-    });
-    observer.observe(this.root, { recursive: true });
+    // });
+    // observer.observe(this.root, { recursive: true });
   }
 
   async #loaddir(dir: FileSystemDirectoryHandle, path: string, addFile: AddFileFn) {
     // this.dhs.set(path, dir);
+    console.log('loading dir', path, dir)
+
 
     for await (const [name, entry] of dir.entries()) {
+      const fullpath = `${path}${name}`;
       if (entry.kind === 'directory') {
-        await this.#loaddir(entry, `${path}${name}/`, addFile)
+        await this.#loaddir(entry, fullpath, addFile)
       }
       else {
-        const fullpath = `${path}${name}`;
         // this.fhs.set(fullpath, entry);
+        console.log('loading file', fullpath)
 
         const h = await dir.getFileHandle(name);
         const f = await h.getFile();
