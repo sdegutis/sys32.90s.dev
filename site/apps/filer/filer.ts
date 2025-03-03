@@ -53,6 +53,8 @@ export default () => {
         await folder.requestPermission({ mode: 'readwrite' });
         await fs.mountUserFolder(drive, folder);
 
+        addDriveButton(drive);
+
         panel.layoutTree();
       }
       catch { }
@@ -103,16 +105,20 @@ export default () => {
     filelist.layoutTree();
   }
 
-  for (const key of fs.drives()) {
+  function addDriveButton(drive: string) {
     sidelist.addChild($(Button, {
       all: 2,
       background: 0xff000033,
-      onClick: () => { showfiles([key]); },
+      onClick: () => { showfiles([drive]); },
     },
-      $(Label, { text: `drive:${key}` })
+      $(Label, { text: `drive:${drive}` })
     ), sidelist.children.indexOf(mountButton));
 
     sidelist.parent?.layoutTree();
+  }
+
+  for (const drive of fs.drives()) {
+    addDriveButton(drive);
   }
 
   const panel = $(Panel, { title: 'filer', w: 150, h: 100, },

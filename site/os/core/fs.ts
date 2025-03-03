@@ -202,6 +202,7 @@ class FS {
     const file = parts.pop()!;
     const dir = this.#nav(parts, { mkdirp: true });
     dir.files.push({ name: file, content });
+    dir.files.sort(sortBy(f => f.name));
   }
 
   #nav(parts: string[], opts?: { mkdirp?: boolean, pop?: boolean }) {
@@ -213,6 +214,7 @@ class FS {
         if (!opts?.mkdirp) throw new Error(`Folder not found: [${parts.join('/')}]`);
         found = { files: [], folders: [], name: part };
         current.folders.push(found);
+        current.folders.sort(sortBy(f => f.name));
       }
       current = found;
     }
@@ -248,6 +250,8 @@ class FS {
     else {
       dir.files.push({ name: file, content });
     }
+
+    dir.files.sort(sortBy(f => f.name));
 
     // const [drive, path] = this.#split(fullpath);
     // drive.push(path, content);
