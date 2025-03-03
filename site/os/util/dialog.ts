@@ -27,16 +27,16 @@ export async function showPrompt(text: string) {
       return false;
     }
   },
-    $(Border, { all: 1, borderColor: 0x99000099, passthrough: false },
-      $(Border, { all: 3, background: 0x000000ff },
+    $(Border, { padding: 1, borderColor: 0x99000099, passthrough: false },
+      $(Border, { padding: 3, background: 0x000000ff },
         $(GroupY, { gap: 3, align: 'a', },
           $(Label, { text }),
-          $(Border, { all: 2, background: 0x222222ff, ...passedFocus },
+          $(Border, { padding: 2, background: 0x222222ff, ...passedFocus },
             $(TextField, { id: 'field', onEnter: accept, })
           ),
           $(GroupX, { gap: 2 },
-            $(Button, { all: 3, onClick: accept }, $(Label, { text: 'ok' })),
-            $(Button, { all: 3, onClick: cancel }, $(Label, { text: 'cancel' })),
+            $(Button, { padding: 3, onClick: accept }, $(Label, { text: 'ok' })),
+            $(Button, { padding: 3, onClick: cancel }, $(Label, { text: 'cancel' })),
           )
         )
       )

@@ -39,7 +39,7 @@ export default () => {
       },
         $(PanedYA, { w: 19, background: 0x333333ff },
           $(Button, {
-            background: 0x00000033, all: 2, onClick: () => {
+            background: 0x00000033, padding: 2, onClick: () => {
               const mapView = panel.find<MapView>('mapview')!;
               return mapView.showGrid = !mapView.showGrid;
             }
@@ -49,7 +49,7 @@ export default () => {
           $(View, { layout: makeFlowLayoutY() },
             ...COLORS.map((col, i) => {
 
-              const button = $(Button, { all: 1, onClick: () => { map.currentTool.val = i; } },
+              const button = $(Button, { padding: 1, onClick: () => { map.currentTool.val = i; } },
                 $(View, { passthrough: true, w: 4, h: 4, background: col })
               );
 

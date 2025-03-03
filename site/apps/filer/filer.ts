@@ -41,7 +41,7 @@ export default () => {
   const breadcrumbs = $(GroupX, { align: 'a', gap: 1, background: 0x00000099 });
 
   const mountButton = $(Button, {
-    all: 2,
+    padding: 2,
     background: 0x99000099,
     onClick: async () => {
       const drive = await showPrompt('what shall the name be?');
@@ -70,7 +70,7 @@ export default () => {
 
     breadcrumbs.children = base.map((name, i) => {
       return $(Button, {
-        all: 2,
+        padding: 2,
         onClick: () => { showfiles(base.slice(0, i + 1)) }
       }, $(Label, { text: name }));
     });
@@ -79,7 +79,7 @@ export default () => {
     filelist.children = [
       ...dir.folders.map(file => {
         return $(Button, {
-          all: 2, onClick: () => {
+          padding: 2, onClick: () => {
             showfiles([...base, file.name]);
           }
         },
@@ -91,7 +91,7 @@ export default () => {
       }),
       ...dir.files.map(file => {
         return $(Button, {
-          all: 2, onClick: () => {
+          padding: 2, onClick: () => {
             ws.openFile([...base, file.name].join('/'));
           }
         },
@@ -108,7 +108,7 @@ export default () => {
 
   function addDriveButton(drive: string) {
     const driveButton = $(Button, {
-      all: 2,
+      padding: 2,
       background: 0xff000033,
       onClick: (button) => {
         if (button === 0) {

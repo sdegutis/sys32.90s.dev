@@ -40,9 +40,9 @@ class Workspace {
     this.#taskbar = $(Spaced, { background: 0x000000ff },
       this.#panels,
       $(Group, {},
-        $(Border, { all: 2 }, $(Clock, {})),
+        $(Border, { padding: 2 }, $(Clock, {})),
         $(Button, {
-          all: 2,
+          padding: 2,
           background: 0x222222ff,
           onClick: () => {
             big = !big;
@@ -75,7 +75,7 @@ class Workspace {
 
     const label = $(Label, {});
     const button = $(Button, {
-      all: 2,
+      padding: 2,
       background: 0x440000ff,
       onClick: () => {
         panel.show();
@@ -110,7 +110,7 @@ class Workspace {
 
     this.#programs.set(name, launch);
 
-    this.#icons.addChild($(Button, { all: 2, onClick: () => launch() },
+    this.#icons.addChild($(Button, { padding: 2, onClick: () => launch() },
       $(Label, { text: name })
     ));
     sys.layoutTree();

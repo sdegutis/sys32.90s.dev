@@ -73,7 +73,7 @@ export class Panel extends View {
 
     this.children = [
 
-      $(Border, { id: 'border', all: 1, layout: makeVacuumLayout(1), },
+      $(Border, { id: 'border', padding: 1, layout: makeVacuumLayout(1), },
 
         $(PanedYA, {},
 
@@ -82,9 +82,9 @@ export class Panel extends View {
               $(Label, { id: 'titleLabel', color: 0xaaaaaaff })
             ),
             $(Group, { gap: 0 },
-              $(Button, { all: 2, onClick: () => this.minimize() }, $(ImageView, { image: minImage })),
-              $(Button, { all: 2, onClick: () => this.maximize() }, $(ImageView, { image: maxImage })),
-              $(Button, { all: 2, onClick: () => this.close(), hoverColor: 0x99000099, pressColor: 0x44000099 }, $(ImageView, { image: axeImage }))
+              $(Button, { padding: 2, onClick: () => this.minimize() }, $(ImageView, { image: minImage })),
+              $(Button, { padding: 2, onClick: () => this.maximize() }, $(ImageView, { image: maxImage })),
+              $(Button, { padding: 2, onClick: () => this.close(), hoverColor: 0x99000099, pressColor: 0x44000099 }, $(ImageView, { image: axeImage }))
             )
           ),
 

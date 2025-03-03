@@ -7,7 +7,7 @@ export class Border extends View {
   d = 0;
   l = 0;
   r = 0;
-  set all(n: number) { this.u = this.d = this.l = this.r = n; }
+  set padding(n: number) { this.u = this.d = this.l = this.r = n; }
 
   borderColor = 0x00000000;
 

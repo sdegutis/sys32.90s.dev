@@ -88,7 +88,7 @@ export default (filepath?: string) => {
     colorsWithButtons.add(color);
 
     const colorView = $(View, { passthrough: true, w: 4, h: 4, background: color, });
-    const border = $(Button, { all: 1, onClick: () => { paintView.color = color; } }, colorView);
+    const border = $(Button, { padding: 1, onClick: () => { paintView.color = color; } }, colorView);
 
     multiplex({
       currentColor: paintView.$data.color,
