@@ -48,7 +48,7 @@ class DirNode {
     this.files.splice(i, 1);
   }
 
-  find(parts: string[]) {
+  findDir(parts: string[]) {
     let current: DirNode = this;
     while (parts.length > 0) {
       const part = parts.shift()!;
@@ -173,8 +173,8 @@ class MountedDrive extends MountedFolder implements Drive {
     this.observer.disconnect();
   }
 
-  override find(parts: string[]): MountedFolder {
-    return super.find(parts) as MountedFolder;
+  override findDir(parts: string[]): MountedFolder {
+    return super.findDir(parts) as MountedFolder;
   }
 
   async #handleChange(change: FileSystemObserverRecord) {
@@ -186,7 +186,7 @@ class MountedDrive extends MountedFolder implements Drive {
     if (change.type === 'moved') {
       const parts = [...change.relativePathMovedFrom];
       const name = parts.pop()!;
-      const dir = this.find(parts);
+      const dir = this.findDir(parts);
       const isFile = change.changedHandle instanceof FileSystemFileHandle;
       const group = isFile ? dir.files : dir.folders;
       const f = group.find(f => f.name === name)!;
@@ -198,7 +198,7 @@ class MountedDrive extends MountedFolder implements Drive {
 
     const parts = [...change.relativePathComponents];
     const name = parts.pop()!;
-    const dir = this.find(parts);
+    const dir = this.findDir(parts);
 
     if (change.type === 'appeared') {
       await dir.addentry(name, change.changedHandle);
@@ -295,20 +295,21 @@ class FS {
   }
 
   getFolder(path: string) {
-    return this.#root.find(path.split('/'));
+    return this.#root.findDir(path.split('/'));
   }
 
   loadFile(path: string): string | undefined {
     const parts = path.split('/');
     const file = parts.pop()!;
-    const dir = this.#root.find(parts);
+    const dir = this.#root.findDir(parts);
     return dir.files.find(f => f.name === file)?.content;
   }
 
   saveFile(filepath: string, content: string) {
     const parts = filepath.split('/');
-    const file = parts.pop()!;
-    const dir = this.#root.find(parts);
+    const name = parts.pop()!;
+    const dir = this.#root.findDir(parts);
+
 
 
 
