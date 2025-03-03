@@ -41,7 +41,7 @@ export class Button extends Border {
     },
   });
 
-  onClick?(button: number, count: number): void;
+  onClick?(click: { button: number, count: number }): void;
 
   override init(): void {
     this.addChild(this.overlay);
@@ -80,7 +80,7 @@ export class Button extends Border {
       },
       up: () => {
         this.pressed = false;
-        this.onClick?.(button, this.#counter.count);
+        this.onClick?.({ button, count: this.#counter.count });
       },
     });
   }

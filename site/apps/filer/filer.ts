@@ -92,8 +92,8 @@ export default () => {
       }),
       ...dir.files.map(file => {
         return $(Button, {
-          padding: 2, onClick: (button, count) => {
-            if (button === 0 && count > 1) {
+          padding: 2, onClick: (click) => {
+            if (click.button === 0 && click.count > 1) {
               ws.openFile([...base, file.name].join('/'));
             }
           }
@@ -117,8 +117,8 @@ export default () => {
     const driveButton = $(Button, {
       padding: 2,
       background: 0xff000033,
-      onClick: (button) => {
-        if (button === 0) {
+      onClick: (click) => {
+        if (click.button === 0) {
           showfiles([drive]);
         }
         else {
