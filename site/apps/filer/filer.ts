@@ -126,10 +126,9 @@ export default () => {
             {
               text: 'unmount',
               onClick: () => {
-                if (fs.unmount(drive)) {
-                  driveButton.remove();
-                  sidelist.layoutTree();
-                }
+                fs.unmount(drive)
+                driveButton.remove();
+                sidelist.layoutTree();
               },
             },
           ]);

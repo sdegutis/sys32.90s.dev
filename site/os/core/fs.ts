@@ -3,21 +3,32 @@ import { Listener } from "../util/events.js";
 const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
 const idbfs = await opendb<{ path: string, content: string }>('idbfs', 'path');
 
-type AddFileFn = (path: string, content: string) => void;
+abstract class Drive implements Folder {
 
-interface Drive {
-  init(addFile: AddFileFn): Promise<void>;
-  // push(path: string, content: string): void;
+  name;
+  folders: Folder[] = [];
+  files: FolderFile[] = [];
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  abstract init(): Promise<void>;
+
+  remove(child: string) {
+
+  }
+
 }
 
-class SysDrive implements Drive {
+class SysDrive extends Drive {
 
-  async init(addFile: AddFileFn) {
+  async init() {
     const files = await fetch(import.meta.resolve('./data.json')).then(r => r.json());
     for (const file of files) {
       const data = await fetch(file).then(r => r.text());
       const path = file.slice('/os/data'.length);
-      addFile(path, data);
+      // addFile(path, data);
     }
   }
 
@@ -25,11 +36,11 @@ class SysDrive implements Drive {
 
 }
 
-class UserDrive implements Drive {
+class UserDrive extends Drive {
 
-  async init(addFile: AddFileFn) {
+  async init() {
     for (const { path, content } of await idbfs.all()) {
-      addFile(path, content);
+      // addFile(path, content);
     }
   }
 
@@ -37,20 +48,57 @@ class UserDrive implements Drive {
   //   idbfs.set({ path, content });
   // }
 
+  override remove(child: string) {
+
+    super.remove(child);
+
+    // const files = await idbfs.all();
+  }
+
 }
 
-class MountedDrive implements Drive {
+class MountedFolder implements Folder {
+
+  name;
+  folders: MountedFolder[] = [];
+  files: MountedFile[] = [];
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  // override remove(child: string) {
+
+  //   super.remove(child);
+
+  //   // const files = await idbfs.all();
+  // }
+
+}
+
+class MountedFile implements FolderFile {
+
+  name;
+  content;
+
+  constructor(name: string, content: string) {
+    this.name = name;
+    this.content = content;
+  }
+
+}
+
+class MountedDrive extends Drive {
 
   root: FileSystemDirectoryHandle;
-  // dhs = new Map<string, FileSystemDirectoryHandle>();
-  // fhs = new Map<string, FileSystemFileHandle>();
 
-  constructor(dir: FileSystemDirectoryHandle) {
+  constructor(name: string, dir: FileSystemDirectoryHandle) {
+    super(name);
     this.root = dir;
   }
 
-  async init(addFile: AddFileFn) {
-    await this.#loaddir(this.root, '/', addFile);
+  async init() {
+    // await this.#loaddir(this.root, '/');
 
     // const observer = new FileSystemObserver((records) => {
     //   for (const change of records) {
@@ -61,28 +109,26 @@ class MountedDrive implements Drive {
     // observer.observe(this.root, { recursive: true });
   }
 
-  async #loaddir(dir: FileSystemDirectoryHandle, path: string, addFile: AddFileFn) {
-    // this.dhs.set(path, dir);
-    console.log('loading dir', path, dir)
+  // async #loaddir(dir: FileSystemDirectoryHandle, path: string) {
+  //   // this.dhs.set(path, dir);
+  //   console.log('loading dir', path, dir)
 
 
-    for await (const [name, entry] of dir.entries()) {
-      const fullpath = `${path}${name}`;
-      if (entry.kind === 'directory') {
-        await this.#loaddir(entry, fullpath, addFile)
-      }
-      else {
-        // this.fhs.set(fullpath, entry);
-        console.log('loading file', fullpath)
+  //   for await (const [name, entry] of dir.entries()) {
+  //     const fullpath = `${path}${name}`;
+  //     if (entry.kind === 'directory') {
+  //       await this.#loaddir(entry, fullpath)
+  //     }
+  //     else {
+  //       const h = await dir.getFileHandle(name);
+  //       console.log('loading file', fullpath, h)
+  //       const f = await h.getFile();
+  //       const data = await f.text();
 
-        const h = await dir.getFileHandle(name);
-        const f = await h.getFile();
-        const data = await f.text();
-
-        addFile(fullpath, data);
-      }
-    }
-  }
+  //       // addFile(fullpath, data);
+  //     }
+  //   }
+  // }
 
   // async push(path: string, content: string) {
   //   const h = await this.#dir.getFileHandle(name, { create: true });
@@ -91,46 +137,70 @@ class MountedDrive implements Drive {
   //   await w.close();
   // }
 
+  // remove(child: string) {
+  // }
+
 }
+
+export type FolderFile = {
+  name: string;
+  content: string;
+};
 
 export type Folder = {
   name: string;
   folders: Folder[];
-  files: { name: string, content: string }[];
+  files: FolderFile[];
 };
+
+class Root extends Drive {
+
+  constructor() {
+    super('[root]');
+  }
+
+  async init() {
+
+  }
+
+  override remove(child: string) {
+    if (child === 'sys' || child === 'user') return;
+    super.remove(child);
+
+
+
+    // const i = this.#root.folders.findIndex(f => f.name === drive);
+    // this.#root.folders.splice(i, 1);
+
+  }
+
+}
 
 class FS {
 
-  #root: Folder = { name: '[root]', folders: [], files: [] };
+  #root = new Root();
 
   async init() {
-    await this.#initdrive('sys', new SysDrive());
-    await this.#initdrive('user', new UserDrive());
-
+    await this.#initdrive(new SysDrive('sys'));
+    await this.#initdrive(new UserDrive('user'));
     for (const { drive, dir } of await mounts.all()) {
       await this.mount(drive, dir);
     }
   }
 
-  unmount(drive: string) {
-    if (drive === 'sys' || drive === 'user') return false;
-
-    const i = this.#root.folders.findIndex(f => f.name === drive);
-    this.#root.folders.splice(i, 1);
-
-    mounts.del(drive);
-
-    return true;
-  }
-
-  async #initdrive(name: string, drive: Drive) {
-    this.#root.folders.push({ files: [], folders: [], name });
-    await drive.init(this.#addfile.bind(this, name));
+  async #initdrive(drive: Drive) {
+    this.#root.folders.push(drive);
+    await drive.init();
   }
 
   async mount(drive: string, folder: FileSystemDirectoryHandle) {
     mounts.set({ drive, dir: folder });
-    await this.#initdrive(drive, new MountedDrive(folder));
+    await this.#initdrive(new MountedDrive(drive, folder));
+  }
+
+  unmount(drive: string) {
+    this.#root.remove(drive);
+    mounts.del(drive);
   }
 
   #reflectChanges(drive: string, change: FileSystemObserverRecord) {
