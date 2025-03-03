@@ -354,6 +354,7 @@ class FS {
       if (!dir) dir = await node.createFolder(name);
       node = dir;
     }
+    return node;
   }
 
   getFolder(path: string) {

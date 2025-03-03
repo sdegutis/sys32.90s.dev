@@ -21,6 +21,8 @@ const fileIcon = new Bitmap([0x000099ff], 1, [1]);
 
 export default () => {
 
+  let currentBase: string[] = ['user'];
+
   // (async () => {
   //   console.log(await fs.getFolder('user'))
   //   // await fs.#drives['b'].putFile('foo', 'bar')
@@ -57,22 +59,40 @@ export default () => {
 
         addDriveButton(drive);
 
-        panel.layoutTree();
       }
       catch { }
 
+      panel.layoutTree();
     }
   }, $(Label, { text: 'mount' }));
 
   sidelist.addChild(mountButton);
 
-  async function showfiles(base: string[]) {
+  const mkdirButton = $(Button, {
+    padding: 2,
+    background: 0x99000099,
+    onClick: async () => {
+      const name = await showPrompt('what shall the name be?');
+      if (!name || fs.drives().includes(name)) return;
+      await fs.mkdirp([...currentBase, name].join('/'));
+      panel.layoutTree();
+    }
+  }, $(Label, { text: 'new folder' }));
+
+  sidelist.addChild(mkdirButton);
+
+  async function showfiles() {
+    const base = currentBase;
+
     const dir = fs.getFolder(base.join('/'));
 
     breadcrumbs.children = base.map((name, i) => {
       return $(Button, {
         padding: 2,
-        onClick: () => { showfiles(base.slice(0, i + 1)) }
+        onClick: () => {
+          currentBase = base.slice(0, i + 1);
+          showfiles();
+        }
       }, $(Label, { text: name }));
     });
     breadcrumbs.parent?.layoutTree();
@@ -81,7 +101,8 @@ export default () => {
       ...dir.folders.map(file => {
         return $(Button, {
           padding: 2, onClick: () => {
-            showfiles([...base, file.name]);
+            currentBase = [...base, file.name];
+            showfiles();
           }
         },
           $(GroupX, { passthrough: true, gap: 2 },
@@ -119,7 +140,8 @@ export default () => {
       background: 0xff000033,
       onClick: (click) => {
         if (click.button === 0) {
-          showfiles([drive]);
+          currentBase = [drive];
+          showfiles();
         }
         else {
           showMenu([
@@ -145,6 +167,8 @@ export default () => {
   for (const drive of fs.drives()) {
     addDriveButton(drive);
   }
+
+  showfiles();
 
   const panel = $(Panel, { title: 'filer', w: 150, h: 100, },
     $(SplitX, { background: 0xffffff11, pos: 50, resizable: true, dividerColor: 0x33333300 },
