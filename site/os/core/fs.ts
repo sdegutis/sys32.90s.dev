@@ -3,7 +3,7 @@ import { Listener } from "../util/events.js";
 const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
 const idbfs = await opendb<{ path: string, content: string }>('idbfs', 'path');
 
-class FolderFile {
+class FileNode {
 
   name: string;
   #content!: string;
@@ -18,22 +18,22 @@ class FolderFile {
 
 };
 
-class Folder {
+class DirNode {
 
   name: string;
-  folders: Folder[] = [];
-  files: FolderFile[] = [];
+  folders: DirNode[] = [];
+  files: FileNode[] = [];
 
   constructor(name: string) {
     this.name = name;
   }
 
-  addFolder(folder: Folder) {
+  addFolder(folder: DirNode) {
     this.folders.push(folder);
     this.folders.sort(sortBy(f => f.name));
   }
 
-  addFile(file: FolderFile) {
+  addFile(file: FileNode) {
     this.files.push(file);
     this.files.sort(sortBy(f => f.name));
   }
@@ -49,7 +49,7 @@ class Folder {
   }
 
   find(parts: string[]) {
-    let current: Folder = this;
+    let current: DirNode = this;
     while (parts.length > 0) {
       const part = parts.shift()!;
       let found = current.folders.find(f => f.name === part);
@@ -63,14 +63,14 @@ class Folder {
 
 };
 
-interface Drive extends Folder {
+interface Drive extends DirNode {
 
   init(): Promise<void>;
   deinit?(): void;
 
 }
 
-class SysDrive extends Folder {
+class SysDrive extends DirNode {
 
   async init() {
     const paths = await fetch(import.meta.resolve('./data.json')).then<string[]>(r => r.json());
@@ -80,26 +80,26 @@ class SysDrive extends Folder {
       const fixedpath = path.slice('/os/data/'.length);
       const parts = fixedpath.split('/');
 
-      let dir: Folder = this;
+      let dir: DirNode = this;
       while (parts.length > 1) {
         const name = parts.shift()!;
         let next = dir.folders.find(f => f.name === name);
         if (!next) {
-          next = new Folder(name);
+          next = new DirNode(name);
           dir.addFolder(next);
         }
         dir = next;
       }
 
       const name = parts.shift()!;
-      const file = new FolderFile(name, content);
+      const file = new FileNode(name, content);
       dir.addFile(file);
     }
   }
 
 }
 
-class UserDrive extends Folder implements Drive {
+class UserDrive extends DirNode implements Drive {
 
   async init() {
     for (const { path, content } of await idbfs.all()) {
@@ -118,7 +118,7 @@ class UserDrive extends Folder implements Drive {
 
 }
 
-class MountedFolder extends Folder implements Drive {
+class MountedFolder extends DirNode implements Drive {
 
   handle: FileSystemDirectoryHandle;
 
@@ -225,7 +225,7 @@ class MountedDrive extends MountedFolder implements Drive {
 }
 
 
-class MountedFile extends FolderFile {
+class MountedFile extends FileNode {
 
   handle;
 
@@ -247,7 +247,7 @@ class MountedFile extends FolderFile {
 
 }
 
-class Root extends Folder {
+class Root extends DirNode {
 
   constructor() {
     super('[root]');
