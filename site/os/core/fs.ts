@@ -131,13 +131,11 @@ class FS {
 
   #root: Folder = { name: '[root]', folders: [], files: [] };
 
-  #drives: Record<string, Drive> = {
-    sys: new SysDrive(),
-    user: new UserDrive(),
-  };
-
   async init() {
-    for (const [name, drive] of Object.entries(this.#drives)) {
+    for (const [name, drive] of Object.entries({
+      sys: new SysDrive(),
+      user: new UserDrive(),
+    })) {
       this.#root.folders.push({ files: [], folders: [], name });
       await drive.init(this.#addfile.bind(this, name));
     }
@@ -155,8 +153,6 @@ class FS {
   }
 
   async mountUserFolder(drive: string, folder: FileSystemDirectoryHandle) {
-    if (drive in this.#drives) return;
-
     this.#root.folders.push({ files: [], folders: [], name: drive });
 
     mounts.set({ drive, dir: folder });
@@ -164,8 +160,6 @@ class FS {
     const mounted = new MountedDrive(folder, (change) => {
       this.#reflectChanges(drive, change);
     });
-
-    this.#drives[drive] = mounted;
 
     await mounted.init(this.#addfile.bind(this, drive));
   }
@@ -230,7 +224,7 @@ class FS {
   }
 
   drives() {
-    return Object.keys(this.#drives);
+    return this.#root.folders.map(f => f.name);
   }
 
   getFolder(path: string) {

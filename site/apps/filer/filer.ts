@@ -46,7 +46,7 @@ export default () => {
     background: 0x99000099,
     onClick: async () => {
       const drive = await showPrompt('what shall the name be?');
-      if (!drive) return;
+      if (!drive || fs.drives().includes(drive)) return;
 
       let folder: FileSystemDirectoryHandle;
       try {
