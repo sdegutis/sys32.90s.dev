@@ -158,6 +158,7 @@ class MountedFolder extends Folder {
   async #handleChange(change: FileSystemObserverRecord) {
     if (change.type === 'unknown') {
       console.warn('unknown fs event', change);
+
       return;
     }
 
@@ -165,14 +166,14 @@ class MountedFolder extends Folder {
       const parts = [...change.relativePathComponents];
       const name = parts.pop()!;
       const dir = this.find(parts);
+
       const file = dir.files.find(f => f.name === name)!;
       file.pullData();
+
       return;
     }
 
     if (change.type === 'moved') {
-      console.log('moving')
-
       const parts = [...change.relativePathMovedFrom];
       const name = parts.pop()!;
       const dir = this.find(parts);
@@ -183,38 +184,34 @@ class MountedFolder extends Folder {
 
       const newname = change.relativePathComponents.at(-1)!;
       f.name = newname;
-      console.log('moved', f)
-      return;
 
-      // const handle = change.changedHandle;
-      // const isFile = handle instanceof FileSystemFileHandle;
-      // const group = isFile ? this.files : this.folders;
-      // const f = group.find(f => f.name === change.relativePathMovedFrom[0])!;
-      // f.name = affected;
+      return;
+    }
+
+    if (change.type === 'appeared') {
+      console.log(change)
+
+      const parts = [...change.relativePathComponents];
+      const name = parts.pop()!;
+      const dir = this.find(parts);
+
+      const handle = change.changedHandle;
+      if (handle instanceof FileSystemFileHandle) {
+        const file = new MountedFile(name, handle);
+        await file.pullData();
+        dir.addFile(file);
+      }
+      else {
+        const folder = new MountedFolder(name, handle);
+        await folder.init();
+        dir.addFolder(folder);
+      }
+
+      return;
     }
 
     // const affected = change.relativePathComponents[0];
 
-    // else if (change.type === 'moved') {
-    //   const handle = change.changedHandle;
-    //   const isFile = handle instanceof FileSystemFileHandle;
-    //   const group = isFile ? this.files : this.folders;
-    //   const f = group.find(f => f.name === change.relativePathMovedFrom[0])!;
-    //   f.name = affected;
-    // }
-    // else if (change.type === 'appeared') {
-    //   const handle = change.changedHandle;
-    //   if (handle instanceof FileSystemFileHandle) {
-    //     const file = new MountedFile(affected, handle);
-    //     await file.pullData();
-    //     this.addFile(file);
-    //   }
-    //   else {
-    //     const folder = new MountedFolder(affected, handle);
-    //     await folder.init();
-    //     this.addFolder(folder);
-    //   }
-    // }
     // else if (change.type === 'disappeared' || change.type === 'errored') {
     //   if (this.files.some(f => f.name === affected)) {
     //     this.removeFile(affected);
