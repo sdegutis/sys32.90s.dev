@@ -1,15 +1,16 @@
 import { Listener } from "../util/events.js";
 
 const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
-const idbfs = await opendb<{ path: string, content: string }>('idbfs', 'path');
+const idbfs = await opendb<{ path: string, content?: string }>('idbfs', 'path');
 
 class FileNode {
 
   name: string;
-  #content = '';
+  #content;
 
-  constructor(name: string) {
+  constructor(name: string, content: string) {
     this.name = name;
+    this.#content = content;
   }
 
   get content() { return this.#content }
@@ -31,6 +32,14 @@ class DirNode {
 
   constructor(name: string) {
     this.name = name;
+  }
+
+  getFolder(name: string) {
+    return this.folders.find(f => f.name === name);
+  }
+
+  getFile(name: string) {
+    return this.files.find(f => f.name === name);
   }
 
   addFolder(folder: DirNode) {
@@ -57,7 +66,7 @@ class DirNode {
     let current: DirNode = this;
     while (parts.length > 0) {
       const part = parts.shift()!;
-      let found = current.folders.find(f => f.name === part);
+      let found = current.getFolder(part);
       if (!found) {
         throw new Error(`Folder not found: [${parts.join('/')}]`);
       }
@@ -66,17 +75,31 @@ class DirNode {
     return current;
   }
 
-  async createFile(name: string) {
-    return new FileNode(name);
+  async createFolder(name: string) {
+    return new DirNode(name);
   }
 
-  async getOrCreateFile(name: string) {
-    let file = this.files.find(f => f.name === name);
+  async createFile(name: string, content: string) {
+    return new FileNode(name, content);
+  }
+
+  async getOrCreateFile(name: string, content: string) {
+    let file = this.getFile(name);
     if (!file) {
-      file = await this.createFile(name);
+      file = await this.createFile(name, content);
       this.addFile(file);
     }
+    file.content = content;
+    file.push();
     return file;
+  }
+
+  async getOrCreateFolder(name: string) {
+    let dir = this.getFolder(name);
+    if (!dir) {
+      dir = await this.createFolder(name);
+    }
+    return dir;
   }
 
 };
@@ -101,7 +124,7 @@ class SysDrive extends DirNode {
       let dir: DirNode = this;
       while (parts.length > 1) {
         const name = parts.shift()!;
-        let next = dir.folders.find(f => f.name === name);
+        let next = dir.getFolder(name);
         if (!next) {
           next = new DirNode(name);
           dir.addFolder(next);
@@ -110,8 +133,7 @@ class SysDrive extends DirNode {
       }
 
       const name = parts.shift()!;
-      const file = new FileNode(name);
-      file.content = content;
+      const file = new FileNode(name, content);
       dir.addFile(file);
     }
   }
@@ -166,6 +188,16 @@ class MountedFolder extends DirNode implements Drive {
       await file.pull();
       this.addFile(file);
     }
+  }
+
+  override async createFolder(name: string) {
+    const handle = await this.handle.getDirectoryHandle(name, { create: true });
+    return new MountedFolder(name, handle);
+  }
+
+  override async createFile(name: string): Promise<MountedFile> {
+    const handle = await this.handle.getFileHandle(name, { create: true });
+    return new MountedFile(name, handle);
   }
 
 }
@@ -225,7 +257,7 @@ class MountedDrive extends MountedFolder implements Drive {
     }
 
     if (change.type === 'modified') {
-      const file = dir.files.find(f => f.name === name)!;
+      const file = dir.getFile(name) as MountedFile;
       await file.pull();
       return;
     }
@@ -241,11 +273,6 @@ class MountedDrive extends MountedFolder implements Drive {
     }
   }
 
-  override async createFile(name: string): Promise<MountedFile> {
-    const handle = await this.handle.getFileHandle(name, { create: true });
-    return new MountedFile(name, handle);
-  }
-
 }
 
 
@@ -254,7 +281,7 @@ class MountedFile extends FileNode {
   handle: FileSystemFileHandle;
 
   constructor(name: string, handle: FileSystemFileHandle) {
-    super(name);
+    super(name, '');
     this.handle = handle;
   }
 
@@ -279,7 +306,7 @@ class Root extends DirNode {
 
   removeDrive(child: string) {
     if (child === 'sys' || child === 'user') return;
-    const folder = this.folders.find(f => f.name === child) as Drive;
+    const folder = this.getFolder(child) as Drive;
     folder.deinit?.();
     this.removeFolder(child);
     mounts.del(child);
@@ -318,6 +345,17 @@ class FS {
     return this.#root.folders.map(f => f.name);
   }
 
+  async mkdirp(path: string) {
+    let node: DirNode = this.#root;
+    const parts = path.split('/');
+    while (parts.length > 0) {
+      const name = parts.shift()!;
+      let dir = node.getFolder(name);
+      if (!dir) dir = await node.createFolder(name);
+      node = dir;
+    }
+  }
+
   getFolder(path: string) {
     return this.#root.findDir(path.split('/'));
   }
@@ -333,24 +371,15 @@ class FS {
     const parts = filepath.split('/');
     const name = parts.pop()!;
     const dir = this.#root.findDir(parts);
-
-    const file = await dir.getOrCreateFile(name);
-    file.content = content;
-    file.push();
-
-    // for (const [watched, fn] of this.#watchers) {
-    //   if (watched.startsWith(filepath)) {
-    //     fn.dispatch(content);
-    //   }
-    // }
+    const file = await dir.getOrCreateFile(name, content);
   }
 
-  #watchers = new Map<string, Listener<string>>();
+  // #watchers = new Map<string, Listener<string>>();
 
   watchTree(path: string, fn: (content: string) => void) {
-    let watcher = this.#watchers.get(path);
-    if (!watcher) this.#watchers.set(path, watcher = new Listener());
-    return watcher.watch(fn);
+    // let watcher = this.#watchers.get(path);
+    // if (!watcher) this.#watchers.set(path, watcher = new Listener());
+    // return watcher.watch(fn);
   }
 
 }
@@ -390,3 +419,5 @@ async function opendb<T>(dbname: string, key: keyof T & string) {
 
 export const fs = new FS();
 await fs.init();
+
+// await fs.mkdirp('user/foo/bar');

@@ -142,6 +142,8 @@ export default async (filename?: string) => {
   panel.onKeyDown = (key) => {
     if (key === 's' && sys.keys['Control']) {
 
+      filename = `user/foo/bar/qux.font`
+
       if (filename) {
 
         // for (let i = 0; i < 26; i++) {
