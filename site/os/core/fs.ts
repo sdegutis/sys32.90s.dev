@@ -25,48 +25,77 @@ class Folder {
     this.name = name;
   }
 
+  protected classForFolder() {
+    return Folder;
+  }
+
+  protected classForFile() {
+    return FolderFile;
+  }
+
+  addFolder(name: string) {
+    let dir = this.folders.find(f => f.name === name);
+    if (!dir) {
+      dir = new (this.classForFolder())(name);
+      this.folders.push(dir);
+    }
+    return dir;
+  }
+
+  addFile(name: string, content: string) {
+    let file = this.files.find(f => f.name === name);
+    if (!file) {
+      file = new (this.classForFile())(name, normalize(content));
+      this.files.push(file);
+    }
+    return file;
+  }
+
+  remove(child: string) {
+
+  }
+
+  find(parts: string[]) {
+    let current: Folder = this;
+    while (parts.length > 0) {
+      const part = parts.shift()!;
+      let found = current.folders.find(f => f.name === part);
+      if (!found) {
+        throw new Error(`Folder not found: [${parts.join('/')}]`);
+      }
+      current = found;
+    }
+    return current;
+  }
+
 };
 
 abstract class Drive extends Folder {
 
   abstract init(): Promise<void>;
 
-  remove(child: string) {
-
-  }
-
 }
 
 class SysDrive extends Drive {
 
   async init() {
-    const filenames = await fetch(import.meta.resolve('./data.json')).then<string[]>(r => r.json());
+    const paths = await fetch(import.meta.resolve('./data.json')).then<string[]>(r => r.json());
 
-    for (const name of filenames) {
-      const content = await fetch(name).then(r => r.text());
-      const path = name.slice('/os/data/'.length);
-      const parts = path.split('/');
+    for (const path of paths) {
+      const content = await fetch(path).then(r => r.text());
+      const fixedpath = path.slice('/os/data/'.length);
+      const parts = fixedpath.split('/');
 
+      let dir: Folder = this;
+      while (parts.length > 1) {
+        const name = parts.shift()!;
+        dir = dir.addFolder(name);
+      }
 
-
-      console.log(path, parts, [content.slice(0, 20)]);
+      const name = parts.shift()!;
+      dir.addFile(name, content);
     }
-
-    // const files = await Promise.all(filenames.map(async name => {
-
-    //   return {
-    //     path: path,
-    //     
-    //   };
-    // }));
-
-
-
-    // console.log(files);
-
   }
-
-  // push(path: string, content: string): void { }
 
 }
 
@@ -224,43 +253,28 @@ class FS {
     // content = normalize(content);
   }
 
-  #addfile(drive: string, path: string, content: string) {
-    content = normalize(content);
-    const parts = (drive + path).split('/');
-    const file = parts.pop()!;
-    const dir = this.#nav(parts, { mkdirp: true });
-    dir.files.push({ name: file, content });
-    dir.files.sort(sortBy(f => f.name));
-  }
-
-  #nav(parts: string[], opts?: { mkdirp?: boolean, pop?: boolean }) {
-    let current: Folder = this.#root;
-    while (parts.length > 0) {
-      const part = parts.shift()!;
-      let found = current.folders.find(f => f.name === part);
-      if (!found) {
-        if (!opts?.mkdirp) throw new Error(`Folder not found: [${parts.join('/')}]`);
-        found = { files: [], folders: [], name: part };
-        current.folders.push(found);
-        current.folders.sort(sortBy(f => f.name));
-      }
-      current = found;
-    }
-    return current;
-  }
+  // #addfile(drive: string, path: string, content: string) {
+  //   content = normalize(content);
+  //   const parts = (drive + path).split('/');
+  //   const file = parts.pop()!;
+  //   const dir = this.#nav(parts, { mkdirp: true });
+  //   dir.files.push({ name: file, content });
+  //   dir.files.sort(sortBy(f => f.name));
+  // }
 
   drives() {
     return this.#root.folders.map(f => f.name);
   }
 
   getFolder(path: string) {
-    return this.#nav(path.split('/'));
+    return undefined as any as Folder;
+    // return this.#nav(path.split('/'));
   }
 
   loadFile(path: string): string | undefined {
     const parts = path.split('/');
     const file = parts.pop()!;
-    const dir = this.#nav(parts);
+    const dir = this.#root.find(parts);
     return dir.files.find(f => f.name === file)?.content;
   }
 
@@ -273,30 +287,30 @@ class FS {
   }
 
   saveFile(filepath: string, content: string) {
-    content = normalize(content);
+    // content = normalize(content);
 
-    const parts = filepath.split('/');
-    const file = parts.pop()!;
-    const dir = this.#nav(parts);
+    // const parts = filepath.split('/');
+    // const file = parts.pop()!;
+    // const dir = this.#nav(parts);
 
-    const existing = dir.files.find(f => f.name === file);
-    if (existing) {
-      existing.content = content;
-    }
-    else {
-      dir.files.push({ name: file, content });
-    }
+    // const existing = dir.files.find(f => f.name === file);
+    // if (existing) {
+    //   existing.content = content;
+    // }
+    // else {
+    //   dir.files.push({ name: file, content });
+    // }
 
-    dir.files.sort(sortBy(f => f.name));
+    // dir.files.sort(sortBy(f => f.name));
 
-    // const [drive, path] = this.#split(fullpath);
-    // drive.push(path, content);
+    // // const [drive, path] = this.#split(fullpath);
+    // // drive.push(path, content);
 
-    for (const [watched, fn] of this.#watchers) {
-      if (watched.startsWith(filepath)) {
-        fn.dispatch(content);
-      }
-    }
+    // for (const [watched, fn] of this.#watchers) {
+    //   if (watched.startsWith(filepath)) {
+    //     fn.dispatch(content);
+    //   }
+    // }
   }
 
   #watchers = new Map<string, Listener<string>>();
