@@ -92,8 +92,10 @@ export default () => {
       }),
       ...dir.files.map(file => {
         return $(Button, {
-          padding: 2, onClick: () => {
-            ws.openFile([...base, file.name].join('/'));
+          padding: 2, onClick: (button, count) => {
+            if (button === 0 && count > 1) {
+              ws.openFile([...base, file.name].join('/'));
+            }
           }
         },
           $(GroupX, { passthrough: true, gap: 2 },
