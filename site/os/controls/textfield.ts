@@ -8,31 +8,14 @@ export class TextField extends View {
   onEnter?(): void;
   onChange?(): void;
 
-  #text = '';
-  length = 10;
-
   #field = $(Label, { text: '' });
-  #cursor = $(Label, { visible: false, text: '_', color: 0x1177ffff });
+  #cursor = $(Label, { visible: false, text: '_' });
 
-  #font = mem.font;
-  get font() { return this.#font; }
-  set font(font: Font) {
-    this.#font = font;
-    this.#field.font = font;
-    this.#cursor.font = font;
-  }
-
-  get color() { return this.#field.color; }
-  set color(c: number) { this.#field.color = c; }
-
-  get cursorColor() { return this.#cursor.color; }
-  set cursorColor(c: number) { this.#cursor.color = c; }
-
-  get text() { return this.#text; }
-  set text(s: string) {
-    this.#text = s;
-    this.#showText();
-  }
+  text = '';
+  length = 10;
+  font = mem.font;
+  color = this.#field.color;
+  cursorColor = 0x1177ffff;
 
   #showText() {
     if (this.focused) {
@@ -45,8 +28,13 @@ export class TextField extends View {
   }
 
   override init(): void {
+    this.#field.$data.color = this.$data.color;
+    this.#cursor.$data.color = this.$data.cursorColor;
     this.$data.font = mem.$data.font;
+    this.#field.$data.font = this.$data.font;
+    this.#cursor.$data.font = this.$data.font;
     this.children = [this.#field, this.#cursor];
+    this.$data.text.watch(s => this.#showText());
   }
 
   override layout(): void {
