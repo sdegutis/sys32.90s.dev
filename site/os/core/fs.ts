@@ -38,6 +38,7 @@ class Folder {
     if (!dir) {
       dir = new (this.classForFolder())(name);
       this.folders.push(dir);
+      this.folders.sort(sortBy(f => f.name));
     }
     return dir;
   }
@@ -47,6 +48,7 @@ class Folder {
     if (!file) {
       file = new (this.classForFile())(name, normalize(content));
       this.files.push(file);
+      this.files.sort(sortBy(f => f.name));
     }
     return file;
   }
@@ -248,18 +250,9 @@ class FS {
     mounts.del(drive);
   }
 
-  #reflectChanges(drive: string, change: FileSystemObserverRecord) {
-    const parts = [drive, ...change.relativePathComponents];
-    // content = normalize(content);
-  }
-
-  // #addfile(drive: string, path: string, content: string) {
-  //   content = normalize(content);
-  //   const parts = (drive + path).split('/');
-  //   const file = parts.pop()!;
-  //   const dir = this.#nav(parts, { mkdirp: true });
-  //   dir.files.push({ name: file, content });
-  //   dir.files.sort(sortBy(f => f.name));
+  // #reflectChanges(drive: string, change: FileSystemObserverRecord) {
+  //   const parts = [drive, ...change.relativePathComponents];
+  //   // content = normalize(content);
   // }
 
   drives() {
@@ -275,14 +268,6 @@ class FS {
     const file = parts.pop()!;
     const dir = this.#root.find(parts);
     return dir.files.find(f => f.name === file)?.content;
-  }
-
-  delete(path: string) {
-
-  }
-
-  mkdir(path: string) {
-
   }
 
   saveFile(filepath: string, content: string) {
