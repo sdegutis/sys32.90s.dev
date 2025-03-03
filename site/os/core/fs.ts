@@ -205,6 +205,28 @@ class MountedFolder extends DirNode implements Drive {
 
 }
 
+class MountedFile extends FileNode {
+
+  handle: FileSystemFileHandle;
+
+  constructor(name: string, handle: FileSystemFileHandle) {
+    super(name, '');
+    this.handle = handle;
+  }
+
+  async pull() {
+    const f = await this.handle.getFile();
+    this.content = await f.text();
+  }
+
+  override async push() {
+    const w = await this.handle.createWritable();
+    await w.write(this.content);
+    await w.close();
+  }
+
+}
+
 class MountedDrive extends MountedFolder implements Drive {
 
   observer!: FileSystemObserver;
@@ -271,28 +293,6 @@ class MountedDrive extends MountedFolder implements Drive {
 
 }
 
-
-class MountedFile extends FileNode {
-
-  handle: FileSystemFileHandle;
-
-  constructor(name: string, handle: FileSystemFileHandle) {
-    super(name, '');
-    this.handle = handle;
-  }
-
-  async pull() {
-    const f = await this.handle.getFile();
-    this.content = await f.text();
-  }
-
-  override async push() {
-    const w = await this.handle.createWritable();
-    await w.write(this.content);
-    await w.close();
-  }
-
-}
 
 class Root extends DirNode {
 
