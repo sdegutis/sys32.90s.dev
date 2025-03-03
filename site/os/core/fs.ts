@@ -267,8 +267,7 @@ class FS {
   }
 
   getFolder(path: string) {
-    return undefined as any as Folder;
-    // return this.#nav(path.split('/'));
+    return this.#root.find(path.split('/'));
   }
 
   loadFile(path: string): string | undefined {
