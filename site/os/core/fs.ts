@@ -140,11 +140,11 @@ class FS {
       await drive.init(this.#addfile.bind(this, name));
     }
     for (const { drive, dir } of await mounts.all()) {
-      await this.mountUserFolder(drive, dir);
+      await this.mount(drive, dir);
     }
   }
 
-  unmountUserFolder(drive: string) {
+  unmount(drive: string) {
     if (drive === 'sys' || drive === 'user') return false;
 
     mounts.del(drive);
@@ -152,7 +152,7 @@ class FS {
     return true;
   }
 
-  async mountUserFolder(drive: string, folder: FileSystemDirectoryHandle) {
+  async mount(drive: string, folder: FileSystemDirectoryHandle) {
     this.#root.folders.push({ files: [], folders: [], name: drive });
 
     mounts.set({ drive, dir: folder });

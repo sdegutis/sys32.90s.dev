@@ -53,7 +53,7 @@ export default () => {
         folder = await window.showDirectoryPicker();
 
         await folder.requestPermission({ mode: 'readwrite' });
-        await fs.mountUserFolder(drive, folder);
+        await fs.mount(drive, folder);
 
         addDriveButton(drive);
 
@@ -126,7 +126,7 @@ export default () => {
             {
               text: 'unmount',
               onClick: () => {
-                if (fs.unmountUserFolder(drive)) {
+                if (fs.unmount(drive)) {
                   driveButton.remove();
                   sidelist.layoutTree();
                 }
