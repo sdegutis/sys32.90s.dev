@@ -35,7 +35,7 @@ class Workspace {
 
     this.#desktop = $(View, {}, this.#icons);
 
-    this.#progbuttons = $(Group, { gap: 2 });
+    this.#progbuttons = $(Group, {});
 
     this.#taskbar = $(Spaced, { background: 0x000000ff },
       this.#progbuttons,
