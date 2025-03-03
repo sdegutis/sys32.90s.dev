@@ -7,10 +7,11 @@ import { ImageView } from "../../os/controls/image.js";
 import { Label } from "../../os/controls/label.js";
 import { Bitmap } from "../../os/core/bitmap.js";
 import { fs } from "../../os/core/fs.js";
-import { $ } from "../../os/core/view.js";
 import { Panel } from "../../os/core/panel.js";
+import { $ } from "../../os/core/view.js";
 import { ws } from "../../os/desktop/workspace.js";
 import { showPrompt } from "../../os/util/dialog.js";
+import { showMenu } from "../../os/util/menu.js";
 
 
 const folderIcon = new Bitmap([0x990000ff], 1, [1]);
@@ -106,14 +107,32 @@ export default () => {
   }
 
   function addDriveButton(drive: string) {
-    sidelist.addChild($(Button, {
+    const driveButton = $(Button, {
       all: 2,
       background: 0xff000033,
-      onClick: () => { showfiles([drive]); },
+      onClick: (button) => {
+        if (button === 0) {
+          showfiles([drive]);
+        }
+        else {
+          showMenu([
+            {
+              text: 'unmount',
+              onClick: () => {
+                if (fs.unmountUserFolder(drive)) {
+                  driveButton.remove();
+                  sidelist.layoutTree();
+                }
+              },
+            },
+          ]);
+        }
+      },
     },
       $(Label, { text: `drive:${drive}` })
-    ), sidelist.children.indexOf(mountButton));
+    );
 
+    sidelist.addChild(driveButton, sidelist.children.indexOf(mountButton));
     sidelist.parent?.layoutTree();
   }
 

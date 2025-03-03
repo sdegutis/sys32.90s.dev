@@ -41,7 +41,7 @@ export class Button extends Border {
     },
   });
 
-  onClick?(count: number): void;
+  onClick?(button: number, count: number): void;
 
   override init(): void {
     this.addChild(this.overlay);
@@ -68,7 +68,7 @@ export class Button extends Border {
     this.#changebg = undefined;
   }
 
-  override onMouseDown(): void {
+  override onMouseDown(button: number): void {
     this.pressed = true;
     this.#counter.increase();
     const cancel = sys.trackMouse({
@@ -80,7 +80,7 @@ export class Button extends Border {
       },
       up: () => {
         this.pressed = false;
-        this.onClick?.(this.#counter.count);
+        this.onClick?.(button, this.#counter.count);
       },
     });
   }

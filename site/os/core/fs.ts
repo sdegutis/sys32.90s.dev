@@ -146,6 +146,14 @@ class FS {
     }
   }
 
+  unmountUserFolder(drive: string) {
+    if (drive === 'sys' || drive === 'user') return false;
+
+    mounts.del(drive);
+
+    return true;
+  }
+
   async mountUserFolder(drive: string, folder: FileSystemDirectoryHandle) {
     if (drive in this.#drives) return;
 
