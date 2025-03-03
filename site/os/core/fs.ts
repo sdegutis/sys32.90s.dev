@@ -98,6 +98,7 @@ class DirNode {
     let dir = this.getFolder(name);
     if (!dir) {
       dir = await this.createFolder(name);
+      this.addFolder(dir);
     }
     return dir;
   }
@@ -178,6 +179,7 @@ class MountedFolder extends DirNode implements Drive {
   }
 
   async addentry(name: string, handle: FileSystemDirectoryHandle | FileSystemFileHandle) {
+    console.log('adding from remote', name)
     if (handle instanceof FileSystemDirectoryHandle) {
       const dir = new MountedFolder(name, handle);
       await dir.init();
@@ -346,14 +348,15 @@ class FS {
   }
 
   async mkdirp(path: string) {
+    console.log('mkdirp', path)
+
     let node: DirNode = this.#root;
     const parts = path.split('/');
     while (parts.length > 0) {
       const name = parts.shift()!;
-      let dir = node.getFolder(name);
-      if (!dir) dir = await node.createFolder(name);
-      node = dir;
+      node = await node.getOrCreateFolder(name);
     }
+    console.log('node', node)
     return node;
   }
 

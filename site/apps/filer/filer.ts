@@ -50,19 +50,14 @@ export default () => {
       const drive = await showPrompt('what shall the name be?');
       if (!drive || fs.drives().includes(drive)) return;
 
-      let folder: FileSystemDirectoryHandle;
       try {
-        folder = await window.showDirectoryPicker();
-
+        const folder = await window.showDirectoryPicker();
         await folder.requestPermission({ mode: 'readwrite' });
         await fs.mount(drive, folder);
-
         addDriveButton(drive);
-
+        panel.layoutTree();
       }
       catch { }
-
-      panel.layoutTree();
     }
   }, $(Label, { text: 'mount' }));
 
@@ -75,6 +70,7 @@ export default () => {
       const name = await showPrompt('what shall the name be?');
       if (!name || fs.drives().includes(name)) return;
       await fs.mkdirp([...currentBase, name].join('/'));
+      showfiles();
       panel.layoutTree();
     }
   }, $(Label, { text: 'new folder' }));
