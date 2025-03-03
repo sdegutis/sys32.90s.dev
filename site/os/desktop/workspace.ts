@@ -4,11 +4,11 @@ import { PanedYB } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
 import { Button } from "../controls/button.js";
 import { Label } from "../controls/label.js";
+import { Panel } from "../core/panel.js";
 import { sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
 import { makeFlowLayout, makeVacuumLayout } from "../util/layouts.js";
 import { Clock } from "./clock.js";
-import { Panel } from "../core/panel.js";
 
 class Workspace {
 
@@ -94,6 +94,10 @@ class Workspace {
       button.parent?.removeChild(button);
       this.#panels.layoutTree();
       this.#desktop.children.at(-1)?.focus();
+    });
+
+    panel.$data.panelFocused.watch(is => {
+      button.background = is ? 0x770000ff : 0x330000ff;
     });
 
     panel.focus();
