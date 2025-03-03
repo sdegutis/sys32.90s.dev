@@ -66,6 +66,7 @@ class Folder {
 interface Drive extends Folder {
 
   init(): Promise<void>;
+  deinit?(): void;
 
 }
 
@@ -98,7 +99,7 @@ class SysDrive extends Folder {
 
 }
 
-class UserDrive extends Folder {
+class UserDrive extends Folder implements Drive {
 
   async init() {
     for (const { path, content } of await idbfs.all()) {
@@ -117,7 +118,7 @@ class UserDrive extends Folder {
 
 }
 
-class MountedFolder extends Folder {
+class MountedFolder extends Folder implements Drive {
 
   handle: FileSystemDirectoryHandle;
 
@@ -150,7 +151,7 @@ class MountedFolder extends Folder {
 
 }
 
-class MountedDrive extends MountedFolder {
+class MountedDrive extends MountedFolder implements Drive {
 
   observer!: FileSystemObserver;
 
@@ -166,6 +167,10 @@ class MountedDrive extends MountedFolder {
       });
     });
     this.observer.observe(this.handle, { recursive: true });
+  }
+
+  deinit(): void {
+    this.observer.disconnect();
   }
 
   override find(parts: string[]): MountedFolder {
@@ -250,7 +255,9 @@ class Root extends Folder {
 
   removeDrive(child: string) {
     if (child === 'sys' || child === 'user') return;
-    // this.remove(child);
+    const folder = this.folders.find(f => f.name === child) as Drive;
+    folder.deinit?.();
+    this.removeFolder(child);
     mounts.del(child);
   }
 
