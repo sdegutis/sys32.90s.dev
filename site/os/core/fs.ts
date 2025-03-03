@@ -33,21 +33,11 @@ class DirNode {
     this.name = name;
   }
 
-  get files() {
-    return this.items.filter(it => it instanceof FileNode);
-  }
+  get files() { return this.items.filter(it => it instanceof FileNode); }
+  get folders() { return this.items.filter(it => it instanceof DirNode); }
 
-  get folders() {
-    return this.items.filter(it => it instanceof DirNode);
-  }
-
-  getFolder(name: string) {
-    return this.items.find(f => f.name === name && f instanceof DirNode) as DirNode | undefined;
-  }
-
-  getFile(name: string) {
-    return this.items.find(f => f.name === name && f instanceof FileNode) as FileNode | undefined;
-  }
+  getFolder(name: string) { return this.items.find(f => f.name === name && f instanceof DirNode) as DirNode | undefined; }
+  getFile(name: string) { return this.items.find(f => f.name === name && f instanceof FileNode) as FileNode | undefined; }
 
   add(item: FileNode | DirNode) {
     this.items.push(item);
