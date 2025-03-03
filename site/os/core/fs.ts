@@ -34,8 +34,8 @@ class Folder {
   get files() { return this.items.filter(it => it instanceof StringFile); }
   get folders() { return this.items.filter(it => it instanceof Folder); }
 
-  getFolder(name: string) { return this.items.find(f => f.name === name && f instanceof Folder) as Folder | undefined; }
-  getFile(name: string) { return this.items.find(f => f.name === name && f instanceof StringFile) as StringFile | undefined; }
+  getFile(name: string) { return this.files.find(f => f.name === name); }
+  getFolder(name: string) { return this.folders.find(f => f.name === name); }
 
   add(item: StringFile | Folder) {
     this.items.push(item);
