@@ -45,11 +45,8 @@ class MountedDrive implements Drive {
   // dhs = new Map<string, FileSystemDirectoryHandle>();
   // fhs = new Map<string, FileSystemFileHandle>();
 
-  changed: (change: FileSystemObserverRecord) => void;
-
-  constructor(dir: FileSystemDirectoryHandle, changed: (change: FileSystemObserverRecord) => void) {
+  constructor(dir: FileSystemDirectoryHandle) {
     this.root = dir;
-    this.changed = changed;
   }
 
   async init(addFile: AddFileFn) {
@@ -104,13 +101,9 @@ class FS {
   #root: Folder = { name: '[root]', folders: [], files: [] };
 
   async init() {
-    for (const [name, drive] of Object.entries({
-      sys: new SysDrive(),
-      user: new UserDrive(),
-    })) {
-      this.#root.folders.push({ files: [], folders: [], name });
-      await drive.init(this.#addfile.bind(this, name));
-    }
+    await this.#initdrive('sys', new SysDrive());
+    await this.#initdrive('user', new UserDrive());
+
     for (const { drive, dir } of await mounts.all()) {
       await this.mount(drive, dir);
     }
@@ -127,16 +120,14 @@ class FS {
     return true;
   }
 
+  async #initdrive(name: string, drive: Drive) {
+    this.#root.folders.push({ files: [], folders: [], name });
+    await drive.init(this.#addfile.bind(this, name));
+  }
+
   async mount(drive: string, folder: FileSystemDirectoryHandle) {
-    this.#root.folders.push({ files: [], folders: [], name: drive });
-
     mounts.set({ drive, dir: folder });
-
-    const mounted = new MountedDrive(folder, (change) => {
-      this.#reflectChanges(drive, change);
-    });
-
-    await mounted.init(this.#addfile.bind(this, drive));
+    await this.#initdrive(drive, new MountedDrive(folder));
   }
 
   #reflectChanges(drive: string, change: FileSystemObserverRecord) {
@@ -146,7 +137,6 @@ class FS {
 
   #addfile(drive: string, path: string, content: string) {
     content = normalize(content);
-
     const parts = (drive + path).split('/');
     const file = parts.pop()!;
     const dir = this.#nav(parts, { mkdirp: true });
