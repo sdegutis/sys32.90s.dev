@@ -7,7 +7,7 @@ type AddFileFn = (path: string, content: string) => void;
 
 interface Drive {
   init(addFile: AddFileFn): Promise<void>;
-  push(path: string, content: string): void;
+  // push(path: string, content: string): void;
 }
 
 class SysDrive implements Drive {
@@ -21,7 +21,7 @@ class SysDrive implements Drive {
     }
   }
 
-  push(path: string, content: string): void { }
+  // push(path: string, content: string): void { }
 
 }
 
@@ -33,9 +33,9 @@ class UserDrive implements Drive {
     }
   }
 
-  push(path: string, content: string): void {
-    idbfs.set({ path, content });
-  }
+  // push(path: string, content: string): void {
+  //   idbfs.set({ path, content });
+  // }
 
 }
 
@@ -58,34 +58,6 @@ class MountedDrive implements Drive {
     const observer = new FileSystemObserver((records) => {
       for (const change of records) {
         const path = '/' + change.relativePathComponents.join('/');
-
-        // console.log(change.root)
-
-        if (change.type === 'appeared') {
-          if (change.changedHandle instanceof FileSystemDirectoryHandle) {
-            // change.changedHandle.
-          }
-          else {
-            // change.changedHandle.
-          }
-        }
-        else if (change.type === 'disappeared') {
-
-        }
-        else if (change.type === 'modified') {
-
-        }
-        else if (change.type === 'moved') {
-          // rename
-        }
-        else if (change.type === 'errored') {
-
-        }
-        else if (change.type === 'unknown') {
-
-        }
-
-        // this.changed(change);
       }
 
     });
@@ -112,12 +84,12 @@ class MountedDrive implements Drive {
     }
   }
 
-  async push(path: string, content: string) {
-    // const h = await this.#dir.getFileHandle(name, { create: true });
-    // const w = await h.createWritable();
-    // await w.write(content);
-    // await w.close();
-  }
+  // async push(path: string, content: string) {
+  //   const h = await this.#dir.getFileHandle(name, { create: true });
+  //   const w = await h.createWritable();
+  //   await w.write(content);
+  //   await w.close();
+  // }
 
 }
 
@@ -169,35 +141,7 @@ class FS {
 
   #reflectChanges(drive: string, change: FileSystemObserverRecord) {
     const parts = [drive, ...change.relativePathComponents];
-
-    if (change.type === 'appeared') {
-      // change.
-    }
-    else if (change.type === 'disappeared') {
-
-    }
-    else if (change.type === 'errored') {
-
-    }
-    else if (change.type === 'modified') {
-
-    }
-    else if (change.type === 'moved') {
-
-    }
-    else if (change.type === 'unknown') {
-
-    }
-
-    console.log(change.type, change.relativePathComponents, change.changedHandle)
-
-    // const file = parts.pop()!;
-    // const dir = this.#nav(parts);
-
-
-
     // content = normalize(content);
-
   }
 
   #addfile(drive: string, path: string, content: string) {
@@ -241,6 +185,14 @@ class FS {
     return dir.files.find(f => f.name === file)?.content;
   }
 
+  delete(path: string) {
+
+  }
+
+  mkdir(path: string) {
+
+  }
+
   saveFile(filepath: string, content: string) {
     content = normalize(content);
 
@@ -267,13 +219,6 @@ class FS {
       }
     }
   }
-
-  // #split<T>(fullpath: string) {
-  //   const i = fullpath.indexOf('/');
-  //   const drivename = fullpath.slice(0, i);
-  //   const drivepath = fullpath.slice(i);
-  //   return [this.#drives[drivename], drivepath] as const;
-  // }
 
   #watchers = new Map<string, Listener<string>>();
 
