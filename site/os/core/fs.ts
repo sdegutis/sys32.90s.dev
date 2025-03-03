@@ -72,18 +72,18 @@ class DirNode {
     return current;
   }
 
-  async createFolder(name: string) {
+  async makeFolder(name: string) {
     return new DirNode(name);
   }
 
-  async createFile(name: string, content: string) {
+  async makeFile(name: string, content: string) {
     return new FileNode(name, content);
   }
 
   async getOrCreateFile(name: string, content: string) {
     let file = this.getFile(name);
     if (!file) {
-      file = await this.createFile(name, content);
+      file = await this.makeFile(name, content);
       this.add(file);
     }
     file.content = content;
@@ -94,7 +94,7 @@ class DirNode {
   async getOrCreateFolder(name: string) {
     let dir = this.getFolder(name);
     if (!dir) {
-      dir = await this.createFolder(name);
+      dir = await this.makeFolder(name);
       this.add(dir);
     }
     return dir;
@@ -193,12 +193,12 @@ class MountedFolder extends DirNode implements Drive {
     }
   }
 
-  override async createFolder(name: string) {
+  override async makeFolder(name: string) {
     const handle = await this.handle.getDirectoryHandle(name, { create: true });
     return new MountedFolder(name, handle);
   }
 
-  override async createFile(name: string): Promise<MountedFile> {
+  override async makeFile(name: string): Promise<MountedFile> {
     const handle = await this.handle.getFileHandle(name, { create: true });
     return new MountedFile(name, handle);
   }
