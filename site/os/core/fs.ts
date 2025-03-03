@@ -54,7 +54,8 @@ class Folder {
   }
 
   remove(child: string) {
-
+    // const i = this.#root.folders.findIndex(f => f.name === drive);
+    // this.#root.folders.splice(i, 1);
   }
 
   find(parts: string[]) {
@@ -72,13 +73,13 @@ class Folder {
 
 };
 
-abstract class Drive extends Folder {
+interface Drive extends Folder {
 
-  abstract init(): Promise<void>;
+  init(): Promise<void>;
 
 }
 
-class SysDrive extends Drive {
+class SysDrive extends Folder implements Drive {
 
   async init() {
     const paths = await fetch(import.meta.resolve('./data.json')).then<string[]>(r => r.json());
@@ -101,7 +102,7 @@ class SysDrive extends Drive {
 
 }
 
-class UserDrive extends Drive {
+class UserDrive extends Folder implements Drive {
 
   async init() {
     for (const { path, content } of await idbfs.all()) {
@@ -146,7 +147,7 @@ class MountedFile extends FolderFile {
 
 }
 
-class MountedDrive extends Drive {
+class MountedDrive extends MountedFolder implements Drive {
 
   root: FileSystemDirectoryHandle;
 
@@ -156,7 +157,7 @@ class MountedDrive extends Drive {
   }
 
   async init() {
-    // await this.#loaddir(this.root, '/');
+    await this.#loaddir(this.root, '');
 
     // const observer = new FileSystemObserver((records) => {
     //   for (const change of records) {
@@ -167,26 +168,26 @@ class MountedDrive extends Drive {
     // observer.observe(this.root, { recursive: true });
   }
 
-  // async #loaddir(dir: FileSystemDirectoryHandle, path: string) {
-  //   // this.dhs.set(path, dir);
-  //   console.log('loading dir', path, dir)
+  async #loaddir(dir: FileSystemDirectoryHandle, path: string) {
+    // this.dhs.set(path, dir);
+    console.log('loading dir', path, dir)
 
 
-  //   for await (const [name, entry] of dir.entries()) {
-  //     const fullpath = `${path}${name}`;
-  //     if (entry.kind === 'directory') {
-  //       await this.#loaddir(entry, fullpath)
-  //     }
-  //     else {
-  //       const h = await dir.getFileHandle(name);
-  //       console.log('loading file', fullpath, h)
-  //       const f = await h.getFile();
-  //       const data = await f.text();
+    // for await (const [name, entry] of dir.entries()) {
+    //   const fullpath = `${path}${name}`;
+    //   if (entry.kind === 'directory') {
+    //     await this.#loaddir(entry, fullpath)
+    //   }
+    //   else {
+    //     const h = await dir.getFileHandle(name);
+    //     console.log('loading file', fullpath, h)
+    //     const f = await h.getFile();
+    //     const data = await f.text();
 
-  //       // addFile(fullpath, data);
-  //     }
-  //   }
-  // }
+    //     // addFile(fullpath, data);
+    //   }
+    // }
+  }
 
   // async push(path: string, content: string) {
   //   const h = await this.#dir.getFileHandle(name, { create: true });
@@ -200,25 +201,15 @@ class MountedDrive extends Drive {
 
 }
 
-class Root extends Drive {
+class Root extends Folder {
 
   constructor() {
     super('[root]');
   }
 
-  async init() {
-
-  }
-
   override remove(child: string) {
     if (child === 'sys' || child === 'user') return;
     super.remove(child);
-
-
-
-    // const i = this.#root.folders.findIndex(f => f.name === drive);
-    // this.#root.folders.splice(i, 1);
-
   }
 
 }
