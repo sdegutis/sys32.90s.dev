@@ -6,6 +6,7 @@ import { TextField } from "../controls/textfield.js";
 import { sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
 import { centerLayout } from "./layouts.js";
+import { dragMove } from "./selections.js";
 import { passedFocus } from "./unsure.js";
 
 function expandToFitContainer(this: View) {
@@ -18,39 +19,47 @@ function expandToFitContainer(this: View) {
 export async function showPrompt(text: string) {
   const p = Promise.withResolvers<string>();
 
-  const dialog = $(View, {
+  const dialog = $(Border, {
+    padding: 1, borderColor: 0x99000099, passthrough: false, onMouseDown: () => {
+      const move = dragMove(dialog);
+      sys.trackMouse({ move });
+    }
+  },
+    $(Border, { padding: 3, background: 0x000000ff },
+      $(GroupY, { gap: 3, align: 'a', },
+        $(Label, { text }),
+        $(Border, { padding: 2, background: 0x222222ff, ...passedFocus },
+          $(TextField, { id: 'field', onEnter: accept, })
+        ),
+        $(GroupX, { gap: 2 },
+          $(Button, { padding: 3, onClick: accept }, $(Label, { text: 'ok' })),
+          $(Button, { padding: 3, onClick: cancel }, $(Label, { text: 'cancel' }))
+        )
+      )
+    )
+  );
+
+  const overlay = $(View, {
     adjust: expandToFitContainer,
     layout: centerLayout,
     background: 0x00000033,
     onKeyDown(key) {
       if (key === 'Escape') { cancel(); return true; }
       return false;
-    }
+    },
+    onMouseDown: cancel,
   },
-    $(Border, { padding: 1, borderColor: 0x99000099, passthrough: false },
-      $(Border, { padding: 3, background: 0x000000ff },
-        $(GroupY, { gap: 3, align: 'a', },
-          $(Label, { text }),
-          $(Border, { padding: 2, background: 0x222222ff, ...passedFocus },
-            $(TextField, { id: 'field', onEnter: accept, })
-          ),
-          $(GroupX, { gap: 2 },
-            $(Button, { padding: 3, onClick: accept }, $(Label, { text: 'ok' })),
-            $(Button, { padding: 3, onClick: cancel }, $(Label, { text: 'cancel' })),
-          )
-        )
-      )
-    )
+    dialog
   );
 
   function accept() { p.resolve(dialog.find<TextField>('field')!.text); }
   function cancel() { p.resolve(''); }
 
-  sys.root.addChild(dialog);
+  sys.root.addChild(overlay);
   dialog.find('field')!.focus();
-  dialog.layoutTree();
+  overlay.layoutTree();
 
-  p.promise.then(() => dialog.remove());
+  p.promise.then(() => overlay.remove());
 
   return p.promise;
 }
