@@ -6,14 +6,14 @@ const idbfs = await opendb<{ path: string, content: string }>('idbfs', 'path');
 class FolderFile {
 
   name: string;
-  parent: Folder | undefined;
   #content!: string;
 
-  constructor(name: string, content: string, parent: Folder | undefined) {
+  constructor(name: string, content: string) {
     this.name = name;
-    this.parent = parent;
     this.content = content;
   }
+
+  async init() { }
 
   get content() { return this.#content }
   set content(s: string) { this.#content = normalize(s) }
@@ -23,13 +23,11 @@ class FolderFile {
 class Folder {
 
   name: string;
-  parent: Folder;
   folders: Folder[] = [];
   files: FolderFile[] = [];
 
-  constructor(name: string, parent: Folder) {
+  constructor(name: string) {
     this.name = name;
-    this.parent = parent;
   }
 
   async init() { }
@@ -62,14 +60,6 @@ class Folder {
     return current;
   }
 
-  childFileGone(child: MountedFile) {
-    // this.files.
-  }
-
-  childFolderGone(child: MountedFolder) {
-
-  }
-
 };
 
 class SysDrive extends Folder {
@@ -87,14 +77,14 @@ class SysDrive extends Folder {
         const name = parts.shift()!;
         let next = dir.folders.find(f => f.name === name);
         if (!next) {
-          next = new Folder(name, dir);
+          next = new Folder(name);
           dir.addFolder(next);
         }
         dir = next;
       }
 
       const name = parts.shift()!;
-      const file = new FolderFile(name, content, dir);
+      const file = new FolderFile(name, content);
       dir.addFile(file);
     }
   }
@@ -127,30 +117,40 @@ class MountedFolder extends Folder {
   override folders: MountedFolder[] = [];
   override files: MountedFile[] = [];
 
-  constructor(name: string, parent: Folder, handle: FileSystemDirectoryHandle) {
-    super(name, parent);
+  constructor(name: string, handle: FileSystemDirectoryHandle) {
+    super(name);
     this.handle = handle;
   }
 
   override async init() {
-
-    // const observer = new FileSystemObserver((records) => {
-    //   for (const change of records) {
-    //     const path = '/' + change.relativePathComponents.join('/');
-    //   }
-
     for await (const [name, handle] of this.handle.entries()) {
       if (handle instanceof FileSystemDirectoryHandle) {
-        const dir = new MountedFolder(name, this, handle);
-        this.addFolder(dir);
+        const dir = new MountedFolder(name, handle);
         await dir.init();
+        this.addFolder(dir);
       }
       else {
-        const file = new MountedFile(name, this, handle);
-        await file.pullData();
+        const file = new MountedFile(name, handle);
+        await file.init();
         this.addFile(file);
       }
     }
+
+    const observer = new FileSystemObserver(async (records) => {
+      for (const change of records) {
+        console.log(this.name, change.type, change.changedHandle?.name, change.relativePathComponents)
+        //   if (change.type === 'modified') {
+        //     await this.pullData();
+        //   }
+        //   else if (change.type === 'disappeared' || change.type === 'errored') {
+        //     observer.disconnect();
+        //     this.parent!.childFileGone(this);
+        //   }
+      }
+    });
+    observer.observe(this.handle, {
+      recursive: false,
+    });
   }
 
 }
@@ -159,22 +159,26 @@ class MountedFile extends FolderFile {
 
   handle;
 
-  constructor(name: string, parent: Folder, handle: FileSystemFileHandle) {
-    super(name, '', parent);
+  constructor(name: string, handle: FileSystemFileHandle) {
+    super(name, '');
     this.handle = handle;
+  }
 
-    const observer = new FileSystemObserver(async (records) => {
-      for (const change of records) {
-        if (change.type === 'modified') {
-          await this.pullData();
-        }
-        else if (change.type === 'disappeared' || change.type === 'errored') {
-          observer.disconnect();
-          this.parent!.childFileGone(this);
-        }
-      }
-    });
-    observer.observe(handle);
+  override async init() {
+    this.pullData();
+
+    // const observer = new FileSystemObserver(async (records) => {
+    //   for (const change of records) {
+    //     if (change.type === 'modified') {
+    //       await this.pullData();
+    //     }
+    //     else if (change.type === 'disappeared' || change.type === 'errored') {
+    //       observer.disconnect();
+    //       this.parent!.childFileGone(this);
+    //     }
+    //   }
+    // });
+    // observer.observe(this.handle);
   }
 
   async pullData() {
@@ -193,7 +197,7 @@ class MountedFile extends FolderFile {
 class Root extends Folder {
 
   constructor() {
-    super('[root]', undefined!);
+    super('[root]');
   }
 
   removeDrive(child: string) {
@@ -214,8 +218,8 @@ class FS {
   #root = new Root();
 
   async init() {
-    await this.#root.addDrive(new SysDrive('sys', this.#root));
-    await this.#root.addDrive(new UserDrive('user', this.#root));
+    await this.#root.addDrive(new SysDrive('sys'));
+    await this.#root.addDrive(new UserDrive('user'));
     for (const { drive, dir } of await mounts.all()) {
       await this.mount(drive, dir);
     }
@@ -223,7 +227,7 @@ class FS {
 
   async mount(drive: string, folder: FileSystemDirectoryHandle) {
     mounts.set({ drive, dir: folder });
-    await this.#root.addDrive(new MountedFolder(drive, this.#root, folder));
+    await this.#root.addDrive(new MountedFolder(drive, folder));
   }
 
   unmount(drive: string) {
