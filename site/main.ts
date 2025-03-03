@@ -1,5 +1,3 @@
-export { };
-
 const div = document.createElement('div');
 div.innerHTML = `<b>loading...</b>`
 div.style.color = 'white'
