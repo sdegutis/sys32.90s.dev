@@ -138,19 +138,59 @@ class MountedFolder extends Folder {
 
     const observer = new FileSystemObserver(async (records) => {
       for (const change of records) {
-        console.log(this.name, change.type, change.changedHandle?.name, change.relativePathComponents)
-        //   if (change.type === 'modified') {
-        //     await this.pullData();
-        //   }
-        //   else if (change.type === 'disappeared' || change.type === 'errored') {
-        //     observer.disconnect();
-        //     this.parent!.childFileGone(this);
-        //   }
+        const affected = change.relativePathComponents[0];
+
+        if (change.type === 'modified') {
+          const f = this.files.find(f => f.name === affected)!;
+          await f.pullData();
+        }
+        else if (change.type === 'moved') {
+          const handle = change.changedHandle;
+          const isFile = handle instanceof FileSystemFileHandle;
+          const group = isFile ? this.files : this.folders;
+          const f = group.find(f => f.name === change.relativePathMovedFrom[0])!;
+          f.name = affected;
+        }
+        else if (change.type === 'appeared') {
+          const handle = change.changedHandle;
+          if (handle instanceof FileSystemFileHandle) {
+            const file = new MountedFile(affected, handle);
+            await file.init();
+            this.addFile(file);
+          }
+          else {
+            const folder = new MountedFolder(affected, handle);
+            await folder.init();
+            this.addFolder(folder);
+          }
+        }
+        else if (change.type === 'disappeared' || change.type === 'errored') {
+          const foundFile = this.files.find(f => f.name === affected);
+          if (foundFile) {
+
+
+            console.log('removing file', affected)
+          }
+          else {
+            console.log('removing folder', affected)
+          }
+
+
+          // if (this.files.) {
+          //   this.removeFile(f);
+          // }
+          // else {
+          //   this.removeFolder(f);
+          //   // disconnect f recursively
+          //   // f.observer.disconnect();
+          // }
+        }
+        else if (change.type === 'unknown') {
+          console.log('unknown fs event', change);
+        }
       }
     });
-    observer.observe(this.handle, {
-      recursive: false,
-    });
+    observer.observe(this.handle);
   }
 
 }
