@@ -6,11 +6,11 @@ const idbfs = await opendb<{ path: string, content?: string }>('idbfs', 'path');
 class StringFile {
 
   name: string;
-  #content;
+  #content!: string;
 
   constructor(name: string, content: string) {
     this.name = name;
-    this.#content = content;
+    this.content = content;
   }
 
   get content() { return this.#content }
