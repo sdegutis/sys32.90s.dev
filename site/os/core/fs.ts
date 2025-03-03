@@ -3,7 +3,7 @@ import { Listener } from "../util/events.js";
 const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
 const idbfs = await opendb<{ path: string, content?: string }>('idbfs', 'path');
 
-class FileNode {
+class StringFile {
 
   name: string;
   #content;
@@ -16,32 +16,30 @@ class FileNode {
   get content() { return this.#content }
   set content(s: string) { this.#content = this.#normalize(s) }
 
-  #normalize(content: string): string {
-    return content.replace(/\r\n/g, '\n');
-  }
+  #normalize(content: string): string { return content.replace(/\r\n/g, '\n'); }
 
   push() { }
 
-};
+}
 
-class DirNode {
+class Folder {
 
   name: string;
-  items: (DirNode | FileNode)[] = [];
+  items: (Folder | StringFile)[] = [];
 
   constructor(name: string) {
     this.name = name;
   }
 
-  get files() { return this.items.filter(it => it instanceof FileNode); }
-  get folders() { return this.items.filter(it => it instanceof DirNode); }
+  get files() { return this.items.filter(it => it instanceof StringFile); }
+  get folders() { return this.items.filter(it => it instanceof Folder); }
 
-  getFolder(name: string) { return this.items.find(f => f.name === name && f instanceof DirNode) as DirNode | undefined; }
-  getFile(name: string) { return this.items.find(f => f.name === name && f instanceof FileNode) as FileNode | undefined; }
+  getFolder(name: string) { return this.items.find(f => f.name === name && f instanceof Folder) as Folder | undefined; }
+  getFile(name: string) { return this.items.find(f => f.name === name && f instanceof StringFile) as StringFile | undefined; }
 
-  add(item: FileNode | DirNode) {
+  add(item: StringFile | Folder) {
     this.items.push(item);
-    this.items.sort(sortBy(f => f.name));
+    this.items.sort(sortBy(f => (f instanceof Folder ? 0 : 1) + f.name));
   }
 
   del(child: string) {
@@ -50,7 +48,7 @@ class DirNode {
   }
 
   findDir(parts: string[]) {
-    let current: DirNode = this;
+    let current: Folder = this;
     while (parts.length > 0) {
       const part = parts.shift()!;
       let found = current.getFolder(part);
@@ -63,11 +61,11 @@ class DirNode {
   }
 
   async makeFolder(name: string) {
-    return new DirNode(name);
+    return new Folder(name);
   }
 
   async makeFile(name: string, content: string) {
-    return new FileNode(name, content);
+    return new StringFile(name, content);
   }
 
   async getOrCreateFile(name: string, content: string) {
@@ -76,7 +74,9 @@ class DirNode {
       file = await this.makeFile(name, content);
       this.add(file);
     }
-    file.content = content;
+    else {
+      file.content = content;
+    }
     file.push();
     return file;
   }
@@ -90,16 +90,16 @@ class DirNode {
     return dir;
   }
 
-};
+}
 
-interface Drive extends DirNode {
+interface Drive extends Folder {
 
   init(): Promise<void>;
   deinit?(): void;
 
 }
 
-class SysDrive extends DirNode {
+class SysDrive extends Folder {
 
   async init() {
     const paths = await fetch(import.meta.resolve('./data.json')).then<string[]>(r => r.json());
@@ -109,26 +109,26 @@ class SysDrive extends DirNode {
       const fixedpath = path.slice('/os/data/'.length);
       const parts = fixedpath.split('/');
 
-      let dir: DirNode = this;
+      let dir: Folder = this;
       while (parts.length > 1) {
         const name = parts.shift()!;
         let next = dir.getFolder(name);
         if (!next) {
-          next = new DirNode(name);
+          next = new Folder(name);
           dir.add(next);
         }
         dir = next;
       }
 
       const name = parts.shift()!;
-      const file = new FileNode(name, content);
+      const file = new StringFile(name, content);
       dir.add(file);
     }
   }
 
 }
 
-class UserDrive extends DirNode implements Drive {
+class UserDrive extends Folder implements Drive {
 
   async init() {
     for (const { path, content } of await idbfs.all()) {
@@ -147,7 +147,7 @@ class UserDrive extends DirNode implements Drive {
 
 }
 
-class MountedFolder extends DirNode implements Drive {
+class MountedFolder extends Folder implements Drive {
 
   handle: FileSystemDirectoryHandle;
 
@@ -195,7 +195,7 @@ class MountedFolder extends DirNode implements Drive {
 
 }
 
-class MountedFile extends FileNode {
+class MountedFile extends StringFile {
 
   handle: FileSystemFileHandle;
 
@@ -284,7 +284,7 @@ class MountedDrive extends MountedFolder implements Drive {
 }
 
 
-class Root extends DirNode {
+class Root extends Folder {
 
   constructor() {
     super('[root]');
@@ -332,7 +332,7 @@ class FS {
   }
 
   async mkdirp(path: string) {
-    let node: DirNode = this.#root;
+    let node: Folder = this.#root;
     const parts = path.split('/');
     while (parts.length > 0) {
       const name = parts.shift()!;
