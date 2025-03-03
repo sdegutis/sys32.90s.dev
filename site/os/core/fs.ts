@@ -6,10 +6,12 @@ const idbfs = await opendb<{ path: string, content: string }>('idbfs', 'path');
 class FolderFile {
 
   name: string;
+  parent: Folder | undefined;
   #content!: string;
 
-  constructor(name: string, content: string) {
+  constructor(name: string, content: string, parent: Folder | undefined) {
     this.name = name;
+    this.parent = parent;
     this.content = content;
   }
 
@@ -21,11 +23,13 @@ class FolderFile {
 class Folder {
 
   name: string;
+  parent: Folder;
   folders: Folder[] = [];
   files: FolderFile[] = [];
 
-  constructor(name: string) {
+  constructor(name: string, parent: Folder) {
     this.name = name;
+    this.parent = parent;
   }
 
   addFolder(folder: Folder) {
@@ -38,10 +42,10 @@ class Folder {
     this.files.sort(sortBy(f => f.name));
   }
 
-  remove(child: string) {
-    // const i = this.#root.folders.findIndex(f => f.name === drive);
-    // this.#root.folders.splice(i, 1);
-  }
+  // remove(child: string) {
+  //   const i = this.folders.findIndex(f => f.name === child);
+  //   this.folders.splice(i, 1);
+  // }
 
   find(parts: string[]) {
     let current: Folder = this;
@@ -54,6 +58,14 @@ class Folder {
       current = found;
     }
     return current;
+  }
+
+  childFileGone(child: MountedFile) {
+    // this.files.
+  }
+
+  childFolderGone(child: MountedFolder) {
+
   }
 
 };
@@ -74,21 +86,19 @@ class SysDrive extends Folder implements Drive {
       const fixedpath = path.slice('/os/data/'.length);
       const parts = fixedpath.split('/');
 
-      console.log(parts)
-
       let dir: Folder = this;
       while (parts.length > 1) {
         const name = parts.shift()!;
         let next = dir.folders.find(f => f.name === name);
         if (!next) {
-          next = new Folder(name);
+          next = new Folder(name, dir);
           dir.addFolder(next);
         }
         dir = next;
       }
 
       const name = parts.shift()!;
-      const file = new FolderFile(name, content);
+      const file = new FolderFile(name, content, dir);
       dir.addFile(file);
     }
   }
@@ -116,30 +126,32 @@ class UserDrive extends Folder implements Drive {
 
 class MountedFolder extends Folder {
 
+  handle: FileSystemDirectoryHandle;
+
   override folders: MountedFolder[] = [];
   override files: MountedFile[] = [];
 
-  constructor(name: string) {
-    super(name);
+  constructor(name: string, parent: Folder, handle: FileSystemDirectoryHandle) {
+    super(name, parent);
+    this.handle = handle;
   }
 
-  async loaddir(dir: FileSystemDirectoryHandle) {
+  async loaddir() {
 
     // const observer = new FileSystemObserver((records) => {
     //   for (const change of records) {
     //     const path = '/' + change.relativePathComponents.join('/');
     //   }
 
-    for await (const [name, entry] of dir.entries()) {
-      if (entry instanceof FileSystemDirectoryHandle) {
-        const dir = new MountedFolder(name);
+    for await (const [name, handle] of this.handle.entries()) {
+      if (handle instanceof FileSystemDirectoryHandle) {
+        const dir = new MountedFolder(name, this, handle);
         this.addFolder(dir);
-        await dir.loaddir(entry);
+        await dir.loaddir();
       }
       else {
-        const f = await entry.getFile();
-        const data = await f.text();
-        const file = new MountedFile(name, data);
+        const file = new MountedFile(name, this, handle);
+        await file.pullData();
         this.addFile(file);
       }
     }
@@ -149,26 +161,43 @@ class MountedFolder extends Folder {
 
 class MountedFile extends FolderFile {
 
-  // async push(path: string, content: string) {
-  //   const h = await this.#dir.getFileHandle(name, { create: true });
-  //   const w = await h.createWritable();
-  //   await w.write(content);
-  //   await w.close();
-  // }
+  handle;
+
+  constructor(name: string, parent: Folder, handle: FileSystemFileHandle) {
+    super(name, '', parent);
+    this.handle = handle;
+
+    const observer = new FileSystemObserver(async (records) => {
+      for (const change of records) {
+        if (change.type === 'modified') {
+          await this.pullData();
+        }
+        else if (change.type === 'disappeared' || change.type === 'errored') {
+          observer.disconnect();
+          this.parent!.childFileGone(this);
+        }
+      }
+    });
+    observer.observe(handle);
+  }
+
+  async pullData() {
+    const f = await this.handle.getFile();
+    this.content = await f.text();
+  }
+
+  async pushData(content: string) {
+    const w = await this.handle.createWritable();
+    await w.write(content);
+    await w.close();
+  }
 
 }
 
 class MountedDrive extends MountedFolder implements Drive {
 
-  root: FileSystemDirectoryHandle;
-
-  constructor(name: string, dir: FileSystemDirectoryHandle) {
-    super(name);
-    this.root = dir;
-  }
-
   async init() {
-    await this.loaddir(this.root);
+    await this.loaddir();
   }
 
 }
@@ -176,13 +205,18 @@ class MountedDrive extends MountedFolder implements Drive {
 class Root extends Folder {
 
   constructor() {
-    super('[root]');
+    super('[root]', undefined!);
   }
 
-  override remove(child: string) {
+  removeDrive(child: string) {
     if (child === 'sys' || child === 'user') return;
-    super.remove(child);
+    // this.remove(child);
     mounts.del(child);
+  }
+
+  async addDrive(drive: Drive) {
+    this.folders.push(drive);
+    await drive.init();
   }
 
 }
@@ -192,32 +226,22 @@ class FS {
   #root = new Root();
 
   async init() {
-    await this.#initdrive(new SysDrive('sys'));
-    await this.#initdrive(new UserDrive('user'));
+    await this.#root.addDrive(new SysDrive('sys', this.#root));
+    await this.#root.addDrive(new UserDrive('user', this.#root));
     for (const { drive, dir } of await mounts.all()) {
       await this.mount(drive, dir);
     }
   }
 
-  async #initdrive(drive: Drive) {
-    this.#root.folders.push(drive);
-    await drive.init();
-  }
-
   async mount(drive: string, folder: FileSystemDirectoryHandle) {
     mounts.set({ drive, dir: folder });
-    await this.#initdrive(new MountedDrive(drive, folder));
+    await this.#root.addDrive(new MountedDrive(drive, this.#root, folder));
   }
 
   unmount(drive: string) {
-    this.#root.remove(drive);
     mounts.del(drive);
+    this.#root.removeDrive(drive);
   }
-
-  // #reflectChanges(drive: string, change: FileSystemObserverRecord) {
-  //   const parts = [drive, ...change.relativePathComponents];
-  //   // content = normalize(content);
-  // }
 
   drives() {
     return this.#root.folders.map(f => f.name);
@@ -235,11 +259,11 @@ class FS {
   }
 
   saveFile(filepath: string, content: string) {
-    // content = normalize(content);
+    const parts = filepath.split('/');
+    const file = parts.pop()!;
+    const dir = this.#root.find(parts);
 
-    // const parts = filepath.split('/');
-    // const file = parts.pop()!;
-    // const dir = this.#nav(parts);
+
 
     // const existing = dir.files.find(f => f.name === file);
     // if (existing) {

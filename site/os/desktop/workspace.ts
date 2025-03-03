@@ -127,12 +127,9 @@ class Workspace {
       bitmap: 'painter',
       font: 'fontmaker',
     };
-    const ext = path.split('.').at(-1);
-    const prog = ext && progs[ext];
-
-    if (prog) {
-      this.launch(prog, path);
-    }
+    const ext = path.split('.').at(-1) as keyof typeof progs;
+    const prog = ext in progs ? progs[ext] : 'writer';
+    this.launch(prog, path);
   }
 
   #programs = new Map<string, (string?: string) => void>();
