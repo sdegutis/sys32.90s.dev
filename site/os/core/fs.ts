@@ -27,39 +27,36 @@ class FileNode {
 class DirNode {
 
   name: string;
-  folders: DirNode[] = [];
-  files: FileNode[] = [];
+  items: (DirNode | FileNode)[] = [];
 
   constructor(name: string) {
     this.name = name;
   }
 
+  get files() {
+    return this.items.filter(it => it instanceof FileNode);
+  }
+
+  get folders() {
+    return this.items.filter(it => it instanceof DirNode);
+  }
+
   getFolder(name: string) {
-    return this.folders.find(f => f.name === name);
+    return this.items.find(f => f.name === name && f instanceof DirNode) as DirNode | undefined;
   }
 
   getFile(name: string) {
-    return this.files.find(f => f.name === name);
+    return this.items.find(f => f.name === name && f instanceof FileNode) as FileNode | undefined;
   }
 
-  addFolder(folder: DirNode) {
-    this.folders.push(folder);
-    this.folders.sort(sortBy(f => f.name));
+  add(item: FileNode | DirNode) {
+    this.items.push(item);
+    this.items.sort(sortBy(f => f.name));
   }
 
-  addFile(file: FileNode) {
-    this.files.push(file);
-    this.files.sort(sortBy(f => f.name));
-  }
-
-  removeFolder(child: string) {
-    const i = this.folders.findIndex(f => f.name === child);
-    this.folders.splice(i, 1);
-  }
-
-  removeFile(child: string) {
-    const i = this.files.findIndex(f => f.name === child);
-    this.files.splice(i, 1);
+  del(child: string) {
+    const i = this.items.findIndex(f => f.name === child);
+    this.items.splice(i, 1);
   }
 
   findDir(parts: string[]) {
@@ -87,7 +84,7 @@ class DirNode {
     let file = this.getFile(name);
     if (!file) {
       file = await this.createFile(name, content);
-      this.addFile(file);
+      this.add(file);
     }
     file.content = content;
     file.push();
@@ -98,7 +95,7 @@ class DirNode {
     let dir = this.getFolder(name);
     if (!dir) {
       dir = await this.createFolder(name);
-      this.addFolder(dir);
+      this.add(dir);
     }
     return dir;
   }
@@ -128,14 +125,14 @@ class SysDrive extends DirNode {
         let next = dir.getFolder(name);
         if (!next) {
           next = new DirNode(name);
-          dir.addFolder(next);
+          dir.add(next);
         }
         dir = next;
       }
 
       const name = parts.shift()!;
       const file = new FileNode(name, content);
-      dir.addFile(file);
+      dir.add(file);
     }
   }
 
@@ -164,8 +161,7 @@ class MountedFolder extends DirNode implements Drive {
 
   handle: FileSystemDirectoryHandle;
 
-  override folders: MountedFolder[] = [];
-  override files: MountedFile[] = [];
+  override items: (MountedFolder | MountedFile)[] = [];
 
   constructor(name: string, handle: FileSystemDirectoryHandle) {
     super(name);
@@ -179,16 +175,21 @@ class MountedFolder extends DirNode implements Drive {
   }
 
   async addentry(name: string, handle: FileSystemDirectoryHandle | FileSystemFileHandle) {
-    console.log('adding from remote', name)
+    const item = this.items.find(it => it.name === name);
+    if (item) {
+      item.handle = handle;
+      return;
+    }
+
     if (handle instanceof FileSystemDirectoryHandle) {
       const dir = new MountedFolder(name, handle);
       await dir.init();
-      this.addFolder(dir);
+      this.add(dir);
     }
     else {
       const file = new MountedFile(name, handle);
       await file.pull();
-      this.addFile(file);
+      this.add(file);
     }
   }
 
@@ -240,9 +241,7 @@ class MountedDrive extends MountedFolder implements Drive {
       const parts = [...change.relativePathMovedFrom];
       const name = parts.pop()!;
       const dir = this.findDir(parts);
-      const isFile = change.changedHandle instanceof FileSystemFileHandle;
-      const group = isFile ? dir.files : dir.folders;
-      const f = group.find(f => f.name === name)!;
+      const f = dir.items.find(f => f.name === name)!;
 
       f.handle = change.changedHandle;
       f.name = change.relativePathComponents.at(-1)!;
@@ -265,12 +264,7 @@ class MountedDrive extends MountedFolder implements Drive {
     }
 
     if (change.type === 'disappeared' || change.type === 'errored') {
-      if (dir.files.some(f => f.name === name)) {
-        dir.removeFile(name);
-      }
-      else {
-        dir.removeFolder(name);
-      }
+      dir.del(name);
       return;
     }
   }
@@ -310,12 +304,12 @@ class Root extends DirNode {
     if (child === 'sys' || child === 'user') return;
     const folder = this.getFolder(child) as Drive;
     folder.deinit?.();
-    this.removeFolder(child);
+    this.del(child);
     mounts.del(child);
   }
 
   async addDrive(drive: Drive) {
-    this.addFolder(drive);
+    this.add(drive);
     await drive.init();
   }
 
@@ -344,19 +338,16 @@ class FS {
   }
 
   drives() {
-    return this.#root.folders.map(f => f.name);
+    return this.#root.items.map(f => f.name);
   }
 
   async mkdirp(path: string) {
-    console.log('mkdirp', path)
-
     let node: DirNode = this.#root;
     const parts = path.split('/');
     while (parts.length > 0) {
       const name = parts.shift()!;
       node = await node.getOrCreateFolder(name);
     }
-    console.log('node', node)
     return node;
   }
 
@@ -368,7 +359,7 @@ class FS {
     const parts = path.split('/');
     const file = parts.pop()!;
     const dir = this.#root.findDir(parts);
-    return dir.files.find(f => f.name === file)?.content;
+    return dir.getFile(file)?.content;
   }
 
   async saveFile(filepath: string, content: string) {
@@ -424,4 +415,4 @@ async function opendb<T>(dbname: string, key: keyof T & string) {
 export const fs = new FS();
 await fs.init();
 
-// await fs.mkdirp('user/foo/bar');
+await fs.mkdirp('user/foo/bar');
