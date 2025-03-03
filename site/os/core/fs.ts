@@ -122,37 +122,19 @@ class MountedFolder extends Folder {
     //     const path = '/' + change.relativePathComponents.join('/');
     //   }
 
-    // console.log('loading dir', path, dir)
-
     for await (const [name, entry] of dir.entries()) {
-      console.log(name, entry);
-
       if (entry instanceof FileSystemDirectoryHandle) {
         const dir = new MountedFolder(name);
         this.addFolder(dir);
         await dir.loaddir(entry);
       }
       else {
-
+        const f = await entry.getFile();
+        const data = await f.text();
+        const file = new MountedFile(name, data);
+        this.addFile(file);
       }
-
     }
-
-
-    // for await (const [name, entry] of dir.entries()) {
-    //   const fullpath = `${path}${name}`;
-    //   if (entry.kind === 'directory') {
-    //     await this.#loaddir(entry, fullpath)
-    //   }
-    //   else {
-    //     const h = await dir.getFileHandle(name);
-    //     console.log('loading file', fullpath, h)
-    //     const f = await h.getFile();
-    //     const data = await f.text();
-
-    //     // addFile(fullpath, data);
-    //   }
-    // }
   }
 
 }
