@@ -147,6 +147,9 @@ class FS {
   unmount(drive: string) {
     if (drive === 'sys' || drive === 'user') return false;
 
+    const i = this.#root.folders.findIndex(f => f.name === drive);
+    this.#root.folders.splice(i, 1);
+
     mounts.del(drive);
 
     return true;
