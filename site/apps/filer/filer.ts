@@ -1,3 +1,4 @@
+import { Border } from "../../os/containers/border.js";
 import { GroupX, GroupY } from "../../os/containers/group.js";
 import { PanedYA } from "../../os/containers/paned.js";
 import { Scroll } from "../../os/containers/scroll.js";
@@ -102,6 +103,10 @@ export default () => {
         );
       }),
     ];
+
+    if (filelist.children.length === 0) {
+      filelist.children = [$(Border, { padding: 2 }, $(Label, { text: '[empty]', color: 0xffffff77 }))];
+    }
 
     filelist.layoutTree();
   }
