@@ -3,15 +3,31 @@ import { Listener } from "../util/events.js";
 const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
 const idbfs = await opendb<{ path: string, content: string }>('idbfs', 'path');
 
-abstract class Drive implements Folder {
+class FolderFile {
 
-  name;
+  name: string;
+  content: string;
+
+  constructor(name: string, content: string) {
+    this.name = name;
+    this.content = content;
+  }
+
+};
+
+class Folder {
+
+  name: string;
   folders: Folder[] = [];
   files: FolderFile[] = [];
 
   constructor(name: string) {
     this.name = name;
   }
+
+};
+
+abstract class Drive extends Folder {
 
   abstract init(): Promise<void>;
 
@@ -24,12 +40,30 @@ abstract class Drive implements Folder {
 class SysDrive extends Drive {
 
   async init() {
-    const files = await fetch(import.meta.resolve('./data.json')).then(r => r.json());
-    for (const file of files) {
-      const data = await fetch(file).then(r => r.text());
-      const path = file.slice('/os/data'.length);
-      // addFile(path, data);
+    const filenames = await fetch(import.meta.resolve('./data.json')).then<string[]>(r => r.json());
+
+    for (const name of filenames) {
+      const content = await fetch(name).then(r => r.text());
+      const path = name.slice('/os/data/'.length);
+      const parts = path.split('/');
+
+
+
+      console.log(path, parts, [content.slice(0, 20)]);
     }
+
+    // const files = await Promise.all(filenames.map(async name => {
+
+    //   return {
+    //     path: path,
+    //     
+    //   };
+    // }));
+
+
+
+    // console.log(files);
+
   }
 
   // push(path: string, content: string): void { }
@@ -57,14 +91,13 @@ class UserDrive extends Drive {
 
 }
 
-class MountedFolder implements Folder {
+class MountedFolder extends Folder {
 
-  name;
-  folders: MountedFolder[] = [];
-  files: MountedFile[] = [];
+  override  folders: MountedFolder[] = [];
+  override  files: MountedFile[] = [];
 
   constructor(name: string) {
-    this.name = name;
+    super(name);
   }
 
   // override remove(child: string) {
@@ -76,15 +109,9 @@ class MountedFolder implements Folder {
 
 }
 
-class MountedFile implements FolderFile {
+class MountedFile extends FolderFile {
 
-  name;
-  content;
 
-  constructor(name: string, content: string) {
-    this.name = name;
-    this.content = content;
-  }
 
 }
 
@@ -141,17 +168,6 @@ class MountedDrive extends Drive {
   // }
 
 }
-
-export type FolderFile = {
-  name: string;
-  content: string;
-};
-
-export type Folder = {
-  name: string;
-  folders: Folder[];
-  files: FolderFile[];
-};
 
 class Root extends Drive {
 
