@@ -11,7 +11,7 @@ export function showMenu(items: MenuItem[]) {
   const menu = $(Border, {
     x: sys.mouse.x,
     y: sys.mouse.y,
-    padding: 1,
+    padding: 2,
     background: 0x333333ff,
     passthrough: false,
     onBlur() { menu.remove() },
@@ -20,7 +20,7 @@ export function showMenu(items: MenuItem[]) {
       return true;
     },
   },
-    $(GroupY, { gap: 1, align: '-' },
+    $(GroupY, { align: '-' },
       ...items.map(it => $(Button, { padding: 2, onClick: it.onClick },
         $(Label, { text: it.text })
       ))

@@ -10,7 +10,7 @@ class FolderFile {
 
   constructor(name: string, content: string) {
     this.name = name;
-    this.content = content;
+    this.content = normalize(content);
   }
 
 };
@@ -33,24 +33,14 @@ class Folder {
     return FolderFile;
   }
 
-  addFolder(name: string) {
-    let dir = this.folders.find(f => f.name === name);
-    if (!dir) {
-      dir = new (this.classForFolder())(name);
-      this.folders.push(dir);
-      this.folders.sort(sortBy(f => f.name));
-    }
-    return dir;
+  addFolder(folder: Folder) {
+    this.folders.push(folder);
+    this.folders.sort(sortBy(f => f.name));
   }
 
-  addFile(name: string, content: string) {
-    let file = this.files.find(f => f.name === name);
-    if (!file) {
-      file = new (this.classForFile())(name, normalize(content));
-      this.files.push(file);
-      this.files.sort(sortBy(f => f.name));
-    }
-    return file;
+  addFile(file: FolderFile) {
+    this.files.push(file);
+    this.files.sort(sortBy(f => f.name));
   }
 
   remove(child: string) {
@@ -92,11 +82,14 @@ class SysDrive extends Folder implements Drive {
       let dir: Folder = this;
       while (parts.length > 1) {
         const name = parts.shift()!;
-        dir = dir.addFolder(name);
+        const next = new Folder(name);
+        dir.addFolder(next);
+        dir = next;
       }
 
       const name = parts.shift()!;
-      dir.addFile(name, content);
+      const file = new FolderFile(name, content);
+      dir.addFile(file);
     }
   }
 
@@ -114,63 +107,44 @@ class UserDrive extends Folder implements Drive {
   //   idbfs.set({ path, content });
   // }
 
-  override remove(child: string) {
-
-    super.remove(child);
-
-    // const files = await idbfs.all();
-  }
-
-}
-
-class MountedFolder extends Folder {
-
-  override  folders: MountedFolder[] = [];
-  override  files: MountedFile[] = [];
-
-  constructor(name: string) {
-    super(name);
-  }
-
   // override remove(child: string) {
-
   //   super.remove(child);
-
   //   // const files = await idbfs.all();
   // }
 
 }
 
-class MountedFile extends FolderFile {
+class MountedFolder extends Folder {
 
+  override folders: MountedFolder[] = [];
+  override files: MountedFile[] = [];
 
-
-}
-
-class MountedDrive extends MountedFolder implements Drive {
-
-  root: FileSystemDirectoryHandle;
-
-  constructor(name: string, dir: FileSystemDirectoryHandle) {
+  constructor(name: string) {
     super(name);
-    this.root = dir;
   }
 
-  async init() {
-    await this.#loaddir(this.root, '');
+  async loaddir(dir: FileSystemDirectoryHandle) {
 
     // const observer = new FileSystemObserver((records) => {
     //   for (const change of records) {
     //     const path = '/' + change.relativePathComponents.join('/');
     //   }
 
-    // });
-    // observer.observe(this.root, { recursive: true });
-  }
+    // console.log('loading dir', path, dir)
 
-  async #loaddir(dir: FileSystemDirectoryHandle, path: string) {
-    // this.dhs.set(path, dir);
-    console.log('loading dir', path, dir)
+    for await (const [name, entry] of dir.entries()) {
+      console.log(name, entry);
+
+      if (entry instanceof FileSystemDirectoryHandle) {
+        const dir = new MountedFolder(name);
+        this.addFolder(dir);
+        await dir.loaddir(entry);
+      }
+      else {
+
+      }
+
+    }
 
 
     // for await (const [name, entry] of dir.entries()) {
@@ -189,6 +163,10 @@ class MountedDrive extends MountedFolder implements Drive {
     // }
   }
 
+}
+
+class MountedFile extends FolderFile {
+
   // async push(path: string, content: string) {
   //   const h = await this.#dir.getFileHandle(name, { create: true });
   //   const w = await h.createWritable();
@@ -196,8 +174,20 @@ class MountedDrive extends MountedFolder implements Drive {
   //   await w.close();
   // }
 
-  // remove(child: string) {
-  // }
+}
+
+class MountedDrive extends MountedFolder implements Drive {
+
+  root: FileSystemDirectoryHandle;
+
+  constructor(name: string, dir: FileSystemDirectoryHandle) {
+    super(name);
+    this.root = dir;
+  }
+
+  async init() {
+    await this.loaddir(this.root);
+  }
 
 }
 
@@ -210,6 +200,7 @@ class Root extends Folder {
   override remove(child: string) {
     if (child === 'sys' || child === 'user') return;
     super.remove(child);
+    mounts.del(child);
   }
 
 }
