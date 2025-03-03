@@ -31,7 +31,7 @@ const pointer = livefile('sys/pointer.bitmap', s => Cursor.fromBitmap(Bitmap.fro
 
 class System {
 
-  root = $(View, { background: 0x00000000 });
+  readonly root = $(View, { background: 0x00000000 });
   focused = this.root;
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0 };
