@@ -25,14 +25,6 @@ class Folder {
     this.name = name;
   }
 
-  protected classForFolder() {
-    return Folder;
-  }
-
-  protected classForFile() {
-    return FolderFile;
-  }
-
   addFolder(folder: Folder) {
     this.folders.push(folder);
     this.folders.sort(sortBy(f => f.name));
