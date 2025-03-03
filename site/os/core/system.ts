@@ -222,6 +222,7 @@ class System {
 
     this.focused = view;
     this.focused.focused = true;
+    this.focused.onFocus?.();
 
     let newFocusedPanel;
     let node: View | undefined = view;
