@@ -6,15 +6,20 @@ const idbfs = await opendb<{ path: string, content: string }>('idbfs', 'path');
 class FileNode {
 
   name: string;
-  #content!: string;
+  #content = '';
 
-  constructor(name: string, content: string) {
+  constructor(name: string) {
     this.name = name;
-    this.content = content;
   }
 
   get content() { return this.#content }
-  set content(s: string) { this.#content = normalize(s) }
+  set content(s: string) { this.#content = this.#normalize(s) }
+
+  #normalize(content: string): string {
+    return content.replace(/\r\n/g, '\n');
+  }
+
+  push() { }
 
 };
 
@@ -61,6 +66,19 @@ class DirNode {
     return current;
   }
 
+  async createFile(name: string) {
+    return new FileNode(name);
+  }
+
+  async getOrCreateFile(name: string) {
+    let file = this.files.find(f => f.name === name);
+    if (!file) {
+      file = await this.createFile(name);
+      this.addFile(file);
+    }
+    return file;
+  }
+
 };
 
 interface Drive extends DirNode {
@@ -92,7 +110,8 @@ class SysDrive extends DirNode {
       }
 
       const name = parts.shift()!;
-      const file = new FileNode(name, content);
+      const file = new FileNode(name);
+      file.content = content;
       dir.addFile(file);
     }
   }
@@ -144,7 +163,7 @@ class MountedFolder extends DirNode implements Drive {
     }
     else {
       const file = new MountedFile(name, handle);
-      await file.pullData();
+      await file.pull();
       this.addFile(file);
     }
   }
@@ -207,7 +226,7 @@ class MountedDrive extends MountedFolder implements Drive {
 
     if (change.type === 'modified') {
       const file = dir.files.find(f => f.name === name)!;
-      await file.pullData();
+      await file.pull();
       return;
     }
 
@@ -222,26 +241,31 @@ class MountedDrive extends MountedFolder implements Drive {
     }
   }
 
+  override async createFile(name: string): Promise<MountedFile> {
+    const handle = await this.handle.getFileHandle(name, { create: true });
+    return new MountedFile(name, handle);
+  }
+
 }
 
 
 class MountedFile extends FileNode {
 
-  handle;
+  handle: FileSystemFileHandle;
 
   constructor(name: string, handle: FileSystemFileHandle) {
-    super(name, '');
+    super(name);
     this.handle = handle;
   }
 
-  async pullData() {
+  async pull() {
     const f = await this.handle.getFile();
     this.content = await f.text();
   }
 
-  async pushData(content: string) {
+  override async push() {
     const w = await this.handle.createWritable();
-    await w.write(content);
+    await w.write(this.content);
     await w.close();
   }
 
@@ -262,7 +286,7 @@ class Root extends DirNode {
   }
 
   async addDrive(drive: Drive) {
-    this.folders.push(drive);
+    this.addFolder(drive);
     await drive.init();
   }
 
@@ -305,26 +329,14 @@ class FS {
     return dir.files.find(f => f.name === file)?.content;
   }
 
-  saveFile(filepath: string, content: string) {
+  async saveFile(filepath: string, content: string) {
     const parts = filepath.split('/');
     const name = parts.pop()!;
     const dir = this.#root.findDir(parts);
 
-
-
-
-    // const existing = dir.files.find(f => f.name === file);
-    // if (existing) {
-    //   existing.content = content;
-    // }
-    // else {
-    //   dir.files.push({ name: file, content });
-    // }
-
-    // dir.files.sort(sortBy(f => f.name));
-
-    // // const [drive, path] = this.#split(fullpath);
-    // // drive.push(path, content);
+    const file = await dir.getOrCreateFile(name);
+    file.content = content;
+    file.push();
 
     // for (const [watched, fn] of this.#watchers) {
     //   if (watched.startsWith(filepath)) {
@@ -341,10 +353,6 @@ class FS {
     return watcher.watch(fn);
   }
 
-}
-
-function normalize(content: string): string {
-  return content.replace(/\r\n/g, '\n');
 }
 
 function sortBy<T, U>(fn: (o: T) => U) {
