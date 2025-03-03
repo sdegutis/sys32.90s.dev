@@ -6,12 +6,15 @@ const idbfs = await opendb<{ path: string, content: string }>('idbfs', 'path');
 class FolderFile {
 
   name: string;
-  content: string;
+  #content!: string;
 
   constructor(name: string, content: string) {
     this.name = name;
-    this.content = normalize(content);
+    this.content = content;
   }
+
+  get content() { return this.#content }
+  set content(s: string) { this.#content = normalize(s) }
 
 };
 
@@ -71,11 +74,16 @@ class SysDrive extends Folder implements Drive {
       const fixedpath = path.slice('/os/data/'.length);
       const parts = fixedpath.split('/');
 
+      console.log(parts)
+
       let dir: Folder = this;
       while (parts.length > 1) {
         const name = parts.shift()!;
-        const next = new Folder(name);
-        dir.addFolder(next);
+        let next = dir.folders.find(f => f.name === name);
+        if (!next) {
+          next = new Folder(name);
+          dir.addFolder(next);
+        }
         dir = next;
       }
 
