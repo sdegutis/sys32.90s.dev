@@ -13,8 +13,6 @@ class FolderFile {
     this.content = content;
   }
 
-  async init() { }
-
   get content() { return this.#content }
   set content(s: string) { this.#content = normalize(s) }
 
@@ -29,8 +27,6 @@ class Folder {
   constructor(name: string) {
     this.name = name;
   }
-
-  async init() { }
 
   addFolder(folder: Folder) {
     this.folders.push(folder);
@@ -67,9 +63,15 @@ class Folder {
 
 };
 
+interface Drive extends Folder {
+
+  init(): Promise<void>;
+
+}
+
 class SysDrive extends Folder {
 
-  override async init() {
+  async init() {
     const paths = await fetch(import.meta.resolve('./data.json')).then<string[]>(r => r.json());
 
     for (const path of paths) {
@@ -98,7 +100,7 @@ class SysDrive extends Folder {
 
 class UserDrive extends Folder {
 
-  override async init() {
+  async init() {
     for (const { path, content } of await idbfs.all()) {
       // addFile(path, content);
     }
@@ -118,35 +120,22 @@ class UserDrive extends Folder {
 class MountedFolder extends Folder {
 
   handle: FileSystemDirectoryHandle;
-  observer!: FileSystemObserver;
 
   override folders: MountedFolder[] = [];
   override files: MountedFile[] = [];
 
-  constructor(name: string, handle: FileSystemDirectoryHandle, watch?: true) {
+  constructor(name: string, handle: FileSystemDirectoryHandle) {
     super(name);
     this.handle = handle;
-
-    if (watch) {
-      let processChanges = Promise.resolve();
-      this.observer = new FileSystemObserver(changes => {
-        processChanges = processChanges.then(async () => {
-          for (const change of changes) {
-            await this.#handleChange(change);
-          }
-        });
-      });
-      this.observer.observe(this.handle, { recursive: true });
-    }
   }
 
-  override async init() {
+  async init() {
     for await (const [name, handle] of this.handle.entries()) {
-      await this.#addentry(name, handle);
+      await this.addentry(name, handle);
     }
   }
 
-  async #addentry(name: string, handle: FileSystemDirectoryHandle | FileSystemFileHandle) {
+  async addentry(name: string, handle: FileSystemDirectoryHandle | FileSystemFileHandle) {
     if (handle instanceof FileSystemDirectoryHandle) {
       const dir = new MountedFolder(name, handle);
       await dir.init();
@@ -159,13 +148,31 @@ class MountedFolder extends Folder {
     }
   }
 
+}
+
+class MountedDrive extends MountedFolder {
+
+  observer!: FileSystemObserver;
+
+  constructor(name: string, handle: FileSystemDirectoryHandle) {
+    super(name, handle);
+
+    let processChanges = Promise.resolve();
+    this.observer = new FileSystemObserver(changes => {
+      processChanges = processChanges.then(async () => {
+        for (const change of changes) {
+          await this.#handleChange(change);
+        }
+      });
+    });
+    this.observer.observe(this.handle, { recursive: true });
+  }
+
   override find(parts: string[]): MountedFolder {
     return super.find(parts) as MountedFolder;
   }
 
   async #handleChange(change: FileSystemObserverRecord) {
-    console.log(change.type, change.relativePathComponents)
-
     if (change.type === 'unknown') {
       console.warn('unknown fs event', change);
       return;
@@ -178,6 +185,8 @@ class MountedFolder extends Folder {
       const isFile = change.changedHandle instanceof FileSystemFileHandle;
       const group = isFile ? dir.files : dir.folders;
       const f = group.find(f => f.name === name)!;
+
+      f.handle = change.changedHandle;
       f.name = change.relativePathComponents.at(-1)!;
       return;
     }
@@ -187,12 +196,11 @@ class MountedFolder extends Folder {
     const dir = this.find(parts);
 
     if (change.type === 'appeared') {
-      await dir.#addentry(name, change.changedHandle);
+      await dir.addentry(name, change.changedHandle);
       return;
     }
 
     if (change.type === 'modified') {
-      console.log('pullig', dir.name, name)
       const file = dir.files.find(f => f.name === name)!;
       await file.pullData();
       return;
@@ -210,6 +218,7 @@ class MountedFolder extends Folder {
   }
 
 }
+
 
 class MountedFile extends FolderFile {
 
@@ -245,7 +254,7 @@ class Root extends Folder {
     mounts.del(child);
   }
 
-  async addDrive(drive: Folder) {
+  async addDrive(drive: Drive) {
     this.folders.push(drive);
     await drive.init();
   }
@@ -266,7 +275,7 @@ class FS {
 
   async mount(drive: string, folder: FileSystemDirectoryHandle) {
     mounts.set({ drive, dir: folder });
-    await this.#root.addDrive(new MountedFolder(drive, folder, true));
+    await this.#root.addDrive(new MountedDrive(drive, folder));
   }
 
   unmount(drive: string) {
