@@ -42,10 +42,15 @@ class Folder {
     this.files.sort(sortBy(f => f.name));
   }
 
-  // remove(child: string) {
-  //   const i = this.folders.findIndex(f => f.name === child);
-  //   this.folders.splice(i, 1);
-  // }
+  removeFolder(child: string) {
+    const i = this.folders.findIndex(f => f.name === child);
+    this.folders.splice(i, 1);
+  }
+
+  removeFile(child: string) {
+    const i = this.files.findIndex(f => f.name === child);
+    this.files.splice(i, 1);
+  }
 
   find(parts: string[]) {
     let current: Folder = this;
@@ -113,6 +118,7 @@ class UserDrive extends Folder {
 class MountedFolder extends Folder {
 
   handle: FileSystemDirectoryHandle;
+  observer!: FileSystemObserver;
 
   override folders: MountedFolder[] = [];
   override files: MountedFile[] = [];
@@ -131,12 +137,12 @@ class MountedFolder extends Folder {
       }
       else {
         const file = new MountedFile(name, handle);
-        await file.init();
+        await file.pullData();
         this.addFile(file);
       }
     }
 
-    const observer = new FileSystemObserver(async (records) => {
+    this.observer = new FileSystemObserver(async (records) => {
       for (const change of records) {
         const affected = change.relativePathComponents[0];
 
@@ -155,7 +161,7 @@ class MountedFolder extends Folder {
           const handle = change.changedHandle;
           if (handle instanceof FileSystemFileHandle) {
             const file = new MountedFile(affected, handle);
-            await file.init();
+            await file.pullData();
             this.addFile(file);
           }
           else {
@@ -165,32 +171,32 @@ class MountedFolder extends Folder {
           }
         }
         else if (change.type === 'disappeared' || change.type === 'errored') {
-          const foundFile = this.files.find(f => f.name === affected);
-          if (foundFile) {
-
-
-            console.log('removing file', affected)
+          if (this.files.some(f => f.name === affected)) {
+            this.removeFile(affected);
           }
           else {
-            console.log('removing folder', affected)
+            this.removeFolder(affected);
           }
-
-
-          // if (this.files.) {
-          //   this.removeFile(f);
-          // }
-          // else {
-          //   this.removeFolder(f);
-          //   // disconnect f recursively
-          //   // f.observer.disconnect();
-          // }
         }
         else if (change.type === 'unknown') {
           console.log('unknown fs event', change);
         }
       }
     });
-    observer.observe(this.handle);
+    this.observer.observe(this.handle);
+  }
+
+  override removeFolder(child: string): void {
+    const folder = this.folders.find(f => f.name === child)!;
+    folder.deinit();
+    super.removeFolder(child);
+  }
+
+  deinit() {
+    this.observer.disconnect();
+    for (const f of this.folders) {
+      f.deinit();
+    }
   }
 
 }
@@ -202,23 +208,6 @@ class MountedFile extends FolderFile {
   constructor(name: string, handle: FileSystemFileHandle) {
     super(name, '');
     this.handle = handle;
-  }
-
-  override async init() {
-    this.pullData();
-
-    // const observer = new FileSystemObserver(async (records) => {
-    //   for (const change of records) {
-    //     if (change.type === 'modified') {
-    //       await this.pullData();
-    //     }
-    //     else if (change.type === 'disappeared' || change.type === 'errored') {
-    //       observer.disconnect();
-    //       this.parent!.childFileGone(this);
-    //     }
-    //   }
-    // });
-    // observer.observe(this.handle);
   }
 
   async pullData() {
