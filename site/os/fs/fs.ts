@@ -11,13 +11,11 @@ const drives = new Map<string, Drive>();
 class FS {
 
   async mount(drive: string, folder: FileSystemDirectoryHandle) {
-    console.log('mount')
     mounts.set({ drive, dir: folder });
-    // await root.addDrive(new MountedDrive(drive, folder));
+    await addDrive(drive, new MountedDrive(folder));
   }
 
   unmount(drive: string) {
-    console.log('unmount')
     mounts.del(drive);
     removeDrive(drive);
   }
@@ -32,7 +30,7 @@ class FS {
 
     for (let i = 0; i < parts.length; i++) {
       const dir = parts.slice(0, i + 1).join('/') + '/';
-      drive.mkdir(dir);
+      await drive.mkdir(dir);
     }
   }
 
@@ -129,4 +127,6 @@ for (const { drive, dir } of await mounts.all()) {
 //   console.log(drive.items.keys().toArray())
 // }
 
-// await fs.mkdirp('user/foo/bar');
+// await fs.mkdirp('os/foo');
+// await fs.mkdirp('os/foo/bar');
+// await fs.mkdirp('os/foo/bar/qux');

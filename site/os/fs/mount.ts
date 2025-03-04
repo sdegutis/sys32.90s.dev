@@ -96,7 +96,6 @@ export class MountedDrive implements Drive {
       processChanges = processChanges.then(async () => {
         for (const change of changes) {
           await this.#handleChange(change);
-          console.log(this.items.keys().toArray())
         }
       });
     });
@@ -132,6 +131,16 @@ export class MountedDrive implements Drive {
   }
 
   async mkdir(path: string) {
+    if (this.items.has(path)) return;
+    const parts = path.split('/');
+
+    const parentpath = parts.slice(0, -2).join('/') + '/';
+    const parent = this.items.get(parentpath) as MountedFolder | undefined;
+    const parenthandle = parent?.handle ?? this.root;
+
+    const name = parts.at(-2)!;
+    const handle = await parenthandle.getDirectoryHandle(name, { create: true });
+    this.items.set(path, { type: 'folder', handle });
   }
 
   deinit(): void {
@@ -158,7 +167,6 @@ export class MountedDrive implements Drive {
     }
 
     if (change.type === 'appeared') {
-      console.log('appeared', path)
       await this.#add(path, change.changedHandle);
       return;
     }
