@@ -65,12 +65,8 @@ class FS {
   }
 
   loadFile(path: string): string | undefined {
-    console.log('loadFile', path)
-    return undefined;
-    // const parts = path.split('/');
-    // const file = parts.pop()!;
-    // const dir = root.findDir(parts);
-    // return dir.getFile(file)?.content;
+    const [drive, subpath] = prepare(path);
+    return drive.items.get(subpath)?.content;
   }
 
   async saveFile(filepath: string, content: string) {
@@ -90,6 +86,13 @@ class FS {
     // return watcher.watch(fn);
   }
 
+}
+
+function prepare(fullpath: string) {
+  const parts = fullpath.split('/');
+  const drivename = parts.shift()!;
+  const drive = root.drives.get(drivename)!;
+  return [drive, parts.join('/')] as const;
 }
 
 export const fs = new FS();

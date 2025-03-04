@@ -86,8 +86,7 @@
 
 export interface Drive {
 
-  // name: string;
-  // items: Navable[];
+  items: Map<string, { content: string }>;
 
   init(): Promise<void>;
   deinit?(): void;
