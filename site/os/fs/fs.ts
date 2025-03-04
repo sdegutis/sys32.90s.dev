@@ -36,34 +36,27 @@ class Root extends Folder {
 
 }
 
+const root = new Root();
+
+
 class FS {
-
-  #root = new Root();
-
-  async init() {
-    await this.#root.addDrive(new SysDrive('sys'));
-    await this.#root.addDrive(new UserDrive('user'));
-    for (const { drive, dir } of await mounts.all()) {
-      await this.mount(drive, dir);
-    }
-  }
 
   async mount(drive: string, folder: FileSystemDirectoryHandle) {
     mounts.set({ drive, dir: folder });
-    await this.#root.addDrive(new MountedDrive(drive, folder));
+    await root.addDrive(new MountedDrive(drive, folder));
   }
 
   unmount(drive: string) {
     mounts.del(drive);
-    this.#root.removeDrive(drive);
+    root.removeDrive(drive);
   }
 
   drives() {
-    return this.#root.items.map(f => f.name);
+    return root.items.map(f => f.name);
   }
 
   async mkdirp(path: string) {
-    let node: Folder = this.#root;
+    let node: Folder = root;
     const parts = path.split('/');
     while (parts.length > 0) {
       const name = parts.shift()!;
@@ -73,20 +66,20 @@ class FS {
   }
 
   getFolder(path: string) {
-    return this.#root.findDir(path.split('/'));
+    return root.findDir(path.split('/'));
   }
 
   loadFile(path: string): string | undefined {
     const parts = path.split('/');
     const file = parts.pop()!;
-    const dir = this.#root.findDir(parts);
+    const dir = root.findDir(parts);
     return dir.getFile(file)?.content;
   }
 
   async saveFile(filepath: string, content: string) {
     const parts = filepath.split('/');
     const name = parts.pop()!;
-    const dir = this.#root.findDir(parts);
+    const dir = root.findDir(parts);
     const file = await dir.getOrCreateFile(name, content);
   }
 
@@ -101,6 +94,11 @@ class FS {
 }
 
 export const fs = new FS();
-await fs.init();
+
+await root.addDrive(new SysDrive('sys'));
+await root.addDrive(new UserDrive('user'));
+for (const { drive, dir } of await mounts.all()) {
+  await fs.mount(drive, dir);
+}
 
 await fs.mkdirp('user/foo/bar');
