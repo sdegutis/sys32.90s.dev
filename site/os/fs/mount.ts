@@ -1,4 +1,4 @@
-import type { Drive, DriveFile, DriveFolder, DriveItem } from "./interface.js";
+import type { Drive, DriveFile, DriveFolder, DriveItem } from "./drive.js";
 
 type MountedFile = DriveFile & { handle: FileSystemFileHandle };
 type MountedFolder = DriveFolder & { handle: FileSystemDirectoryHandle };

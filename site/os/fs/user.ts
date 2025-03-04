@@ -1,5 +1,5 @@
 import { opendb } from "./db.js";
-import type { Drive, DriveItem } from "./interface.js";
+import type { Drive, DriveItem } from "./drive.js";
 
 const db = await opendb<{ path: string, content?: string }>('idbfs', 'path');
 

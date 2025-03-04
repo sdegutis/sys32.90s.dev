@@ -21,22 +21,7 @@ const fileIcon = new Bitmap([0x000099ff], 1, [1]);
 
 export default () => {
 
-  let currentBase: string[] = ['os/'];
-
-  // (async () => {
-  //   console.log(await fs.getFolder('user'))
-  //   // await fs.#drives['b'].putFile('foo', 'bar')
-  //   // await fs.#drives['b'].putFolder('qux')
-  //   const b = await fs.getFolder('user');
-  //   await b!.putFolder('qux')
-  //   await fs.saveFile('user/qux/hmm3', 'bar123es')
-  //   // console.log(await fs.loadFile('b/qux/hmm'))
-  //   const dir = await (await fs.getFolder('user/qux'))?.list() ?? [];
-  //   for (const f of dir) {
-  //     console.log(f);
-  //   }
-
-  // })()
+  let currentBase: string[] = ['user/'];
 
   const sidelist = $(GroupY, { align: 'a', gap: 1 });
   const filelist = $(GroupY, { align: 'a' });
@@ -99,7 +84,19 @@ export default () => {
     filelist.children = [
       ...folders.map(file => {
         return $(Button, {
-          padding: 2, onClick: () => {
+          padding: 2, onClick: (click) => {
+            if (click.button > 1) {
+              showMenu([{
+                text: 'delete',
+                onClick: () => {
+                  fs.rmdir([...base, file.name].join(''));
+                  sidelist.layoutTree();
+                },
+              },
+              ])
+              return;
+            }
+
             currentBase = [...base, file.name];
             showfiles();
           }
@@ -113,6 +110,18 @@ export default () => {
       ...files.map(file => {
         return $(Button, {
           padding: 2, onClick: (click) => {
+            if (click.button > 1) {
+              showMenu([{
+                text: 'delete',
+                onClick: () => {
+                  fs.rm([...base, file.name].join(''));
+                  sidelist.layoutTree();
+                },
+              },
+              ])
+              return;
+            }
+
             if (click.button === 0 && click.count > 1) {
               ws.openFile([...base, file.name].join(''));
             }

@@ -1,5 +1,5 @@
 import { opendb } from "./db.js";
-import { type Drive } from "./interface.js";
+import { type Drive } from "./drive.js";
 import { MountedDrive } from "./mount.js";
 import { SysDrive } from "./sys.js";
 import { UserDrive } from "./user.js";
@@ -32,6 +32,16 @@ class FS {
       const dir = parts.slice(0, i + 1).join('/') + '/';
       await drive.mkdir(dir);
     }
+  }
+
+  async rm(path: string) {
+    const [drive, subpath] = prepare(path);
+    console.log(['rm', drive, subpath]);
+  }
+
+  async rmdir(path: string) {
+    const [drive, subpath] = prepare(path);
+    console.log(['rmdir', drive, subpath]);
   }
 
   getFolder(path: string) {

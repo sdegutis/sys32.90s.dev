@@ -1,4 +1,4 @@
-import { type Drive, type DriveItem } from "./interface.js";
+import { type Drive, type DriveItem } from "./drive.js";
 
 export class SysDrive implements Drive {
 
