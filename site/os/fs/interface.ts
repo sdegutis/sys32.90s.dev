@@ -84,9 +84,13 @@
 
 // }
 
+export type DriveFile = { type: 'file', content: string };
+export type DriveFolder = { type: 'folder' };
+export type DriveItem = DriveFolder | DriveFile;
+
 export interface Drive {
 
-  items: Map<string, { content: string }>;
+  items: Map<string, DriveItem>;
 
   init(): Promise<void>;
   deinit?(): void;

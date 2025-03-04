@@ -60,6 +60,9 @@ class FS {
     return (drive.items
       .entries()
       .map(([k, v]) => {
+
+        // if (v.)
+
         const m = k.match(r)?.[0];
         if (!m) return null;
         const name = m.slice(subpath.length);
@@ -80,7 +83,9 @@ class FS {
 
   loadFile(path: string): string | undefined {
     const [drive, subpath] = prepare(path);
-    return drive.items.get(subpath)?.content;
+    const item = drive.items.get(subpath);
+    if (item?.type === 'file') return item.content;
+    return undefined;
   }
 
   async saveFile(filepath: string, content: string) {
