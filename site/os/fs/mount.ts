@@ -1,6 +1,6 @@
 // import { Folder, StringFile, type Drive } from "./interface.js";
 
-import type { Drive, DriveItem } from "./interface.js";
+import type { Drive, DriveFile, DriveFolder, DriveItem } from "./interface.js";
 
 // class MountedFolder extends Folder implements Drive {
 
@@ -72,29 +72,55 @@ import type { Drive, DriveItem } from "./interface.js";
 
 // }
 
+type MountedFile = DriveFile & {
+  handle: FileSystemFileHandle;
+};
+
+type MountedFolder = DriveFolder & {
+  handle: FileSystemDirectoryHandle;
+};
+
+type MountedItem = MountedFile | MountedFolder;
+
 export class MountedDrive implements Drive {
 
+  items = new Map<string, MountedItem>();
   root: FileSystemDirectoryHandle;
-
-  observer!: FileSystemObserver;
+  observer: FileSystemObserver;
 
   constructor(root: FileSystemDirectoryHandle) {
     this.root = root;
 
-    // let processChanges = Promise.resolve();
-    // this.observer = new FileSystemObserver(changes => {
-    //   processChanges = processChanges.then(async () => {
-    //     for (const change of changes) {
-    //       await this.#handleChange(change);
-    //     }
-    //   });
-    // });
-    // this.observer.observe(this.handle, { recursive: true });
+    let processChanges = Promise.resolve();
+    this.observer = new FileSystemObserver(changes => {
+      processChanges = processChanges.then(async () => {
+        for (const change of changes) {
+          // await this.#handleChange(change);
+        }
+      });
+    });
+    this.observer.observe(root, { recursive: true });
   }
 
-  items = new Map<string, DriveItem>();
-
   async init() {
+    await this.addfrom('', this.root);
+  }
+
+  async addfrom(path: string, dir: FileSystemDirectoryHandle) {
+    for await (const [name, handle] of dir.entries()) {
+      let fullpath = path + name;
+      if (handle instanceof FileSystemDirectoryHandle) {
+        fullpath += '/';
+
+        this.items.set(fullpath, { type: 'folder', handle });
+        this.addfrom(fullpath, handle);
+      }
+      else {
+        const f = await handle.getFile();
+        const content = await f.text();
+        this.items.set(fullpath, { type: 'file', handle, content });
+      }
+    }
   }
 
   async mkdir(path: string) {
@@ -103,10 +129,6 @@ export class MountedDrive implements Drive {
   deinit(): void {
     this.observer.disconnect();
   }
-
-  // override findDir(parts: string[]): MountedFolder {
-  //   return super.findDir(parts) as MountedFolder;
-  // }
 
   // async #handleChange(change: FileSystemObserverRecord) {
   //   if (change.type === 'unknown') {
