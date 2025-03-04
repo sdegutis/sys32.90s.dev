@@ -61,11 +61,13 @@ class FS {
   loadFile(path: string): string | undefined {
     const [drive, subpath] = prepare(path);
     const item = drive.items.get(subpath);
-    if (item?.type === 'file') return item.content;
+    if (item?.type === 'file') return normalize(item.content);
     return undefined;
   }
 
   async saveFile(filepath: string, content: string) {
+    content = normalize(content);
+
     console.log('saveFile', filepath)
     // const parts = filepath.split('/');
     // const name = parts.pop()!;
@@ -109,6 +111,10 @@ function removeDrive(name: string) {
   if (name === 'sys' || name === 'user') return;
   drives.get(name)?.deinit?.();
   drives.delete(name);
+}
+
+function normalize(content: string) {
+  return content.replace(/\r\n/g, '\n');
 }
 
 export const fs = new FS();
