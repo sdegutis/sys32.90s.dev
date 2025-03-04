@@ -1,4 +1,4 @@
-import { Folder, StringFile, type Drive } from "./base.js";
+import { Folder, StringFile, type Drive } from "./interface.js";
 
 class MountedFolder extends Folder implements Drive {
 

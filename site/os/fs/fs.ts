@@ -1,4 +1,4 @@
-import { Folder, StringFile, type Drive } from "./base.js";
+import { Folder, StringFile, type Drive } from "./interface.js";
 import { opendb } from "./db.js";
 import { MountedDrive } from "./mount.js";
 import { SysDrive } from "./sys.js";

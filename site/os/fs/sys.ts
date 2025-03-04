@@ -1,4 +1,4 @@
-import { Folder, StringFile } from "./base.js";
+import { Folder, StringFile } from "./interface.js";
 
 class SysFolder extends Folder {
 
