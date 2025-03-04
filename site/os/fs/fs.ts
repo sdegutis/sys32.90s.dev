@@ -7,32 +7,28 @@ import { UserDrive } from "./user.js";
 const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
 
 
-class Root extends Folder {
+class Root {
 
-  constructor() {
-    super('[root]');
-  }
+  // removeDrive(child: string) {
+  //   if (child === 'sys' || child === 'user') return;
+  //   const folder = this.getFolder(child) as Drive;
+  //   folder.deinit?.();
+  //   this.del(child);
+  //   mounts.del(child);
+  // }
 
-  removeDrive(child: string) {
-    if (child === 'sys' || child === 'user') return;
-    const folder = this.getFolder(child) as Drive;
-    folder.deinit?.();
-    this.del(child);
-    mounts.del(child);
-  }
+  // async addDrive(drive: Drive) {
+  //   this.add(drive);
+  //   await drive.init();
+  // }
 
-  async addDrive(drive: Drive) {
-    this.add(drive);
-    await drive.init();
-  }
+  // override makeFolder(name: string): Promise<Folder> {
+  //   throw new Error("Method not implemented.");
+  // }
 
-  override makeFolder(name: string): Promise<Folder> {
-    throw new Error("Method not implemented.");
-  }
-
-  override makeFile(name: string, content: string): Promise<StringFile> {
-    throw new Error("Method not implemented.");
-  }
+  // override makeFile(name: string, content: string): Promise<StringFile> {
+  //   throw new Error("Method not implemented.");
+  // }
 
 }
 
@@ -101,10 +97,10 @@ class FS {
 
 export const fs = new FS();
 
-await root.addDrive(new SysDrive('sys'));
-await root.addDrive(new UserDrive('user'));
-for (const { drive, dir } of await mounts.all()) {
-  await root.addDrive(new MountedDrive(drive, dir));
-}
+// await root.addDrive(new SysDrive('sys'));
+// await root.addDrive(new UserDrive('user'));
+// for (const { drive, dir } of await mounts.all()) {
+//   await root.addDrive(new MountedDrive(drive, dir));
+// }
 
 // await fs.mkdirp('user/foo/bar');
