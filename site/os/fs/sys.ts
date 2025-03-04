@@ -1,10 +1,13 @@
-import { type Drive, type DriveItem } from "./drive.js";
+import { type Drive, type DriveItem, type DriveNotificationType } from "./drive.js";
 
 export class SysDrive implements Drive {
 
   items = new Map<string, DriveItem>();
+  notify?: (type: DriveNotificationType, path: string) => void;
 
-  async mount() {
+  async mount(notify: (type: DriveNotificationType, path: string) => void) {
+    this.notify = notify;
+
     const jsonpath = import.meta.resolve('./data.json');
     const paths = await fetch(jsonpath).then<string[]>(r => r.json());
 
@@ -22,11 +25,16 @@ export class SysDrive implements Drive {
   }
 
   async putdir(path: string) {
+    if (this.items.has(path)) return;
+
     this.items.set(path, { type: 'folder' });
+    this.notify?.('modified', path);
   }
 
   async putfile(path: string, content: string) {
+    const has = this.items.has(path);
     this.items.set(path, { type: 'file', content });
+    this.notify?.(has ? 'modified' : 'appeared', path);
   }
 
   async rmdir(path: string) {
@@ -35,10 +43,12 @@ export class SysDrive implements Drive {
         this.items.delete(key);
       }
     }
+    this.notify?.('disappeared', path);
   }
 
   async rmfile(path: string) {
     this.items.delete(path);
+    this.notify?.('disappeared', path);
   }
 
 }

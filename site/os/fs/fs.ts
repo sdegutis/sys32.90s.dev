@@ -80,8 +80,6 @@ class FS {
   async saveFile(filepath: string, content: string) {
     const [drive, subpath] = prepare(filepath);
     drive.putfile(subpath, normalize(content));
-
-    notify('modified', filepath);
   }
 
   watchTree(path: string, fn: (type: DriveNotificationType) => void) {
