@@ -1,3 +1,4 @@
+import { Listener } from "../util/events.js";
 import { opendb } from "./db.js";
 import { type Drive } from "./drive.js";
 import { MountedDrive } from "./mount.js";
@@ -79,14 +80,20 @@ class FS {
   async saveFile(filepath: string, content: string) {
     const [drive, subpath] = prepare(filepath);
     drive.putfile(subpath, normalize(content));
+
+    for (const [p, w] of this.#watchers) {
+      if (filepath.startsWith(p)) {
+        w.dispatch(content);
+      }
+    }
   }
 
-  // #watchers = new Map<string, Listener<string>>();
+  #watchers = new Map<string, Listener<string>>();
 
   watchTree(path: string, fn: (content: string) => void) {
-    // let watcher = this.#watchers.get(path);
-    // if (!watcher) this.#watchers.set(path, watcher = new Listener());
-    // return watcher.watch(fn);
+    let watcher = this.#watchers.get(path);
+    if (!watcher) this.#watchers.set(path, watcher = new Listener());
+    return watcher.watch(fn);
   }
 
 }
