@@ -4,10 +4,6 @@ const $ = jsxToString;
 
 const copyright = `Copyright ©️ ${new Date().getFullYear()} Novo Cantico LLC. All rights reserved.`;
 
-const icon = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <path d="M10 2 L10 30 24 16 Z" fill="#19f" />
-</svg>;
-
 export default (({ inFiles, outFiles }) => {
   const files = [...inFiles];
 
@@ -23,6 +19,10 @@ export default (({ inFiles, outFiles }) => {
     .filter(s => !s.includes('@imlib'))
     .filter(s => !s.includes('.json.'))
     .map(s => <link rel="modulepreload" href={s} />));
+
+  const icon = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <path d="M10 2 L10 30 24 16 Z" fill="#19f" />
+  </svg>;
 
   const iconlink = <link rel="shortcut icon" href={`data:image/svg+xml,${encodeURIComponent($(icon))}`} />;
   const headers = [...datas, ...modules, iconlink];
