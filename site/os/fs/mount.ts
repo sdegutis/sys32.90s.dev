@@ -118,9 +118,11 @@ export class MountedDrive implements Drive {
     }
 
     if (change.type === 'modified') {
-      const item = this.items.get(path) as MountedFile;
-      const f = await item.handle.getFile();
-      item.content = await f.text();
+      const item = this.items.get(path) as MountedFile | undefined;
+      if (item) {
+        const f = await item.handle.getFile();
+        item.content = await f.text();
+      }
       return;
     }
 
@@ -130,20 +132,28 @@ export class MountedDrive implements Drive {
     }
   }
 
+  async #parenthandle(path: string) {
+    const parts = path.split('/');
+    const name = parts.pop()!;
+    const parentpath = parts.join('/') + '/';
+    const parent = this.items.get(parentpath) as MountedFolder | undefined;
+    return [parent?.handle ?? this.root, name] as const;
+  }
+
   async rmdir(path: string) {
+    const [handle, name] = await this.#parenthandle(path.slice(0, -1));
     for (const key of this.items.keys()) {
       if (key.startsWith(path)) {
-        // db.del(key);
         this.items.delete(key);
       }
     }
+    await handle.removeEntry(name, { recursive: true });
   }
 
   async rmfile(path: string) {
-    // const file = this.items.get(path);
-
-    // db.del(path);
+    const [handle, name] = await this.#parenthandle(path);
     this.items.delete(path);
+    await handle.removeEntry(name, { recursive: true });
   }
 
 }
