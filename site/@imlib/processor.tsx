@@ -1,6 +1,8 @@
-import { processFile, type SiteProcessor } from "@imlib/core";
+import { jsxToString, processFile, type SiteProcessor } from "@imlib/core";
 
 const copyright = `Copyright ©️ ${new Date().getFullYear()} Novo Cantico LLC. All rights reserved.`;
+
+const $ = jsxToString;
 
 export default (({ inFiles, outFiles }) => {
   const files = [...inFiles];
@@ -9,17 +11,15 @@ export default (({ inFiles, outFiles }) => {
     .map(f => f.path)
     .filter(s => s.startsWith('/os/data/'))
     .toSpliced(0, 0, '/os/fs/data.json')
-    .map(s => `  <link rel="preload" as="fetch" href="${s}" crossorigin="anonymous" />`)
+    .map(s => `  ${$(<link rel="preload" as="fetch" href={s} crossOrigin="anonymous" />)}`)
     .join('\n'));
-
-  console.log(preloadfetch)
 
   const preload = (files
     .map(f => f.path)
     .filter(s => s.endsWith('.js'))
     .filter(s => !s.includes('@imlib'))
     .filter(s => !s.includes('.json.'))
-    .map(s => `  <link rel="modulepreload" href="${s}" />`)
+    .map(s => `  ${$(<link rel="modulepreload" href={s} />)}`)
     .join('\n'));
 
   function insert(s: string) {
