@@ -1,3 +1,7 @@
+import { crt } from "./os/core/crt.js";
+import { sys } from "./os/core/system.js";
+import { ws } from "./os/desktop/workspace.js";
+
 const div = document.createElement('div');
 div.innerHTML = `<b>loading...</b>`
 div.style.color = 'white'
@@ -5,10 +9,6 @@ div.style.position = 'absolute'
 div.style.x = '0'
 div.style.y = '0'
 document.body.appendChild(div)
-
-const crt = (await import("./os/core/crt.js")).crt;
-const sys = (await import("./os/core/system.js")).sys;
-const ws = (await import("./os/desktop/workspace.js")).ws;
 
 // await new Promise(resolve => setTimeout(resolve, 100));
 
