@@ -1,5 +1,7 @@
 // import { Folder, StringFile, type Drive } from "./interface.js";
 
+import type { Drive, DriveItem } from "./interface.js";
+
 // class MountedFolder extends Folder implements Drive {
 
 //   handle: FileSystemDirectoryHandle;
@@ -70,68 +72,78 @@
 
 // }
 
-// export class MountedDrive extends MountedFolder implements Drive {
+export class MountedDrive implements Drive {
 
-//   observer!: FileSystemObserver;
+  root: FileSystemDirectoryHandle;
 
-//   constructor(name: string, handle: FileSystemDirectoryHandle) {
-//     super(name, handle);
+  observer!: FileSystemObserver;
 
-//     let processChanges = Promise.resolve();
-//     this.observer = new FileSystemObserver(changes => {
-//       processChanges = processChanges.then(async () => {
-//         for (const change of changes) {
-//           await this.#handleChange(change);
-//         }
-//       });
-//     });
-//     this.observer.observe(this.handle, { recursive: true });
-//   }
+  constructor(root: FileSystemDirectoryHandle) {
+    this.root = root;
 
-//   deinit(): void {
-//     this.observer.disconnect();
-//   }
+    // let processChanges = Promise.resolve();
+    // this.observer = new FileSystemObserver(changes => {
+    //   processChanges = processChanges.then(async () => {
+    //     for (const change of changes) {
+    //       await this.#handleChange(change);
+    //     }
+    //   });
+    // });
+    // this.observer.observe(this.handle, { recursive: true });
+  }
 
-//   override findDir(parts: string[]): MountedFolder {
-//     return super.findDir(parts) as MountedFolder;
-//   }
+  items = new Map<string, DriveItem>();
 
-//   async #handleChange(change: FileSystemObserverRecord) {
-//     if (change.type === 'unknown') {
-//       console.warn('unknown fs event', change);
-//       return;
-//     }
+  async init() {
+  }
 
-//     if (change.type === 'moved') {
-//       const parts = [...change.relativePathMovedFrom];
-//       const name = parts.pop()!;
-//       const dir = this.findDir(parts);
-//       const f = dir.items.find(f => f.name === name)!;
+  async mkdir(path: string) {
+  }
 
-//       f.handle = change.changedHandle;
-//       f.name = change.relativePathComponents.at(-1)!;
-//       return;
-//     }
+  deinit(): void {
+    this.observer.disconnect();
+  }
 
-//     const parts = [...change.relativePathComponents];
-//     const name = parts.pop()!;
-//     const dir = this.findDir(parts);
+  // override findDir(parts: string[]): MountedFolder {
+  //   return super.findDir(parts) as MountedFolder;
+  // }
 
-//     if (change.type === 'appeared') {
-//       await dir.addentry(name, change.changedHandle);
-//       return;
-//     }
+  // async #handleChange(change: FileSystemObserverRecord) {
+  //   if (change.type === 'unknown') {
+  //     console.warn('unknown fs event', change);
+  //     return;
+  //   }
 
-//     if (change.type === 'modified') {
-//       const file = dir.getFile(name) as MountedFile;
-//       await file.pull();
-//       return;
-//     }
+  //   if (change.type === 'moved') {
+  //     const parts = [...change.relativePathMovedFrom];
+  //     const name = parts.pop()!;
+  //     const dir = this.findDir(parts);
+  //     const f = dir.items.find(f => f.name === name)!;
 
-//     if (change.type === 'disappeared' || change.type === 'errored') {
-//       dir.del(name);
-//       return;
-//     }
-//   }
+  //     f.handle = change.changedHandle;
+  //     f.name = change.relativePathComponents.at(-1)!;
+  //     return;
+  //   }
 
-// }
+  //   const parts = [...change.relativePathComponents];
+  //   const name = parts.pop()!;
+  //   const dir = this.findDir(parts);
+
+  //   if (change.type === 'appeared') {
+  //     await dir.addentry(name, change.changedHandle);
+  //     return;
+  //   }
+
+  //   if (change.type === 'modified') {
+  //     const file = dir.getFile(name) as MountedFile;
+  //     await file.pull();
+  //     return;
+  //   }
+
+  //   if (change.type === 'disappeared' || change.type === 'errored') {
+  //     dir.del(name);
+  //     return;
+  //   }
+  // }
+
+}

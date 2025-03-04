@@ -1,30 +1,24 @@
 import { opendb } from "./db.js";
 import { type Drive } from "./interface.js";
+import { MountedDrive } from "./mount.js";
 import { SysDrive } from "./sys.js";
 import { UserDrive } from "./user.js";
 
 const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
 
-class Root {
+const drives = new Map<string, Drive>();
 
-  drives = new Map<string, Drive>();
-
-  async addDrive(name: string, drive: Drive) {
-    await drive.init();
-    this.drives.set(name, drive);
-  }
-
-  removeDrive(name: string) {
-    if (name === 'sys' || name === 'user') return;
-    const drive = this.drives.get(name);
-    this.drives.delete(name);
-    drive?.deinit?.();
-  }
-
+async function addDrive(name: string, drive: Drive) {
+  await drive.init();
+  drives.set(name, drive);
 }
 
-const root = new Root();
-
+function removeDrive(name: string) {
+  if (name === 'sys' || name === 'user') return;
+  const drive = drives.get(name);
+  drives.delete(name);
+  drive?.deinit?.();
+}
 
 class FS {
 
@@ -37,11 +31,11 @@ class FS {
   unmount(drive: string) {
     console.log('unmount')
     mounts.del(drive);
-    root.removeDrive(drive);
+    removeDrive(drive);
   }
 
   drives() {
-    return root.drives.keys().map(s => s + '/').toArray();
+    return drives.keys().map(s => s + '/').toArray();
   }
 
   async mkdirp(path: string) {
@@ -114,16 +108,16 @@ function sortBy<T, U>(fn: (o: T) => U) {
 function prepare(fullpath: string) {
   const parts = fullpath.split('/');
   const drivename = parts.shift()!;
-  const drive = root.drives.get(drivename)!;
+  const drive = drives.get(drivename)!;
   return [drive, parts.join('/')] as const;
 }
 
 export const fs = new FS();
 
-await root.addDrive('sys', new SysDrive());
-await root.addDrive('user', new UserDrive());
-// for (const { drive, dir } of await mounts.all()) {
-//   await root.addDrive(new MountedDrive(drive, dir));
-// }
+await addDrive('sys', new SysDrive());
+await addDrive('user', new UserDrive());
+for (const { drive, dir } of await mounts.all()) {
+  await addDrive(drive, new MountedDrive(dir));
+}
 
 // await fs.mkdirp('user/foo/bar');
