@@ -65,7 +65,7 @@ export default () => {
   async function showfiles() {
     const base = currentBase;
 
-    const dir = fs.getFolder(base.join(''));
+    const dir = fs.list(base.join(''));
 
     const folders = dir.filter(e => e.type === 'folder');
     const files = dir.filter(e => e.type === 'file');

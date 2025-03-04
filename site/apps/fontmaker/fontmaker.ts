@@ -37,7 +37,7 @@ export default async (filename?: string) => {
   let chars: Record<string, Bitmap> = {};
 
   if (filename) {
-    const s = fs.loadFile(filename)!;
+    const s = fs.get(filename)!;
 
     const keys = [...CHARSET].sort();
     const vals = s.split('===\n').map(s => Bitmap.fromString(s));
@@ -158,7 +158,7 @@ export default async (filename?: string) => {
 
         console.log(chars);
         const saveData = orderedChars.map(ch => chars[ch].toString()).join('===\n');
-        fs.saveFile(filename, saveData);
+        fs.put(filename, saveData);
       }
 
       return true;

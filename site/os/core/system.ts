@@ -8,7 +8,7 @@ import { Font } from "./font.js";
 import { fs } from "../fs/fs.js";
 import { $, Dynamic, makeDynamic, View } from "./view.js";
 
-const crt2025 = Font.fromString(fs.loadFile('sys/font1.font')!);
+const crt2025 = Font.fromString(fs.get('sys/font1.font')!);
 
 class Memory extends Dynamic {
   font = crt2025;
@@ -21,11 +21,11 @@ mem.$data.font = livefile('sys/font1.font', Font.fromString);
 
 
 function livefile<T>(path: string, to: (content: string) => T) {
-  const s = fs.loadFile(path)!;
+  const s = fs.get(path)!;
   const r = new Reactive<T>(to(s));
   fs.watchTree(path, (type) => {
     if (type === 'disappeared') return;
-    const s = fs.loadFile(path)!;
+    const s = fs.get(path)!;
     r.val = to(s);
     sys.needsRedraw = true;
   });

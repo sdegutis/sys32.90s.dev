@@ -125,7 +125,7 @@ export default (filepath?: string) => {
 
   if (filepath) {
 
-    const s = fs.loadFile(filepath);
+    const s = fs.get(filepath);
     if (s) {
       paintView.loadBitmap(s);
     }
@@ -156,7 +156,7 @@ export default (filepath?: string) => {
 
       const bitmap = paintView.toBitmap();
 
-      fs.saveFile(filepath, bitmap.toString());
+      fs.put(filepath, bitmap.toString());
       console.log('done')
 
       return true;

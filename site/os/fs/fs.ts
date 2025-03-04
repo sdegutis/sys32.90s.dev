@@ -48,7 +48,7 @@ class FS {
     await drive.rmdir(subpath);
   }
 
-  getFolder(path: string) {
+  list(path: string) {
     const [drive, subpath] = prepare(path);
     const r = new RegExp(`^${subpath}[^/]+?/?$`);
     return (drive.items
@@ -70,14 +70,14 @@ class FS {
       .sort(sortBy(e => (e.type === 'folder' ? 0 : 1) + e.name)));
   }
 
-  loadFile(path: string): string | undefined {
+  get(path: string): string | undefined {
     const [drive, subpath] = prepare(path);
     const item = drive.items.get(subpath);
     if (item?.type === 'file') return normalize(item.content);
     return undefined;
   }
 
-  async saveFile(filepath: string, content: string) {
+  async put(filepath: string, content: string) {
     const [drive, subpath] = prepare(filepath);
     drive.putfile(subpath, normalize(content));
   }
