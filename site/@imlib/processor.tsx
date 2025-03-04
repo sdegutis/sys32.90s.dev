@@ -1,4 +1,4 @@
-import { processFile, type SiteProcessor } from "@imlib/core";
+import { jsxToString, processFile, type SiteProcessor } from "@imlib/core";
 
 const copyright = `Copyright ©️ ${new Date().getFullYear()} Novo Cantico LLC. All rights reserved.`;
 
@@ -14,7 +14,12 @@ export default (({ inFiles, outFiles }) => {
     .join('\n'));
 
   function insert(s: string) {
-    return s.replace('<head>', `<head>\n${preload}`);
+    const icon = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <path d="M10 2 L10 30 24 16 Z" fill="#19f" />
+    </svg>;
+    const href = `data:image/svg+xml,${encodeURIComponent(jsxToString(icon))}`;
+    const iconlink = jsxToString(<link rel="shortcut icon" href={href} />);
+    return s.replace('<head>', `<head>\n${preload}\n  ${iconlink}`);
   }
 
   for (const file of files) {

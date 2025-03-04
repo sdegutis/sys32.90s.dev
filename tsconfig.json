@@ -10,6 +10,7 @@
       "@imlib/core/runtime.d.ts",
       "@types/wicg-file-system-access"
     ],
+    "jsx": "preserve",
     "moduleDetection": "force",
     "target": "ESNext",
     "module": "ESNext",
