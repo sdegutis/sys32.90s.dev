@@ -13,10 +13,8 @@ export class UserDrive implements Drive {
         this.items.set(path, { type: 'folder' });
       }
       else {
-        console.log(path, content)
+        this.items.set(path, { type: 'file', content: content! });
       }
-
-      // addFile(path, content);
     }
   }
 
@@ -25,9 +23,10 @@ export class UserDrive implements Drive {
     db.set({ path });
   }
 
-  // push(path: string, content: string): void {
-  //   idbfs.set({ path, content });
-  // }
+  async putfile(path: string, content: string) {
+    this.items.set(path, { type: 'file', content });
+    db.set({ path, content });
+  }
 
   // override remove(child: string) {
   //   super.remove(child);

@@ -24,4 +24,8 @@ export class SysDrive implements Drive {
     this.items.set(path, { type: 'folder' });
   }
 
+  async putfile(path: string, content: string) {
+    this.items.set(path, { type: 'file', content });
+  }
+
 }

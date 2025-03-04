@@ -82,6 +82,10 @@ export class MountedDrive implements Drive {
     this.items.set(path, { type: 'folder', handle });
   }
 
+  async putfile(path: string, content: string) {
+
+  }
+
   deinit(): void {
     this.observer.disconnect();
   }
