@@ -4,8 +4,8 @@ const $ = jsxToString;
 
 const copyright = `Copyright ©️ ${new Date().getFullYear()} Novo Cantico LLC. All rights reserved.`;
 
-const icon = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <path d="M10 2 L10 30 24 16 Z" fill="#19f" />
+const icon = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 5">
+  <path d="M1 0 L3 2 1 4 Z" fill="#19f" />
 </svg>;
 
 export default (({ inFiles, outFiles }) => {
