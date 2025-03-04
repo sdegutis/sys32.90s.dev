@@ -1,39 +1,39 @@
-import { Folder, StringFile, type Drive } from "./interface.js";
-import { opendb } from "./db.js";
+// import { Folder, StringFile, type Drive } from "./interface.js";
+// import { opendb } from "./db.js";
 
-const idbfs = await opendb<{ path: string, content?: string }>('idbfs', 'path');
+// const idbfs = await opendb<{ path: string, content?: string }>('idbfs', 'path');
 
-class UserFolder extends Folder {
+// class UserFolder extends Folder {
 
-  override async makeFolder(name: string) {
-    return new UserFolder(name);
-  }
+//   override async makeFolder(name: string) {
+//     return new UserFolder(name);
+//   }
 
-  override async makeFile(name: string, content: string) {
-    return new UserFile(name, content);
-  }
+//   override async makeFile(name: string, content: string) {
+//     return new UserFile(name, content);
+//   }
 
-}
+// }
 
-class UserFile extends StringFile {
+// class UserFile extends StringFile {
 
-}
+// }
 
-export class UserDrive extends UserFolder implements Drive {
+// export class UserDrive extends UserFolder implements Drive {
 
-  async init() {
-    for (const { path, content } of await idbfs.all()) {
-      // addFile(path, content);
-    }
-  }
+//   async init() {
+//     for (const { path, content } of await idbfs.all()) {
+//       // addFile(path, content);
+//     }
+//   }
 
-  // push(path: string, content: string): void {
-  //   idbfs.set({ path, content });
-  // }
+//   // push(path: string, content: string): void {
+//   //   idbfs.set({ path, content });
+//   // }
 
-  // override remove(child: string) {
-  //   super.remove(child);
-  //   // const files = await idbfs.all();
-  // }
+//   // override remove(child: string) {
+//   //   super.remove(child);
+//   //   // const files = await idbfs.all();
+//   // }
 
-}
+// }

@@ -1,34 +1,24 @@
-import { Folder, StringFile, type Drive } from "./interface.js";
 import { opendb } from "./db.js";
-import { MountedDrive } from "./mount.js";
+import { type Drive } from "./interface.js";
 import { SysDrive } from "./sys.js";
-import { UserDrive } from "./user.js";
 
 const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
 
-
 class Root {
 
-  // removeDrive(child: string) {
-  //   if (child === 'sys' || child === 'user') return;
-  //   const folder = this.getFolder(child) as Drive;
-  //   folder.deinit?.();
-  //   this.del(child);
-  //   mounts.del(child);
-  // }
+  drives = new Map<string, Drive>();
 
-  // async addDrive(drive: Drive) {
-  //   this.add(drive);
-  //   await drive.init();
-  // }
+  async addDrive(name: string, drive: Drive) {
+    await drive.init();
+    this.drives.set(name, drive);
+  }
 
-  // override makeFolder(name: string): Promise<Folder> {
-  //   throw new Error("Method not implemented.");
-  // }
-
-  // override makeFile(name: string, content: string): Promise<StringFile> {
-  //   throw new Error("Method not implemented.");
-  // }
+  removeDrive(name: string) {
+    if (name === 'sys' || name === 'user') return;
+    const drive = this.drives.get(name);
+    this.drives.delete(name);
+    drive?.deinit?.();
+  }
 
 }
 
@@ -38,16 +28,19 @@ const root = new Root();
 class FS {
 
   async mount(drive: string, folder: FileSystemDirectoryHandle) {
-    // mounts.set({ drive, dir: folder });
+    console.log('mount')
+    mounts.set({ drive, dir: folder });
     // await root.addDrive(new MountedDrive(drive, folder));
   }
 
   unmount(drive: string) {
-    // mounts.del(drive);
-    // root.removeDrive(drive);
+    console.log('unmount')
+    mounts.del(drive);
+    root.removeDrive(drive);
   }
 
   drives() {
+    console.log('drives')
     return [] as string[];
     // return root.items.map(f => f.name);
   }
@@ -63,6 +56,7 @@ class FS {
   }
 
   getFolder(path: string): { folders: { name: string }[], files: { name: string }[] } {
+    console.log('getFolder')
     return {
       folders: [],
       files: [],
@@ -71,6 +65,7 @@ class FS {
   }
 
   loadFile(path: string): string | undefined {
+    console.log('loadFile', path)
     return undefined;
     // const parts = path.split('/');
     // const file = parts.pop()!;
@@ -79,6 +74,7 @@ class FS {
   }
 
   async saveFile(filepath: string, content: string) {
+    console.log('saveFile', filepath)
     // const parts = filepath.split('/');
     // const name = parts.pop()!;
     // const dir = root.findDir(parts);
@@ -88,6 +84,7 @@ class FS {
   // #watchers = new Map<string, Listener<string>>();
 
   watchTree(path: string, fn: (content: string) => void) {
+    console.log('watchTree', path)
     // let watcher = this.#watchers.get(path);
     // if (!watcher) this.#watchers.set(path, watcher = new Listener());
     // return watcher.watch(fn);
@@ -97,7 +94,7 @@ class FS {
 
 export const fs = new FS();
 
-// await root.addDrive(new SysDrive('sys'));
+await root.addDrive('sys', new SysDrive());
 // await root.addDrive(new UserDrive('user'));
 // for (const { drive, dir } of await mounts.all()) {
 //   await root.addDrive(new MountedDrive(drive, dir));
