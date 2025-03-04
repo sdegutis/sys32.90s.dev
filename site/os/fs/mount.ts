@@ -95,7 +95,7 @@ export class MountedDrive implements Drive {
     this.observer = new FileSystemObserver(changes => {
       processChanges = processChanges.then(async () => {
         for (const change of changes) {
-          // await this.#handleChange(change);
+          await this.#handleChange(change);
         }
       });
     });
@@ -113,7 +113,7 @@ export class MountedDrive implements Drive {
         fullpath += '/';
 
         this.items.set(fullpath, { type: 'folder', handle });
-        this.#addfrom(fullpath, handle);
+        await this.#addfrom(fullpath, handle);
       }
       else {
         const f = await handle.getFile();
@@ -130,42 +130,45 @@ export class MountedDrive implements Drive {
     this.observer.disconnect();
   }
 
-  // async #handleChange(change: FileSystemObserverRecord) {
-  //   if (change.type === 'unknown') {
-  //     console.warn('unknown fs event', change);
-  //     return;
-  //   }
+  async #handleChange(change: FileSystemObserverRecord) {
+    if (change.type === 'unknown') {
+      console.warn('unknown fs event', change);
+      return;
+    }
 
-  //   if (change.type === 'moved') {
-  //     const parts = [...change.relativePathMovedFrom];
-  //     const name = parts.pop()!;
-  //     const dir = this.findDir(parts);
-  //     const f = dir.items.find(f => f.name === name)!;
+    if (change.type === 'moved') {
+      const isfile = change.changedHandle instanceof FileSystemFileHandle;
+      const end = isfile ? '' : '/';
 
-  //     f.handle = change.changedHandle;
-  //     f.name = change.relativePathComponents.at(-1)!;
-  //     return;
-  //   }
+      const oldpath = change.relativePathMovedFrom.join('/') + end;
+      const newpath = change.relativePathComponents.join('/') + end;
 
-  //   const parts = [...change.relativePathComponents];
-  //   const name = parts.pop()!;
-  //   const dir = this.findDir(parts);
+      const item = this.items.get(oldpath)!;
+      this.items.delete(oldpath);
+      this.items.set(newpath, item);
+      item.handle = change.changedHandle;
+      return;
+    }
 
-  //   if (change.type === 'appeared') {
-  //     await dir.addentry(name, change.changedHandle);
-  //     return;
-  //   }
+    // const parts = [...change.relativePathComponents];
+    // const name = parts.pop()!;
+    // const dir = this.findDir(parts);
 
-  //   if (change.type === 'modified') {
-  //     const file = dir.getFile(name) as MountedFile;
-  //     await file.pull();
-  //     return;
-  //   }
+    // if (change.type === 'appeared') {
+    //   await dir.addentry(name, change.changedHandle);
+    //   return;
+    // }
 
-  //   if (change.type === 'disappeared' || change.type === 'errored') {
-  //     dir.del(name);
-  //     return;
-  //   }
-  // }
+    // if (change.type === 'modified') {
+    //   const file = dir.getFile(name) as MountedFile;
+    //   await file.pull();
+    //   return;
+    // }
+
+    // if (change.type === 'disappeared' || change.type === 'errored') {
+    //   dir.del(name);
+    //   return;
+    // }
+  }
 
 }

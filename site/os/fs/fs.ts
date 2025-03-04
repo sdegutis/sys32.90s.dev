@@ -125,4 +125,8 @@ for (const { drive, dir } of await mounts.all()) {
   await addDrive(drive, new MountedDrive(dir));
 }
 
+// for (const drive of drives.values()) {
+//   console.log(drive.items.keys().toArray())
+// }
+
 // await fs.mkdirp('user/foo/bar');
