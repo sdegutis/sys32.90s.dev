@@ -1,4 +1,4 @@
-import type { Drive, DriveFile, DriveFolder, DriveItem } from "./drive.js";
+import type { Drive, DriveFile, DriveFolder, DriveItem, DriveNotificationType } from "./drive.js";
 
 type MountedFile = DriveFile & { handle: FileSystemFileHandle };
 type MountedFolder = DriveFolder & { handle: FileSystemDirectoryHandle };
@@ -8,24 +8,28 @@ export class MountedDrive implements Drive {
 
   items = new Map<string, MountedItem>();
   root: FileSystemDirectoryHandle;
-  observer: FileSystemObserver;
+  notify?: (type: DriveNotificationType, path: string) => void;
+  unmount = () => { };
 
   constructor(root: FileSystemDirectoryHandle) {
     this.root = root;
+  }
+
+  async mount(notify: (type: DriveNotificationType, path: string) => void) {
+    this.notify = notify;
+    await this.#scan('', this.root);
 
     let processChanges = Promise.resolve();
-    this.observer = new FileSystemObserver(changes => {
+    const observer = new FileSystemObserver(changes => {
       processChanges = processChanges.then(async () => {
         for (const change of changes) {
           await this.#handleChange(change);
         }
       });
     });
-    this.observer.observe(root, { recursive: true });
-  }
+    this.unmount = () => observer.disconnect();
 
-  async mount() {
-    await this.#scan('', this.root);
+    observer.observe(this.root, { recursive: true });
   }
 
   async #scan(path: string, dir: FileSystemDirectoryHandle) {
@@ -89,10 +93,6 @@ export class MountedDrive implements Drive {
     await w.close();
   }
 
-  unmount(): void {
-    this.observer.disconnect();
-  }
-
   async #handleChange(change: FileSystemObserverRecord) {
     if (change.type === 'unknown') {
       console.warn('unknown fs event', change);
@@ -109,11 +109,14 @@ export class MountedDrive implements Drive {
       this.items.delete(oldpath);
       this.items.set(path, item);
       item.handle = change.changedHandle;
+      this.notify?.('disappeared', oldpath);
+      this.notify?.('appeared', path);
       return;
     }
 
     if (change.type === 'appeared') {
       await this.#add(path, change.changedHandle);
+      this.notify?.('appeared', path);
       return;
     }
 
@@ -123,11 +126,13 @@ export class MountedDrive implements Drive {
         const f = await item.handle.getFile();
         item.content = await f.text();
       }
+      this.notify?.('modified', path);
       return;
     }
 
     if (change.type === 'disappeared' || change.type === 'errored') {
       this.items.delete(path + '/') || this.items.delete(path);
+      this.notify?.('disappeared', path);
       return;
     }
   }

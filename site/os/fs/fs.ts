@@ -1,6 +1,6 @@
 import { Listener } from "../util/events.js";
 import { opendb } from "./db.js";
-import { type Drive } from "./drive.js";
+import { type Drive, type DriveNotificationType } from "./drive.js";
 import { MountedDrive } from "./mount.js";
 import { SysDrive } from "./sys.js";
 import { UserDrive } from "./user.js";
@@ -8,6 +8,8 @@ import { UserDrive } from "./user.js";
 const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
 
 const drives = new Map<string, Drive>();
+
+const watchers = new Map<string, Listener<string>>();
 
 class FS {
 
@@ -81,18 +83,16 @@ class FS {
     const [drive, subpath] = prepare(filepath);
     drive.putfile(subpath, normalize(content));
 
-    for (const [p, w] of this.#watchers) {
+    for (const [p, w] of watchers) {
       if (filepath.startsWith(p)) {
         w.dispatch(content);
       }
     }
   }
 
-  #watchers = new Map<string, Listener<string>>();
-
   watchTree(path: string, fn: (content: string) => void) {
-    let watcher = this.#watchers.get(path);
-    if (!watcher) this.#watchers.set(path, watcher = new Listener());
+    let watcher = watchers.get(path);
+    if (!watcher) watchers.set(path, watcher = new Listener());
     return watcher.watch(fn);
   }
 
@@ -115,8 +115,12 @@ function prepare(fullpath: string) {
   return [drive, parts.join('/')] as const;
 }
 
+function notify(type: DriveNotificationType, path: string) {
+  console.log('got', type, path)
+}
+
 async function addDrive(name: string, drive: Drive) {
-  await drive.mount();
+  await drive.mount(notify);
   drives.set(name, drive);
 }
 
