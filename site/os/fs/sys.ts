@@ -15,9 +15,13 @@ export class SysDrive implements Drive {
       const dirs = fixedpath.split('/').slice(0, -1);
       for (let i = 0; i < dirs.length; i++) {
         const dir = dirs.slice(0, i + 1).join('/') + '/';
-        this.items.set(dir, { type: 'folder' });
+        this.mkdir(dir);
       }
     }
+  }
+
+  async mkdir(path: string) {
+    this.items.set(path, { type: 'folder' });
   }
 
 }

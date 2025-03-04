@@ -45,13 +45,13 @@ class FS {
   }
 
   async mkdirp(path: string) {
-    // let node: Folder = root;
-    // const parts = path.split('/');
-    // while (parts.length > 0) {
-    //   const name = parts.shift()!;
-    //   node = await node.getOrCreateFolder(name);
-    // }
-    // return node;
+    const [drive, subpath] = prepare(path);
+    const parts = subpath.split('/');
+
+    for (let i = 0; i < parts.length; i++) {
+      const dir = parts.slice(0, i + 1).join('/') + '/';
+      drive.mkdir(dir);
+    }
   }
 
   getFolder(path: string) {

@@ -95,4 +95,6 @@ export interface Drive {
   init(): Promise<void>;
   deinit?(): void;
 
+  mkdir(path: string): Promise<void>;
+
 }
