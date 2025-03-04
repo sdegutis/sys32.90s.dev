@@ -32,7 +32,7 @@ function livefile<T>(path: string, to: (content: string) => T) {
   return r;
 }
 
-const pointer = livefile('os/data/pointer.bitmap', s => Cursor.fromBitmap(Bitmap.fromString(s)));
+const pointer = livefile('sys/pointer.bitmap', s => Cursor.fromBitmap(Bitmap.fromString(s)));
 
 class System {
 
