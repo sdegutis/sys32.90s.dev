@@ -1,67 +1,8 @@
-// import { Folder, StringFile, type Drive } from "./interface.js";
-
 import type { Drive, DriveFile, DriveFolder, DriveItem } from "./interface.js";
-
-// class MountedFolder extends Folder implements Drive {
-
-//   handle: FileSystemDirectoryHandle;
-
-//   override items: (MountedFolder | MountedFile)[] = [];
-
-//   constructor(name: string, handle: FileSystemDirectoryHandle) {
-//     super(name);
-//     this.handle = handle;
-//   }
-
-//   async init() {
-//     for await (const [name, handle] of this.handle.entries()) {
-//       await this.addentry(name, handle);
-//     }
-//   }
-
-//   async addentry(name: string, handle: FileSystemDirectoryHandle | FileSystemFileHandle) {
-//     const item = this.items.find(it => it.name === name);
-//     if (item) {
-//       item.handle = handle;
-//       return;
-//     }
-
-//     if (handle instanceof FileSystemDirectoryHandle) {
-//       const dir = new MountedFolder(name, handle);
-//       await dir.init();
-//       this.add(dir);
-//     }
-//     else {
-//       const file = new MountedFile(name, handle);
-//       await file.pull();
-//       this.add(file);
-//     }
-//   }
-
-//   override async makeFolder(name: string) {
-//     const handle = await this.handle.getDirectoryHandle(name, { create: true });
-//     return new MountedFolder(name, handle);
-//   }
 
 //   override async makeFile(name: string): Promise<MountedFile> {
 //     const handle = await this.handle.getFileHandle(name, { create: true });
 //     return new MountedFile(name, handle);
-//   }
-
-// }
-
-// class MountedFile extends StringFile {
-
-//   handle: FileSystemFileHandle;
-
-//   constructor(name: string, handle: FileSystemFileHandle) {
-//     super(name, '');
-//     this.handle = handle;
-//   }
-
-//   async pull() {
-//     const f = await this.handle.getFile();
-//     this.content = await f.text();
 //   }
 
 //   override async push() {
@@ -69,8 +10,6 @@ import type { Drive, DriveFile, DriveFolder, DriveItem } from "./interface.js";
 //     await w.write(this.content);
 //     await w.close();
 //   }
-
-// }
 
 type MountedFile = DriveFile & {
   handle: FileSystemFileHandle;
