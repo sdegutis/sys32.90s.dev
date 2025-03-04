@@ -56,25 +56,20 @@ class FS {
 
   getFolder(path: string) {
     const [drive, subpath] = prepare(path);
-    const r = new RegExp(`^${subpath}.+?(/|$)`);
+    const r = new RegExp(`^${subpath}[^/]+?/?$`);
     return (drive.items
       .entries()
       .map(([k, v]) => {
-
-        // if (v.)
-
         const m = k.match(r)?.[0];
         if (!m) return null;
+
         const name = m.slice(subpath.length);
-        if (m.endsWith('/')) return {
-          name,
-          type: 'folder' as const,
-        };
-        return {
-          name,
-          type: 'file' as const,
-          content: v,
-        };
+        const type = v.type;
+
+        if (v.type === 'folder')
+          return { name, type };
+        else
+          return { name, type, content: v };
       })
       .filter(e => e !== null)
       .toArray()

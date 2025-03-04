@@ -1,26 +1,7 @@
-// import { Folder, StringFile, type Drive } from "./interface.js";
-// import { opendb } from "./db.js";
-
 import { opendb } from "./db.js";
 import type { Drive, DriveItem } from "./interface.js";
 
 const idbfs = await opendb<{ path: string, content?: string }>('idbfs', 'path');
-
-// class UserFolder extends Folder {
-
-//   override async makeFolder(name: string) {
-//     return new UserFolder(name);
-//   }
-
-//   override async makeFile(name: string, content: string) {
-//     return new UserFile(name, content);
-//   }
-
-// }
-
-// class UserFile extends StringFile {
-
-// }
 
 export class UserDrive implements Drive {
 
