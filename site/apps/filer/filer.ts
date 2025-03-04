@@ -21,7 +21,7 @@ const fileIcon = new Bitmap([0x000099ff], 1, [1]);
 
 export default () => {
 
-  let currentBase: string[] = ['sys'];
+  let currentBase: string[] = ['sys/'];
 
   // (async () => {
   //   console.log(await fs.getFolder('user'))
@@ -41,7 +41,7 @@ export default () => {
   const sidelist = $(GroupY, { align: 'a', gap: 1 });
   const filelist = $(GroupY, { align: 'a' });
 
-  const breadcrumbs = $(GroupX, { align: 'a', gap: 1, background: 0x00000099 });
+  const breadcrumbs = $(GroupX, { align: 'a', background: 0x00000099 });
 
   const mountButton = $(Button, {
     padding: 2,
@@ -69,7 +69,7 @@ export default () => {
     onClick: async () => {
       const name = await showPrompt('what shall the name be?');
       if (!name || fs.drives().includes(name)) return;
-      await fs.mkdirp([...currentBase, name].join('/'));
+      await fs.mkdirp([...currentBase, name].join(''));
       showfiles();
       panel.layoutTree();
     }
@@ -80,7 +80,7 @@ export default () => {
   async function showfiles() {
     const base = currentBase;
 
-    const dir = fs.getFolder(base.join('/'));
+    const dir = fs.getFolder(base.join(''));
 
     const folders = dir.filter(e => e.type === 'folder');
     const files = dir.filter(e => e.type === 'file');
