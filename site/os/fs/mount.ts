@@ -103,17 +103,17 @@ export class MountedDrive implements Drive {
   }
 
   async init() {
-    await this.addfrom('', this.root);
+    await this.#addfrom('', this.root);
   }
 
-  async addfrom(path: string, dir: FileSystemDirectoryHandle) {
+  async #addfrom(path: string, dir: FileSystemDirectoryHandle) {
     for await (const [name, handle] of dir.entries()) {
       let fullpath = path + name;
       if (handle instanceof FileSystemDirectoryHandle) {
         fullpath += '/';
 
         this.items.set(fullpath, { type: 'folder', handle });
-        this.addfrom(fullpath, handle);
+        this.#addfrom(fullpath, handle);
       }
       else {
         const f = await handle.getFile();
