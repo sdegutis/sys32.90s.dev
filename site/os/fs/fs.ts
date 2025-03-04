@@ -107,9 +107,8 @@ async function addDrive(name: string, drive: Drive) {
 
 function removeDrive(name: string) {
   if (name === 'sys' || name === 'user') return;
-  const drive = drives.get(name);
+  drives.get(name)?.deinit?.();
   drives.delete(name);
-  drive?.deinit?.();
 }
 
 export const fs = new FS();
