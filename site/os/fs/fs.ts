@@ -79,7 +79,7 @@ class FS {
 
   async put(filepath: string, content: string) {
     const [drive, subpath] = prepare(filepath);
-    drive.putfile(subpath, normalize(content));
+    await drive.putfile(subpath, normalize(content));
   }
 
   watchTree(path: string, fn: (type: DriveNotificationType) => void) {
