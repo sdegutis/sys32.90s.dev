@@ -3,7 +3,7 @@ import { TextArea } from "../../os/containers/textarea.js";
 import { $, View } from "../../os/core/view.js";
 import { Panel } from "../../os/core/panel.js";
 import { makeVacuumLayout } from "../../os/util/layouts.js";
-import { fs } from "../../os/core/fs.js";
+import { fs } from "../../os/fs/fs.js";
 
 export default (filename?: string) => {
 

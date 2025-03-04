@@ -8,7 +8,7 @@ import { Slider } from "../../os/controls/slider.js";
 import { Bitmap } from "../../os/core/bitmap.js";
 import { crt } from "../../os/core/crt.js";
 import { emptyCursor } from "../../os/core/cursor.js";
-import { fs } from "../../os/core/fs.js";
+import { fs } from "../../os/fs/fs.js";
 import { sys } from "../../os/core/system.js";
 import { $, View } from "../../os/core/view.js";
 import { Panel } from "../../os/core/panel.js";

@@ -5,7 +5,7 @@ import { Bitmap } from "./bitmap.js";
 import { crt } from "./crt.js";
 import { Cursor } from "./cursor.js";
 import { Font } from "./font.js";
-import { fs } from "./fs.js";
+import { fs } from "../fs/fs.js";
 import { $, Dynamic, makeDynamic, View } from "./view.js";
 
 const crt2025 = Font.fromString(fs.loadFile('sys/font1.font')!);

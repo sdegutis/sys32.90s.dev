@@ -7,7 +7,7 @@ import { Button } from "../../os/controls/button.js";
 import { ImageView } from "../../os/controls/image.js";
 import { Label } from "../../os/controls/label.js";
 import { Bitmap } from "../../os/core/bitmap.js";
-import { fs } from "../../os/core/fs.js";
+import { fs } from "../../os/fs/fs.js";
 import { Panel } from "../../os/core/panel.js";
 import { $ } from "../../os/core/view.js";
 import { ws } from "../../os/desktop/workspace.js";

@@ -7,7 +7,7 @@ import { Bitmap } from "../../os/core/bitmap.js";
 import { crt } from "../../os/core/crt.js";
 import { emptyCursor } from "../../os/core/cursor.js";
 import { CHARSET, Font } from "../../os/core/font.js";
-import { fs } from "../../os/core/fs.js";
+import { fs } from "../../os/fs/fs.js";
 import { mem, sys } from "../../os/core/system.js";
 import { $, View } from "../../os/core/view.js";
 import { Panel } from "../../os/core/panel.js";
