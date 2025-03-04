@@ -42,45 +42,51 @@ const root = new Root();
 class FS {
 
   async mount(drive: string, folder: FileSystemDirectoryHandle) {
-    mounts.set({ drive, dir: folder });
-    await root.addDrive(new MountedDrive(drive, folder));
+    // mounts.set({ drive, dir: folder });
+    // await root.addDrive(new MountedDrive(drive, folder));
   }
 
   unmount(drive: string) {
-    mounts.del(drive);
-    root.removeDrive(drive);
+    // mounts.del(drive);
+    // root.removeDrive(drive);
   }
 
   drives() {
-    return root.items.map(f => f.name);
+    return [] as string[];
+    // return root.items.map(f => f.name);
   }
 
   async mkdirp(path: string) {
-    let node: Folder = root;
-    const parts = path.split('/');
-    while (parts.length > 0) {
-      const name = parts.shift()!;
-      node = await node.getOrCreateFolder(name);
-    }
-    return node;
+    // let node: Folder = root;
+    // const parts = path.split('/');
+    // while (parts.length > 0) {
+    //   const name = parts.shift()!;
+    //   node = await node.getOrCreateFolder(name);
+    // }
+    // return node;
   }
 
-  getFolder(path: string) {
-    return root.findDir(path.split('/'));
+  getFolder(path: string): { folders: { name: string }[], files: { name: string }[] } {
+    return {
+      folders: [],
+      files: [],
+    };
+    // return root.findDir(path.split('/'));
   }
 
   loadFile(path: string): string | undefined {
-    const parts = path.split('/');
-    const file = parts.pop()!;
-    const dir = root.findDir(parts);
-    return dir.getFile(file)?.content;
+    return undefined;
+    // const parts = path.split('/');
+    // const file = parts.pop()!;
+    // const dir = root.findDir(parts);
+    // return dir.getFile(file)?.content;
   }
 
   async saveFile(filepath: string, content: string) {
-    const parts = filepath.split('/');
-    const name = parts.pop()!;
-    const dir = root.findDir(parts);
-    const file = await dir.getOrCreateFile(name, content);
+    // const parts = filepath.split('/');
+    // const name = parts.pop()!;
+    // const dir = root.findDir(parts);
+    // const file = await dir.getOrCreateFile(name, content);
   }
 
   // #watchers = new Map<string, Listener<string>>();
@@ -101,4 +107,4 @@ for (const { drive, dir } of await mounts.all()) {
   await root.addDrive(new MountedDrive(drive, dir));
 }
 
-await fs.mkdirp('user/foo/bar');
+// await fs.mkdirp('user/foo/bar');
