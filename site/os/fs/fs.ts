@@ -9,7 +9,7 @@ const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('
 
 const drives = new Map<string, Drive>();
 
-const watchers = new Map<string, Listener<string>>();
+const watchers = new Map<string, Listener<DriveNotificationType>>();
 
 class FS {
 
@@ -83,14 +83,10 @@ class FS {
     const [drive, subpath] = prepare(filepath);
     drive.putfile(subpath, normalize(content));
 
-    for (const [p, w] of watchers) {
-      if (filepath.startsWith(p)) {
-        w.dispatch(content);
-      }
-    }
+    notify('modified', filepath);
   }
 
-  watchTree(path: string, fn: (content: string) => void) {
+  watchTree(path: string, fn: (type: DriveNotificationType) => void) {
     let watcher = watchers.get(path);
     if (!watcher) watchers.set(path, watcher = new Listener());
     return watcher.watch(fn);
@@ -116,11 +112,15 @@ function prepare(fullpath: string) {
 }
 
 function notify(type: DriveNotificationType, path: string) {
-  console.log('got', type, path)
+  for (const [p, w] of watchers) {
+    if (path.startsWith(p)) {
+      w.dispatch(type);
+    }
+  }
 }
 
 async function addDrive(name: string, drive: Drive) {
-  await drive.mount(notify);
+  await drive.mount((type, path) => notify(type, name + '/' + path));
   drives.set(name, drive);
 }
 

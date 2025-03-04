@@ -23,11 +23,16 @@ mem.$data.font = livefile('sys/font1.font', Font.fromString);
 function livefile<T>(path: string, to: (content: string) => T) {
   const s = fs.loadFile(path)!;
   const r = new Reactive<T>(to(s));
-  fs.watchTree(path, s => r.val = to(s));
+  fs.watchTree(path, (type) => {
+    if (type === 'disappeared') return;
+    const s = fs.loadFile(path)!;
+    r.val = to(s);
+    sys.needsRedraw = true;
+  });
   return r;
 }
 
-const pointer = livefile('sys/pointer.bitmap', s => Cursor.fromBitmap(Bitmap.fromString(s)));
+const pointer = livefile('os/data/pointer.bitmap', s => Cursor.fromBitmap(Bitmap.fromString(s)));
 
 class System {
 
