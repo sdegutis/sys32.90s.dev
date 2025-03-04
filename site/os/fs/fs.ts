@@ -6,9 +6,7 @@ import { SysDrive } from "./sys.js";
 import { UserDrive } from "./user.js";
 
 const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
-
 const drives = new Map<string, Drive>();
-
 const watchers = new Map<string, Listener<DriveNotificationType>>();
 
 class FS {
