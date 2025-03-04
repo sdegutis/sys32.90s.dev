@@ -14,6 +14,15 @@ const icon = jsxToString(<link
 export default (({ inFiles, outFiles }) => {
   const files = [...inFiles];
 
+  const preloadfetch = (files
+    .map(f => f.path)
+    .filter(s => s.startsWith('/os/data/'))
+    .toSpliced(0, 0, '/os/fs/data.json')
+    .map(s => `  <link rel="preload" as="fetch" href="${s}" />`)
+    .join('\n'));
+
+  console.log(preloadfetch)
+
   const preload = (files
     .map(f => f.path)
     .filter(s => s.endsWith('.js'))
@@ -23,7 +32,7 @@ export default (({ inFiles, outFiles }) => {
     .join('\n'));
 
   function insert(s: string) {
-    return s.replace('<head>', `<head>\n${preload}\n  ${icon}`);
+    return s.replace('<head>', `<head>\n${preload}\n${preloadfetch}\n  ${icon}`);
   }
 
   for (const file of files) {
