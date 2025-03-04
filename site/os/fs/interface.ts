@@ -92,13 +92,3 @@ export interface Drive {
   deinit?(): void;
 
 }
-
-// function sortBy<T, U>(fn: (o: T) => U) {
-//   return (a: T, b: T) => {
-//     const aa = fn(a);
-//     const bb = fn(b);
-//     if (aa < bb) return -1;
-//     if (aa > bb) return +1;
-//     return 0;
-//   };
-// }

@@ -21,7 +21,7 @@ const fileIcon = new Bitmap([0x000099ff], 1, [1]);
 
 export default () => {
 
-  let currentBase: string[] = ['user'];
+  let currentBase: string[] = ['sys'];
 
   // (async () => {
   //   console.log(await fs.getFolder('user'))
@@ -82,6 +82,9 @@ export default () => {
 
     const dir = fs.getFolder(base.join('/'));
 
+    const folders = dir.filter(e => e.type === 'folder');
+    const files = dir.filter(e => e.type === 'file');
+
     breadcrumbs.children = base.map((name, i) => {
       return $(Button, {
         padding: 2,
@@ -94,7 +97,7 @@ export default () => {
     breadcrumbs.parent?.layoutTree();
 
     filelist.children = [
-      ...dir.folders.map(file => {
+      ...folders.map(file => {
         return $(Button, {
           padding: 2, onClick: () => {
             currentBase = [...base, file.name];
@@ -107,7 +110,7 @@ export default () => {
           )
         );
       }),
-      ...dir.files.map(file => {
+      ...files.map(file => {
         return $(Button, {
           padding: 2, onClick: (click) => {
             if (click.button === 0 && click.count > 1) {

@@ -1,7 +1,10 @@
 // import { Folder, StringFile, type Drive } from "./interface.js";
 // import { opendb } from "./db.js";
 
-// const idbfs = await opendb<{ path: string, content?: string }>('idbfs', 'path');
+import { opendb } from "./db.js";
+import type { Drive } from "./interface.js";
+
+const idbfs = await opendb<{ path: string, content?: string }>('idbfs', 'path');
 
 // class UserFolder extends Folder {
 
@@ -19,21 +22,23 @@
 
 // }
 
-// export class UserDrive extends UserFolder implements Drive {
+export class UserDrive implements Drive {
 
-//   async init() {
-//     for (const { path, content } of await idbfs.all()) {
-//       // addFile(path, content);
-//     }
-//   }
+  items = new Map<string, { content: string; }>();
 
-//   // push(path: string, content: string): void {
-//   //   idbfs.set({ path, content });
-//   // }
+  async init() {
+    for (const { path, content } of await idbfs.all()) {
+      // addFile(path, content);
+    }
+  }
 
-//   // override remove(child: string) {
-//   //   super.remove(child);
-//   //   // const files = await idbfs.all();
-//   // }
+  // push(path: string, content: string): void {
+  //   idbfs.set({ path, content });
+  // }
 
-// }
+  // override remove(child: string) {
+  //   super.remove(child);
+  //   // const files = await idbfs.all();
+  // }
+
+}

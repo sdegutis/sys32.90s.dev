@@ -1,6 +1,7 @@
 import { opendb } from "./db.js";
 import { type Drive } from "./interface.js";
 import { SysDrive } from "./sys.js";
+import { UserDrive } from "./user.js";
 
 const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
 
@@ -40,9 +41,7 @@ class FS {
   }
 
   drives() {
-    console.log('drives')
-    return [] as string[];
-    // return root.items.map(f => f.name);
+    return root.drives.keys().toArray();
   }
 
   async mkdirp(path: string) {
@@ -55,13 +54,20 @@ class FS {
     // return node;
   }
 
-  getFolder(path: string): { folders: { name: string }[], files: { name: string }[] } {
-    console.log('getFolder')
-    return {
-      folders: [],
-      files: [],
-    };
-    // return root.findDir(path.split('/'));
+  getFolder(path: string) {
+    const [drive, subpath] = prepare(path);
+    const r = new RegExp(`^${subpath}.+?(\/|$)`);
+    return (drive.items
+      .entries()
+      .map(([k, v]) => {
+        const name = k.match(r)?.[0];
+        if (!name) return null;
+        if (name.endsWith('/')) return { name, type: 'folder' as const };
+        return { name, type: 'file' as const, content: v };
+      })
+      .filter(e => e !== null)
+      .toArray()
+      .sort(sortBy(e => (e.type === 'folder' ? 0 : 1) + e.name)));
   }
 
   loadFile(path: string): string | undefined {
@@ -80,12 +86,21 @@ class FS {
   // #watchers = new Map<string, Listener<string>>();
 
   watchTree(path: string, fn: (content: string) => void) {
-    console.log('watchTree', path)
     // let watcher = this.#watchers.get(path);
     // if (!watcher) this.#watchers.set(path, watcher = new Listener());
     // return watcher.watch(fn);
   }
 
+}
+
+function sortBy<T, U>(fn: (o: T) => U) {
+  return (a: T, b: T) => {
+    const aa = fn(a);
+    const bb = fn(b);
+    if (aa < bb) return -1;
+    if (aa > bb) return +1;
+    return 0;
+  };
 }
 
 function prepare(fullpath: string) {
@@ -98,7 +113,7 @@ function prepare(fullpath: string) {
 export const fs = new FS();
 
 await root.addDrive('sys', new SysDrive());
-// await root.addDrive(new UserDrive('user'));
+await root.addDrive('user', new UserDrive());
 // for (const { drive, dir } of await mounts.all()) {
 //   await root.addDrive(new MountedDrive(drive, dir));
 // }
