@@ -103,23 +103,30 @@ export class MountedDrive implements Drive {
   }
 
   async init() {
-    await this.#addfrom('', this.root);
+    await this.#scan('', this.root);
   }
 
-  async #addfrom(path: string, dir: FileSystemDirectoryHandle) {
+  async #scan(path: string, dir: FileSystemDirectoryHandle) {
     for await (const [name, handle] of dir.entries()) {
-      let fullpath = path + name;
-      if (handle instanceof FileSystemDirectoryHandle) {
-        fullpath += '/';
+      const isdir = handle instanceof FileSystemDirectoryHandle;
+      const fullpath = path + name + (isdir ? '/' : '');
 
-        this.items.set(fullpath, { type: 'folder', handle });
-        await this.#addfrom(fullpath, handle);
+      await this.#add(fullpath, handle);
+
+      if (isdir) {
+        await this.#scan(fullpath, handle);
       }
-      else {
-        const f = await handle.getFile();
-        const content = await f.text();
-        this.items.set(fullpath, { type: 'file', handle, content });
-      }
+    }
+  }
+
+  async #add(path: string, handle: FileSystemDirectoryHandle | FileSystemFileHandle) {
+    if (handle instanceof FileSystemDirectoryHandle) {
+      this.items.set(path, { type: 'folder', handle });
+    }
+    else {
+      const f = await handle.getFile();
+      const content = await f.text();
+      this.items.set(path, { type: 'file', handle, content });
     }
   }
 
@@ -149,14 +156,11 @@ export class MountedDrive implements Drive {
       return;
     }
 
-    // const parts = [...change.relativePathComponents];
-    // const name = parts.pop()!;
-    // const dir = this.findDir(parts);
-
-    // if (change.type === 'appeared') {
-    //   await dir.addentry(name, change.changedHandle);
-    //   return;
-    // }
+    if (change.type === 'appeared') {
+      console.log('appeared', path)
+      await this.#add(path, change.changedHandle);
+      return;
+    }
 
     if (change.type === 'modified') {
       const item = this.items.get(path) as MountedFile;
