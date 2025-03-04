@@ -1,6 +1,22 @@
 import { Folder, StringFile } from "./base.js";
 
-export class SysDrive extends Folder {
+class SysFolder extends Folder {
+
+  override async makeFolder(name: string) {
+    return new SysFolder(name);
+  }
+
+  override async makeFile(name: string, content: string) {
+    return new SysFile(name, content);
+  }
+
+}
+
+class SysFile extends StringFile {
+
+}
+
+export class SysDrive extends SysFolder {
 
   async init() {
     const paths = await fetch(import.meta.resolve('./data.json')).then<string[]>(r => r.json());
@@ -15,14 +31,14 @@ export class SysDrive extends Folder {
         const name = parts.shift()!;
         let next = dir.getFolder(name);
         if (!next) {
-          next = new Folder(name);
+          next = new SysFolder(name);
           dir.add(next);
         }
         dir = next;
       }
 
       const name = parts.shift()!;
-      const file = new StringFile(name, content);
+      const file = new SysFile(name, content);
       dir.add(file);
     }
   }

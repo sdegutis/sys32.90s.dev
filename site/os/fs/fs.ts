@@ -1,4 +1,4 @@
-import { Folder, type Drive } from "./base.js";
+import { Folder, StringFile, type Drive } from "./base.js";
 import { opendb } from "./db.js";
 import { MountedDrive } from "./mount.js";
 import { SysDrive } from "./sys.js";
@@ -24,6 +24,14 @@ class Root extends Folder {
   async addDrive(drive: Drive) {
     this.add(drive);
     await drive.init();
+  }
+
+  override makeFolder(name: string): Promise<Folder> {
+    throw new Error("Method not implemented.");
+  }
+
+  override makeFile(name: string, content: string): Promise<StringFile> {
+    throw new Error("Method not implemented.");
   }
 
 }

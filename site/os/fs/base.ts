@@ -1,4 +1,4 @@
-export class StringFile {
+export abstract class StringFile {
 
   name: string;
   #content!: string;
@@ -17,7 +17,7 @@ export class StringFile {
 
 }
 
-export class Folder {
+export abstract class Folder {
 
   name: string;
   items: (Folder | StringFile)[] = [];
@@ -55,13 +55,8 @@ export class Folder {
     return current;
   }
 
-  async makeFolder(name: string) {
-    return new Folder(name);
-  }
-
-  async makeFile(name: string, content: string) {
-    return new StringFile(name, content);
-  }
+  abstract makeFolder(name: string): Promise<Folder>;
+  abstract makeFile(name: string, content: string): Promise<StringFile>;
 
   async getOrCreateFile(name: string, content: string) {
     let file = this.getFile(name);
