@@ -21,7 +21,7 @@ const fileIcon = new Bitmap([0x000099ff], 1, [1]);
 
 export default () => {
 
-  let currentBase: string[] = ['user/'];
+  let currentBase: string[] = ['os/'];
 
   // (async () => {
   //   console.log(await fs.getFolder('user'))

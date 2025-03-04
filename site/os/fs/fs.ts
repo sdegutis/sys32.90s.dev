@@ -64,9 +64,8 @@ class FS {
   }
 
   async saveFile(filepath: string, content: string) {
-    content = normalize(content);
     const [drive, subpath] = prepare(filepath);
-    drive.putfile(subpath, content);
+    drive.putfile(subpath, normalize(content));
   }
 
   // #watchers = new Map<string, Listener<string>>();
@@ -123,8 +122,10 @@ for (const { drive, dir } of await mounts.all()) {
 //   console.log(drive.items.keys().toArray())
 // }
 
-// await fs.mkdirp('user/foo2/bar');
-// await fs.saveFile('user/foo2/bar/qux.txt', 'testing\nthis');
-// await fs.saveFile('os/data/aaa.txt', 'testing\nthis');
+// await fs.mkdirp('os/foo2/bar');
+// await fs.saveFile('os/foo2/bar/qux.txt', 'testing\nthis');
+
+// await fs.saveFile('os/aaa.txt', 'testing\nth2is');
+// await fs.saveFile('os/data/bbb.txt', 'testigasd\nthis3');
 // await fs.mkdirp('os/foo/bar');
 // await fs.mkdirp('os/foo/bar/qux');

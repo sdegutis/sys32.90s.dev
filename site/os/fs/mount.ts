@@ -1,24 +1,7 @@
 import type { Drive, DriveFile, DriveFolder, DriveItem } from "./interface.js";
 
-//   override async makeFile(name: string): Promise<MountedFile> {
-//     const handle = await this.handle.getFileHandle(name, { create: true });
-//     return new MountedFile(name, handle);
-//   }
-
-//   override async push() {
-//     const w = await this.handle.createWritable();
-//     await w.write(this.content);
-//     await w.close();
-//   }
-
-type MountedFile = DriveFile & {
-  handle: FileSystemFileHandle;
-};
-
-type MountedFolder = DriveFolder & {
-  handle: FileSystemDirectoryHandle;
-};
-
+type MountedFile = DriveFile & { handle: FileSystemFileHandle };
+type MountedFolder = DriveFolder & { handle: FileSystemDirectoryHandle };
 type MountedItem = MountedFile | MountedFolder;
 
 export class MountedDrive implements Drive {
@@ -83,7 +66,27 @@ export class MountedDrive implements Drive {
   }
 
   async putfile(path: string, content: string) {
+    let file = this.items.get(path) as MountedFile | undefined;
 
+    if (file) {
+      file.content = content;
+    }
+    else {
+      const parts = path.split('/');
+
+      const parentpath = parts.slice(0, -1).join('/') + '/';
+      const parent = this.items.get(parentpath) as MountedFolder | undefined;
+      const parenthandle = parent?.handle ?? this.root;
+
+      const name = parts.at(-1)!;
+      const handle = await parenthandle.getFileHandle(name, { create: true });
+      file = { type: 'file', content, handle };
+      this.items.set(path, file);
+    }
+
+    const w = await file.handle.createWritable();
+    await w.write(content);
+    await w.close();
   }
 
   deinit(): void {
