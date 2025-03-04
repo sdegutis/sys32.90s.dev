@@ -8,18 +8,6 @@ const mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('
 
 const drives = new Map<string, Drive>();
 
-async function addDrive(name: string, drive: Drive) {
-  await drive.init();
-  drives.set(name, drive);
-}
-
-function removeDrive(name: string) {
-  if (name === 'sys' || name === 'user') return;
-  const drive = drives.get(name);
-  drives.delete(name);
-  drive?.deinit?.();
-}
-
 class FS {
 
   async mount(drive: string, folder: FileSystemDirectoryHandle) {
@@ -110,6 +98,18 @@ function prepare(fullpath: string) {
   const drivename = parts.shift()!;
   const drive = drives.get(drivename)!;
   return [drive, parts.join('/')] as const;
+}
+
+async function addDrive(name: string, drive: Drive) {
+  await drive.init();
+  drives.set(name, drive);
+}
+
+function removeDrive(name: string) {
+  if (name === 'sys' || name === 'user') return;
+  const drive = drives.get(name);
+  drives.delete(name);
+  drive?.deinit?.();
 }
 
 export const fs = new FS();
