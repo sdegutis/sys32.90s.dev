@@ -130,19 +130,3 @@ await addDrive('user', new UserDrive());
 for (const { drive, dir } of await mounts.all()) {
   await addDrive(drive, new MountedDrive(dir));
 }
-
-// for (const drive of drives.values()) {
-//   console.log(drive.items.keys().toArray())
-// }
-
-await fs.mkdirp('os/foo');
-await fs.mkdirp('os/foo/bar');
-await fs.saveFile('os/foo/bar/qux.txt', 'testing\nthis1');
-await fs.mkdirp('os/foo2');
-await fs.mkdirp('os/foo2/bar');
-await fs.saveFile('os/foo2/bar/qux.txt', 'testing\nthis2');
-
-// await fs.saveFile('os/aaa.txt', 'testing\nth2is');
-// await fs.saveFile('os/data/bbb.txt', 'testigasd\nthis3');
-// await fs.mkdirp('os/foo/bar');
-// await fs.mkdirp('os/foo/bar/qux');

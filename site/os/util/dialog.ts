@@ -63,3 +63,49 @@ export async function showPrompt(text: string) {
 
   return p.promise;
 }
+
+export async function showConfirm(text: string) {
+  const p = Promise.withResolvers<boolean>();
+
+  const dialog = $(Border, {
+    padding: 1, borderColor: 0x99000099, passthrough: false, onMouseDown: () => {
+      const move = dragMove(dialog);
+      sys.trackMouse({ move });
+    }
+  },
+    $(Border, { padding: 3, background: 0x000000ff },
+      $(GroupY, { gap: 3, align: 'a', },
+        $(Label, { text }),
+        $(GroupX, { gap: 2 },
+          $(Button, { padding: 3, onClick: accept }, $(Label, { text: 'yes' })),
+          $(Button, { padding: 3, onClick: cancel }, $(Label, { text: 'no' }))
+        )
+      )
+    )
+  );
+
+  const overlay = $(View, {
+    adjust: expandToFitContainer,
+    layout: centerLayout,
+    background: 0x00000033,
+    onKeyDown(key) {
+      if (key === 'Escape') { cancel(); return true; }
+      if (key === 'Enter') { accept(); return true; }
+      return false;
+    },
+    onMouseDown: cancel,
+  },
+    dialog
+  );
+
+  function accept() { p.resolve(true); }
+  function cancel() { p.resolve(false); }
+
+  sys.root.addChild(overlay);
+  dialog.focus();
+  overlay.layoutTree();
+
+  p.promise.then(() => overlay.remove());
+
+  return p.promise;
+}

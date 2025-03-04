@@ -11,7 +11,7 @@ import { fs } from "../../os/fs/fs.js";
 import { Panel } from "../../os/core/panel.js";
 import { $ } from "../../os/core/view.js";
 import { ws } from "../../os/desktop/workspace.js";
-import { showPrompt } from "../../os/util/dialog.js";
+import { showConfirm, showPrompt } from "../../os/util/dialog.js";
 import { showMenu } from "../../os/util/menu.js";
 
 
@@ -89,6 +89,7 @@ export default () => {
               showMenu([{
                 text: 'delete',
                 onClick: async () => {
+                  if (!(await showConfirm('are you sure?'))) return;
                   await fs.rmdir([...base, file.name].join(''));
                   showfiles();
                   sidelist.layoutTree();
@@ -115,6 +116,7 @@ export default () => {
               showMenu([{
                 text: 'delete',
                 onClick: async () => {
+                  if (!(await showConfirm('are you sure?'))) return;
                   await fs.rm([...base, file.name].join(''));
                   showfiles();
                   sidelist.layoutTree();
