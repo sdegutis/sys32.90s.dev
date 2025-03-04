@@ -4,7 +4,7 @@ export class SysDrive implements Drive {
 
   items = new Map<string, DriveItem>();
 
-  async init() {
+  async mount() {
     const paths = await fetch(import.meta.resolve('./data.json')).then<string[]>(r => r.json());
 
     for (const path of paths) {
@@ -15,17 +15,29 @@ export class SysDrive implements Drive {
       const dirs = fixedpath.split('/').slice(0, -1);
       for (let i = 0; i < dirs.length; i++) {
         const dir = dirs.slice(0, i + 1).join('/') + '/';
-        this.mkdir(dir);
+        this.putdir(dir);
       }
     }
   }
 
-  async mkdir(path: string) {
+  async putdir(path: string) {
     this.items.set(path, { type: 'folder' });
   }
 
   async putfile(path: string, content: string) {
     this.items.set(path, { type: 'file', content });
+  }
+
+  async rmdir(path: string) {
+    for (const key of this.items.keys()) {
+      if (key.startsWith(path)) {
+        this.items.delete(key);
+      }
+    }
+  }
+
+  async rmfile(path: string) {
+    this.items.delete(path);
   }
 
 }

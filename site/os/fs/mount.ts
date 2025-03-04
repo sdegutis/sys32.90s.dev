@@ -24,7 +24,7 @@ export class MountedDrive implements Drive {
     this.observer.observe(root, { recursive: true });
   }
 
-  async init() {
+  async mount() {
     await this.#scan('', this.root);
   }
 
@@ -52,7 +52,7 @@ export class MountedDrive implements Drive {
     }
   }
 
-  async mkdir(path: string) {
+  async putdir(path: string) {
     if (this.items.has(path)) return;
     const parts = path.split('/');
 
@@ -89,7 +89,7 @@ export class MountedDrive implements Drive {
     await w.close();
   }
 
-  deinit(): void {
+  unmount(): void {
     this.observer.disconnect();
   }
 
@@ -128,6 +128,14 @@ export class MountedDrive implements Drive {
       this.items.delete(path + '/') || this.items.delete(path);
       return;
     }
+  }
+
+  async rmdir(path: string) {
+
+  }
+
+  async rmfile(path: string) {
+
   }
 
 }

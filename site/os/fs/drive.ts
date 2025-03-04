@@ -6,10 +6,13 @@ export interface Drive {
 
   items: Map<string, DriveItem>;
 
-  init(): Promise<void>;
-  deinit?(): void;
+  mount(): Promise<void>;
+  unmount?(): void;
 
-  mkdir(path: string): Promise<void>;
+  putdir(path: string): Promise<void>;
   putfile(path: string, content: string): Promise<void>;
+
+  rmdir(path: string): Promise<void>;
+  rmfile(path: string): Promise<void>;
 
 }

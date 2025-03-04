@@ -25,23 +25,26 @@ class FS {
   }
 
   async mkdirp(path: string) {
+    if (path.endsWith('/')) path = path.replace(/\/+$/, '');
+
     const [drive, subpath] = prepare(path);
     const parts = subpath.split('/');
 
     for (let i = 0; i < parts.length; i++) {
       const dir = parts.slice(0, i + 1).join('/') + '/';
-      await drive.mkdir(dir);
+      await drive.putdir(dir);
     }
   }
 
   async rm(path: string) {
     const [drive, subpath] = prepare(path);
-    console.log(['rm', drive, subpath]);
+    await drive.rmfile(subpath);
   }
 
   async rmdir(path: string) {
+    if (!path.endsWith('/')) path += '/';
     const [drive, subpath] = prepare(path);
-    console.log(['rmdir', drive, subpath]);
+    await drive.rmdir(subpath);
   }
 
   getFolder(path: string) {
@@ -106,13 +109,13 @@ function prepare(fullpath: string) {
 }
 
 async function addDrive(name: string, drive: Drive) {
-  await drive.init();
+  await drive.mount();
   drives.set(name, drive);
 }
 
 function removeDrive(name: string) {
   if (name === 'sys' || name === 'user') return;
-  drives.get(name)?.deinit?.();
+  drives.get(name)?.unmount?.();
   drives.delete(name);
 }
 
@@ -132,8 +135,12 @@ for (const { drive, dir } of await mounts.all()) {
 //   console.log(drive.items.keys().toArray())
 // }
 
-// await fs.mkdirp('os/foo2/bar');
-// await fs.saveFile('os/foo2/bar/qux.txt', 'testing\nthis');
+await fs.mkdirp('user/foo');
+await fs.mkdirp('user/foo/bar');
+await fs.saveFile('user/foo/bar/qux.txt', 'testing\nthis');
+await fs.mkdirp('user/foo2');
+await fs.mkdirp('user/foo2/bar');
+await fs.saveFile('user/foo2/bar/qux.txt', 'testing\nthis');
 
 // await fs.saveFile('os/aaa.txt', 'testing\nth2is');
 // await fs.saveFile('os/data/bbb.txt', 'testigasd\nthis3');

@@ -7,7 +7,7 @@ export class UserDrive implements Drive {
 
   items = new Map<string, DriveItem>();
 
-  async init() {
+  async mount() {
     for (const { path, content } of await db.all()) {
       if (path.endsWith('/')) {
         this.items.set(path, { type: 'folder' });
@@ -18,7 +18,7 @@ export class UserDrive implements Drive {
     }
   }
 
-  async mkdir(path: string) {
+  async putdir(path: string) {
     this.items.set(path, { type: 'folder' });
     db.set({ path });
   }
@@ -28,9 +28,18 @@ export class UserDrive implements Drive {
     db.set({ path, content });
   }
 
-  // override remove(child: string) {
-  //   super.remove(child);
-  //   // const files = await idbfs.all();
-  // }
+  async rmdir(path: string) {
+    for (const key of this.items.keys()) {
+      if (key.startsWith(path)) {
+        db.del(key);
+        this.items.delete(key);
+      }
+    }
+  }
+
+  async rmfile(path: string) {
+    db.del(path);
+    this.items.delete(path);
+  }
 
 }
