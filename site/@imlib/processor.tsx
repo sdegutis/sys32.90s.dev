@@ -31,7 +31,7 @@ export default (({ inFiles, outFiles }) => {
   const toinsert = headers.map(s => `  ${$(s)}`).join('\n');
 
   function insert(s: string) {
-    return s.replace('<head>', `<head>\n${toinsert}\n`);
+    return s.replace('<head>', `<head>\n${toinsert}`);
   }
 
   for (const file of files) {
