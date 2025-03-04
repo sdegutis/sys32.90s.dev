@@ -21,7 +21,7 @@ const fileIcon = new Bitmap([0x000099ff], 1, [1]);
 
 export default () => {
 
-  let currentBase: string[] = ['os/'];
+  let currentBase: string[] = ['user/'];
 
   const sidelist = $(GroupY, { align: 'a', gap: 1 });
   const filelist = $(GroupY, { align: 'a' });
