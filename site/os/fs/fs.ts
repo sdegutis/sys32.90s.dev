@@ -98,7 +98,7 @@ export const fs = new FS();
 await root.addDrive(new SysDrive('sys'));
 await root.addDrive(new UserDrive('user'));
 for (const { drive, dir } of await mounts.all()) {
-  await fs.mount(drive, dir);
+  await root.addDrive(new MountedDrive(drive, dir));
 }
 
 await fs.mkdirp('user/foo/bar');
