@@ -136,16 +136,15 @@ export class MountedDrive implements Drive {
       return;
     }
 
+    const isfile = change.changedHandle instanceof FileSystemFileHandle;
+    const end = isfile ? '' : '/';
+    const path = change.relativePathComponents.join('/') + end;
+
     if (change.type === 'moved') {
-      const isfile = change.changedHandle instanceof FileSystemFileHandle;
-      const end = isfile ? '' : '/';
-
       const oldpath = change.relativePathMovedFrom.join('/') + end;
-      const newpath = change.relativePathComponents.join('/') + end;
-
       const item = this.items.get(oldpath)!;
       this.items.delete(oldpath);
-      this.items.set(newpath, item);
+      this.items.set(path, item);
       item.handle = change.changedHandle;
       return;
     }
@@ -159,11 +158,12 @@ export class MountedDrive implements Drive {
     //   return;
     // }
 
-    // if (change.type === 'modified') {
-    //   const file = dir.getFile(name) as MountedFile;
-    //   await file.pull();
-    //   return;
-    // }
+    if (change.type === 'modified') {
+      const item = this.items.get(path) as MountedFile;
+      const f = await item.handle.getFile();
+      item.content = await f.text();
+      return;
+    }
 
     // if (change.type === 'disappeared' || change.type === 'errored') {
     //   dir.del(name);
