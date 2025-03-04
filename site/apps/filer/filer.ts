@@ -114,7 +114,7 @@ export default () => {
         return $(Button, {
           padding: 2, onClick: (click) => {
             if (click.button === 0 && click.count > 1) {
-              ws.openFile([...base, file.name].join('/'));
+              ws.openFile([...base, file.name].join(''));
             }
           }
         },
