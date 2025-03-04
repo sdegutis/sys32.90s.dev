@@ -3,10 +3,24 @@ import { processFile, type SiteProcessor } from "@imlib/core";
 const copyright = `Copyright ©️ ${new Date().getFullYear()} Novo Cantico LLC. All rights reserved.`;
 
 export default (({ inFiles, outFiles }) => {
-  for (const file of inFiles) {
+  const files = [...inFiles];
+
+  const preload = (files
+    .map(f => f.path)
+    .filter(s => s.endsWith('.js'))
+    .filter(s => !s.includes('@imlib'))
+    .filter(s => !s.includes('.json.'))
+    .map(s => `  <link rel="modulepreload" href="${s}" />`)
+    .join('\n'));
+
+  function insert(s: string) {
+    return s.replace('<head>', `<head>\n${preload}`);
+  }
+
+  for (const file of files) {
     for (let { path, content } of processFile(file)) {
-      if (path.endsWith('.js')) content = `/** ${copyright} */\n` + content;
-      if (path.endsWith('.html')) content = `<!-- ${copyright} -->\n` + content;
+      if (path.endsWith('.js')) content = `/** ${copyright} */\n` + content.toString('utf8');
+      if (path.endsWith('.html')) content = `<!-- ${copyright} -->\n` + insert(content.toString('utf8'));
       outFiles.set(path, content);
     }
   }
