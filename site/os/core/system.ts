@@ -48,8 +48,6 @@ class System {
   #hovered = this.root;
   #trackingMouse?: { move: () => void, up?: () => void };
 
-  #destroyer = new AbortController();
-
   init(canvas: HTMLCanvasElement) {
     crt.init(canvas);
     this.resize(canvas.width, canvas.height);
@@ -75,17 +73,17 @@ class System {
       }
 
       this.needsRedraw = true;
-    }, { signal: this.#destroyer.signal });
+    });
 
     canvas.addEventListener('keyup', (e) => {
       e.preventDefault();
       this.keys[e.key] = false;
       this.needsRedraw = true;
-    }, { signal: this.#destroyer.signal });
+    });
 
     canvas.addEventListener('contextmenu', (e) => {
       e.preventDefault();
-    }, { signal: this.#destroyer.signal });
+    });
 
     canvas.addEventListener('mousedown', (e) => {
       e.preventDefault();
@@ -93,7 +91,7 @@ class System {
       this.#hovered.focus();
       this.#hovered.onMouseDown?.(e.button);
       this.needsRedraw = true;
-    }, { signal: this.#destroyer.signal });
+    });
 
     canvas.addEventListener('mousemove', (e) => {
       e.preventDefault();
@@ -111,14 +109,14 @@ class System {
       this.#trackingMouse?.move();
 
       this.needsRedraw = true;
-    }, { signal: this.#destroyer.signal });
+    });
 
     canvas.addEventListener('mouseup', (e) => {
       e.preventDefault();
       this.#trackingMouse?.up?.();
       this.#trackingMouse = undefined!;
       this.needsRedraw = true;
-    }, { signal: this.#destroyer.signal });
+    });
 
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
@@ -132,16 +130,11 @@ class System {
         }
         node = node.parent;
       }
-    }, { signal: this.#destroyer.signal });
+    });
 
   }
 
   #startTicks() {
-    let alive = true;
-    this.#destroyer.signal.addEventListener('abort', () => {
-      alive = false;
-    });
-
     let last = +document.timeline.currentTime!;
     const update = (t: number) => {
       const delta = t - last;
@@ -160,9 +153,7 @@ class System {
         }
         last = t;
       }
-      if (alive) {
-        requestAnimationFrame(update);
-      }
+      requestAnimationFrame(update);
     };
     requestAnimationFrame(update);
   }
@@ -211,10 +202,6 @@ class System {
       this.#hovered = activeHovered;
       this.#hovered.hovered = true;
     }
-  }
-
-  destroy() {
-    this.#destroyer.abort();
   }
 
   focusedPanel: Panel | undefined;
