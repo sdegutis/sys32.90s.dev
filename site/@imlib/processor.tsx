@@ -15,7 +15,7 @@ export default (({ inFiles, outFiles }) => {
     .map(f => f.path)
     .filter(s => s.startsWith('/os/data/'))
     .toSpliced(0, 0, '/os/fs/data.json')
-    .map(s => <link rel="preload" as="fetch" href={s} crossOrigin="anonymous" />));
+    .map(s => <link rel="preload" as="fetch" href={s} crossorigin="anonymous" />));
 
   const modules = (files
     .map(f => f.path)
