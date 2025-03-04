@@ -5,12 +5,15 @@ export class SysDrive implements Drive {
   items = new Map<string, DriveItem>();
 
   async mount() {
-    const opts: RequestInit = { mode: 'no-cors', credentials: 'include' };
 
-    const paths = await fetch(import.meta.resolve('./data.json'), opts).then<string[]>(r => r.json());
+    const path1 = import.meta.resolve('./data.json');
+    const paths = await fetch(path1).then<string[]>(r => r.json());
+
+    console.log(path1)
 
     for (const path of paths) {
-      const content = await fetch(path, opts).then(r => r.text());
+      console.log(path)
+      const content = await fetch(path).then(r => r.text());
       const fixedpath = path.slice('/os/data/'.length);
       this.items.set(fixedpath, { type: 'file', content });
 
