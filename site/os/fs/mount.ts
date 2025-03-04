@@ -131,11 +131,19 @@ export class MountedDrive implements Drive {
   }
 
   async rmdir(path: string) {
-
+    for (const key of this.items.keys()) {
+      if (key.startsWith(path)) {
+        // db.del(key);
+        this.items.delete(key);
+      }
+    }
   }
 
   async rmfile(path: string) {
+    // const file = this.items.get(path);
 
+    // db.del(path);
+    this.items.delete(path);
   }
 
 }

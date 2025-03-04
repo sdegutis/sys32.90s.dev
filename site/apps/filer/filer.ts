@@ -21,7 +21,7 @@ const fileIcon = new Bitmap([0x000099ff], 1, [1]);
 
 export default () => {
 
-  let currentBase: string[] = ['user/'];
+  let currentBase: string[] = ['os/'];
 
   const sidelist = $(GroupY, { align: 'a', gap: 1 });
   const filelist = $(GroupY, { align: 'a' });
@@ -88,8 +88,9 @@ export default () => {
             if (click.button > 1) {
               showMenu([{
                 text: 'delete',
-                onClick: () => {
-                  fs.rmdir([...base, file.name].join(''));
+                onClick: async () => {
+                  await fs.rmdir([...base, file.name].join(''));
+                  showfiles();
                   sidelist.layoutTree();
                 },
               },
@@ -113,8 +114,9 @@ export default () => {
             if (click.button > 1) {
               showMenu([{
                 text: 'delete',
-                onClick: () => {
-                  fs.rm([...base, file.name].join(''));
+                onClick: async () => {
+                  await fs.rm([...base, file.name].join(''));
+                  showfiles();
                   sidelist.layoutTree();
                 },
               },

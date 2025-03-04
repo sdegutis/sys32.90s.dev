@@ -135,12 +135,12 @@ for (const { drive, dir } of await mounts.all()) {
 //   console.log(drive.items.keys().toArray())
 // }
 
-await fs.mkdirp('user/foo');
-await fs.mkdirp('user/foo/bar');
-await fs.saveFile('user/foo/bar/qux.txt', 'testing\nthis');
-await fs.mkdirp('user/foo2');
-await fs.mkdirp('user/foo2/bar');
-await fs.saveFile('user/foo2/bar/qux.txt', 'testing\nthis');
+await fs.mkdirp('os/foo');
+await fs.mkdirp('os/foo/bar');
+await fs.saveFile('os/foo/bar/qux.txt', 'testing\nthis1');
+await fs.mkdirp('os/foo2');
+await fs.mkdirp('os/foo2/bar');
+await fs.saveFile('os/foo2/bar/qux.txt', 'testing\nthis2');
 
 // await fs.saveFile('os/aaa.txt', 'testing\nth2is');
 // await fs.saveFile('os/data/bbb.txt', 'testigasd\nthis3');
