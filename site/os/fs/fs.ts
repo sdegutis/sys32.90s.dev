@@ -12,9 +12,10 @@ class FS {
   private watchers = new Map<string, Listener<DriveNotificationType>>();
 
   async init() {
-    this.mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
     await this.addDrive('sys', new SysDrive());
     await this.addDrive('user', new UserDrive());
+
+    this.mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
     for (const { drive, dir } of await this.mounts.all()) {
       await this.addDrive(drive, new MountedDrive(dir));
     }
