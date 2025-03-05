@@ -4,30 +4,21 @@ export const CHARSET = Array(95).keys().map(i => String.fromCharCode(i + 32)).to
 
 export class Font {
 
+  charsheet: Bitmap;
   chars: Record<string, BitmapLike> = {};
   width: number;
   height: number;
 
-  static fromString(s: string) {
-    const all = Bitmap.fromString(s);
-    const w = all.width / 16;
-    const h = all.height / 6;
-
-    let chars: Record<string, BitmapLike> = {};
+  constructor(data: string) {
+    this.charsheet = Bitmap.fromString(data);
+    this.width = this.charsheet.width / 16;
+    this.height = this.charsheet.height / 6;
 
     for (const [i, ch] of CHARSET.entries()) {
-      const x = i % 16 * w;
-      const y = Math.floor(i / 16) * h;
-      chars[ch] = all.makeView(x, y, w, h);
+      const x = i % 16 * this.width;
+      const y = Math.floor(i / 16) * this.height;
+      this.chars[ch] = this.charsheet.makeView(x, y, this.width, this.height);
     }
-
-    return new Font(chars);
-  }
-
-  constructor(chars: Record<string, BitmapLike>) {
-    this.width = chars['a'].width;
-    this.height = chars['a'].height;
-    this.chars = chars;
   }
 
   calcSize(text: string) {

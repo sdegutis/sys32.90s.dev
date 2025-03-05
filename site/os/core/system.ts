@@ -45,7 +45,7 @@ class System {
   private trackingMouse?: { move: () => void, up?: () => void };
 
   init() {
-    this.mem.font = Font.fromString(fs.get('sys/font1.font')!);
+    this.mem.font = new Font(fs.get('sys/font1.font')!);
     this.mem.pointer = Cursor.fromBitmap(Bitmap.fromString(fs.get('sys/pointer.bitmap')!));
 
     this.resize(crt.canvas.width, crt.canvas.height);

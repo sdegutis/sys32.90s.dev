@@ -4,7 +4,7 @@ import { PanedYB } from "../../os/containers/paned.js";
 import { Scroll } from "../../os/containers/scroll.js";
 import { Label } from "../../os/controls/label.js";
 import { Slider } from "../../os/controls/slider.js";
-import { Bitmap } from "../../os/core/bitmap.js";
+import { Bitmap, type BitmapLike } from "../../os/core/bitmap.js";
 import { crt } from "../../os/core/crt.js";
 import { emptyCursor } from "../../os/core/cursor.js";
 import { CHARSET, Font } from "../../os/core/font.js";
@@ -12,45 +12,50 @@ import { Panel } from "../../os/core/panel.js";
 import { sys } from "../../os/core/system.js";
 import { $, View } from "../../os/core/view.js";
 import { fs } from "../../os/fs/fs.js";
-import { Listener, multiplex, Reactive } from "../../os/util/events.js";
+import { multiplex, Reactive } from "../../os/util/events.js";
 
 const SAMPLE_TEXT = [
   "how quickly daft jumping zebras vex!",
   "the five boxing wizards jump quickly.",
   "the quick brown fox, jumps over the lazy dog.",
-  `abcdefghijklmnopqrstuvwxyz`,
   ` .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`,
 ].join('\n');
 
 export default async (filename?: string) => {
 
   const $myfont = new Reactive(sys.mem.font);
-
   const $width = new Reactive(4);
   const $height = new Reactive(5);
+
+  function rebuildWhole() {
+    const w = $width.val;
+    const h = $height.val;
+    const src = new Bitmap([0x000000ff], 16 * w, Array(96 * w * h).fill(0));
+
+    for (const [i, ch] of CHARSET.entries()) {
+      const x = i % 16;
+      const y = Math.floor(i / 16);
+      $myfont.val.chars[ch].draw(x * w, y * h, 1, src);
+    }
+
+    $myfont.val = new Font((src.toString()));
+  }
+
+  rebuildWhole();
+
   const $zoom = new Reactive(3);
   const $hovered = new Reactive('');
 
-  const rebuilt = new Listener<CharView>();
-
-  const charViews = new Map<string, CharView>();
-  let chars: Record<string, Bitmap> = {};
-
   if (filename) {
-    const s = fs.get(filename)!;
-
-    const vals = s.split('===\n').map(s => Bitmap.fromString(s));
-    CHARSET.forEach((k, i) => { chars[k] = vals[i] });
-    $width.val = vals[0].width;
-    $height.val = vals[0].height;
-
-    // $width.val = sys.font.width;
-    // $height.val = sys.font.height;
-    // chars = sys.font.chars;
+    $myfont.val = new Font(fs.get(filename)!);
+    $width.val = $myfont.val.width;
+    $height.val = $myfont.val.height;
   }
 
+  const charViews = new Map<string, CharView>();
+
   for (const char of CHARSET) {
-    const view = $(CharView, { char, rebuilt, initial: chars[char], $data: { width: $width, height: $height, zoom: $zoom } });
+    const view = $(CharView, { char, font: $myfont.val, $data: { font: $myfont, width: $width, height: $height, zoom: $zoom } });
     charViews.set(char, view);
     view.$data.hovered.watch((h) => { if (h) $hovered.val = char; });
   }
@@ -120,9 +125,6 @@ export default async (filename?: string) => {
   $zoom.watch((n) => { panel.find<Label>('zoom-label')!.text = n.toString(); });
 
   multiplex({ w: $width, h: $height }).watch(() => {
-    for (const v of charViews.values()) {
-      v.rebuidBitmap();
-    }
     rebuildWhole();
   });
 
@@ -130,23 +132,11 @@ export default async (filename?: string) => {
     panel.layoutTree();
   });
 
-  function rebuildWhole() {
-    for (const v of charViews.values()) {
-      chars[v.char] = v.bitmap;
-    }
-
-    $myfont.val = new Font(chars);
-  }
-
-  rebuilt.watch((view) => { rebuildWhole(); })
-  rebuildWhole();
-
   panel.onKeyDown = (key) => {
     if (key === 's' && sys.keys['Control']) {
 
       if (filename) {
-        // const saveData = CHARSET.map(ch => chars[ch].toString()).join('===\n');
-        // fs.put(filename, saveData);
+        fs.put(filename, $myfont.val.charsheet.toString())
       }
 
       return true;
@@ -156,30 +146,12 @@ export default async (filename?: string) => {
 
   panel.show();
 
-  // const a = chars['a'];
-  // const w = a.width;
-  // const h = a.height;
-  // const pixels = Array(96 * w * h).fill(0)
-  // const b = new Bitmap(a.colors, 16 * w, pixels);
-
-  // // let i = 0;
-  // for (const [i, ch] of CHARSET.entries()) {
-  //   const x = i % 16;
-  //   const y = Math.floor(i / 16);
-  //   chars[ch].draw(x * w, y * h, 1, b);
-  // }
-
-  // fs.put(filename!, b.toString());
-
-  // // console.log(CHARSET)
-
 };
 
 class CharView extends View {
 
-  initial: Bitmap | undefined;
   char!: string;
-  rebuilt!: Listener<CharView>;
+  font!: Font;
 
   override cursor = emptyCursor;
 
@@ -187,37 +159,19 @@ class CharView extends View {
   height = 2;
   zoom = 1;
 
-  bitmap!: Bitmap;
-
   spots: Record<string, boolean> = {};
 
   override background = 0x000000ff;
 
   override init(): void {
-    if (this.initial) {
-      for (let y = 0; y < this.initial.height; y++) {
-        for (let x = 0; x < this.initial.width; x++) {
-          let k = `${x},${y}`;
-          if (this.initial.pixels[y * this.initial.width + x] > 0) {
-            this.spots[k] = true;
-          }
+    for (let y = 0; y < this.font.height; y++) {
+      for (let x = 0; x < this.font.width; x++) {
+        let k = `${x},${y}`;
+        if (this.font.chars[this.char].pget(x, y) > 0) {
+          this.spots[k] = true;
         }
       }
     }
-  }
-
-  rebuidBitmap() {
-    const pixels: number[] = [];
-
-    let i = 0;
-    for (let y = 0; y < this.height; y++) {
-      for (let x = 0; x < this.width; x++) {
-        const key = `${x},${y}`;
-        pixels.push(this.spots[key] ? 1 : 0);
-      }
-    }
-
-    this.bitmap = new Bitmap([0x000000ff], this.width, pixels);
   }
 
   override adjust(): void {
@@ -244,7 +198,7 @@ class CharView extends View {
       const tx = Math.floor(this.mouse.x / this.zoom) * this.zoom;
       const ty = Math.floor(this.mouse.y / this.zoom) * this.zoom;
 
-      crt.rectFill(tx, ty, this.zoom, this.zoom, 0x0000ff99);
+      crt.rectFill(tx, ty, this.zoom, this.zoom, 0xff000099);
     }
   }
 
@@ -256,8 +210,7 @@ class CharView extends View {
 
         const key = `${tx},${ty}`;
         this.spots[key] = button === 0;
-        this.rebuidBitmap();
-        this.rebuilt.dispatch(this);
+        this.font.chars[this.char].pset(tx, ty, button === 0 ? 1 : 0);
       }
     });
   }

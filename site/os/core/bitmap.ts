@@ -8,6 +8,8 @@ export interface BitmapLike {
   width: number;
   height: number;
   draw(px: number, py: number, c?: number, target?: DrawTarget): void;
+  pset(x: number, y: number, c: number): void;
+  pget(x: number, y: number): number;
 }
 
 class BitmapView implements BitmapLike {
@@ -34,6 +36,16 @@ class BitmapView implements BitmapLike {
         if (ci > 0) target.pset(px + x, py + y, c ?? this.of.colors[ci - 1]);
       }
     }
+  }
+
+  pset(x: number, y: number, c: number) {
+    const i = (this.y + y) * this.of.width + (this.x + x);
+    this.of.pixels[i] = c;
+  }
+
+  pget(x: number, y: number) {
+    const i = (this.y + y) * this.of.width + (this.x + x);
+    return this.of.pixels[i];
   }
 
 }
@@ -71,8 +83,13 @@ export class Bitmap implements BitmapLike {
     this.pixels[i] = c;
   }
 
+  pget(x: number, y: number) {
+    const i = x + y * this.width;
+    return this.pixels[i];
+  }
+
   static fromString(s: string) {
-    const [top, bottom] = s.replace(/\r\n/g, '\n').split('\n\n');
+    const [top, bottom] = s.split('\n\n');
     const colors = top.split('\n').map(s => parseInt(s, 16));
     const lines = bottom.trim().split('\n').map(s => s.split(' ').map(s => parseInt(s, 16)));
     const pixels: number[] = [];
