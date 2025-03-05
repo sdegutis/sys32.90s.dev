@@ -44,8 +44,6 @@ export class Font {
   }
 
   print(x: number, y: number, c: number, text: string) {
-    text = text.toLowerCase();
-
     let posx = 0;
     let posy = 0;
 

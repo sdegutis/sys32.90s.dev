@@ -12,7 +12,7 @@ export default (filename?: string) => {
 
 
   const s = filename ? fs.get(filename)! : 'foo\nbar\n\nhello world';
-  textarea.text = s.toLowerCase()
+  textarea.text = s
   // textarea.colors[10] = 0x0000ffff;
   // textarea.colors[5] = 0xffff0099;
   // textarea.colors.length = 0
