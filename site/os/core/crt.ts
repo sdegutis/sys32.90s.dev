@@ -50,12 +50,12 @@ class CRT {
 
   private _autoscale() {
     const rect = this.canvas.parentElement!.getBoundingClientRect();
-    let w = this.canvas.width;
-    let h = this.canvas.height;
+    let w = this.width;
+    let h = this.height;
     let s = 1;
     while (
-      (w += this.canvas.width) <= rect.width &&
-      (h += this.canvas.height) <= rect.height
+      (w += this.width) <= rect.width &&
+      (h += this.height) <= rect.height
     ) s++;
     this.scale(s);
   }
