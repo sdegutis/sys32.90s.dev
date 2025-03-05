@@ -11,6 +11,14 @@ const watchers = new Map<string, Listener<DriveNotificationType>>();
 
 class FS {
 
+  async init() {
+    await addDrive('sys', new SysDrive());
+    await addDrive('user', new UserDrive());
+    for (const { drive, dir } of await mounts.all()) {
+      await addDrive(drive, new MountedDrive(dir));
+    }
+  }
+
   async mount(drive: string, folder: FileSystemDirectoryHandle) {
     mounts.set({ drive, dir: folder });
     await addDrive(drive, new MountedDrive(folder));
@@ -131,9 +139,3 @@ function normalize(content: string) {
 }
 
 export const fs = new FS();
-
-await addDrive('sys', new SysDrive());
-await addDrive('user', new UserDrive());
-for (const { drive, dir } of await mounts.all()) {
-  await addDrive(drive, new MountedDrive(dir));
-}

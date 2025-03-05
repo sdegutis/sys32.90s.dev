@@ -1,5 +1,4 @@
-import { Font } from "../core/font.js";
-import { mem, sys } from "../core/system.js";
+import { sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
 import { Label } from "./label.js";
 
@@ -13,7 +12,7 @@ export class TextField extends View {
 
   text = '';
   length = 10;
-  font = mem.font;
+  font = sys.mem.font;
   color = this._field.color;
   cursorColor = 0x1177ffff;
 
@@ -30,7 +29,7 @@ export class TextField extends View {
   override init(): void {
     this._field.$data.color = this.$data.color;
     this._cursor.$data.color = this.$data.cursorColor;
-    this.$data.font = mem.$data.font;
+    this.font = sys.mem.font;
     this._field.$data.font = this.$data.font;
     this._cursor.$data.font = this.$data.font;
     this.children = [this._field, this._cursor];

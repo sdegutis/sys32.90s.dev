@@ -7,34 +7,30 @@ import { Font } from "./font.js";
 import { Panel } from "./panel.js";
 import { $, Dynamic, makeDynamic, View } from "./view.js";
 
-const crt2025 = Font.fromString(fs.get('sys/font1.font')!);
+// class Memory extends Dynamic {
+//   font: Font = null!;
+//   pointer: Bitmap = null!;
+// }
 
-class Memory extends Dynamic {
-  font = crt2025;
-}
-
-export const mem = new Memory();
-makeDynamic(mem);
-
-mem.$data.font = livefile('sys/font1.font', Font.fromString);
-
-
-function livefile<T>(path: string, to: (content: string) => T) {
-  const s = fs.get(path)!;
-  const r = new Reactive<T>(to(s));
-  fs.watchTree(path, (type) => {
-    if (type === 'disappeared') return;
-    const s = fs.get(path)!;
-    r.val = to(s);
-    sys.needsRedraw = true;
-    sys.layoutTree();
-  });
-  return r;
-}
-
-const pointer = livefile('sys/pointer.bitmap', s => Cursor.fromBitmap(Bitmap.fromString(s)));
+// function livefile<T>(path: string, to: (content: string) => T) {
+//   const s = fs.get(path)!;
+//   const r = new Reactive<T>(to(s));
+//   fs.watchTree(path, (type) => {
+//     if (type === 'disappeared') return;
+//     const s = fs.get(path)!;
+//     r.val = to(s);
+//     sys.needsRedraw = true;
+//     sys.layoutTree();
+//   });
+//   return r;
+// }
 
 class System {
+
+  mem: {
+    pointer: Cursor;
+    font: Font;
+  } = {} as any;
 
   readonly root = $(View, { background: 0x00000000 });
   focused = this.root;
@@ -49,6 +45,9 @@ class System {
   private trackingMouse?: { move: () => void, up?: () => void };
 
   init() {
+    this.mem.font = Font.fromString(fs.get('sys/font1.font')!);
+    this.mem.pointer = Cursor.fromBitmap(Bitmap.fromString(fs.get('sys/pointer.bitmap')!));
+
     this.resize(crt.canvas.width, crt.canvas.height);
     this.addListeners();
     this.startTicks();
@@ -143,7 +142,7 @@ class System {
 
           this.draw(this.root);
 
-          const cursor = this.hovered.cursor ?? pointer.val;
+          const cursor = this.hovered.cursor ?? this.mem.pointer;
           cursor.draw(this.mouse.x, this.mouse.y);
 
           crt.blit();

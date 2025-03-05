@@ -1,15 +1,15 @@
-import { mem } from "../core/system.js";
+import { sys } from "../core/system.js";
 import { View } from "../core/view.js";
 
 export class Label extends View {
 
   text = '';
-  font = mem.font;
+  font = sys.mem.font;
   color = 0xffffffff;
   override passthrough = true;
 
   override init(): void {
-    this.$data.font = mem.$data.font;
+    this.font = sys.mem.font;
   }
 
   override adjust(): void {

@@ -1,8 +1,10 @@
 import { crt } from "./os/core/crt.js";
 import { sys } from "./os/core/system.js";
 import { ws } from "./os/desktop/workspace.js";
+import { fs } from "./os/fs/fs.js";
 
 crt.init();
+await fs.init();
 sys.init();
 ws.init();
 

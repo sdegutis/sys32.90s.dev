@@ -1,18 +1,18 @@
 import { Border } from "../../os/containers/border.js";
 import { GroupX, GroupY } from "../../os/containers/group.js";
 import { PanedYB } from "../../os/containers/paned.js";
+import { Scroll } from "../../os/containers/scroll.js";
 import { Label } from "../../os/controls/label.js";
 import { Slider } from "../../os/controls/slider.js";
 import { Bitmap } from "../../os/core/bitmap.js";
 import { crt } from "../../os/core/crt.js";
 import { emptyCursor } from "../../os/core/cursor.js";
 import { CHARSET, Font } from "../../os/core/font.js";
-import { fs } from "../../os/fs/fs.js";
-import { mem, sys } from "../../os/core/system.js";
-import { $, View } from "../../os/core/view.js";
 import { Panel } from "../../os/core/panel.js";
+import { sys } from "../../os/core/system.js";
+import { $, View } from "../../os/core/view.js";
+import { fs } from "../../os/fs/fs.js";
 import { Listener, multiplex, Reactive } from "../../os/util/events.js";
-import { Scroll } from "../../os/containers/scroll.js";
 
 const SAMPLE_TEXT = [
   "how quickly daft jumping zebras vex!",
@@ -24,7 +24,7 @@ const SAMPLE_TEXT = [
 
 export default async (filename?: string) => {
 
-  const $myfont = new Reactive(mem.font);
+  const $myfont = new Reactive(sys.mem.font);
 
   const $width = new Reactive(4);
   const $height = new Reactive(5);
