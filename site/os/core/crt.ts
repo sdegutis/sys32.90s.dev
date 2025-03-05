@@ -4,28 +4,30 @@ class CRT {
   clip = { cx: 0, cy: 0, x1: 0, y1: 0, x2: 0, y2: 0 };
   raw = false;
 
-  private canvas!: HTMLCanvasElement;
+  canvas!: HTMLCanvasElement;
   private context!: CanvasRenderingContext2D;
   private imgdata!: ImageData;
 
   private autoscaling = false;
 
-  width = 0;
-  height = 0;
+  width = 320;
+  height = 180;
 
-  init(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
-    this.context = canvas.getContext('2d')!;
+  init() {
+    this.canvas = document.createElement('canvas');
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
+    this.canvas.style.imageRendering = 'pixelated';
+    this.canvas.style.backgroundColor = '#000';
+    this.canvas.style.outline = 'none';
+    this.canvas.style.cursor = 'none';
+    this.canvas.tabIndex = 0;
+    document.body.replaceChildren(this.canvas);
+    this.canvas.focus();
 
-    canvas.tabIndex = 0;
-    canvas.focus();
-
-    canvas.style.imageRendering = 'pixelated';
-    canvas.style.backgroundColor = '#000';
-    canvas.style.outline = 'none';
-    canvas.style.cursor = 'none';
-
-    this.resize(canvas.width, canvas.height);
+    this.context = this.canvas.getContext('2d')!;
+    this.resize(this.canvas.width, this.canvas.height);
+    this.autoscale();
   }
 
   resize(w: number, h: number) {

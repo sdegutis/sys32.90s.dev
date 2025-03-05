@@ -1,11 +1,10 @@
-import { Panel } from "./panel.js";
-import { ws } from "../desktop/workspace.js";
+import { fs } from "../fs/fs.js";
 import { Listener, Reactive } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { crt } from "./crt.js";
 import { Cursor } from "./cursor.js";
 import { Font } from "./font.js";
-import { fs } from "../fs/fs.js";
+import { Panel } from "./panel.js";
 import { $, Dynamic, makeDynamic, View } from "./view.js";
 
 const crt2025 = Font.fromString(fs.get('sys/font1.font')!);
@@ -49,17 +48,14 @@ class System {
   private hovered = this.root;
   private trackingMouse?: { move: () => void, up?: () => void };
 
-  init(canvas: HTMLCanvasElement) {
-    crt.init(canvas);
-    this.resize(canvas.width, canvas.height);
-    this.addListeners(canvas);
+  init() {
+    this.resize(crt.canvas.width, crt.canvas.height);
+    this.addListeners();
     this.startTicks();
-    ws.init();
   }
 
-  private addListeners(canvas: HTMLCanvasElement) {
-
-    canvas.addEventListener('keydown', (e) => {
+  private addListeners() {
+    crt.canvas.addEventListener('keydown', (e) => {
       if (e.key.length > 1 && e.key[0] === 'F') return;
 
       e.preventDefault();
@@ -76,31 +72,31 @@ class System {
       this.needsRedraw = true;
     });
 
-    canvas.addEventListener('keyup', (e) => {
+    crt.canvas.addEventListener('keyup', (e) => {
       e.preventDefault();
       this.keys[e.key] = false;
       this.needsRedraw = true;
     });
 
-    canvas.addEventListener('contextmenu', (e) => {
+    crt.canvas.addEventListener('contextmenu', (e) => {
       e.preventDefault();
     });
 
-    canvas.addEventListener('mousedown', (e) => {
+    crt.canvas.addEventListener('mousedown', (e) => {
       e.preventDefault();
-      canvas.focus();
+      crt.canvas.focus();
       this.hovered.focus();
       this.hovered.onMouseDown?.(e.button);
       this.needsRedraw = true;
     });
 
-    canvas.addEventListener('mousemove', (e) => {
+    crt.canvas.addEventListener('mousemove', (e) => {
       e.preventDefault();
       const x = Math.floor(e.offsetX);
       const y = Math.floor(e.offsetY);
 
       if (x === this.mouse.x && y === this.mouse.y) return;
-      if (x >= canvas.width || y >= canvas.height) return;
+      if (x >= crt.canvas.width || y >= crt.canvas.height) return;
 
       this.mouse.x = x;
       this.mouse.y = y;
@@ -112,14 +108,14 @@ class System {
       this.needsRedraw = true;
     });
 
-    canvas.addEventListener('mouseup', (e) => {
+    crt.canvas.addEventListener('mouseup', (e) => {
       e.preventDefault();
       this.trackingMouse?.up?.();
       this.trackingMouse = undefined!;
       this.needsRedraw = true;
     });
 
-    canvas.addEventListener('wheel', (e) => {
+    crt.canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
 
       let node: View | undefined = this.hovered;
