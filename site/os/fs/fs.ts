@@ -42,7 +42,9 @@ class FS {
 
     for (let i = 0; i < parts.length; i++) {
       const dir = parts.slice(0, i + 1).join('/') + '/';
-      await drive.putdir(dir);
+      if (!drive.items.has(dir)) {
+        await drive.putdir(dir);
+      }
     }
   }
 

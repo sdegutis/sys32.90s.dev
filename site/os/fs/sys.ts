@@ -25,8 +25,6 @@ export class SysDrive implements Drive {
   }
 
   async putdir(path: string) {
-    if (this.items.has(path)) return;
-
     this.items.set(path, { type: 'folder' });
     this.notify?.('modified', path);
   }

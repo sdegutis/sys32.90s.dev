@@ -22,8 +22,6 @@ export class UserDrive implements Drive {
   }
 
   async putdir(path: string) {
-    if (this.items.has(path)) return;
-
     this.items.set(path, { type: 'folder' });
     db.set({ path });
     this.notify?.('modified', path);
@@ -39,16 +37,16 @@ export class UserDrive implements Drive {
   async rmdir(path: string) {
     for (const key of this.items.keys()) {
       if (key.startsWith(path)) {
-        db.del(key);
         this.items.delete(key);
+        db.del(key);
       }
     }
     this.notify?.('disappeared', path);
   }
 
   async rmfile(path: string) {
-    db.del(path);
     this.items.delete(path);
+    db.del(path);
     this.notify?.('disappeared', path);
   }
 

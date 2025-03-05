@@ -57,7 +57,6 @@ export class MountedDrive implements Drive {
   }
 
   async putdir(path: string) {
-    if (this.items.has(path)) return;
     const parts = path.split('/');
 
     const parentpath = parts.slice(0, -2).join('/') + '/';
@@ -84,8 +83,7 @@ export class MountedDrive implements Drive {
 
       const name = parts.at(-1)!;
       const handle = await parenthandle.getFileHandle(name, { create: true });
-      file = { type: 'file', content, handle };
-      this.items.set(path, file);
+      this.items.set(path, file = { type: 'file', content, handle });
     }
 
     const w = await file.handle.createWritable();
