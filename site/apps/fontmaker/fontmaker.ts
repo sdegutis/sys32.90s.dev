@@ -14,7 +14,6 @@ import { Panel } from "../../os/core/panel.js";
 import { Listener, multiplex, Reactive } from "../../os/util/events.js";
 
 const SAMPLE_TEXT = [
-  'the quick brown fox',
   "how quickly daft jumping zebras vex!",
   "the five boxing wizards jump quickly.",
   "the quick brown fox, jumps over the lazy dog.",
