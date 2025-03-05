@@ -8,23 +8,19 @@ const icon = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 5">
   <path d="M1 0 L3 2 1 4 Z" fill="#19f" />
 </svg>;
 
+const ext = (s: string) => s.match(/\.([^\/]+)$/)?.[1] ?? '';
+
 export default (({ inFiles, outFiles }) => {
-  const files = [...inFiles];
+  const files = [...inFiles].filter(f => !f.path.startsWith('/@imlib/'));
+  const paths = files.map(f => f.path);
 
-  const datas = (files
-    .map(f => f.path)
-    .filter(s => s.startsWith('/os/data/'))
-    .toSpliced(0, 0, '/os/fs/data.json')
-    .map(s => <link rel="preload" as="fetch" href={s} crossorigin="anonymous" />));
+  const datas = (paths
+    .filter(s => !['js', 'html'].includes(ext(s)))
+    .map(s => <link rel="preload" as="fetch" href={s.replace(/\.js$/, '')} crossorigin="anonymous" />));
 
-  const modules = (files
-    .map(f => f.path)
-    .filter(s => s.endsWith('.js'))
-    .filter(s => !s.includes('@imlib'))
-    .filter(s => !s.includes('.json.'))
+  const modules = (paths
+    .filter(s => ext(s) === 'js')
     .map(s => <link rel="modulepreload" href={s} />));
-
-  console.log(icon)
 
   const iconlink = <link rel="shortcut icon" href={`data:image/svg+xml,${encodeURIComponent($({ ...icon }))}`} />;
   const headers = [...datas, ...modules, iconlink];
