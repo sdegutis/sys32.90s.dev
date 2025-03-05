@@ -1,21 +1,30 @@
-import { Bitmap } from "./bitmap.js";
+import { Bitmap, type BitmapLike } from "./bitmap.js";
 
 export const CHARSET = Array(95).keys().map(i => String.fromCharCode(i + 32)).toArray();
 
 export class Font {
 
-  chars: Record<string, Bitmap> = {};
+  chars: Record<string, BitmapLike> = {};
   width: number;
   height: number;
 
   static fromString(s: string) {
-    let chars: Record<string, Bitmap> = {};
-    const vals = s.split('===\n').map(s => Bitmap.fromString(s));
-    CHARSET.forEach((k, i) => { chars[k] = vals[i] });
+    const all = Bitmap.fromString(s);
+    const w = all.width / 16;
+    const h = all.height / 6;
+
+    let chars: Record<string, BitmapLike> = {};
+
+    for (const [i, ch] of CHARSET.entries()) {
+      const x = i % 16 * w;
+      const y = Math.floor(i / 16) * h;
+      chars[ch] = all.makeView(x, y, w, h);
+    }
+
     return new Font(chars);
   }
 
-  constructor(chars: Record<string, Bitmap>) {
+  constructor(chars: Record<string, BitmapLike>) {
     this.width = chars['a'].width;
     this.height = chars['a'].height;
     this.chars = chars;

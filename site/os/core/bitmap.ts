@@ -1,6 +1,44 @@
 import { crt } from "./crt.js";
 
-export class Bitmap {
+interface DrawTarget {
+  pset(x: number, y: number, c: number): void;
+}
+
+export interface BitmapLike {
+  width: number;
+  height: number;
+  draw(px: number, py: number, c?: number, target?: DrawTarget): void;
+}
+
+class BitmapView implements BitmapLike {
+
+  of: Bitmap;
+  private x: number;
+  private y: number;
+  width: number;
+  height: number;
+
+  constructor(of: Bitmap, x: number, y: number, w: number, h: number) {
+    this.of = of;
+    this.x = x;
+    this.y = y;
+    this.width = w;
+    this.height = h;
+  }
+
+  draw(px: number, py: number, c?: number, target: DrawTarget = crt) {
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
+        const i = (this.y + y) * this.of.width + (this.x + x);
+        const ci = this.of.pixels[i];
+        if (ci > 0) target.pset(px + x, py + y, c ?? this.of.colors[ci - 1]);
+      }
+    }
+  }
+
+}
+
+export class Bitmap implements BitmapLike {
 
   width: number;
   height: number;
@@ -14,14 +52,23 @@ export class Bitmap {
     this.height = this.pixels.length / w;
   }
 
-  draw(px: number, py: number, c?: number) {
+  makeView(x: number, y: number, w: number, h: number) {
+    return new BitmapView(this, x, y, w, h);
+  }
+
+  draw(px: number, py: number, c?: number, target: DrawTarget = crt) {
     let i = 0;
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
         const ci = this.pixels[i++];
-        if (ci > 0) crt.pset(px + x, py + y, c ?? this.colors[ci - 1]);
+        if (ci > 0) target.pset(px + x, py + y, c ?? this.colors[ci - 1]);
       }
     }
+  }
+
+  pset(x: number, y: number, c: number) {
+    const i = x + y * this.width;
+    this.pixels[i] = c;
   }
 
   static fromString(s: string) {

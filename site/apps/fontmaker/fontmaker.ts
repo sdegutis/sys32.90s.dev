@@ -144,23 +144,9 @@ export default async (filename?: string) => {
   panel.onKeyDown = (key) => {
     if (key === 's' && sys.keys['Control']) {
 
-      // filename = `user/foo/bar/qux.font`
-
       if (filename) {
-
-        // for (let i = 0; i < 26; i++) {
-        //   const upcase = String.fromCharCode(65 + i);
-        //   chars[upcase] = chars[upcase.toLowerCase()];
-        // }
-
-        const orderedChars = Object.keys(chars).sort();
-
-        // const a = chars['a'];
-        // const b = new Bitmap(a.colors, a.width * 16, ));
-
-        console.log(chars);
-        const saveData = orderedChars.map(ch => chars[ch].toString()).join('===\n');
-        fs.put(filename, saveData);
+        // const saveData = CHARSET.map(ch => chars[ch].toString()).join('===\n');
+        // fs.put(filename, saveData);
       }
 
       return true;
@@ -169,6 +155,23 @@ export default async (filename?: string) => {
   }
 
   panel.show();
+
+  // const a = chars['a'];
+  // const w = a.width;
+  // const h = a.height;
+  // const pixels = Array(96 * w * h).fill(0)
+  // const b = new Bitmap(a.colors, 16 * w, pixels);
+
+  // // let i = 0;
+  // for (const [i, ch] of CHARSET.entries()) {
+  //   const x = i % 16;
+  //   const y = Math.floor(i / 16);
+  //   chars[ch].draw(x * w, y * h, 1, b);
+  // }
+
+  // fs.put(filename!, b.toString());
+
+  // // console.log(CHARSET)
 
 };
 
