@@ -122,19 +122,19 @@ class MapView extends View {
   showGrid = true;
   map!: Map;
 
-  #drawTerrain: ((x: number, y: number) => void)[] = [];
-  #tilesel: TileSelection | null = null;
+  private drawTerrain: ((x: number, y: number) => void)[] = [];
+  private tilesel: TileSelection | null = null;
 
   override cursor = emptyCursor;
 
   override init(): void {
     for (let i = 0; i < 16; i++) {
-      this.#drawTerrain.push((x, y) => {
+      this.drawTerrain.push((x, y) => {
         crt.rectFill(x, y, 4, 4, COLORS[i]);
       });
     }
 
-    this.#drawTerrain.push((x, y) => {
+    this.drawTerrain.push((x, y) => {
       crt.rectFill(x, y, 4, 4, COLORS[3]);
     });
 
@@ -147,16 +147,16 @@ class MapView extends View {
       sys.trackMouse({ move: dragMove(this) });
     }
     else if (sys.keys['Control']) {
-      this.#tilesel = new TileSelection(this, 4);
+      this.tilesel = new TileSelection(this, 4);
 
       sys.trackMouse({
         move: () => {
-          this.#tilesel!.update();
+          this.tilesel!.update();
 
-          const tx1 = Math.max(this.#tilesel!.tx1, 0);
-          const ty1 = Math.max(this.#tilesel!.ty1, 0);
-          const tx2 = Math.min(this.#tilesel!.tx2, this.map.width);
-          const ty2 = Math.min(this.#tilesel!.ty2, this.map.height);
+          const tx1 = Math.max(this.tilesel!.tx1, 0);
+          const ty1 = Math.max(this.tilesel!.ty1, 0);
+          const tx2 = Math.min(this.tilesel!.tx2, this.map.width);
+          const ty2 = Math.min(this.tilesel!.ty2, this.map.height);
 
           for (let y = ty1; y < ty2; y++) {
             for (let x = tx1; x < tx2; x++) {
@@ -166,7 +166,7 @@ class MapView extends View {
 
         },
         up: () => {
-          this.#tilesel = null;
+          this.tilesel = null;
         },
       });
     }
@@ -201,7 +201,7 @@ class MapView extends View {
       for (let x = 0; x < this.map.width; x++) {
         const i = y * this.map.width + x;
         const t = this.map.terrain[i];
-        this.#drawTerrain[t](x * 4, y * 4);
+        this.drawTerrain[t](x * 4, y * 4);
       }
     }
 
@@ -228,8 +228,8 @@ class MapView extends View {
       }
     }
 
-    if (this.#tilesel) {
-      const { tx1, tx2, ty1, ty2 } = this.#tilesel;
+    if (this.tilesel) {
+      const { tx1, tx2, ty1, ty2 } = this.tilesel;
 
       crt.rectLine(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);
       crt.rectFill(tx1 * 4, ty1 * 4, 4 * (tx2 - tx1), 4 * (ty2 - ty1), 0x0000ff33);

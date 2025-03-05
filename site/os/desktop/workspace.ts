@@ -12,10 +12,10 @@ import { Clock } from "./clock.js";
 
 class Workspace {
 
-  #icons!: View;
-  #desktop!: View;
-  #taskbar!: View;
-  #progbuttons!: View;
+  private icons!: View;
+  private desktop!: View;
+  private taskbar!: View;
+  private progbuttons!: View;
 
   init() {
 
@@ -23,7 +23,7 @@ class Workspace {
 
     sys.root.layout = makeVacuumLayout();
 
-    this.#icons = $(View, {
+    this.icons = $(View, {
       background: 0x222222ff,
       layout: makeFlowLayout(3, 10),
       adjust: function () {
@@ -33,12 +33,12 @@ class Workspace {
       }
     });
 
-    this.#desktop = $(View, {}, this.#icons);
+    this.desktop = $(View, {}, this.icons);
 
-    this.#progbuttons = $(Group, { gap: 1 });
+    this.progbuttons = $(Group, { gap: 1 });
 
-    this.#taskbar = $(Spaced, { background: 0x000000ff },
-      this.#progbuttons,
+    this.taskbar = $(Spaced, { background: 0x000000ff },
+      this.progbuttons,
       $(Group, {},
         $(Border, { padding: 2 }, $(Clock, {})),
         $(Button, {
@@ -57,8 +57,8 @@ class Workspace {
 
     sys.root.children = [
       $(PanedYB, {},
-        this.#desktop,
-        this.#taskbar
+        this.desktop,
+        this.taskbar
       )
     ];
 
@@ -66,14 +66,14 @@ class Workspace {
   }
 
   addPanel(panel: Panel) {
-    if (this.#desktop.children.includes(panel)) return;
+    if (this.desktop.children.includes(panel)) return;
 
-    const topPanel = this.#desktop.children.at(-1);
+    const topPanel = this.desktop.children.at(-1);
 
     panel.x = (topPanel?.x ?? 0) + 12;
     panel.y = (topPanel?.y ?? 0) + 12;
 
-    this.#desktop.addChild(panel);
+    this.desktop.addChild(panel);
 
     const label = $(Label, {});
     const button = $(Button, {
@@ -86,16 +86,16 @@ class Workspace {
     },
       label
     );
-    this.#progbuttons.addChild(button);
-    this.#progbuttons.layoutTree();
+    this.progbuttons.addChild(button);
+    this.progbuttons.layoutTree();
 
     panel.$data.title.watch(s => label.text = s);
-    label.$data.text.watch(s => { this.#progbuttons.layoutTree(); });
+    label.$data.text.watch(s => { this.progbuttons.layoutTree(); });
 
     panel.didClose.watch(() => {
       button.parent?.removeChild(button);
-      this.#progbuttons.layoutTree();
-      this.#desktop.children.at(-1)?.focus();
+      this.progbuttons.layoutTree();
+      this.desktop.children.at(-1)?.focus();
     });
 
     panel.$data.panelFocused.watch(is => {
@@ -110,16 +110,16 @@ class Workspace {
     const mod = await import(path + path.split('/').at(-2) + '.js');
     const launch: () => void = mod.default;
 
-    this.#programs.set(name, launch);
+    this.programs.set(name, launch);
 
-    this.#icons.addChild($(Button, { padding: 2, onClick: () => launch() },
+    this.icons.addChild($(Button, { padding: 2, onClick: () => launch() },
       $(Label, { text: name })
     ));
     sys.layoutTree();
   }
 
   launch(name: string, path?: string) {
-    this.#programs.get(name)?.(path);
+    this.programs.get(name)?.(path);
   }
 
   openFile(path: string) {
@@ -132,7 +132,7 @@ class Workspace {
     this.launch(prog, path);
   }
 
-  #programs = new Map<string, (string?: string) => void>();
+  private programs = new Map<string, (string?: string) => void>();
 
 }
 

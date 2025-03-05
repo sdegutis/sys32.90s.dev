@@ -8,40 +8,40 @@ export class TextField extends View {
   onEnter?(): void;
   onChange?(): void;
 
-  #field = $(Label, { text: '' });
-  #cursor = $(Label, { visible: false, text: '_' });
+  private _field = $(Label, { text: '' });
+  private _cursor = $(Label, { visible: false, text: '_' });
 
   text = '';
   length = 10;
   font = mem.font;
-  color = this.#field.color;
+  color = this._field.color;
   cursorColor = 0x1177ffff;
 
-  #showText() {
+  private showText() {
     if (this.focused) {
-      this.#field.text = this.text.slice(-this.length + 1);
+      this._field.text = this.text.slice(-this.length + 1);
     }
     else {
-      this.#field.text = this.text.slice(0, this.length);
+      this._field.text = this.text.slice(0, this.length);
     }
     this.layoutTree();
   }
 
   override init(): void {
-    this.#field.$data.color = this.$data.color;
-    this.#cursor.$data.color = this.$data.cursorColor;
+    this._field.$data.color = this.$data.color;
+    this._cursor.$data.color = this.$data.cursorColor;
     this.$data.font = mem.$data.font;
-    this.#field.$data.font = this.$data.font;
-    this.#cursor.$data.font = this.$data.font;
-    this.children = [this.#field, this.#cursor];
-    this.$data.text.watch(s => this.#showText());
+    this._field.$data.font = this.$data.font;
+    this._cursor.$data.font = this.$data.font;
+    this.children = [this._field, this._cursor];
+    this.$data.text.watch(s => this.showText());
   }
 
   override layout(): void {
-    this.#field.x = 0;
-    this.#field.y = 0;
-    this.#cursor.x = (this.#cursor.w + 1) * this.#field.text.length;
-    this.#cursor.y = 0;
+    this._field.x = 0;
+    this._field.y = 0;
+    this._cursor.x = (this._cursor.w + 1) * this._field.text.length;
+    this._cursor.y = 0;
   }
 
   override adjust(): void {
@@ -56,58 +56,58 @@ export class TextField extends View {
         this.text += s;
         this.onChange?.();
       });
-      this.#restartBlinking();
+      this.restartBlinking();
       return true;
     }
     else if (key === 'c' && sys.keys['Control']) {
       navigator.clipboard.writeText(this.text);
-      this.#restartBlinking();
+      this.restartBlinking();
       return true;
     }
     else if (key === 'Enter') {
       this.onEnter?.();
-      this.#restartBlinking();
+      this.restartBlinking();
       return true;
     }
     else if (key === 'Backspace') {
       this.text = this.text.slice(0, -1);
       this.onChange?.();
-      this.#restartBlinking();
+      this.restartBlinking();
       return true;
     }
     else if (key.length === 1) {
       this.text += key;
       this.onChange?.();
-      this.#restartBlinking();
+      this.restartBlinking();
       return true;
     }
     return false;
   };
 
-  #blink?: ReturnType<typeof setInterval>;
+  private blink?: ReturnType<typeof setInterval>;
 
-  #restartBlinking() {
-    this.#stopBlinking();
-    this.#cursor.visible = true;
-    this.#blink = setInterval(() => {
-      this.#cursor.visible = !this.#cursor.visible;
+  private restartBlinking() {
+    this.stopBlinking();
+    this._cursor.visible = true;
+    this.blink = setInterval(() => {
+      this._cursor.visible = !this._cursor.visible;
       sys.needsRedraw = true;
     }, 500);
   }
 
-  #stopBlinking() {
-    this.#cursor.visible = false;
-    clearInterval(this.#blink);
+  private stopBlinking() {
+    this._cursor.visible = false;
+    clearInterval(this.blink);
   }
 
   override onFocus(): void {
-    this.#restartBlinking();
-    this.#showText();
+    this.restartBlinking();
+    this.showText();
   }
 
   override onBlur(): void {
-    this.#stopBlinking();
-    this.#showText();
+    this.stopBlinking();
+    this.showText();
   }
 
 }

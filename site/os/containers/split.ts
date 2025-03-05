@@ -87,7 +87,7 @@ export class Split extends View {
   dividerColorPress = 0x1177ffcc;
   resizable = false;
 
-  #resizer?: View;
+  private resizer?: View;
 
   override init(): void {
     while (this.children.length < 2) {
@@ -96,13 +96,13 @@ export class Split extends View {
   }
 
   override layout(): void {
-    if (this.resizable && !this.#resizer) {
-      this.#resizer = new SplitDivider(this);
-      this.addChild(this.#resizer);
+    if (this.resizable && !this.resizer) {
+      this.resizer = new SplitDivider(this);
+      this.addChild(this.resizer);
     }
-    else if (!this.resizable && this.#resizer) {
-      this.#resizer = undefined!;
-      this.removeChild(this.#resizer);
+    else if (!this.resizable && this.resizer) {
+      this.resizer = undefined!;
+      this.removeChild(this.resizer);
     }
 
     const dx = this.dir;
@@ -119,14 +119,14 @@ export class Split extends View {
     b[dx] = this.pos;
     b[dw] = this[dw] - this.pos;
 
-    if (this.#resizer) {
-      this.#resizer.x = 0;
-      this.#resizer.y = 0;
-      this.#resizer.w = this.w;
-      this.#resizer.h = this.h;
+    if (this.resizer) {
+      this.resizer.x = 0;
+      this.resizer.y = 0;
+      this.resizer.w = this.w;
+      this.resizer.h = this.h;
 
-      this.#resizer[dx] = this.pos - 1;
-      this.#resizer[dw] = this.dividerWidth + 2;
+      this.resizer[dx] = this.pos - 1;
+      this.resizer[dw] = this.dividerWidth + 2;
     }
   }
 

@@ -2,9 +2,9 @@ import { Bitmap } from "./bitmap.js";
 
 export class Cursor {
 
-  #bitmap: Bitmap;
-  #ox;
-  #oy;
+  private bitmap: Bitmap;
+  private ox;
+  private oy;
 
   static fromBitmap(bitmap: Bitmap) {
     for (let i = 0; i < bitmap.pixels.length; i++) {
@@ -23,13 +23,13 @@ export class Cursor {
   }
 
   constructor(bitmap: Bitmap, ox: number, oy: number) {
-    this.#bitmap = bitmap;
-    this.#ox = ox;
-    this.#oy = oy;
+    this.bitmap = bitmap;
+    this.ox = ox;
+    this.oy = oy;
   }
 
   draw(x: number, y: number) {
-    this.#bitmap.draw(x - this.#ox, y - this.#oy);
+    this.bitmap.draw(x - this.ox, y - this.oy);
   }
 
 }

@@ -42,7 +42,7 @@ export class Panel extends View {
   minw = 30;
   minh = 30;
 
-  #lastPos?: { x: number, y: number, w: number, h: number };
+  private lastPos?: { x: number, y: number, w: number, h: number };
 
   override init(): void {
     const pad = 2;
@@ -60,7 +60,7 @@ export class Panel extends View {
           const moved = drag();
           if (Math.hypot(moved.x, moved.y) > 1) {
             counter.count = 0;
-            this.#lastPos = undefined!;
+            this.lastPos = undefined!;
           }
         },
         up: () => {
@@ -109,7 +109,7 @@ export class Panel extends View {
             this.y = this.parent!.h - this.h!;
           },
           onMouseDown: () => {
-            this.#lastPos = undefined!;
+            this.lastPos = undefined!;
             const resize = dragResize(this);
             sys.trackMouse({
               move: () => {
@@ -141,18 +141,18 @@ export class Panel extends View {
   }
 
   maximize() {
-    if (this.#lastPos) {
-      this.x = this.#lastPos.x;
-      this.y = this.#lastPos.y;
-      this.w = this.#lastPos.w;
-      this.h = this.#lastPos.h;
-      this.#lastPos = undefined!;
+    if (this.lastPos) {
+      this.x = this.lastPos.x;
+      this.y = this.lastPos.y;
+      this.w = this.lastPos.w;
+      this.h = this.lastPos.h;
+      this.lastPos = undefined!;
       this.layoutTree();
     }
     else {
-      this.#lastPos = { x: this.x, y: this.y, w: this.w, h: this.h };
+      this.lastPos = { x: this.x, y: this.y, w: this.w, h: this.h };
 
-      // const a = { ...this.#lastPos };
+      // const a = { ...this.lastPos };
       // const b = { x: 0, y: 0, w: this.parent!.w, h: this.parent!.h };
 
       // let total = 100;

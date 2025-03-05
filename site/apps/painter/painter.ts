@@ -194,7 +194,7 @@ class PaintView extends View {
   override background = 0xffffff33;
   override cursor = emptyCursor;
 
-  #grid: number[] = [];
+  private grid: number[] = [];
 
   override adjust(): void {
     this.w = this.width * this.zoom;
@@ -216,7 +216,7 @@ class PaintView extends View {
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
         const i = y * this.width + x;
-        const c = this.#grid[i];
+        const c = this.grid[i];
         if (c !== undefined) {
           const px = x * this.zoom;
           const py = y * this.zoom;
@@ -237,7 +237,7 @@ class PaintView extends View {
       const x = Math.floor(this.mouse.x / this.zoom);
       const y = Math.floor(this.mouse.y / this.zoom);
       const i = y * this.width + x;
-      let colorUnderMouse = this.#grid[i];
+      let colorUnderMouse = this.grid[i];
       if (colorUnderMouse === undefined) colorUnderMouse = 0x00000000;
       this.color = colorUnderMouse;
       return;
@@ -249,7 +249,7 @@ class PaintView extends View {
           const x = Math.floor(this.mouse.x / this.zoom);
           const y = Math.floor(this.mouse.y / this.zoom);
           const i = y * this.width + x;
-          this.#grid[i] = this.tool === 'pencil' ? this.color : 0x00000000;
+          this.grid[i] = this.tool === 'pencil' ? this.color : 0x00000000;
         }
       })
     }
@@ -265,7 +265,7 @@ class PaintView extends View {
         const ci = b.pixels[i];
         if (ci > 0) {
           const c = b.colors[ci - 1];
-          this.#grid[i] = c;
+          this.grid[i] = c;
         }
       }
     }
@@ -277,7 +277,7 @@ class PaintView extends View {
     const map = new Map<number, number>();
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
-        const c = this.#grid[y * this.width + x];
+        const c = this.grid[y * this.width + x];
         if (c === undefined) {
           pixels.push(0);
         }
@@ -292,18 +292,18 @@ class PaintView extends View {
   }
 
   resize(width: number, height: number) {
-    const oldgrid = [...this.#grid];
+    const oldgrid = [...this.grid];
     const oldwidth = this.width;
     const oldheight = this.height;
 
     this.width = width;
     this.height = height;
-    this.#grid.length = 0;
+    this.grid.length = 0;
 
     for (let y = 0; y < Math.min(height, oldheight); y++) {
       for (let x = 0; x < Math.min(width, oldwidth); x++) {
         const c = oldgrid[y * oldwidth + x];
-        if (c !== undefined) this.#grid[y * width + x] = c;
+        if (c !== undefined) this.grid[y * width + x] = c;
       }
     }
 

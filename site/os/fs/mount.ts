@@ -17,13 +17,13 @@ export class MountedDrive implements Drive {
 
   async mount(notify: (type: DriveNotificationType, path: string) => void) {
     this.notify = notify;
-    await this.#scan('', this.root);
+    await this.scan('', this.root);
 
     let processChanges = Promise.resolve();
     const observer = new FileSystemObserver(changes => {
       processChanges = processChanges.then(async () => {
         for (const change of changes) {
-          await this.#handleChange(change);
+          await this.handleChange(change);
         }
       });
     });
@@ -32,20 +32,20 @@ export class MountedDrive implements Drive {
     observer.observe(this.root, { recursive: true });
   }
 
-  async #scan(path: string, dir: FileSystemDirectoryHandle) {
+  private async scan(path: string, dir: FileSystemDirectoryHandle) {
     for await (const [name, handle] of dir.entries()) {
       const isdir = handle instanceof FileSystemDirectoryHandle;
       const fullpath = path + name + (isdir ? '/' : '');
 
-      await this.#add(fullpath, handle);
+      await this.add(fullpath, handle);
 
       if (isdir) {
-        await this.#scan(fullpath, handle);
+        await this.scan(fullpath, handle);
       }
     }
   }
 
-  async #add(path: string, handle: FileSystemDirectoryHandle | FileSystemFileHandle) {
+  private async add(path: string, handle: FileSystemDirectoryHandle | FileSystemFileHandle) {
     if (handle instanceof FileSystemDirectoryHandle) {
       this.items.set(path, { type: 'folder', handle });
     }
@@ -93,7 +93,7 @@ export class MountedDrive implements Drive {
     await w.close();
   }
 
-  async #handleChange(change: FileSystemObserverRecord) {
+  private async handleChange(change: FileSystemObserverRecord) {
     if (change.type === 'unknown') {
       console.warn('unknown fs event', change);
       return;
@@ -115,7 +115,7 @@ export class MountedDrive implements Drive {
     }
 
     if (change.type === 'appeared') {
-      await this.#add(path, change.changedHandle);
+      await this.add(path, change.changedHandle);
       this.notify?.('appeared', path);
       return;
     }
@@ -137,7 +137,7 @@ export class MountedDrive implements Drive {
     }
   }
 
-  async #parenthandle(path: string) {
+  private async parenthandle(path: string) {
     const parts = path.split('/');
     const name = parts.pop()!;
     const parentpath = parts.join('/') + '/';
@@ -146,7 +146,7 @@ export class MountedDrive implements Drive {
   }
 
   async rmdir(path: string) {
-    const [handle, name] = await this.#parenthandle(path.slice(0, -1));
+    const [handle, name] = await this.parenthandle(path.slice(0, -1));
     for (const key of this.items.keys()) {
       if (key.startsWith(path)) {
         this.items.delete(key);
@@ -156,7 +156,7 @@ export class MountedDrive implements Drive {
   }
 
   async rmfile(path: string) {
-    const [handle, name] = await this.#parenthandle(path);
+    const [handle, name] = await this.parenthandle(path);
     this.items.delete(path);
     await handle.removeEntry(name, { recursive: true });
   }

@@ -10,7 +10,7 @@ export class Scroll extends View {
   override layout(): void {
     if (!this.firstChild) return;
 
-    this.#adjust();
+    this._adjust();
     this.firstChild.x = -this.scrollx;
     this.firstChild.y = -this.scrolly;
   }
@@ -19,11 +19,11 @@ export class Scroll extends View {
     const sy = sys.keys['Shift'] ? 'scrollx' : 'scrolly';
     this[sy] += up ? -this.amount : this.amount;
 
-    this.#adjust();
+    this._adjust();
     this.layoutTree();
   }
 
-  #adjust() {
+  private _adjust() {
     if (!this.firstChild) return;
 
     this.scrollx = Math.max(0, Math.min(this.firstChild.w - this.w, this.scrollx));

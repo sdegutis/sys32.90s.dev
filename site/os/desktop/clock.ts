@@ -2,26 +2,26 @@ import { Label } from "../controls/label.js";
 
 export class Clock extends Label {
 
-  #timer?: ReturnType<typeof setInterval>;
+  private timer?: ReturnType<typeof setInterval>;
 
   override init(): void {
     super.init();
-    this.#updateTime();
+    this.updateTime();
   }
 
   override adopted(): void {
-    this.#timer = setInterval((() => {
-      this.#updateTime();
+    this.timer = setInterval((() => {
+      this.updateTime();
       this.parent?.layoutTree();
     }), 1000);
   }
 
   override abandoned(): void {
-    clearInterval(this.#timer);
-    this.#timer = undefined!;
+    clearInterval(this.timer);
+    this.timer = undefined!;
   }
 
-  #updateTime() {
+  private updateTime() {
     this.text = new Date().toLocaleTimeString('en-us');
   }
 

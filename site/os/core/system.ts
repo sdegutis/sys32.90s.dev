@@ -46,18 +46,18 @@ class System {
 
   needsRedraw = true;
 
-  #hovered = this.root;
-  #trackingMouse?: { move: () => void, up?: () => void };
+  private hovered = this.root;
+  private trackingMouse?: { move: () => void, up?: () => void };
 
   init(canvas: HTMLCanvasElement) {
     crt.init(canvas);
     this.resize(canvas.width, canvas.height);
-    this.#addListeners(canvas);
-    this.#startTicks();
+    this.addListeners(canvas);
+    this.startTicks();
     ws.init();
   }
 
-  #addListeners(canvas: HTMLCanvasElement) {
+  private addListeners(canvas: HTMLCanvasElement) {
 
     canvas.addEventListener('keydown', (e) => {
       if (e.key.length > 1 && e.key[0] === 'F') return;
@@ -89,8 +89,8 @@ class System {
     canvas.addEventListener('mousedown', (e) => {
       e.preventDefault();
       canvas.focus();
-      this.#hovered.focus();
-      this.#hovered.onMouseDown?.(e.button);
+      this.hovered.focus();
+      this.hovered.onMouseDown?.(e.button);
       this.needsRedraw = true;
     });
 
@@ -105,24 +105,24 @@ class System {
       this.mouse.x = x;
       this.mouse.y = y;
 
-      this.#checkUnderMouse();
+      this.checkUnderMouse();
 
-      this.#trackingMouse?.move();
+      this.trackingMouse?.move();
 
       this.needsRedraw = true;
     });
 
     canvas.addEventListener('mouseup', (e) => {
       e.preventDefault();
-      this.#trackingMouse?.up?.();
-      this.#trackingMouse = undefined!;
+      this.trackingMouse?.up?.();
+      this.trackingMouse = undefined!;
       this.needsRedraw = true;
     });
 
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
 
-      let node: View | undefined = this.#hovered;
+      let node: View | undefined = this.hovered;
       while (node) {
         if (node.onScroll) {
           node.onScroll(e.deltaY < 0);
@@ -135,7 +135,7 @@ class System {
 
   }
 
-  #startTicks() {
+  private startTicks() {
     let last = +document.timeline.currentTime!;
     const update = (t: number) => {
       const delta = t - last;
@@ -145,9 +145,9 @@ class System {
         if (this.needsRedraw) {
           this.needsRedraw = false;
 
-          this.#draw(this.root);
+          this.draw(this.root);
 
-          const cursor = this.#hovered.cursor ?? pointer.val;
+          const cursor = this.hovered.cursor ?? pointer.val;
           cursor.draw(this.mouse.x, this.mouse.y);
 
           crt.blit();
@@ -161,8 +161,8 @@ class System {
 
   trackMouse(fns: { move: () => void; up?: () => void; }) {
     fns.move();
-    this.#trackingMouse = fns;
-    return () => this.#trackingMouse = undefined!;
+    this.trackingMouse = fns;
+    return () => this.trackingMouse = undefined!;
   }
 
   resize(w: number, h: number) {
@@ -175,33 +175,33 @@ class System {
   }
 
   layoutTree(node: View = this.root) {
-    this.#adjustTree(node);
-    this.#layoutTree(node);
-    this.#checkUnderMouse();
+    this.adjustTree(node);
+    this._layoutTree(node);
+    this.checkUnderMouse();
     this.needsRedraw = true;
   }
 
-  #layoutTree(node: View) {
+  private _layoutTree(node: View) {
     node.layout?.();
     for (let i = 0; i < node.children.length; i++) {
-      this.#layoutTree(node.children[i]);
+      this._layoutTree(node.children[i]);
     }
   }
 
-  #adjustTree(node: View) {
+  private adjustTree(node: View) {
     for (let i = 0; i < node.children.length; i++) {
-      this.#adjustTree(node.children[i]);
+      this.adjustTree(node.children[i]);
     }
     node.adjust?.();
   }
 
-  #checkUnderMouse() {
-    const activeHovered = this.#hover(this.root, this.mouse.x, this.mouse.y)!;
+  private checkUnderMouse() {
+    const activeHovered = this.hover(this.root, this.mouse.x, this.mouse.y)!;
 
-    if (this.#hovered !== activeHovered) {
-      this.#hovered.hovered = false;
-      this.#hovered = activeHovered;
-      this.#hovered.hovered = true;
+    if (this.hovered !== activeHovered) {
+      this.hovered.hovered = false;
+      this.hovered = activeHovered;
+      this.hovered.hovered = true;
     }
   }
 
@@ -234,7 +234,7 @@ class System {
     }
   }
 
-  #hover(node: View, x: number, y: number): View | null {
+  private hover(node: View, x: number, y: number): View | null {
     if (!node.visible) return null;
 
     let tx = 0;
@@ -251,7 +251,7 @@ class System {
     let i = node.children.length;
     while (i--) {
       const child = node.children[i];
-      const found = this.#hover(child, x - child.x, y - child.y);
+      const found = this.hover(child, x - child.x, y - child.y);
       if (found) return found;
     }
 
@@ -260,7 +260,7 @@ class System {
     return node;
   }
 
-  #draw(node: View) {
+  private draw(node: View) {
     if (!node.visible) return;
 
     const cx1 = crt.clip.x1;
@@ -278,7 +278,7 @@ class System {
     node.draw?.();
 
     for (let i = 0; i < node.children.length; i++) {
-      this.#draw(node.children[i]);
+      this.draw(node.children[i]);
     }
 
     crt.clip.cx -= node.x;

@@ -4,18 +4,18 @@ class CRT {
   clip = { cx: 0, cy: 0, x1: 0, y1: 0, x2: 0, y2: 0 };
   raw = false;
 
-  #canvas!: HTMLCanvasElement;
-  #context!: CanvasRenderingContext2D;
-  #imgdata!: ImageData;
+  private canvas!: HTMLCanvasElement;
+  private context!: CanvasRenderingContext2D;
+  private imgdata!: ImageData;
 
-  #autoscaling = false;
+  private autoscaling = false;
 
   width = 0;
   height = 0;
 
   init(canvas: HTMLCanvasElement) {
-    this.#canvas = canvas;
-    this.#context = canvas.getContext('2d')!;
+    this.canvas = canvas;
+    this.context = canvas.getContext('2d')!;
 
     canvas.tabIndex = 0;
     canvas.focus();
@@ -29,11 +29,11 @@ class CRT {
   }
 
   resize(w: number, h: number) {
-    this.#canvas.width = this.width = w;
-    this.#canvas.height = this.height = h;
+    this.canvas.width = this.width = w;
+    this.canvas.height = this.height = h;
 
     this.pixels = new Uint8ClampedArray(w * h * 4);
-    this.#imgdata = new ImageData(this.pixels, w, h);
+    this.imgdata = new ImageData(this.pixels, w, h);
     for (let i = 0; i < w * h * 4; i += 4) {
       this.pixels[i + 3] = 255;
     }
@@ -41,42 +41,42 @@ class CRT {
     this.clip.x2 = w - 1;
     this.clip.y2 = h - 1;
 
-    if (this.#autoscaling) {
-      this.#autoscale();
+    if (this.autoscaling) {
+      this._autoscale();
     }
   }
 
-  #autoscale() {
-    const rect = this.#canvas.parentElement!.getBoundingClientRect();
-    let w = this.#canvas.width;
-    let h = this.#canvas.height;
+  private _autoscale() {
+    const rect = this.canvas.parentElement!.getBoundingClientRect();
+    let w = this.canvas.width;
+    let h = this.canvas.height;
     let s = 1;
     while (
-      (w += this.#canvas.width) <= rect.width &&
-      (h += this.#canvas.height) <= rect.height
+      (w += this.canvas.width) <= rect.width &&
+      (h += this.canvas.height) <= rect.height
     ) s++;
     this.scale(s);
   }
 
   autoscale() {
-    if (this.#autoscaling) return;
-    this.#autoscaling = true;
+    if (this.autoscaling) return;
+    this.autoscaling = true;
 
-    const observer = new ResizeObserver(() => this.#autoscale());
-    observer.observe(this.#canvas.parentElement!);
+    const observer = new ResizeObserver(() => this._autoscale());
+    observer.observe(this.canvas.parentElement!);
     const done = () => {
-      this.#autoscaling = false;
+      this.autoscaling = false;
       observer.disconnect();
     };
     return done;
   }
 
   scale(scale: number) {
-    this.#canvas.style.transform = `scale(${scale})`;
+    this.canvas.style.transform = `scale(${scale})`;
   }
 
   blit() {
-    this.#context.putImageData(this.#imgdata, 0, 0);
+    this.context.putImageData(this.imgdata, 0, 0);
   }
 
   pset(x: number, y: number, c: number) {

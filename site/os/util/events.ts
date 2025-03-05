@@ -1,48 +1,48 @@
 export class Listener<T = void, U = void> {
 
-  #list = new Set<(data: T) => U>();
+  private list = new Set<(data: T) => U>();
 
   dispatch(data: T) {
-    for (const fn of this.#list) {
+    for (const fn of this.list) {
       fn(data);
     }
   }
 
   watch(fn: (data: T) => U) {
-    this.#list.add(fn);
-    return () => { this.#list.delete(fn); };
+    this.list.add(fn);
+    return () => { this.list.delete(fn); };
   }
 
   destroy() {
-    this.#list.clear();
+    this.list.clear();
   }
 
 }
 
 export class Reactive<T> {
 
-  #data;
-  #changed = new Listener<T>();
+  private data;
+  private changed = new Listener<T>();
 
   constructor(data: T) {
-    this.#data = data;
+    this.data = data;
   }
 
-  get val() { return this.#data; }
+  get val() { return this.data; }
   set val(data: T) {
-    if (data === this.#data) return;
-    this.#data = data;
-    this.#changed.dispatch(data);
+    if (data === this.data) return;
+    this.data = data;
+    this.changed.dispatch(data);
   }
 
   watch(fn: (data: T) => void) {
-    const done = this.#changed.watch(fn);
-    this.#changed.dispatch(this.val);
+    const done = this.changed.watch(fn);
+    this.changed.dispatch(this.val);
     return done;
   }
 
   destroy() {
-    this.#changed.destroy();
+    this.changed.destroy();
   }
 
 }

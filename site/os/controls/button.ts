@@ -6,17 +6,17 @@ import { multiplex, Reactive } from "../util/events.js";
 export class ClickCounter {
 
   count = 0;
-  #clear!: ReturnType<typeof setTimeout>;
-  #sec: number;
+  private clear!: ReturnType<typeof setTimeout>;
+  private sec: number;
 
   constructor(sec = 333) {
-    this.#sec = sec;
+    this.sec = sec;
   }
 
   increase() {
     this.count++;
-    clearTimeout(this.#clear);
-    this.#clear = setTimeout(() => this.count = 0, this.#sec);
+    clearTimeout(this.clear);
+    this.clear = setTimeout(() => this.count = 0, this.sec);
   }
 
 }
@@ -24,7 +24,7 @@ export class ClickCounter {
 export class Button extends Border {
 
   pressed = false;
-  #counter = new ClickCounter();
+  private counter = new ClickCounter();
 
   hoverColor = 0xffffff22;
   pressColor = 0xffffff11;
@@ -47,15 +47,15 @@ export class Button extends Border {
     this.addChild(this.overlay);
   }
 
-  #changebg: Reactive<any> | undefined;
+  private changebg: Reactive<any> | undefined;
 
   override adopted(): void {
-    this.#changebg = multiplex({
+    this.changebg = multiplex({
       pressed: this.$data.pressed,
       hovered: this.$data.hovered,
     });
 
-    this.#changebg.watch(data => {
+    this.changebg.watch(data => {
       let c = 0x00000000;
       if (data.pressed) c = this.pressColor;
       else if (data.hovered) c = this.hoverColor;
@@ -64,13 +64,13 @@ export class Button extends Border {
   }
 
   override abandoned(): void {
-    this.#changebg?.destroy();
-    this.#changebg = undefined;
+    this.changebg?.destroy();
+    this.changebg = undefined;
   }
 
   override onMouseDown(button: number): void {
     this.pressed = true;
-    this.#counter.increase();
+    this.counter.increase();
     const cancel = sys.trackMouse({
       move: () => {
         if (!this.hovered) {
@@ -80,7 +80,7 @@ export class Button extends Border {
       },
       up: () => {
         this.pressed = false;
-        this.onClick?.({ button, count: this.#counter.count });
+        this.onClick?.({ button, count: this.counter.count });
       },
     });
   }
