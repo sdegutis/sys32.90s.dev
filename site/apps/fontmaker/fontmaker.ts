@@ -24,8 +24,8 @@ const SAMPLE_TEXT = [
 export default async (filename?: string) => {
 
   const $myfont = new Reactive(mem.font);
-  const $width = new Reactive(4);
-  const $height = new Reactive(5);
+  const $width = new Reactive($myfont.data.width);
+  const $height = new Reactive($myfont.data.height);
 
   function rebuildWhole() {
     const w = $width.data;
