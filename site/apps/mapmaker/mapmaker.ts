@@ -27,12 +27,12 @@ export default () => {
       $(PanedXA, {
         onScroll: (up) => {
           if (up) {
-            map.currentTool.val--;
-            if (map.currentTool.val < 0) map.currentTool.val = 15;
+            map.currentTool.data--;
+            if (map.currentTool.data < 0) map.currentTool.update(15);
           }
           else {
-            map.currentTool.val++;
-            if (map.currentTool.val === 16) map.currentTool.val = 0;
+            map.currentTool.data++;
+            if (map.currentTool.data === 16) map.currentTool.update(0);
           }
         }
       },
@@ -48,7 +48,7 @@ export default () => {
           $(View, { layout: makeFlowLayoutY() },
             ...COLORS.map((col, i) => {
 
-              const button = $(Button, { padding: 1, onClick: () => { map.currentTool.val = i; } },
+              const button = $(Button, { padding: 1, onClick: () => { map.currentTool.update(i); } },
                 $(View, { passthrough: true, w: 4, h: 4, background: col })
               );
 
@@ -107,7 +107,7 @@ class Map {
   useTool(tx: number, ty: number) {
     if (tx < 0 || ty < 0 || tx >= this.width || ty >= this.height) return;
     const ti = ty * this.width + tx;
-    this.terrain[ti] = this.currentTool.val;
+    this.terrain[ti] = this.currentTool.data;
   }
 
 }

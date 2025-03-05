@@ -31,7 +31,7 @@ export default () => {
 
             $(Button, {
               init(this: Button) { this.find('checkbox')!.addChild(this.overlay!); },
-              onClick(this: Button) { radios.val = 0 }
+              onClick(this: Button) { radios.update(0) }
             },
               $(GroupX, { gap: 2, },
                 $(Label, { text: 'aaa' }),
@@ -48,7 +48,7 @@ export default () => {
 
             $(Button, {
               init(this: Button) { this.find('checkbox')!.addChild(this.overlay!); },
-              onClick(this: Button) { radios.val = 1 }
+              onClick(this: Button) { radios.update(1) }
             },
               $(GroupX, { gap: 2, },
                 $(Border, { id: 'checkbox', borderColor: 0xffffff33, padding: 1, },
@@ -105,7 +105,7 @@ export default () => {
           $(GroupY, { gap: 1 },
             $(GroupY, { gap: 1 },
               $(Border, { background: 0x00000077, padding: 3 }, $(Label, { text: 'hello' })),
-              $(Button, { onClick: (t) => { console.log('clicked button1', t); radios.val = 3 } },
+              $(Button, { onClick: (t) => { console.log('clicked button1', t); radios.update(3) } },
                 $(Border, { background: 0x00000077, padding: 3 },
                   $(Label, { text: 'hello' })
                 )

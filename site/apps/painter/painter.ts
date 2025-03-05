@@ -113,7 +113,7 @@ export default (filepath?: string) => {
   const filesource = new Reactive('');
 
   setTimeout(() => {
-    filesource.val = 'b/foo.bitmap';
+    filesource.update('b/foo.bitmap');
   }, 1000);
 
   filesource.watch(s => {

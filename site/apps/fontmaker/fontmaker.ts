@@ -28,17 +28,17 @@ export default async (filename?: string) => {
   const $height = new Reactive(5);
 
   function rebuildWhole() {
-    const w = $width.val;
-    const h = $height.val;
+    const w = $width.data;
+    const h = $height.data;
     const src = new Bitmap([0x000000ff], 16 * w, Array(96 * w * h).fill(0));
 
     for (const [i, ch] of CHARSET.entries()) {
       const x = i % 16;
       const y = Math.floor(i / 16);
-      $myfont.val.chars[ch].draw(x * w, y * h, 1, src);
+      $myfont.data.chars[ch].draw(x * w, y * h, 1, src);
     }
 
-    $myfont.val = new Font((src.toString()));
+    $myfont.update(new Font((src.toString())));
   }
 
   rebuildWhole();
@@ -47,17 +47,17 @@ export default async (filename?: string) => {
   const $hovered = new Reactive('');
 
   if (filename) {
-    $myfont.val = new Font(fs.get(filename)!);
-    $width.val = $myfont.val.width;
-    $height.val = $myfont.val.height;
+    $myfont.update(new Font(fs.get(filename)!));
+    $width.update($myfont.data.width);
+    $height.update($myfont.data.height);
   }
 
   const charViews = new Map<string, CharView>();
 
   for (const char of CHARSET) {
-    const view = $(CharView, { char, font: $myfont.val, $data: { font: $myfont, width: $width, height: $height, zoom: $zoom } });
+    const view = $(CharView, { char, font: $myfont.data, $data: { font: $myfont, width: $width, height: $height, zoom: $zoom } });
     charViews.set(char, view);
-    view.$data.hovered.watch((h) => { if (h) $hovered.val = char; });
+    view.$data.hovered.watch((h) => { if (h) $hovered.update(char); });
   }
 
   const panel = $(Panel, { title: 'fontmaker', },
@@ -66,15 +66,15 @@ export default async (filename?: string) => {
         $(View, {
           background: 0x44444499,
           adjust(this: View) {
-            const padding = 1 * $zoom.val;
-            const gap = 1 * $zoom.val;
+            const padding = 1 * $zoom.data;
+            const gap = 1 * $zoom.data;
             const child = this.firstChild!;
             this.w = padding * 2 + (child.w * 16) + (gap * 15);
             this.h = padding * 2 + (child.h * 6) + (gap * 5);
           },
           layout(this: View) {
-            const padding = 1 * $zoom.val;
-            const gap = 1 * $zoom.val;
+            const padding = 1 * $zoom.data;
+            const gap = 1 * $zoom.data;
 
             let i = 0;
             for (let y = 0; y < 6; y++) {
@@ -136,7 +136,7 @@ export default async (filename?: string) => {
     if (key === 's' && sys.keys['Control']) {
 
       if (filename) {
-        fs.put(filename, $myfont.val.charsheet.toString())
+        fs.put(filename, $myfont.data.charsheet.toString())
       }
 
       return true;

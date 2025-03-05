@@ -21,15 +21,14 @@ export class Listener<T = void, U = void> {
 
 export class Reactive<T> {
 
-  private data;
+  data;
   private changed = new Listener<T>();
 
   constructor(data: T) {
     this.data = data;
   }
 
-  get val() { return this.data; }
-  set val(data: T) {
+  update(data: T) {
     if (data === this.data) return;
     this.data = data;
     this.changed.dispatch(data);
@@ -37,7 +36,7 @@ export class Reactive<T> {
 
   watch(fn: (data: T) => void) {
     const done = this.changed.watch(fn);
-    this.changed.dispatch(this.val);
+    this.changed.dispatch(this.data);
     return done;
   }
 
@@ -48,10 +47,10 @@ export class Reactive<T> {
 }
 
 export function multiplex<T extends Record<string, any>>(reactives: { [K in keyof T]: Reactive<T[K]> }): Reactive<T> {
-  const initial = Object.fromEntries(Object.entries<Reactive<any>>(reactives).map(([key, val]) => [key, val.val])) as T;
+  const initial = Object.fromEntries(Object.entries<Reactive<any>>(reactives).map(([key, val]) => [key, val.data])) as T;
   const m = new Reactive(initial);
   for (const [key, r] of Object.entries<Reactive<any>>(reactives)) {
-    r.watch(data => m.val = { ...m.val, [key]: data });
+    r.watch(data => m.update({ ...m.data, [key]: data }));
   }
   return m;
 }

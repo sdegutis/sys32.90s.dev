@@ -24,7 +24,7 @@ function livefile<T>(path: string, to: (content: string) => T) {
   fs.watchTree(path, (type) => {
     if (type === 'disappeared') return;
     const s = fs.get(path)!;
-    r.val = to(s);
+    r.update(to(s));
     sys.needsRedraw = true;
     sys.layoutTree();
   });

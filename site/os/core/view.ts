@@ -132,8 +132,8 @@ export function makeDynamic<T extends Dynamic>(o: T) {
 
     Object.defineProperty(o, key, {
       enumerable: true,
-      set: (v) => o.$data[key as K].val = v,
-      get: () => o.$data[key as K].val,
+      set: (v) => o.$data[key as K].update(v),
+      get: () => o.$data[key as K].data,
     });
   }
 }
