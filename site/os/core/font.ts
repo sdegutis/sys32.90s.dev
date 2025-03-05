@@ -1,6 +1,6 @@
 import { Bitmap } from "./bitmap.js";
 
-export const CHARSET = `abcdefghijklmnopqrstuvwxyz .,'!?1234567890-+/()":;%*=[]<>_&#|{}\`$@~^\\`;
+export const CHARSET = Array(95).keys().map(i => String.fromCharCode(i + 32)).toArray();
 
 export class Font {
 
@@ -10,9 +10,8 @@ export class Font {
 
   static fromString(s: string) {
     let chars: Record<string, Bitmap> = {};
-    const keys = [...CHARSET].sort();
     const vals = s.split('===\n').map(s => Bitmap.fromString(s));
-    keys.forEach((k, i) => { chars[k] = vals[i] });
+    CHARSET.forEach((k, i) => { chars[k] = vals[i] });
     return new Font(chars);
   }
 

@@ -38,9 +38,8 @@ export default async (filename?: string) => {
   if (filename) {
     const s = fs.get(filename)!;
 
-    const keys = [...CHARSET].sort();
     const vals = s.split('===\n').map(s => Bitmap.fromString(s));
-    keys.forEach((k, i) => { chars[k] = vals[i] });
+    CHARSET.forEach((k, i) => { chars[k] = vals[i] });
     $width.val = vals[0].width;
     $height.val = vals[0].height;
 
@@ -49,7 +48,7 @@ export default async (filename?: string) => {
     // chars = sys.font.chars;
   }
 
-  for (const char of [...CHARSET]) {
+  for (const char of CHARSET) {
     const view = $(CharView, { char, rebuilt, initial: chars[char], $data: { width: $width, height: $height, zoom: $zoom } });
     charViews.set(char, view);
     view.$data.hovered.watch((h) => { if (h) $hovered.val = char; });
