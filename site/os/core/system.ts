@@ -1,11 +1,11 @@
 import { fs } from "../fs/fs.js";
-import { Listener, Reactive } from "../util/events.js";
+import { Listener } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { crt } from "./crt.js";
 import { Cursor } from "./cursor.js";
 import { Font } from "./font.js";
 import { Panel } from "./panel.js";
-import { $, Dynamic, makeDynamic, View } from "./view.js";
+import { $, View } from "./view.js";
 
 // class Memory extends Dynamic {
 //   font: Font = null!;
