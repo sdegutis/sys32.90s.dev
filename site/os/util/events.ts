@@ -36,7 +36,7 @@ export class Reactive<T> {
 
   watch(fn: (data: T) => void) {
     const done = this.changed.watch(fn);
-    this.changed.dispatch(this.data);
+    fn(this.data);
     return done;
   }
 
