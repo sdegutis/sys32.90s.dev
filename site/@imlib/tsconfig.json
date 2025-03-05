@@ -1,39 +1,31 @@
 {
   "compilerOptions": {
+    "composite": true,
     "lib": [
       "ESNext",
-      "DOM",
-      "DOM.Iterable",
     ],
     "types": [
+      "node",
+      "@imlib/core/runtime.d.ts",
       "@types/wicg-file-system-access"
     ],
-    "moduleDetection": "force",
+    "jsx": "preserve",
     "target": "ESNext",
     "module": "ESNext",
-    "rootDir": "site",
-    "noEmit": true,
+    "rootDir": ".",
+    "noEmit": false,
     "moduleResolution": "Node",
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true,
     "strict": true,
     "noImplicitAny": true,
-    // "downlevelIteration": true,
     "exactOptionalPropertyTypes": true,
     "esModuleInterop": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    // "noUncheckedIndexedAccess": true,
+    "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
-    // "skipLibCheck": true,
+    "skipLibCheck": true,
   },
-  "exclude": [
-    "site/@imlib"
-  ],
-  "references": [
-    {
-      "path": "site/@imlib"
-    }
-  ]
 }
