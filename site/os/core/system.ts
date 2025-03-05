@@ -28,7 +28,7 @@ class System {
   }
 
   private addListeners() {
-    crt.canvas.addEventListener('keydown', (e) => {
+    crt.canvas.onkeydown = (e) => {
       if (e.key.length > 1 && e.key[0] === 'F') return;
 
       e.preventDefault();
@@ -43,27 +43,27 @@ class System {
       }
 
       this.needsRedraw = true;
-    });
+    };
 
-    crt.canvas.addEventListener('keyup', (e) => {
+    crt.canvas.onkeyup = (e) => {
       e.preventDefault();
       this.keys[e.key] = false;
       this.needsRedraw = true;
-    });
+    };
 
-    crt.canvas.addEventListener('contextmenu', (e) => {
+    crt.canvas.oncontextmenu = (e) => {
       e.preventDefault();
-    });
+    };
 
-    crt.canvas.addEventListener('mousedown', (e) => {
+    crt.canvas.onmousedown = (e) => {
       e.preventDefault();
       crt.canvas.focus();
       this.hovered.focus();
       this.hovered.onMouseDown?.(e.button);
       this.needsRedraw = true;
-    });
+    };
 
-    crt.canvas.addEventListener('mousemove', (e) => {
+    crt.canvas.onmousemove = (e) => {
       e.preventDefault();
       const x = Math.floor(e.offsetX);
       const y = Math.floor(e.offsetY);
@@ -79,16 +79,16 @@ class System {
       this.trackingMouse?.move();
 
       this.needsRedraw = true;
-    });
+    };
 
-    crt.canvas.addEventListener('mouseup', (e) => {
+    crt.canvas.onmouseup = (e) => {
       e.preventDefault();
       this.trackingMouse?.up?.();
       this.trackingMouse = undefined!;
       this.needsRedraw = true;
-    });
+    };
 
-    crt.canvas.addEventListener('wheel', (e) => {
+    crt.canvas.onwheel = (e) => {
       e.preventDefault();
 
       let node: View | undefined = this.hovered;
@@ -100,7 +100,7 @@ class System {
         }
         node = node.parent;
       }
-    });
+    };
 
   }
 
