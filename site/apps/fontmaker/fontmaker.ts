@@ -12,6 +12,7 @@ import { mem, sys } from "../../os/core/system.js";
 import { $, View } from "../../os/core/view.js";
 import { Panel } from "../../os/core/panel.js";
 import { Listener, multiplex, Reactive } from "../../os/util/events.js";
+import { Scroll } from "../../os/containers/scroll.js";
 
 const SAMPLE_TEXT = [
   "how quickly daft jumping zebras vex!",
@@ -27,7 +28,7 @@ export default async (filename?: string) => {
 
   const $width = new Reactive(4);
   const $height = new Reactive(5);
-  const $zoom = new Reactive(1);
+  const $zoom = new Reactive(3);
   const $hovered = new Reactive('');
 
   const rebuilt = new Listener<CharView>();
@@ -56,31 +57,34 @@ export default async (filename?: string) => {
 
   const panel = $(Panel, { title: 'fontmaker', },
     $(PanedYB, {},
-      $(View, {
-        layout: function (this: View) {
-          const padding = 1 * $zoom.val;
-          const gap = 1 * $zoom.val;
+      $(Scroll, {},
+        $(View, {
+          background: 0x44444499,
+          adjust(this: View) {
+            const padding = 1 * $zoom.val;
+            const gap = 1 * $zoom.val;
+            const child = this.firstChild!;
+            this.w = padding * 2 + (child.w * 16) + (gap * 15);
+            this.h = padding * 2 + (child.h * 6) + (gap * 5);
+          },
+          layout(this: View) {
+            const padding = 1 * $zoom.val;
+            const gap = 1 * $zoom.val;
 
-          let x = padding;
-          let y = padding;
-          let h = 0;
-          for (let i = 0; i < this.children.length; i++) {
-            const child = this.children[i];
+            let i = 0;
+            for (let y = 0; y < 6; y++) {
+              for (let x = 0; x < 16; x++) {
+                const child = this.children[i++];
+                if (!child) break;
 
-            if (x + child.w > this.w && i > 0) {
-              x = padding;
-              y += h + gap;
-              h = 0;
+                child.x = padding + (x * child.w) + (x * gap);
+                child.y = padding + (y * child.h) + (y * gap);
+              }
             }
-
-            child.x = x;
-            child.y = y;
-            x += child.w + gap;
-            if (child.h > h) h = child.h;
-          }
-        }, background: 0x44444499
-      },
-        ...charViews.values()
+          },
+        },
+          ...charViews.values()
+        )
       ),
       $(Border, { background: 0x000000ff, u: 2 },
         $(GroupY, { gap: 3, align: 'a' },
