@@ -2,7 +2,6 @@ import { PanedXA, PanedYA } from "../../os/containers/paned.js";
 import { Button } from "../../os/controls/button.js";
 import { Label } from "../../os/controls/label.js";
 import { crt } from "../../os/core/crt.js";
-import { emptyCursor } from "../../os/core/cursor.js";
 import { sys } from "../../os/core/system.js";
 import { $, View } from "../../os/core/view.js";
 import { Panel } from "../../os/core/panel.js";
@@ -125,7 +124,7 @@ class MapView extends View {
   private drawTerrain: ((x: number, y: number) => void)[] = [];
   private tilesel: TileSelection | null = null;
 
-  override cursor = emptyCursor;
+  override cursor = null;
 
   override init(): void {
     for (let i = 0; i < 16; i++) {

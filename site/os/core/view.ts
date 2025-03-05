@@ -1,6 +1,7 @@
 import { Listener, Reactive } from "../util/events.js";
 import { crt } from "./crt.js";
-import { type Cursor } from "./cursor.js";
+import type { Cursor } from "./cursor.js";
+import { mem } from "./memory.js";
 import { sys } from "./system.js";
 
 export class Dynamic {
@@ -42,7 +43,7 @@ export class View extends Dynamic {
   get lastChild(): View | undefined { return this.children[this.children.length - 1]; }
 
   mouse = { x: 0, y: 0 };
-  cursor: Cursor | undefined;
+  cursor: Cursor | null = mem.pointer;
 
   parent?: View;
 

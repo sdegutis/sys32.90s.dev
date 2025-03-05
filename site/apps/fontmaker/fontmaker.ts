@@ -4,10 +4,10 @@ import { PanedYB } from "../../os/containers/paned.js";
 import { Scroll } from "../../os/containers/scroll.js";
 import { Label } from "../../os/controls/label.js";
 import { Slider } from "../../os/controls/slider.js";
-import { Bitmap, type BitmapLike } from "../../os/core/bitmap.js";
+import { Bitmap } from "../../os/core/bitmap.js";
 import { crt } from "../../os/core/crt.js";
-import { emptyCursor } from "../../os/core/cursor.js";
 import { CHARSET, Font } from "../../os/core/font.js";
+import { mem } from "../../os/core/memory.js";
 import { Panel } from "../../os/core/panel.js";
 import { sys } from "../../os/core/system.js";
 import { $, View } from "../../os/core/view.js";
@@ -23,7 +23,7 @@ const SAMPLE_TEXT = [
 
 export default async (filename?: string) => {
 
-  const $myfont = new Reactive(sys.mem.font);
+  const $myfont = new Reactive(mem.font);
   const $width = new Reactive(4);
   const $height = new Reactive(5);
 
@@ -153,7 +153,7 @@ class CharView extends View {
   char!: string;
   font!: Font;
 
-  override cursor = emptyCursor;
+  override cursor = null;
 
   width = 2;
   height = 2;

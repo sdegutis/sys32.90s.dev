@@ -1,39 +1,12 @@
-import { fs } from "../fs/fs.js";
 import { Listener } from "../util/events.js";
-import { Bitmap } from "./bitmap.js";
 import { crt } from "./crt.js";
-import { Cursor } from "./cursor.js";
-import { Font } from "./font.js";
 import { Panel } from "./panel.js";
 import { $, View } from "./view.js";
 
-// class Memory extends Dynamic {
-//   font: Font = null!;
-//   pointer: Bitmap = null!;
-// }
-
-// function livefile<T>(path: string, to: (content: string) => T) {
-//   const s = fs.get(path)!;
-//   const r = new Reactive<T>(to(s));
-//   fs.watchTree(path, (type) => {
-//     if (type === 'disappeared') return;
-//     const s = fs.get(path)!;
-//     r.val = to(s);
-//     sys.needsRedraw = true;
-//     sys.layoutTree();
-//   });
-//   return r;
-// }
-
 class System {
 
-  mem: {
-    pointer: Cursor;
-    font: Font;
-  } = {} as any;
-
-  readonly root = $(View, { background: 0x00000000 });
-  focused = this.root;
+  root!: View;
+  focused !: View;
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0 };
 
@@ -41,12 +14,13 @@ class System {
 
   needsRedraw = true;
 
-  private hovered = this.root;
+  private hovered !: View;
   private trackingMouse?: { move: () => void, up?: () => void };
 
   init() {
-    this.mem.font = new Font(fs.get('sys/font1.font')!);
-    this.mem.pointer = Cursor.fromBitmap(Bitmap.fromString(fs.get('sys/pointer.bitmap')!));
+    this.root = $(View, { background: 0x00000000 });
+    this.focused = this.root;
+    this.hovered = this.root;
 
     this.resize(crt.canvas.width, crt.canvas.height);
     this.addListeners();
@@ -141,9 +115,7 @@ class System {
           this.needsRedraw = false;
 
           this.draw(this.root);
-
-          const cursor = this.hovered.cursor ?? this.mem.pointer;
-          cursor.draw(this.mouse.x, this.mouse.y);
+          this.hovered.cursor?.draw(this.mouse.x, this.mouse.y);
 
           crt.blit();
         }

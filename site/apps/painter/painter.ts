@@ -7,7 +7,6 @@ import { Label } from "../../os/controls/label.js";
 import { Slider } from "../../os/controls/slider.js";
 import { Bitmap } from "../../os/core/bitmap.js";
 import { crt } from "../../os/core/crt.js";
-import { emptyCursor } from "../../os/core/cursor.js";
 import { fs } from "../../os/fs/fs.js";
 import { sys } from "../../os/core/system.js";
 import { $, View } from "../../os/core/view.js";
@@ -192,7 +191,7 @@ class PaintView extends View {
   tool: 'pencil' | 'eraser' = 'pencil';
 
   override background = 0xffffff33;
-  override cursor = emptyCursor;
+  override cursor = null;
 
   private grid: number[] = [];
 
