@@ -28,6 +28,7 @@ function livefile<T>(path: string, to: (content: string) => T) {
     const s = fs.get(path)!;
     r.val = to(s);
     sys.needsRedraw = true;
+    sys.layoutTree();
   });
   return r;
 }

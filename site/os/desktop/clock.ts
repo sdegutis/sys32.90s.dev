@@ -5,6 +5,7 @@ export class Clock extends Label {
   #timer?: ReturnType<typeof setInterval>;
 
   override init(): void {
+    super.init();
     this.#updateTime();
   }
 
