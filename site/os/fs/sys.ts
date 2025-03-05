@@ -1,3 +1,4 @@
+import { files } from "./data.js";
 import { type Drive, type DriveItem, type DriveNotificationType } from "./drive.js";
 
 export class SysDrive implements Drive {
@@ -8,15 +9,10 @@ export class SysDrive implements Drive {
   async mount(notify: (type: DriveNotificationType, path: string) => void) {
     this.notify = notify;
 
-    const jsonpath = import.meta.resolve('./data.json');
-    const paths = await fetch(jsonpath).then<string[]>(r => r.json());
+    for (const [path, content] of Object.entries(files)) {
+      this.items.set(path, { type: 'file', content });
 
-    for (const path of paths) {
-      const content = await fetch(path).then(r => r.text());
-      const fixedpath = path.slice('/os/data/'.length);
-      this.items.set(fixedpath, { type: 'file', content });
-
-      const dirs = fixedpath.split('/').slice(0, -1);
+      const dirs = path.split('/').slice(0, -1);
       for (let i = 0; i < dirs.length; i++) {
         const dir = dirs.slice(0, i + 1).join('/') + '/';
         this.putdir(dir);
