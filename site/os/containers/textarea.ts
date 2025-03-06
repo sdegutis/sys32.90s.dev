@@ -49,15 +49,7 @@ export class TextArea extends View {
       )
     ];
 
-    // sys.trackMouse({
-    //   move: () => {
-    //     console.log(sys.mouse.x, sys.mouse.y)
-    //   }
-    // })
-
     this.$data.cursorColor.watch(c => this._cursor.background = c);
-    this.$data.col.watch(() => this.reflectCursorPos());
-    this.$data.row.watch(() => this.reflectCursorPos());
   }
 
   private drawTextLabel() {
@@ -86,11 +78,11 @@ export class TextArea extends View {
   private reflectCursorPos() {
     this._cursor.x = this.col * this.font.xgap + this.col * this.font.width;
     this._cursor.y = this.row * this.font.ygap + this.row * this.font.height;
+  }
 
+  private scrollCursorIntoView() {
     let x = this._cursor.x;
     let y = this._cursor.y;
-
-    console.log('start', x, y)
 
     let node = this._cursor;
     while (node !== this.scroll) {
@@ -98,11 +90,28 @@ export class TextArea extends View {
       x += node.x;
       y += node.y;
     }
-    console.log('end', x, y)
 
-    // if ()
+    if (y < 0) {
+      this.scroll.scrolly -= -y;
+      this.layoutTree();
+    }
 
-    // console.log(this.scroll)
+    if (x < 0) {
+      this.scroll.scrollx -= -x;
+      this.layoutTree();
+    }
+
+    const maxy = this.scroll.h - this._cursor.h;
+    if (y > maxy) {
+      this.scroll.scrolly -= maxy - y;
+      this.layoutTree();
+    }
+
+    const maxx = this.scroll.w - this._cursor.w;
+    if (x > maxx) {
+      this.scroll.scrollx -= maxx - x;
+      this.layoutTree();
+    }
   }
 
   override onKeyDown(key: string): boolean {
@@ -184,6 +193,9 @@ export class TextArea extends View {
       this.end = this.col;
       this.layoutTree();
     }
+
+    this.reflectCursorPos();
+    this.scrollCursorIntoView();
 
     return true;
   }
