@@ -7,40 +7,32 @@ import { showPrompt } from "../../os/util/dialog.js";
 import { Reactive } from "../../os/util/events.js";
 import { showMenu } from "../../os/util/menu.js";
 
-export default (filepath?: string) => {
-
-  const filesource = new Reactive(filepath);
-
-  const textarea = $(TextArea, { background: 0x00007777 });
-  const panel = $(Panel, { title: 'writer', w: 120, h: 100, }, textarea);
-
-
-
-  function loadData(s: string) {
-    textarea.text = s;
-  }
-
-  function saveData(): string {
-    return textarea.text;
-  }
+function makeFilePanel(opts: {
+  panel: Panel;
+  filepath: string | undefined;
+  loadData(s: string): void;
+  saveData(): string;
+}) {
+  const panel = opts.panel;
+  const title = panel.title;
+  const filesource = new Reactive(opts.filepath);
 
   panel.onMenu = function doMenu() {
     showMenu([
       { text: 'load', onClick: loadFile },
       { text: 'save', onClick: saveFile },
     ])
-  }
-
+  };
 
   filesource.watch(s => {
-    panel.title = !s ? `painter:[no file]` : `painter:${s}`;
+    panel.title = !s ? `${title}:[no file]` : `${title}:${s}`;
     panel.layoutTree();
   });
 
   if (filesource.data) {
     const s = fs.get(filesource.data);
     if (s) {
-      loadData(s);
+      opts.loadData(s);
     }
   }
 
@@ -51,7 +43,7 @@ export default (filepath?: string) => {
 
     const data = fs.get(filesource.data!);
     if (data) {
-      loadData(data);
+      opts.loadData(data);
     }
   }
 
@@ -61,7 +53,7 @@ export default (filepath?: string) => {
       if (!s) return;
       filesource.update(s);
     }
-    fs.put(filesource.data!, saveData());
+    fs.put(filesource.data!, opts.saveData());
   }
 
   panel.onKeyDown = (key) => {
@@ -76,8 +68,19 @@ export default (filepath?: string) => {
     return false;
   };
 
+}
 
+export default (filepath?: string) => {
 
+  const textarea = $(TextArea, { background: 0x00007777 });
+  const panel = $(Panel, { title: 'writer', w: 120, h: 100, }, textarea);
+
+  makeFilePanel({
+    filepath,
+    panel,
+    loadData: s => textarea.text = s,
+    saveData: () => textarea.text,
+  });
 
   panel.show();
 
