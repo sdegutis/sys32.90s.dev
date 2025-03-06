@@ -8,6 +8,7 @@ export class TextArea extends Label {
 
   row = 0;
   col = 0;
+  icol = 0;
 
   // colors: number[] = [];
 
@@ -21,17 +22,21 @@ export class TextArea extends Label {
 
     this.$data.cursorColor.watch(c => this._cursor.background = c);
 
+    this.$data.row.watch(() => this.fixCursorPos());
+    this.$data.icol.watch(() => this.fixCursorPos());
+
     this.$data.col.watch(() => this.reflectCursorPos());
     this.$data.row.watch(() => this.reflectCursorPos());
 
     this.$data.text.watch(() => {
       console.log(this.lines)
+      this.fixCursorPos();
     });
   }
 
   private reflectCursorPos() {
-    this._cursor.x = (this.col) * this.font.xgap + this.col * this.font.width;
-    this._cursor.y = (this.row) * this.font.ygap + this.row * this.font.height;
+    this._cursor.x = this.col * this.font.xgap + this.col * this.font.width;
+    this._cursor.y = this.row * this.font.ygap + this.row * this.font.height;
   }
 
   override adjust(): void {
@@ -80,38 +85,46 @@ export class TextArea extends Label {
   override onKeyDown(key: string): boolean {
     if (sys.keys['Control']) return false;
 
+    if (key === 'Home') {
+      this.restartBlinking();
+      this.icol = 0;
+    }
+
+    if (key === 'End') {
+      this.restartBlinking();
+      this.icol = Infinity;
+    }
+
     if (key === 'ArrowRight') {
       this.restartBlinking();
-      this.col++;
-      this.constrainColumn();
+      console.log(!isFinite(this.icol))
+      this.icol++;
     }
 
     if (key === 'ArrowLeft') {
       this.restartBlinking();
-      this.col--;
-      if (this.col < 0) this.col = 0;
+      this.icol--;
+      if (this.icol < 0) this.icol = 0;
     }
 
     if (key === 'ArrowDown') {
       this.restartBlinking();
-      this.row++;
-      if (this.row >= this.lines.length) this.row = this.lines.length - 1;
-      this.constrainColumn();
+      this.row = Math.min(this.row + 1, this.lines.length - 1);
     }
 
     if (key === 'ArrowUp') {
       this.restartBlinking();
-      this.row--;
-      if (this.row < 0) this.row = 0;
-      this.constrainColumn();
+      this.row = Math.max(0, this.row - 1);
     }
 
     return true;
   }
 
-  private constrainColumn() {
+  private fixCursorPos() {
     const max = this.lines[this.row].length;
-    if (this.col > max) this.col = max;
+    let col = this.icol;
+    if (col > max) col = max;
+    this.col = col;
   }
 
   private blink?: ReturnType<typeof setInterval>;
