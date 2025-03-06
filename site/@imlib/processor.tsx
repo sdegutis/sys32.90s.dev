@@ -16,8 +16,8 @@ export default (({ inFiles, outFiles }) => {
   const sysdata = JSON.stringify(Object.fromEntries(files
     .filter(f => f.path.startsWith('/os/data'))
     .map(f => [f.path.slice('/os/data/'.length), f.content.toString('utf8')])
-  ));
-  files.push({ path: '/os/fs/data.js', content: `export const files = ${sysdata}` });
+  ), null, 2);
+  files.push({ path: '/os/fs/data.js', content: `export const files = ${sysdata};` });
 
   const paths = files.map(f => f.path).filter(s => !s.startsWith('/os/data'));
 
