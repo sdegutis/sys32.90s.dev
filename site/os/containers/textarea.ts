@@ -59,30 +59,25 @@ export class TextArea extends Label {
 
   override onKeyDown(key: string): boolean {
     if (sys.keys['Control']) return false;
+    this.restartBlinking();
 
     if (key === 'Home') {
-      this.restartBlinking();
       this.end = this.col = 0;
     }
     else if (key === 'End') {
-      this.restartBlinking();
       this.end = this.col = this.lines[this.row].length;
     }
     else if (key === 'ArrowRight') {
-      this.restartBlinking();
       this.end = this.col = Math.min(this.col + 1, this.lines[this.row].length);
     }
     else if (key === 'ArrowLeft') {
-      this.restartBlinking();
       this.end = this.col = Math.max(0, this.col - 1);
     }
     else if (key === 'ArrowDown') {
-      this.restartBlinking();
       this.row = Math.min(this.row + 1, this.lines.length - 1);
       this.fixCol();
     }
     else if (key === 'ArrowUp') {
-      this.restartBlinking();
       this.row = Math.max(0, this.row - 1);
       this.fixCol();
     }
