@@ -11,11 +11,6 @@ export default (filename?: string) => {
 
   const s = filename ? fs.get(filename)! : 'foo\nbar\n\nhello worldfoo\nbar\n\nhello worldfoo\nbar\n\nhello worldfoo\nbar\n\nhello worldfoo\nbar\n\nhello worldfoo\nbar\n\nhello world';
   textarea.text = s
-  // textarea.colors[10] = 0x0000ffff;
-  // textarea.colors[5] = 0xffff0099;
-  // textarea.colors.length = 0
-
-  // textarea.color = 0x009999ff;
 
   const panel = $(Panel, { title: 'writer', w: 120, h: 100, },
     textarea

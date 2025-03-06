@@ -8,7 +8,6 @@ import { Scroll } from "./scroll.js";
 export class TextArea extends View {
 
   font = mem.font;
-  text = '';
   color = 0xffffffff;
   private lines: string[] = [];
 
@@ -17,6 +16,14 @@ export class TextArea extends View {
   private scroll!: Scroll;
   private label!: View;
   private _cursor!: View;
+
+  get text() { return this.lines.join('\n') }
+  set text(s: string) {
+    this.lines = s.split('\n');
+    this.row = Math.min(this.row, this.lines.length - 1);
+    this.fixCol();
+    this.layoutTree();
+  }
 
   cursorColor = 0x99000099;
 
@@ -27,13 +34,6 @@ export class TextArea extends View {
   override layout = makeVacuumLayout();
 
   override init(): void {
-    this.$data.text.watch((t: string) => {
-      this.lines = t.split('\n');
-      this.row = Math.min(this.row, this.lines.length - 1);
-      this.fixCol();
-      this.layoutTree();
-    })
-
     // passthrough: false,
     //   onFocus(this: Partial<View>) { this.firstChild?.focus() },
 
