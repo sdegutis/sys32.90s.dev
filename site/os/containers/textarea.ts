@@ -1,4 +1,3 @@
-import { crt } from "../core/crt.js";
 import { mem } from "../core/memory.js";
 import { sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
@@ -209,7 +208,7 @@ export class TextArea extends View {
       this.end = this.col = 0;
       this.layoutTree();
     }
-    else if (key.length === 1) {
+    else if (key.length === 1 && !sys.keys['Control']) {
       const [a, b] = this.halves();
       this.lines[this.row] = a + key + b;
       this.col++;
