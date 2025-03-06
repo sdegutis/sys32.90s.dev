@@ -16,11 +16,11 @@ export class TextArea extends View {
 
   override passthrough = false;
 
-  scroll!: Scroll;
-  label!: View;
+  private scroll!: Scroll;
+  private label!: View;
+  private _cursor!: View;
 
   cursorColor = 0x99000099;
-  private _cursor = $(View, { visible: false, w: this.font.width, h: this.font.height });
 
   row = 0;
   col = 0;
@@ -42,11 +42,12 @@ export class TextArea extends View {
           this.label = $(View, {
             adjust: () => { this.adjustTextLabel() },
             draw: () => { this.drawTextLabel() }
-          }, this._cursor)
+          },
+            this._cursor = $(View, { visible: false, w: this.font.width, h: this.font.height })
+          )
         )
       )
     ];
-
 
     this.$data.cursorColor.watch(c => this._cursor.background = c);
 
@@ -152,7 +153,7 @@ export class TextArea extends View {
       const [a, b] = this.halves();
       this.lines[this.row] = a;
       this.lines.splice(++this.row, 0, b);
-      this.col = 0;
+      this.end = this.col = 0;
       this.layoutTree();
     }
     else if (key.length === 1) {
