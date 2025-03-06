@@ -80,6 +80,7 @@ export class Scroll extends View {
 
   override onMouseEntered(): void {
     this.cancelTracker = sys.trackMouse({
+      autostop: false,
       move: () => {
         console.log('mv')
 
