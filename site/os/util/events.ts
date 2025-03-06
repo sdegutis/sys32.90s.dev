@@ -21,7 +21,7 @@ export class Listener<T = void, U = void> {
 
 export class Reactive<T> {
 
-  data;
+  readonly data;
   private changed = new Listener<T>();
 
   constructor(data: T) {
@@ -30,7 +30,7 @@ export class Reactive<T> {
 
   update(data: T) {
     if (data === this.data) return;
-    this.data = data;
+    (this as any).data = data;
     this.changed.dispatch(data);
   }
 
