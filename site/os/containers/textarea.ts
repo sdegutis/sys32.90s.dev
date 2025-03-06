@@ -43,7 +43,11 @@ export class TextArea extends View {
           draw: () => { this.drawTextLabel() },
           // onmou: () => { this.drawTextLabel() },
         },
-          this._cursor = $(View, { visible: false, w: this.font.width, h: this.font.height })
+          this._cursor = $(View, {
+            visible: false,
+            w: this.font.width + this.font.xgap,
+            h: this.font.height + this.font.ygap,
+          })
         )
       )
     ];
@@ -74,8 +78,8 @@ export class TextArea extends View {
   }
 
   private reflectCursorPos() {
-    this._cursor.x = this.col * this.font.xgap + this.col * this.font.width;
-    this._cursor.y = this.row * this.font.ygap + this.row * this.font.height;
+    this._cursor.x = (this.col * this.font.xgap + this.col * this.font.width) - Math.floor(this.font.xgap / 2);
+    this._cursor.y = (this.row * this.font.ygap + this.row * this.font.height) - Math.floor(this.font.ygap / 2);
   }
 
   private scrollCursorIntoView() {
