@@ -11,8 +11,11 @@ class FS {
   private _drives = new Map<string, Drive>();
   private watchers = new Map<string, Listener<DriveNotificationType>>();
 
-  async init() {
-    await this.addDrive('sys', new SysDrive());
+  init() {
+    this.addDrive('sys', new SysDrive());
+  }
+
+  async mountUserDrives() {
     await this.addDrive('user', new UserDrive());
 
     this.mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
@@ -116,9 +119,9 @@ class FS {
     }
   }
 
-  private async addDrive(name: string, drive: Drive) {
-    await drive.mount((type, path) => this.notify(type, name + '/' + path));
+  private addDrive(name: string, drive: Drive) {
     this._drives.set(name, drive);
+    return drive.mount((type, path) => this.notify(type, name + '/' + path));
   }
 
   private removeDrive(name: string) {
