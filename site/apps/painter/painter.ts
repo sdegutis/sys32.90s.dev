@@ -121,7 +121,7 @@ export default (filepath?: string) => {
   }
 
   filesource.watch(s => {
-    panel.title = !s ? `painter: [no file]` : `painter: ${s}`;
+    panel.title = !s ? `painter:[no file]` : `painter:${s}`;
     panel.layoutTree();
   });
 
