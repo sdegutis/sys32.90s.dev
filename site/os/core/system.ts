@@ -87,6 +87,7 @@ class System {
     crt.canvas.onmouseup = (e) => {
       e.preventDefault();
       this.mouseUp.dispatch();
+      this.mouseUp.clear();
       this.needsRedraw = true;
     };
 
@@ -130,16 +131,16 @@ class System {
 
   trackMouse(fns: { move: () => void; up?: () => void; }) {
     fns.move();
-    const doneMove = this.mouseMoved.watch(fns.move);
-    const doneUp = fns.up && this.mouseUp.watch(() => {
-      fns.up!();
-      doneBoth();
+    const destroyMove = this.mouseMoved.watch(fns.move);
+    const destroyUp = this.mouseUp.watch(() => {
+      fns.up?.();
+      destroyBoth();
     });
-    const doneBoth = () => {
-      doneMove();
-      doneUp?.();
+    const destroyBoth = () => {
+      destroyMove();
+      destroyUp();
     };
-    return doneBoth
+    return destroyBoth;
   }
 
   resize(w: number, h: number) {

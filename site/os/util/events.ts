@@ -14,6 +14,10 @@ export class Listener<T = void, U = void> {
   }
 
   destroy() {
+    this.clear();
+  }
+
+  clear() {
     this.list.clear();
   }
 
