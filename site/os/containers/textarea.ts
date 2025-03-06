@@ -29,11 +29,11 @@ export class TextArea extends View {
   override layout = makeVacuumLayout();
 
   override init(): void {
-
     this.$data.text.watch((t: string) => {
       this.lines = t.split('\n');
-      this.layoutTree()
+      this.row = Math.min(this.row, this.lines.length - 1);
       this.fixCol();
+      this.layoutTree();
     })
 
     this.children = [
@@ -50,10 +50,8 @@ export class TextArea extends View {
     ];
 
     this.$data.cursorColor.watch(c => this._cursor.background = c);
-
     this.$data.col.watch(() => this.reflectCursorPos());
     this.$data.row.watch(() => this.reflectCursorPos());
-
   }
 
   private drawTextLabel() {
