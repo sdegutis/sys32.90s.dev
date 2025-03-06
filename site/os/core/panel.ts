@@ -84,14 +84,14 @@ export class Panel extends View {
           $(Spaced, { onMouseDown: titleBarMouseDown, },
             $(Border, {},
               $(GroupX, { gap: 1 },
-                $(Button, { padding: 2, onClick: () => this.onMenu?.() }, $(ImageView, { image: mem.menubuttonImage })),
+                $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.onMenu?.() }, $(ImageView, { image: mem.menubuttonImage })),
                 $(Label, { id: 'titleLabel', color: 0xaaaaaaff })
               )
             ),
             $(Group, { gap: 0 },
-              $(Button, { padding: 2, onClick: () => this.minimize() }, $(ImageView, { image: minImage })),
-              $(Button, { padding: 2, onClick: () => this.maximize() }, $(ImageView, { image: maxImage })),
-              $(Button, { padding: 2, onClick: () => this.close(), hoverColor: 0x99000055, pressColor: 0x44000099 }, $(ImageView, { image: axeImage }))
+              $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.minimize() }, $(ImageView, { image: minImage })),
+              $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.maximize() }, $(ImageView, { image: maxImage })),
+              $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.close(), hoverColor: 0x99000055, pressColor: 0x44000099 }, $(ImageView, { image: axeImage }))
             )
           ),
 
