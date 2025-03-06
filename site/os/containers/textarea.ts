@@ -1,59 +1,83 @@
-import { Label } from "../controls/label.js";
 import { crt } from "../core/crt.js";
+import { mem } from "../core/memory.js";
 import { sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
+import { makeVacuumLayout } from "../util/layouts.js";
+import { passedFocus } from "../util/unsure.js";
+import { Border } from "./border.js";
+import { Scroll } from "./scroll.js";
 
-export class TextArea extends Label {
+export class TextArea extends View {
 
+  font = mem.font;
+  text = '';
+  color = 0xffffffff;
+  private lines: string[] = [];
+
+  override passthrough = false;
+
+  cursorColor = 0x99000099;
   private _cursor = $(View, { visible: false, w: this.font.width, h: this.font.height });
 
   row = 0;
   col = 0;
   end = 0;
 
-  // colors: number[] = [];
-
-  override passthrough = false;
-
-  cursorColor = 0x99000099;
+  override layout = makeVacuumLayout();
 
   override init(): void {
-    super.init();
-    this.children = [this._cursor];
+
+    this.$data.text.watch((t: string) => {
+      this.lines = t.split('\n');
+      this.layoutTree()
+      this.fixCol();
+    })
+
+    let label: View;
+
+    this.children = [
+      $(Scroll, { background: 0x0000ff11, ...passedFocus },
+        $(Border, { background: 0x00ff0011, padding: 2, ...passedFocus },
+          label = $(View, {
+            adjust: () => {
+              let w = 0;
+              for (const line of this.lines) {
+                if (line.length > w) w = line.length;
+              }
+              label.w = w * this.font.width + (w - 1) * this.font.xgap;
+              label.h = (this.lines.length * this.font.height) + ((this.lines.length - 1) * this.font.ygap);
+              label.w += this.font.width + this.font.xgap;
+            },
+            draw: () => {
+              crt.rectFill(0, 0, this.w, this.h, 0x000000ff)
+              for (let y = 0; y < this.lines.length; y++) {
+                const line = this.lines[y];
+                const py = y * this.font.height + y * this.font.ygap;
+                for (let x = 0; x < line.length; x++) {
+                  const char = this.font.chars[line[x]];
+                  const px = x * this.font.width + x * this.font.xgap;
+                  char.draw(px, py, this.color);
+                }
+              }
+            }
+          },
+            this._cursor
+          )
+        )
+      )
+    ];
+
 
     this.$data.cursorColor.watch(c => this._cursor.background = c);
 
     this.$data.col.watch(() => this.reflectCursorPos());
     this.$data.row.watch(() => this.reflectCursorPos());
 
-    this.$data.text.watch(() => {
-      this.fixCol();
-    });
   }
 
   private reflectCursorPos() {
     this._cursor.x = this.col * this.font.xgap + this.col * this.font.width;
     this._cursor.y = this.row * this.font.ygap + this.row * this.font.height;
-  }
-
-  override adjust(): void {
-    super.adjust();
-
-    this.w += this.font.width + this.font.xgap;
-  }
-
-  override draw(): void {
-    crt.rectFill(0, 0, this.w, this.h, this.background)
-
-    for (let y = 0; y < this.lines.length; y++) {
-      const line = this.lines[y];
-      const py = y * this.font.height + y * this.font.ygap;
-      for (let x = 0; x < line.length; x++) {
-        const char = this.font.chars[line[x]];
-        const px = x * this.font.width + x * this.font.xgap;
-        char.draw(px, py, this.color);
-      }
-    }
   }
 
   override onKeyDown(key: string): boolean {
@@ -98,7 +122,7 @@ export class TextArea extends Label {
         this.lines[this.row] = a.slice(0, -1) + b;
         this.col--;
         this.end = this.col;
-        this.parent?.layoutTree();
+        this.layoutTree();
       }
       else if (this.row > 0) {
         this.end = this.lines[this.row - 1].length;
@@ -106,19 +130,19 @@ export class TextArea extends Label {
         this.lines.splice(this.row, 1);
         this.row--;
         this.col = this.end;
-        this.parent?.layoutTree();
+        this.layoutTree();
       }
     }
     else if (key === 'Delete') {
       if (this.col < this.lines[this.row].length) {
         const [a, b] = this.halves();
         this.lines[this.row] = a + b.slice(1);
-        this.parent?.layoutTree();
+        this.layoutTree();
       }
       else if (this.row < this.lines.length - 1) {
         this.lines[this.row] += this.lines[this.row + 1];
         this.lines.splice(this.row + 1, 1);
-        this.parent?.layoutTree();
+        this.layoutTree();
       }
     }
     else if (key === 'Enter') {
@@ -126,14 +150,14 @@ export class TextArea extends Label {
       this.lines[this.row] = a;
       this.lines.splice(++this.row, 0, b);
       this.col = 0;
-      this.parent?.layoutTree();
+      this.layoutTree();
     }
     else if (key.length === 1) {
       const [a, b] = this.halves();
       this.lines[this.row] = a + key + b;
       this.col++;
       this.end = this.col;
-      this.parent?.layoutTree();
+      this.layoutTree();
     }
 
     return true;

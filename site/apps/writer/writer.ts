@@ -9,7 +9,9 @@ import { passedFocus } from "../../os/util/unsure.js";
 
 export default (filename?: string) => {
 
-  const textarea = $(TextArea, { background: 0x00990033 });
+  const textarea = $(TextArea, {
+    background: 0x00990033,
+  });
 
   const s = filename ? fs.get(filename)! : 'foo\nbar\n\nhello world';
   textarea.text = s
@@ -18,11 +20,7 @@ export default (filename?: string) => {
   // textarea.colors.length = 0
 
   const panel = $(Panel, { title: 'writer', w: 120, h: 100, },
-    $(View, { layout: makeVacuumLayout(), background: 0x44444433 },
-      $(Scroll, { background: 0x0000ff11, ...passedFocus },
-        $(Border, { padding: 2, ...passedFocus }, textarea)
-      )
-    )
+    textarea
   );
 
   panel.show();
