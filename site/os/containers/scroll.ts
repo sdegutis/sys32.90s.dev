@@ -22,6 +22,11 @@ export class Scroll extends View {
     this.addChild(this.barx);
     this.addChild(this.bary);
 
+    this.barx.onMouseEntered = () => this.scrollVisibleClaims++;
+    this.bary.onMouseEntered = () => this.scrollVisibleClaims++;
+    this.barx.onMouseExited = () => this.scrollVisibleClaims--;
+    this.bary.onMouseExited = () => this.scrollVisibleClaims--;
+
     this.$data.scrollVisibleClaims.watch((claims) => {
       this.barx.visible = (claims > 0) && (this.firstChild!.h > this.h);
       this.bary.visible = (claims > 0) && (this.firstChild!.w > this.w);
