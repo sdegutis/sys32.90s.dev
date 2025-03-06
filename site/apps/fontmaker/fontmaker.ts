@@ -55,7 +55,7 @@ export default async (filename?: string) => {
   const charViews = new Map<string, CharView>();
 
   for (const char of CHARSET) {
-    const view = $(CharView, { char, font: $myfont.data, $data: { font: $myfont, width: $width, height: $height, zoom: $zoom } });
+    const view = $(CharView, { char, $data: { font: $myfont, width: $width, height: $height, zoom: $zoom } });
     charViews.set(char, view);
     view.$data.hovered.watch((h) => { if (h) $hovered.update(char); });
   }

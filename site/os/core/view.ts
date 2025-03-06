@@ -134,4 +134,13 @@ export function makeDynamic<T extends Dynamic>(o: T) {
       get: () => o.$data[key as keyof T].data,
     });
   }
+  for (let key of Object.keys(o['$data'])) {
+    if (Object.getOwnPropertyDescriptor(o, key)?.get) continue;
+
+    Object.defineProperty(o, key, {
+      enumerable: true,
+      set: (v) => o.$data[key as keyof T].update(v),
+      get: () => o.$data[key as keyof T].data,
+    });
+  }
 }
