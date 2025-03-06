@@ -53,7 +53,7 @@ export class Scroll extends View {
   private dragTrack(track: View) {
     this.scrollVisibleClaims++;
 
-    const o = { x: this.trackx.y, y: this.tracky.x };
+    const o = { y: this.trackx.y, x: this.tracky.x };
     const drag = dragMove(o);
     const move = () => {
       drag();
