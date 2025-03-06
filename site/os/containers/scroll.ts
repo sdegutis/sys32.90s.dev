@@ -82,15 +82,8 @@ export class Scroll extends View {
     this.cancelTracker = sys.trackMouse({
       autostop: false,
       move: () => {
-        console.log('mv')
-
-        if (this.cancelClaim) {
-          clearTimeout(this.cancelClaim);
-        }
-        else {
-          this.scrollVisibleClaims++;
-        }
-
+        if (this.cancelClaim) clearTimeout(this.cancelClaim);
+        else this.scrollVisibleClaims++;
         setTimeout(() => { this.scrollVisibleClaims-- }, 500);
       }
     });
