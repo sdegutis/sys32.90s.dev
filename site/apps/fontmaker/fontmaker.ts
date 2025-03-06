@@ -5,7 +5,6 @@ import { Scroll } from "../../os/containers/scroll.js";
 import { Label } from "../../os/controls/label.js";
 import { Slider } from "../../os/controls/slider.js";
 import { Bitmap } from "../../os/core/bitmap.js";
-import { crt } from "../../os/core/crt.js";
 import { CHARSET, Font } from "../../os/core/font.js";
 import { mem } from "../../os/core/memory.js";
 import { Panel } from "../../os/core/panel.js";
@@ -13,6 +12,7 @@ import { sys } from "../../os/core/system.js";
 import { $, View } from "../../os/core/view.js";
 import { fs } from "../../os/fs/fs.js";
 import { multiplex, Reactive } from "../../os/util/events.js";
+import { CharView } from "./charview.js";
 
 const SAMPLE_TEXT = [
   "how quickly daft jumping zebras vex!",
@@ -43,7 +43,7 @@ export default async (filename?: string) => {
 
   rebuildWhole();
 
-  const $zoom = new Reactive(3);
+  const $zoom = new Reactive(2);
   const $hovered = new Reactive('');
 
   if (filename) {
@@ -147,72 +147,3 @@ export default async (filename?: string) => {
   panel.show();
 
 };
-
-class CharView extends View {
-
-  char!: string;
-  font!: Font;
-
-  override cursor = null;
-
-  width = 2;
-  height = 2;
-  zoom = 1;
-
-  spots: Record<string, boolean> = {};
-
-  override background = 0x000000ff;
-
-  override init(): void {
-    for (let y = 0; y < this.font.height; y++) {
-      for (let x = 0; x < this.font.width; x++) {
-        let k = `${x},${y}`;
-        if (this.font.chars[this.char].pget(x, y) > 0) {
-          this.spots[k] = true;
-        }
-      }
-    }
-  }
-
-  override adjust(): void {
-    this.w = this.width * this.zoom;
-    this.h = this.height * this.zoom;
-  }
-
-  override draw(): void {
-    super.draw();
-
-    for (let y = 0; y < this.height; y++) {
-      for (let x = 0; x < this.width; x++) {
-        const tx = x * this.zoom;
-        const ty = y * this.zoom;
-        const key = `${x},${y}`;
-
-        if (this.spots[key]) {
-          crt.rectFill(tx, ty, this.zoom, this.zoom, 0xffffffff);
-        }
-      }
-    }
-
-    if (this.hovered) {
-      const tx = Math.floor(this.mouse.x / this.zoom) * this.zoom;
-      const ty = Math.floor(this.mouse.y / this.zoom) * this.zoom;
-
-      crt.rectFill(tx, ty, this.zoom, this.zoom, 0xff000099);
-    }
-  }
-
-  override onMouseDown(button: number): void {
-    sys.trackMouse({
-      move: () => {
-        const tx = Math.floor(this.mouse.x / this.zoom);
-        const ty = Math.floor(this.mouse.y / this.zoom);
-
-        const key = `${tx},${ty}`;
-        this.spots[key] = button === 0;
-        this.font.chars[this.char].pset(tx, ty, button === 0 ? 1 : 0);
-      }
-    });
-  }
-
-}
