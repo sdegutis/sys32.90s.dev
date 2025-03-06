@@ -44,4 +44,7 @@ export class TextArea extends Label {
 
   }
 
+  override onFocus(): void {
+  }
+
 }

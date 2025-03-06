@@ -4,6 +4,7 @@ import { $, View } from "../../os/core/view.js";
 import { Panel } from "../../os/core/panel.js";
 import { makeVacuumLayout } from "../../os/util/layouts.js";
 import { fs } from "../../os/fs/fs.js";
+import { Border } from "../../os/containers/border.js";
 
 export default (filename?: string) => {
 
@@ -15,14 +16,16 @@ export default (filename?: string) => {
   // textarea.colors[5] = 0xffff0099;
   // textarea.colors.length = 0
 
-  const panel = $(Panel, { title: 'writer', w: 70, h: 50, },
+  const panel = $(Panel, { title: 'writer', w: 120, h: 100, },
     $(View, { layout: makeVacuumLayout(), background: 0x44444433 },
       $(Scroll, { background: 0x0000ff11 },
-        textarea
+        $(Border, { padding: 2 }, textarea)
       )
     )
   );
 
   panel.show();
+
+  textarea.focus();
 
 };
