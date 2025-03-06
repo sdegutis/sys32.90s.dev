@@ -117,7 +117,10 @@ class Workspace {
       }).toArray(),
       '-',
       { text: 'resize', onClick: () => this.toggleSize() },
-    ]);
+    ], menu => {
+      menu.x = 0;
+      menu.y = this.taskbar.y - menu.h;
+    });
   }
 
   openFile(path: string) {

@@ -8,7 +8,7 @@ import { $, View } from "../core/view.js";
 
 export type MenuItem = '-' | { text: string, onClick: () => void };
 
-export function showMenu(items: MenuItem[]) {
+export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
   const menu = $(Border, {
     x: sys.mouse.x,
     y: sys.mouse.y,
@@ -36,6 +36,8 @@ export function showMenu(items: MenuItem[]) {
   if (menu.y + menu.h > sys.root.h) {
     menu.y = sys.mouse.y - menu.h;
   }
+
+  adjust?.(menu);
 
   sys.root.addChild(menu);
   menu.focus();
