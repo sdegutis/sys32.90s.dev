@@ -1,5 +1,5 @@
 import { Border } from "../containers/border.js";
-import { Group } from "../containers/group.js";
+import { Group, GroupX } from "../containers/group.js";
 import { PanedYA } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
 import { Button, ClickCounter } from "../controls/button.js";
@@ -13,10 +13,12 @@ import { Listener } from "../util/events.js";
 import { makeVacuumLayout } from "../util/layouts.js";
 import { dragMove, dragResize } from "../util/selections.js";
 import { ws } from "../desktop/workspace.js";
+import { fs } from "../fs/fs.js";
+import { mem } from "./memory.js";
 
-const minImage = new Bitmap([0xaaaaaaff], 4, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,]);
-const maxImage = new Bitmap([0xaaaaaaff], 4, [1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1,]);
-const axeImage = new Bitmap([0xaaaaaaff], 4, [1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,]);
+const minImage = new Bitmap([0x333333ff], 4, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,]);
+const maxImage = new Bitmap([0x333333ff], 4, [1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1,]);
+const axeImage = new Bitmap([0x333333ff], 4, [1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,]);
 const adjImage = new Bitmap([0xffffff77], 3, [0, 0, 1, 0, 0, 1, 1, 1, 1,]);
 
 const adjCursor = Cursor.fromBitmap(new Bitmap([0x000000cc, 0xffffffff, 0xfffffffe], 5, [
@@ -30,6 +32,8 @@ const adjCursor = Cursor.fromBitmap(new Bitmap([0x000000cc, 0xffffffff, 0xffffff
 export class Panel extends View {
 
   didClose = new Listener();
+
+  onMenu?(): void;
 
   override background = 0x070707ee;
   override layout = makeVacuumLayout(0);
@@ -78,13 +82,16 @@ export class Panel extends View {
         $(PanedYA, {},
 
           $(Spaced, { onMouseDown: titleBarMouseDown, },
-            $(Border, { l: pad },
-              $(Label, { id: 'titleLabel', color: 0xaaaaaaff })
+            $(Border, {},
+              $(GroupX, { gap: 1 },
+                $(Button, { padding: 2, onClick: () => this.onMenu?.() }, $(ImageView, { image: mem.menubuttonImage })),
+                $(Label, { id: 'titleLabel', color: 0xaaaaaaff })
+              )
             ),
             $(Group, { gap: 0 },
               $(Button, { padding: 2, onClick: () => this.minimize() }, $(ImageView, { image: minImage })),
               $(Button, { padding: 2, onClick: () => this.maximize() }, $(ImageView, { image: maxImage })),
-              $(Button, { padding: 2, onClick: () => this.close(), hoverColor: 0x99000099, pressColor: 0x44000099 }, $(ImageView, { image: axeImage }))
+              $(Button, { padding: 2, onClick: () => this.close(), hoverColor: 0x99000055, pressColor: 0x44000099 }, $(ImageView, { image: axeImage }))
             )
           ),
 

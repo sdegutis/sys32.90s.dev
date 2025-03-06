@@ -8,12 +8,14 @@ import { Dynamic } from "./view.js";
 
 class Memory extends Dynamic {
 
-  font: Font = null!;
-  pointer: Cursor = null!;
+  font!: Font;
+  pointer!: Cursor;
+  menubuttonImage!: Bitmap;
 
   init() {
     this.font = new Font(fs.get('sys/font1.font')!);
     this.pointer = Cursor.fromBitmap(Bitmap.fromString(fs.get('sys/pointer.bitmap')!));
+    this.menubuttonImage = Bitmap.fromString(fs.get('sys/menubutton.bitmap')!);
   }
 
 }
