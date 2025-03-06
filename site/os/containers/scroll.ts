@@ -65,8 +65,6 @@ export class Scroll extends View {
   override onMouseEntered(): void {
     this.cancelTracker = sys.trackMouse({
       move: () => {
-        console.log('mv')
-
         if (this.cancelClaim) {
           clearTimeout(this.cancelClaim);
         }
