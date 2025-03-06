@@ -11,7 +11,7 @@ class FS {
   private _drives = new Map<string, Drive>();
   private watchers = new Map<string, Listener<DriveNotificationType>>();
 
-  init() {
+  constructor() {
     this.addDrive('sys', new SysDrive());
   }
 

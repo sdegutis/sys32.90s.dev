@@ -4,8 +4,8 @@ class CRT {
   clip = { cx: 0, cy: 0, x1: 0, y1: 0, x2: 0, y2: 0 };
   raw = false;
 
-  canvas!: HTMLCanvasElement;
-  private context!: CanvasRenderingContext2D;
+  canvas: HTMLCanvasElement;
+  private context: CanvasRenderingContext2D;
   private imgdata!: ImageData;
 
   private autoscaling = false;
@@ -13,7 +13,7 @@ class CRT {
   width = 320;
   height = 180;
 
-  init() {
+  constructor() {
     this.canvas = document.createElement('canvas');
     this.canvas.width = this.width;
     this.canvas.height = this.height;
