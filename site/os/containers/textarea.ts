@@ -115,9 +115,6 @@ export class TextArea extends View {
   }
 
   override onKeyDown(key: string): boolean {
-    if (sys.keys['Control']) return false;
-    this.restartBlinking();
-
     if (key === 'Home') {
       this.end = this.col = 0;
     }
@@ -143,12 +140,24 @@ export class TextArea extends View {
       }
     }
     else if (key === 'ArrowDown') {
-      this.row = Math.min(this.row + 1, this.lines.length - 1);
-      this.fixCol();
+      if (sys.keys['Control']) {
+        this.row = this.lines.length - 1;
+        this.col = this.end = this.lines[this.row].length;
+      }
+      else {
+        this.row = Math.min(this.row + 1, this.lines.length - 1);
+        this.fixCol();
+      }
     }
     else if (key === 'ArrowUp') {
-      this.row = Math.max(0, this.row - 1);
-      this.fixCol();
+      if (sys.keys['Control']) {
+        this.row = 0
+        this.end = this.col = 0;
+      }
+      else {
+        this.row = Math.max(0, this.row - 1);
+        this.fixCol();
+      }
     }
     else if (key === 'Backspace') {
       if (this.col > 0) {
@@ -193,10 +202,13 @@ export class TextArea extends View {
       this.end = this.col;
       this.layoutTree();
     }
+    else {
+      return false;
+    }
 
+    this.restartBlinking();
     this.reflectCursorPos();
     this.scrollCursorIntoView();
-
     return true;
   }
 
