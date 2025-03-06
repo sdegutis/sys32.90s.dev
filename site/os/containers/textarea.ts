@@ -7,6 +7,12 @@ export class TextArea extends Label {
 
   override passthrough = false;
 
+  override adjust(): void {
+    super.adjust();
+
+    this.w += this.font.width + this.font.xgap;
+  }
+
   override draw(): void {
     super.draw();
 

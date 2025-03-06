@@ -8,7 +8,7 @@ export class Label extends View {
   color = 0xffffffff;
   override passthrough = true;
 
-  lines: string[] = [];
+  protected lines: string[] = [];
 
   override init(): void {
     this.font = mem.font;
