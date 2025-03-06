@@ -104,19 +104,16 @@ class Workspace {
     this.programs.get(name)?.(path);
   }
 
-  toggleSize() {
-    big = !big;
-    sys.resize(320 * (+big + 1), 180 * (+big + 1));
-    sys.layoutTree();
-  }
-
   showProgMenu() {
+    const progs = this.programs.entries().filter(p => p[0] !== 'settings');
+    const settings = this.programs.get('settings')!;
+
     showMenu([
-      ...this.programs.entries().map(([name, launch]) => {
+      ...progs.map(([name, launch]) => {
         return { text: name, onClick: () => launch() } as MenuItem;
       }).toArray(),
       '-',
-      { text: 'resize', onClick: () => this.toggleSize() },
+      { text: 'settings', onClick: () => settings() },
     ], menu => {
       menu.x = 0;
       menu.y = this.taskbar.y - menu.h;
