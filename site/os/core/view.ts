@@ -1,6 +1,7 @@
 import { Listener, Reactive } from "../util/events.js";
 import { crt } from "./crt.js";
 import type { Cursor } from "./cursor.js";
+import { makeDynamic } from "./dyn.js";
 import { mem } from "./memory.js";
 import { sys } from "./system.js";
 
@@ -24,6 +25,8 @@ export class View extends Dynamic {
   adjust?(): void;
   adopted?(): void;
   abandoned?(): void;
+
+  data = makeDynamic({});
 
   id = '';
 
@@ -113,12 +116,12 @@ export function $<T extends View>(
 ): T {
   const view = new ctor();
   Object.assign(view, { children }, config);
-  makeDynamic(view);
+  makeDynamicOld(view);
   view.init?.();
   return view;
 }
 
-export function makeDynamic<T extends Dynamic>(o: T) {
+export function makeDynamicOld<T extends Dynamic>(o: T) {
   for (let [key, val] of Object.entries(o)) {
     if (key === '$data') continue;
     if (typeof val === 'function') continue;
