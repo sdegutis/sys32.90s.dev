@@ -27,7 +27,6 @@ export class TextArea extends Label {
     this.$data.row.watch(() => this.reflectCursorPos());
 
     this.$data.text.watch(() => {
-      console.log(this.lines)
       this.fixCol();
     });
   }
@@ -68,10 +67,22 @@ export class TextArea extends Label {
       this.end = this.col = this.lines[this.row].length;
     }
     else if (key === 'ArrowRight') {
-      this.end = this.col = Math.min(this.col + 1, this.lines[this.row].length);
+      if (this.col < this.lines[this.row].length) {
+        this.end = this.col = this.col + 1;
+      }
+      else if (this.row < this.lines.length - 1) {
+        this.col = this.end = 0;
+        this.row++;
+      }
     }
     else if (key === 'ArrowLeft') {
-      this.end = this.col = Math.max(0, this.col - 1);
+      if (this.col > 0) {
+        this.end = this.col = this.col - 1;
+      }
+      else if (this.row > 0) {
+        this.row--;
+        this.end = this.col = this.lines[this.row].length;
+      }
     }
     else if (key === 'ArrowDown') {
       this.row = Math.min(this.row + 1, this.lines.length - 1);
