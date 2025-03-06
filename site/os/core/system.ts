@@ -14,6 +14,7 @@ class System {
 
   needsRedraw = true;
 
+  private allHovered = new Set<View>();
   private hovered !: View;
   private trackingMouse?: { move: () => void, up?: () => void };
 
@@ -163,7 +164,18 @@ class System {
   }
 
   private checkUnderMouse() {
+    const lastHovered = this.allHovered;
+    this.allHovered = new Set();
+
     const activeHovered = this.hover(this.root, this.mouse.x, this.mouse.y)!;
+
+    for (const view of this.allHovered.difference(lastHovered)) {
+      view.onMouseEntered?.();
+    }
+
+    for (const view of lastHovered.difference(this.allHovered)) {
+      view.onMouseExited?.();
+    }
 
     if (this.hovered !== activeHovered) {
       this.hovered.hovered = false;
@@ -211,6 +223,8 @@ class System {
 
     const inThis = (x >= tx && y >= ty && x < tw && y < th);
     if (!inThis) return null;
+
+    this.allHovered.add(node);
 
     node.mouse.x = x;
     node.mouse.y = y;

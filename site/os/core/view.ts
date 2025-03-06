@@ -19,6 +19,8 @@ export class View extends Dynamic {
   onScroll?(up: boolean): void;
   onKeyDown?(key: string): boolean;
   onMouseDown?(button: number): void;
+  onMouseEntered?(): void;
+  onMouseExited?(): void;
   onFocus?(): void;
   onBlur?(): void;
   layout?(): void;

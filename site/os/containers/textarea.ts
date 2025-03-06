@@ -120,10 +120,22 @@ export class TextArea extends View {
 
   override onKeyDown(key: string): boolean {
     if (key === 'Home') {
-      this.end = this.col = 0;
+      if (sys.keys['Control']) {
+        this.row = 0
+        this.end = this.col = 0;
+      }
+      else {
+        this.end = this.col = 0;
+      }
     }
     else if (key === 'End') {
-      this.end = this.col = this.lines[this.row].length;
+      if (sys.keys['Control']) {
+        this.row = this.lines.length - 1;
+        this.col = this.end = this.lines[this.row].length;
+      }
+      else {
+        this.end = this.col = this.lines[this.row].length;
+      }
     }
     else if (key === 'ArrowRight') {
       if (this.col < this.lines[this.row].length) {
@@ -144,24 +156,12 @@ export class TextArea extends View {
       }
     }
     else if (key === 'ArrowDown') {
-      if (sys.keys['Control']) {
-        this.row = this.lines.length - 1;
-        this.col = this.end = this.lines[this.row].length;
-      }
-      else {
-        this.row = Math.min(this.row + 1, this.lines.length - 1);
-        this.fixCol();
-      }
+      this.row = Math.min(this.row + 1, this.lines.length - 1);
+      this.fixCol();
     }
     else if (key === 'ArrowUp') {
-      if (sys.keys['Control']) {
-        this.row = 0
-        this.end = this.col = 0;
-      }
-      else {
-        this.row = Math.max(0, this.row - 1);
-        this.fixCol();
-      }
+      this.row = Math.max(0, this.row - 1);
+      this.fixCol();
     }
     else if (key === 'Backspace') {
       if (this.col > 0) {

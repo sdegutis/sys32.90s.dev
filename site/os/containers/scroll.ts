@@ -7,15 +7,46 @@ export class Scroll extends View {
   scrolly = 0;
   amount = 6;
 
-  barx = $(View, { w: 3, background: 0x770000cc });
-  bary = $(View, { h: 3, background: 0x770000cc });
+  trackx = $(View, { w: 3, background: 0xffffff22 });
+  tracky = $(View, { h: 3, background: 0xffffff22 });
+
+  barx = $(View, { w: 3, background: 0x00000099 }, this.trackx);
+  bary = $(View, { h: 3, background: 0x00000099 }, this.tracky);
+
+  hoveredAny = false;
 
   override init(): void {
     this.addChild(this.barx);
     this.addChild(this.bary);
 
-    this.barx.$data.visible = this.$data.hovered;
-    this.bary.$data.visible = this.$data.hovered;
+    this.barx.$data.visible = this.$data.hoveredAny;
+    this.bary.$data.visible = this.$data.hoveredAny;
+
+    this.$data.w.watch(() => this.adjustTracks());
+    this.$data.h.watch(() => this.adjustTracks());
+    this.$data.scrollx.watch(() => this.adjustTracks());
+    this.$data.scrolly.watch(() => this.adjustTracks());
+  }
+
+  private adjustTracks() {
+    const content = this.firstChild!;
+
+
+    const py = Math.min(1, this.h / content.h);
+    this.trackx.y = Math.round(this.scrolly / (content.h - this.h) * this.barx.h * (1 - py));
+    this.trackx.h = Math.round(this.barx.h * py);
+
+    const px = Math.min(1, this.w / content.w);
+    this.tracky.x = Math.round(this.scrollx / (content.w - this.w) * this.bary.w * (1 - px));
+    this.tracky.w = Math.round(this.bary.w * px);
+  }
+
+  override onMouseEntered(): void {
+    this.hoveredAny = true;
+  }
+
+  override onMouseExited(): void {
+    this.hoveredAny = false;
   }
 
   override layout(): void {
@@ -27,11 +58,19 @@ export class Scroll extends View {
 
     this.barx.x = this.w - this.barx.w;
     this.barx.y = 0;
-    this.barx.h = this.h;
+    this.barx.h = this.h - this.bary.h;
 
     this.bary.y = this.h - this.bary.h;
     this.bary.x = 0;
-    this.bary.w = this.w;
+    this.bary.w = this.w - this.barx.w;
+
+    this.trackx.x = 0;
+    this.trackx.w = this.barx.w;
+
+    this.tracky.y = 0;
+    this.tracky.h = this.bary.h;
+
+    this.adjustTracks();
   }
 
   override onScroll(up: boolean): void {
