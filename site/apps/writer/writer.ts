@@ -6,7 +6,7 @@ import { fs } from "../../os/fs/fs.js";
 export default (filename?: string) => {
 
   const textarea = $(TextArea, {
-    background: 0x00990033,
+    background: 0x00007777,
   });
 
   const s = filename ? fs.get(filename)! : 'foo\nbar\n\nhello worldfoo\nbar\n\nhello worldfoo\nbar\n\nhello worldfoo\nbar\n\nhello worldfoo\nbar\n\nhello worldfoo\nbar\n\nhello world';

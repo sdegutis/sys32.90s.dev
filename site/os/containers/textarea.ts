@@ -38,7 +38,7 @@ export class TextArea extends View {
     //   onFocus(this: Partial<View>) { this.firstChild?.focus() },
 
     this.children = [
-      this.scroll = $(Scroll, { background: 0x0000ff11 },
+      this.scroll = $(Scroll, {},
         this.label = $(View, {
           adjust: () => { this.adjustTextLabel() },
           draw: () => { this.drawTextLabel() },
@@ -53,7 +53,6 @@ export class TextArea extends View {
   }
 
   private drawTextLabel() {
-    crt.rectFill(0, 0, this.label.w, this.label.h, 0x000000ff);
     for (let y = 0; y < this.lines.length; y++) {
       const line = this.lines[y];
       const py = y * this.font.height + y * this.font.ygap;
@@ -159,13 +158,28 @@ export class TextArea extends View {
       this.row = Math.max(0, this.row - 1);
       this.fixCol();
     }
+    else if (key === 'Tab') {
+      const [a, b] = this.halves();
+      this.lines[this.row] = a + '  ' + b;
+      this.col += 2;
+      this.end = this.col;
+      this.layoutTree();
+    }
     else if (key === 'Backspace') {
       if (this.col > 0) {
         const [a, b] = this.halves();
-        this.lines[this.row] = a.slice(0, -1) + b;
-        this.col--;
-        this.end = this.col;
-        this.layoutTree();
+        if (a === ' '.repeat(a.length) && a.length >= 2) {
+          this.lines[this.row] = a.slice(0, -2) + b;
+          this.col -= 2;
+          this.end = this.col;
+          this.layoutTree();
+        }
+        else {
+          this.lines[this.row] = a.slice(0, -1) + b;
+          this.col--;
+          this.end = this.col;
+          this.layoutTree();
+        }
       }
       else if (this.row > 0) {
         this.end = this.lines[this.row - 1].length;
