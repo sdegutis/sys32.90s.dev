@@ -49,13 +49,19 @@ export class TextArea extends View {
       )
     ];
 
+    // sys.trackMouse({
+    //   move: () => {
+    //     console.log(sys.mouse.x, sys.mouse.y)
+    //   }
+    // })
+
     this.$data.cursorColor.watch(c => this._cursor.background = c);
     this.$data.col.watch(() => this.reflectCursorPos());
     this.$data.row.watch(() => this.reflectCursorPos());
   }
 
   private drawTextLabel() {
-    crt.rectFill(0, 0, this.w, this.h, 0x000000ff);
+    crt.rectFill(0, 0, this.label.w, this.label.h, 0x000000ff);
     for (let y = 0; y < this.lines.length; y++) {
       const line = this.lines[y];
       const py = y * this.font.height + y * this.font.ygap;
@@ -80,6 +86,23 @@ export class TextArea extends View {
   private reflectCursorPos() {
     this._cursor.x = this.col * this.font.xgap + this.col * this.font.width;
     this._cursor.y = this.row * this.font.ygap + this.row * this.font.height;
+
+    let x = this._cursor.x;
+    let y = this._cursor.y;
+
+    console.log('start', x, y)
+
+    let node = this._cursor;
+    while (node !== this.scroll) {
+      node = node.parent!;
+      x += node.x;
+      y += node.y;
+    }
+    console.log('end', x, y)
+
+    // if ()
+
+    // console.log(this.scroll)
   }
 
   override onKeyDown(key: string): boolean {
