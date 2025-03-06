@@ -28,7 +28,7 @@ export class TextArea extends Label {
 
     this.$data.text.watch(() => {
       console.log(this.lines)
-      this.constrainCursorCol();
+      this.fixCol();
     });
   }
 
@@ -79,54 +79,68 @@ export class TextArea extends Label {
     else if (key === 'ArrowDown') {
       this.restartBlinking();
       this.row = Math.min(this.row + 1, this.lines.length - 1);
-      this.constrainCursorCol();
+      this.fixCol();
     }
     else if (key === 'ArrowUp') {
       this.restartBlinking();
       this.row = Math.max(0, this.row - 1);
-      this.constrainCursorCol();
+      this.fixCol();
     }
     else if (key === 'Backspace') {
       if (this.col > 0) {
-        const [a, b] = this.linehalves();
+        const [a, b] = this.halves();
         this.lines[this.row] = a.slice(0, -1) + b;
         this.col--;
         this.end = this.col;
-
         this.parent?.layoutTree();
-        sys.needsRedraw = true;
+      }
+      else if (this.row > 0) {
+        this.end = this.lines[this.row - 1].length;
+        this.lines[this.row - 1] += this.lines[this.row];
+        this.lines.splice(this.row, 1);
+        this.row--;
+        this.col = this.end;
+        this.parent?.layoutTree();
       }
     }
     else if (key === 'Delete') {
       if (this.col < this.lines[this.row].length) {
-        const [a, b] = this.linehalves();
+        const [a, b] = this.halves();
         this.lines[this.row] = a + b.slice(1);
-
         this.parent?.layoutTree();
-        sys.needsRedraw = true;
+      }
+      else if (this.row < this.lines.length - 1) {
+        this.lines[this.row] += this.lines[this.row + 1];
+        this.lines.splice(this.row + 1, 1);
+        this.parent?.layoutTree();
       }
     }
+    else if (key === 'Enter') {
+      const [a, b] = this.halves();
+      this.lines[this.row] = a;
+      this.lines.splice(++this.row, 0, b);
+      this.col = 0;
+      this.parent?.layoutTree();
+    }
     else if (key.length === 1) {
-      const [a, b] = this.linehalves();
+      const [a, b] = this.halves();
       this.lines[this.row] = a + key + b;
       this.col++;
       this.end = this.col;
-
       this.parent?.layoutTree();
-      sys.needsRedraw = true;
     }
 
     return true;
   }
 
-  private linehalves() {
+  private halves() {
     let line = this.lines[this.row];
     const first = line.slice(0, this.col);
     const last = line.slice(this.col);
     return [first, last] as const;
   }
 
-  private constrainCursorCol() {
+  private fixCol() {
     this.col = Math.min(this.lines[this.row].length, this.end);
   }
 
