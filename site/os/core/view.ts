@@ -7,7 +7,7 @@ import { sys } from "./system.js";
 export class Dynamic {
 
   $data = Object.create(null) as {
-    [K in Exclude<keyof this, '$data'>]: Reactive<any>
+    [K in keyof this]: Reactive<any>
   };
 
 }
@@ -119,8 +119,6 @@ export function $<T extends View>(
 }
 
 export function makeDynamic<T extends Dynamic>(o: T) {
-  type K = Exclude<keyof T['$data'], '$data'>;
-
   for (let [key, val] of Object.entries(o)) {
     if (key === '$data') continue;
     if (typeof val === 'function') continue;
@@ -128,12 +126,12 @@ export function makeDynamic<T extends Dynamic>(o: T) {
     if (val instanceof Array) continue;
     if (Object.getOwnPropertyDescriptor(o, key)?.get) continue;
 
-    o.$data[key as K] ??= new Reactive(val);
+    o.$data[key as keyof T] ??= new Reactive(val);
 
     Object.defineProperty(o, key, {
       enumerable: true,
-      set: (v) => o.$data[key as K].update(v),
-      get: () => o.$data[key as K].data,
+      set: (v) => o.$data[key as keyof T].update(v),
+      get: () => o.$data[key as keyof T].data,
     });
   }
 }
