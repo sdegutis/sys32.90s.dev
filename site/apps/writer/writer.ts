@@ -9,8 +9,6 @@ export default (filename?: string) => {
 
   const textarea = $(TextArea, { background: 0x00990033 });
 
-
-
   const s = filename ? fs.get(filename)! : 'foo\nbar\n\nhello world';
   textarea.text = s
   // textarea.colors[10] = 0x0000ffff;

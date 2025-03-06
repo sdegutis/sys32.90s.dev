@@ -2,10 +2,11 @@ import { Border } from "../containers/border.js";
 import { GroupY } from "../containers/group.js";
 import { Button } from "../controls/button.js";
 import { Label } from "../controls/label.js";
+import { crt } from "../core/crt.js";
 import { sys } from "../core/system.js";
-import { $ } from "../core/view.js";
+import { $, View } from "../core/view.js";
 
-type MenuItem = { text: string, onClick: () => void };
+export type MenuItem = '-' | { text: string, onClick: () => void };
 
 export function showMenu(items: MenuItem[]) {
   const menu = $(Border, {
@@ -21,11 +22,21 @@ export function showMenu(items: MenuItem[]) {
     },
   },
     $(GroupY, { align: '-' },
-      ...items.map(it => $(Button, { padding: 2, onClick: it.onClick },
-        $(Label, { text: it.text })
-      ))
+      ...items.map(it => it === '-'
+        ? $(View, { h: 5, draw(this: View) { crt.rectFill(0, 2, this.w, 1, 0xffffff11) } })
+        : $(Button, { padding: 2, onClick: it.onClick },
+          $(Label, { text: it.text })
+        )
+      )
     )
   );
+
+  menu.layoutTree();
+
+  if (menu.y + menu.h > sys.root.h) {
+    menu.y = sys.mouse.y - menu.h;
+  }
+
   sys.root.addChild(menu);
   menu.focus();
   menu.layoutTree();

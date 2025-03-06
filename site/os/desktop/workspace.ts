@@ -1,5 +1,5 @@
 import { Border } from "../containers/border.js";
-import { Group } from "../containers/group.js";
+import { Group, GroupX } from "../containers/group.js";
 import { PanedYB } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
 import { Button } from "../controls/button.js";
@@ -8,51 +8,38 @@ import { Panel } from "../core/panel.js";
 import { sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
 import { makeFlowLayout, makeVacuumLayout } from "../util/layouts.js";
+import { showMenu, type MenuItem } from "../util/menu.js";
 import { Clock } from "./clock.js";
+
+let big = false;
 
 class Workspace {
 
-  private icons!: View;
   private desktop!: View;
   private taskbar!: View;
   private progbuttons!: View;
 
   init() {
 
-    let big = false;
-
     sys.root.layout = makeVacuumLayout();
 
-    this.icons = $(View, {
-      background: 0x222222ff,
-      layout: makeFlowLayout(3, 10),
-      adjust: function () {
-        this.x = this.y = 0;
-        this.w = this.parent!.w;
-        this.h = this.parent!.h;
-      }
+    this.desktop = $(View, {
+      background: 0x222222ff
     });
 
-    this.desktop = $(View, {}, this.icons);
+    const progMenuButton = $(Button, {
+      padding: 2,
+      background: 0x222222ff,
+      onClick: () => this.showProgMenu(),
+    }, $(Label, { text: 'run' }));
 
-    this.progbuttons = $(Group, { gap: 1 });
+    this.progbuttons = $(GroupX, { gap: 1 },
+      progMenuButton
+    );
 
     this.taskbar = $(Spaced, { background: 0x000000ff },
       this.progbuttons,
-      $(Group, {},
-        $(Border, { padding: 2 }, $(Clock, {})),
-        $(Button, {
-          padding: 2,
-          background: 0x222222ff,
-          onClick: () => {
-            big = !big;
-            sys.resize(320 * (+big + 1), 180 * (+big + 1));
-            sys.layoutTree();
-          }
-        },
-          $(Label, { text: 'resize' })
-        )
-      ),
+      $(Border, { padding: 2 }, $(Clock, {})),
     );
 
     sys.root.children = [
@@ -109,17 +96,28 @@ class Workspace {
   async addProgram(name: string, path: string) {
     const mod = await import(path + path.split('/').at(-2) + '.js');
     const launch: () => void = mod.default;
-
     this.programs.set(name, launch);
-
-    this.icons.addChild($(Button, { padding: 2, onClick: () => launch() },
-      $(Label, { text: name })
-    ));
     sys.layoutTree();
   }
 
   launch(name: string, path?: string) {
     this.programs.get(name)?.(path);
+  }
+
+  toggleSize() {
+    big = !big;
+    sys.resize(320 * (+big + 1), 180 * (+big + 1));
+    sys.layoutTree();
+  }
+
+  showProgMenu() {
+    showMenu([
+      ...this.programs.entries().map(([name, launch]) => {
+        return { text: name, onClick: () => launch() } as MenuItem;
+      }).toArray(),
+      '-',
+      { text: 'resize', onClick: () => this.toggleSize() },
+    ]);
   }
 
   openFile(path: string) {
@@ -132,7 +130,7 @@ class Workspace {
     this.launch(prog, path);
   }
 
-  private programs = new Map<string, (string?: string) => void>();
+  private programs = new Map<string, (filename?: string) => void>();
 
 }
 
