@@ -5,18 +5,17 @@ import { SpacedX } from "../../os/containers/spaced.js";
 import { Button } from "../../os/controls/button.js";
 import { Label } from "../../os/controls/label.js";
 import { Slider } from "../../os/controls/slider.js";
-import { Bitmap } from "../../os/core/bitmap.js";
-import { crt } from "../../os/core/crt.js";
-import { fs } from "../../os/fs/fs.js";
+import { Panel } from "../../os/core/panel.js";
 import { sys } from "../../os/core/system.js";
 import { $, View } from "../../os/core/view.js";
-import { Panel } from "../../os/core/panel.js";
+import { fs } from "../../os/fs/fs.js";
 import { showPrompt } from "../../os/util/dialog.js";
 import { makeStripeDrawer } from "../../os/util/draw.js";
 import { multiplex, Reactive } from "../../os/util/events.js";
 import { makeFlowLayout } from "../../os/util/layouts.js";
-import { dragResize } from "../../os/util/selections.js";
 import { showMenu } from "../../os/util/menu.js";
+import { PaintView } from "./paintview.js";
+import { ResizerView } from "./resizer.js";
 
 export default (filepath?: string) => {
 
@@ -175,172 +174,6 @@ export default (filepath?: string) => {
 
 
 
-
-class PaintView extends View {
-
-  showGrid = true;
-
-  width = 10;
-  height = 10;
-
-  zoom = 4;
-
-  color = 0xffffffff;
-
-  tool: 'pencil' | 'eraser' = 'pencil';
-
-  override background = 0xffffff33;
-  override cursor = null;
-
-  private grid: number[] = [];
-
-  override adjust(): void {
-    this.w = this.width * this.zoom;
-    this.h = this.height * this.zoom;
-  }
-
-  override draw(): void {
-    super.draw();
-
-    if (this.showGrid) {
-      for (let x = 0; x < this.width; x++) {
-        crt.rectFill(x * this.zoom, 0, 1, this.h, 0x00000033);
-      }
-      for (let y = 0; y < this.height; y++) {
-        crt.rectFill(0, y * this.zoom, this.w, 1, 0x00000033);
-      }
-    }
-
-    for (let y = 0; y < this.height; y++) {
-      for (let x = 0; x < this.width; x++) {
-        const i = y * this.width + x;
-        const c = this.grid[i];
-        if (c !== undefined) {
-          const px = x * this.zoom;
-          const py = y * this.zoom;
-          crt.rectFill(px, py, this.zoom, this.zoom, c);
-        }
-      }
-    }
-
-    if (this.hovered) {
-      const px = Math.floor(this.mouse.x / this.zoom) * this.zoom;
-      const py = Math.floor(this.mouse.y / this.zoom) * this.zoom;
-      crt.rectFill(px, py, this.zoom, this.zoom, 0x0000ff77);
-    }
-  }
-
-  override onMouseDown(button: number): void {
-    if (button !== 0) {
-      const x = Math.floor(this.mouse.x / this.zoom);
-      const y = Math.floor(this.mouse.y / this.zoom);
-      const i = y * this.width + x;
-      let colorUnderMouse = this.grid[i];
-      if (colorUnderMouse === undefined) colorUnderMouse = 0x00000000;
-      this.color = colorUnderMouse;
-      return;
-    }
-
-    if (this.tool === 'pencil' || this.tool === 'eraser') {
-      sys.trackMouse({
-        move: () => {
-          const x = Math.floor(this.mouse.x / this.zoom);
-          const y = Math.floor(this.mouse.y / this.zoom);
-          const i = y * this.width + x;
-          this.grid[i] = this.tool === 'pencil' ? this.color : 0x00000000;
-        }
-      })
-    }
-  }
-
-  loadBitmap(s: string) {
-    const b = Bitmap.fromString(s);
-    this.resize(b.width, b.height);
-
-    for (let y = 0; y < this.height; y++) {
-      for (let x = 0; x < this.width; x++) {
-        const i = y * this.width + x;
-        const ci = b.pixels[i];
-        if (ci > 0) {
-          const c = b.colors[ci - 1];
-          this.grid[i] = c;
-        }
-      }
-    }
-  }
-
-  toBitmap() {
-    const colors: number[] = [];
-    const pixels: number[] = [];
-    const map = new Map<number, number>();
-    for (let y = 0; y < this.height; y++) {
-      for (let x = 0; x < this.width; x++) {
-        const c = this.grid[y * this.width + x];
-        if (c === undefined) {
-          pixels.push(0);
-        }
-        else {
-          let index = map.get(c);
-          if (!index) map.set(c, index = colors.push(c));
-          pixels.push(index);
-        }
-      }
-    }
-    return new Bitmap(colors, this.width, pixels);
-  }
-
-  resize(width: number, height: number) {
-    const oldgrid = [...this.grid];
-    const oldwidth = this.width;
-    const oldheight = this.height;
-
-    this.width = width;
-    this.height = height;
-    this.grid.length = 0;
-
-    for (let y = 0; y < Math.min(height, oldheight); y++) {
-      for (let x = 0; x < Math.min(width, oldwidth); x++) {
-        const c = oldgrid[y * oldwidth + x];
-        if (c !== undefined) this.grid[y * width + x] = c;
-      }
-    }
-
-    this.parent?.layoutTree();
-  }
-
-}
-
-class ResizerView extends View {
-
-  previousSibling<T extends View>() {
-    if (!this.parent) return null;
-    const i = this.parent.children.indexOf(this);
-    if (i < 1) return null;
-    return this.parent.children[i - 1] as T;
-  }
-
-  override layout() {
-    const paintView = this.previousSibling()!;
-    this.x = paintView.w;
-    this.y = paintView.h;
-  };
-
-  override onMouseDown() {
-    const paintView = this.previousSibling<PaintView>()!;
-    const o = { w: paintView.w, h: paintView.h };
-    const fn = dragResize(o);
-
-    sys.trackMouse({
-      move: () => {
-        fn();
-        const w = Math.floor(o.w / paintView.zoom);
-        const h = Math.floor(o.h / paintView.zoom);
-        paintView.resize(w, h);
-      }
-    })
-  }
-
-}
 
 
 // const COLORS = [
