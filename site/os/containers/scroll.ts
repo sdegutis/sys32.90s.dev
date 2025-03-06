@@ -15,6 +15,7 @@ export class Scroll extends View {
   bary = $(View, { h: 3, background: 0x00000099 }, this.tracky);
 
   scrollVisibleClaims = 0;
+  hoveringChildren = false;
 
   override init(): void {
     this.addChild(this.barx);
@@ -25,6 +26,14 @@ export class Scroll extends View {
       this.bary.visible = n > 0;
     })
 
+    sys.trackMouse({
+      move: () => {
+        if (this.hoveringChildren) {
+          this.scrollVisibleClaims++;
+          setTimeout(() => { this.scrollVisibleClaims-- }, 500)
+        }
+      }
+    });
 
     this.$data.w.watch(() => this.adjustTracks());
     this.$data.h.watch(() => this.adjustTracks());
@@ -33,14 +42,14 @@ export class Scroll extends View {
   }
 
   private adjustTracks() {
-    const content = this.firstChild!;
+    const contentView = this.firstChild!;
 
-    const py = Math.min(1, this.h / content.h);
-    this.trackx.y = Math.round(this.scrolly / (content.h - this.h) * this.barx.h * (1 - py));
+    const py = Math.min(1, this.h / contentView.h);
+    this.trackx.y = Math.round(this.scrolly / (contentView.h - this.h) * this.barx.h * (1 - py));
     this.trackx.h = Math.round(this.barx.h * py);
 
-    const px = Math.min(1, this.w / content.w);
-    this.tracky.x = Math.round(this.scrollx / (content.w - this.w) * this.bary.w * (1 - px));
+    const px = Math.min(1, this.w / contentView.w);
+    this.tracky.x = Math.round(this.scrollx / (contentView.w - this.w) * this.bary.w * (1 - px));
     this.tracky.w = Math.round(this.bary.w * px);
   }
 
@@ -55,16 +64,18 @@ export class Scroll extends View {
       this.fixScrollPos();
       this.layoutTree();
     }
-    const up = () => { this.scrollVisibleClaims-- }
-    sys.trackMouse({ move, up })
+    const up = () => {
+      this.scrollVisibleClaims--;
+    };
+    sys.trackMouse({ move, up });
   }
 
   override onMouseEntered(): void {
-    this.scrollVisibleClaims++;
+    this.hoveringChildren = true;
   }
 
   override onMouseExited(): void {
-    this.scrollVisibleClaims--;
+    this.hoveringChildren = false;
   }
 
   override layout(): void {

@@ -15,8 +15,10 @@ class System {
   needsRedraw = true;
 
   private allHovered = new Set<View>();
-  private hovered !: View;
-  private trackingMouse?: { move: () => void, up?: () => void };
+  private hovered!: View;
+
+  private mouseMoved = new Listener();
+  private mouseUp = new Listener();
 
   init() {
     this.root = $(View, { background: 0x00000000 });
@@ -77,15 +79,14 @@ class System {
 
       this.checkUnderMouse();
 
-      this.trackingMouse?.move();
+      this.mouseMoved.dispatch();
 
       this.needsRedraw = true;
     };
 
     crt.canvas.onmouseup = (e) => {
       e.preventDefault();
-      this.trackingMouse?.up?.();
-      this.trackingMouse = undefined!;
+      this.mouseUp.dispatch();
       this.needsRedraw = true;
     };
 
@@ -129,8 +130,16 @@ class System {
 
   trackMouse(fns: { move: () => void; up?: () => void; }) {
     fns.move();
-    this.trackingMouse = fns;
-    return () => this.trackingMouse = undefined!;
+    const doneMove = this.mouseMoved.watch(fns.move);
+    const doneUp = fns.up && this.mouseUp.watch(() => {
+      fns.up!();
+      doneBoth();
+    });
+    const doneBoth = () => {
+      doneMove();
+      doneUp?.();
+    };
+    return doneBoth
   }
 
   resize(w: number, h: number) {
