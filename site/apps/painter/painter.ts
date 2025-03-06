@@ -16,12 +16,15 @@ import { makeStripeDrawer } from "../../os/util/draw.js";
 import { multiplex, Reactive } from "../../os/util/events.js";
 import { makeFlowLayout } from "../../os/util/layouts.js";
 import { dragResize } from "../../os/util/selections.js";
+import { showMenu } from "../../os/util/menu.js";
 
 export default (filepath?: string) => {
 
+  const filesource = new Reactive(filepath);
+
   const $zoom = new Reactive(4);
 
-  const panel = $(Panel, { title: 'painter', minw: 50, w: 180, h: 120, },
+  const panel = $(Panel, { title: 'painter', minw: 50, w: 180, h: 120, onMenu: () => doMenu() },
     $(PanedXB, { gap: 1 },
       $(PanedYB, { gap: 1 },
         $(Scroll, { background: 0x222222ff, draw: makeStripeDrawer(), },
@@ -110,54 +113,50 @@ export default (filepath?: string) => {
 
   paintView.$data.color.watch(color => colorLabel.text = '0x' + color.toString(16).padStart(8, '0'));
 
-  const filesource = new Reactive('');
-
-  setTimeout(() => {
-    filesource.update('b/foo.bitmap');
-  }, 1000);
+  function doMenu() {
+    showMenu([
+      { text: 'load', onClick: loadFile },
+      { text: 'save', onClick: saveFile },
+    ])
+  }
 
   filesource.watch(s => {
-    panel.title = s.length === 0 ? `painter: [no file]` : `painter: ${s}`;
+    panel.title = !s ? `painter: [no file]` : `painter: ${s}`;
     panel.layoutTree();
   });
 
-
-  if (filepath) {
-
-    const s = fs.get(filepath);
+  if (filesource.data) {
+    const s = fs.get(filesource.data);
     if (s) {
       paintView.loadBitmap(s);
     }
-
-
-  }
-  else {
-    filepath = 'user/test1.bitmap';
   }
 
+  async function loadFile() {
+    const s = await showPrompt('file path?');
+    if (!s) return;
+    filesource.update(s);
 
+    const data = fs.get(filesource.data!)!;
+    paintView.loadBitmap(data);
+  }
 
+  async function saveFile() {
+    if (!filesource.data) {
+      const s = await showPrompt('file path?');
+      if (!s) return;
+      filesource.update(s);
+    }
+    fs.put(filesource.data!, paintView.toBitmap().toString());
+  }
 
   panel.onKeyDown = (key) => {
     if (key === 'o' && sys.keys['Control']) {
-
-
-      // sys.fs.loadFile(filepath!).then(s => {
-      //   if (s) {
-      //     paintView.loadBitmap(s);
-      //   }
-      // });
-
-
+      loadFile();
+      return true;
     }
     else if (key === 's' && sys.keys['Control']) {
-      console.log('saving');
-
-      const bitmap = paintView.toBitmap();
-
-      fs.put(filepath, bitmap.toString());
-      console.log('done')
-
+      saveFile();
       return true;
     }
     return false;
@@ -342,6 +341,14 @@ class ResizerView extends View {
   }
 
 }
+
+
+// const COLORS = [
+//   0x1a1c2cff, 0x5d275dff, 0xb13e53ff, 0xef7d57ff,
+//   0xffcd75ff, 0xa7f070ff, 0x38b764ff, 0x257179ff,
+//   0x29366fff, 0x3b5dc9ff, 0x41a6f6ff, 0x73eff7ff,
+//   0xf4f4f4ff, 0x94b0c2ff, 0x566c86ff, 0x333c57ff,
+// ];
 
 const COLORS = [
   0x000000ff, 0x1D2B53ff, 0x7E2553ff, 0x008751ff,
