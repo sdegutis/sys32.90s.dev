@@ -1,4 +1,5 @@
 import { Label } from "../controls/label.js";
+import { crt } from "../core/crt.js";
 import { sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
 
@@ -43,40 +44,17 @@ export class TextArea extends Label {
   }
 
   override draw(): void {
-    super.draw();
+    crt.rectFill(0, 0, this.w, this.h, this.background)
 
-    let c = this.color;
-
-    const x = 0;
-    const y = 0;
-
-    const text = this.text;
-    const font = this.font;
-
-    let posx = 0;
-    let posy = 0;
-
-    for (let i = 0; i < text.length; i++) {
-      const ch = text[i];
-
-      // if (this.colors[i]) c = this.colors[i];
-
-      if (ch === '\n') {
-        posy++;
-        posx = 0;
-        continue;
+    for (let y = 0; y < this.lines.length; y++) {
+      const line = this.lines[y];
+      const py = y * this.font.height + y * this.font.ygap;
+      for (let x = 0; x < line.length; x++) {
+        const char = this.font.chars[line[x]];
+        const px = x * this.font.width + x * this.font.xgap;
+        char.draw(px, py, this.color);
       }
-
-      const px = x + (posx * 4);
-      const py = y + (posy * 6);
-
-      const map = font.chars[ch];
-      map.draw(px, py, c);
-
-      posx++;
-
     }
-
   }
 
   override onKeyDown(key: string): boolean {
@@ -86,35 +64,66 @@ export class TextArea extends Label {
       this.restartBlinking();
       this.end = this.col = 0;
     }
-
-    if (key === 'End') {
+    else if (key === 'End') {
       this.restartBlinking();
       this.end = this.col = this.lines[this.row].length;
     }
-
-    if (key === 'ArrowRight') {
+    else if (key === 'ArrowRight') {
       this.restartBlinking();
       this.end = this.col = Math.min(this.col + 1, this.lines[this.row].length);
     }
-
-    if (key === 'ArrowLeft') {
+    else if (key === 'ArrowLeft') {
       this.restartBlinking();
       this.end = this.col = Math.max(0, this.col - 1);
     }
-
-    if (key === 'ArrowDown') {
+    else if (key === 'ArrowDown') {
       this.restartBlinking();
       this.row = Math.min(this.row + 1, this.lines.length - 1);
       this.constrainCursorCol();
     }
-
-    if (key === 'ArrowUp') {
+    else if (key === 'ArrowUp') {
       this.restartBlinking();
       this.row = Math.max(0, this.row - 1);
       this.constrainCursorCol();
     }
+    else if (key === 'Backspace') {
+      if (this.col > 0) {
+        const [a, b] = this.linehalves();
+        this.lines[this.row] = a.slice(0, -1) + b;
+        this.col--;
+        this.end = this.col;
+
+        this.parent?.layoutTree();
+        sys.needsRedraw = true;
+      }
+    }
+    else if (key === 'Delete') {
+      if (this.col < this.lines[this.row].length) {
+        const [a, b] = this.linehalves();
+        this.lines[this.row] = a + b.slice(1);
+
+        this.parent?.layoutTree();
+        sys.needsRedraw = true;
+      }
+    }
+    else if (key.length === 1) {
+      const [a, b] = this.linehalves();
+      this.lines[this.row] = a + key + b;
+      this.col++;
+      this.end = this.col;
+
+      this.parent?.layoutTree();
+      sys.needsRedraw = true;
+    }
 
     return true;
+  }
+
+  private linehalves() {
+    let line = this.lines[this.row];
+    const first = line.slice(0, this.col);
+    const last = line.slice(this.col);
+    return [first, last] as const;
   }
 
   private constrainCursorCol() {
