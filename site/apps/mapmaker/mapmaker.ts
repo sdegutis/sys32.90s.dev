@@ -27,11 +27,11 @@ export default () => {
       $(PanedXA, {
         onScroll: (up) => {
           if (up) {
-            map.currentTool.data--;
+            map.currentTool.update(map.currentTool.data - 1);
             if (map.currentTool.data < 0) map.currentTool.update(15);
           }
           else {
-            map.currentTool.data++;
+            map.currentTool.update(map.currentTool.data + 1);
             if (map.currentTool.data === 16) map.currentTool.update(0);
           }
         }
