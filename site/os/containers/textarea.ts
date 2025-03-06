@@ -16,6 +16,9 @@ export class TextArea extends View {
 
   override passthrough = false;
 
+  scroll!: Scroll;
+  label!: View;
+
   cursorColor = 0x99000099;
   private _cursor = $(View, { visible: false, w: this.font.width, h: this.font.height });
 
@@ -33,36 +36,13 @@ export class TextArea extends View {
       this.fixCol();
     })
 
-    let label: View;
-
     this.children = [
-      $(Scroll, { background: 0x0000ff11, ...passedFocus },
+      this.scroll = $(Scroll, { background: 0x0000ff11, ...passedFocus },
         $(Border, { background: 0x00ff0011, padding: 2, ...passedFocus },
-          label = $(View, {
-            adjust: () => {
-              let w = 0;
-              for (const line of this.lines) {
-                if (line.length > w) w = line.length;
-              }
-              label.w = w * this.font.width + (w - 1) * this.font.xgap;
-              label.h = (this.lines.length * this.font.height) + ((this.lines.length - 1) * this.font.ygap);
-              label.w += this.font.width + this.font.xgap;
-            },
-            draw: () => {
-              crt.rectFill(0, 0, this.w, this.h, 0x000000ff)
-              for (let y = 0; y < this.lines.length; y++) {
-                const line = this.lines[y];
-                const py = y * this.font.height + y * this.font.ygap;
-                for (let x = 0; x < line.length; x++) {
-                  const char = this.font.chars[line[x]];
-                  const px = x * this.font.width + x * this.font.xgap;
-                  char.draw(px, py, this.color);
-                }
-              }
-            }
-          },
-            this._cursor
-          )
+          this.label = $(View, {
+            adjust: () => { this.adjustTextLabel() },
+            draw: () => { this.drawTextLabel() }
+          }, this._cursor)
         )
       )
     ];
@@ -73,6 +53,29 @@ export class TextArea extends View {
     this.$data.col.watch(() => this.reflectCursorPos());
     this.$data.row.watch(() => this.reflectCursorPos());
 
+  }
+
+  private drawTextLabel() {
+    crt.rectFill(0, 0, this.w, this.h, 0x000000ff);
+    for (let y = 0; y < this.lines.length; y++) {
+      const line = this.lines[y];
+      const py = y * this.font.height + y * this.font.ygap;
+      for (let x = 0; x < line.length; x++) {
+        const char = this.font.chars[line[x]];
+        const px = x * this.font.width + x * this.font.xgap;
+        char.draw(px, py, this.color);
+      }
+    }
+  }
+
+  private adjustTextLabel() {
+    let w = 0;
+    for (const line of this.lines) {
+      if (line.length > w) w = line.length;
+    }
+    this.label.w = w * this.font.width + (w - 1) * this.font.xgap;
+    this.label.h = (this.lines.length * this.font.height) + ((this.lines.length - 1) * this.font.ygap);
+    this.label.w += this.font.width + this.font.xgap;
   }
 
   private reflectCursorPos() {
