@@ -8,7 +8,7 @@ export class TextArea extends View {
 
   font = mem.font;
   color = 0xffffffff;
-  private lines: string[] = [];
+  private lines: string[] = [''];
 
   // override passthrough = false;
 
