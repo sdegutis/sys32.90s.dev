@@ -1,5 +1,6 @@
 import { sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
+import { dragMove } from "../util/selections.js";
 
 export class Scroll extends View {
 
@@ -7,8 +8,8 @@ export class Scroll extends View {
   scrolly = 0;
   amount = 6;
 
-  trackx = $(View, { w: 3, background: 0xffffff22 });
-  tracky = $(View, { h: 3, background: 0xffffff22 });
+  trackx = $(View, { w: 3, background: 0xffffff22, onMouseDown: () => this.dragTrack(this.trackx) });
+  tracky = $(View, { h: 3, background: 0xffffff22, onMouseDown: () => this.dragTrack(this.tracky) });
 
   barx = $(View, { w: 3, background: 0x00000099 }, this.trackx);
   bary = $(View, { h: 3, background: 0x00000099 }, this.tracky);
@@ -31,7 +32,6 @@ export class Scroll extends View {
   private adjustTracks() {
     const content = this.firstChild!;
 
-
     const py = Math.min(1, this.h / content.h);
     this.trackx.y = Math.round(this.scrolly / (content.h - this.h) * this.barx.h * (1 - py));
     this.trackx.h = Math.round(this.barx.h * py);
@@ -39,6 +39,19 @@ export class Scroll extends View {
     const px = Math.min(1, this.w / content.w);
     this.tracky.x = Math.round(this.scrollx / (content.w - this.w) * this.bary.w * (1 - px));
     this.tracky.w = Math.round(this.bary.w * px);
+  }
+
+  private dragTrack(track: View) {
+    const o = { x: this.scrollx, y: this.scrolly };
+    const drag = dragMove(o);
+    const move = () => {
+      drag();
+      if (track === this.trackx) this.scrolly = o.y;
+      if (track === this.tracky) this.scrollx = o.x;
+      this.fixScrollPos();
+      this.layoutTree();
+    }
+    sys.trackMouse({ move })
   }
 
   override onMouseEntered(): void {
@@ -52,7 +65,7 @@ export class Scroll extends View {
   override layout(): void {
     if (!this.firstChild) return;
 
-    this._adjust();
+    this.fixScrollPos();
     this.firstChild.x = -this.scrollx;
     this.firstChild.y = -this.scrolly;
 
@@ -77,11 +90,11 @@ export class Scroll extends View {
     const sy = sys.keys['Shift'] ? 'scrollx' : 'scrolly';
     this[sy] += up ? -this.amount : this.amount;
 
-    this._adjust();
+    this.fixScrollPos();
     this.layoutTree();
   }
 
-  private _adjust() {
+  private fixScrollPos() {
     if (!this.firstChild) return;
 
     this.scrollx = Math.max(0, Math.min(this.firstChild.w - this.w, this.scrollx));

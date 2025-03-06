@@ -3,8 +3,6 @@ import { mem } from "../core/memory.js";
 import { sys } from "../core/system.js";
 import { $, View } from "../core/view.js";
 import { makeVacuumLayout } from "../util/layouts.js";
-import { passedFocus } from "../util/unsure.js";
-import { Border } from "./border.js";
 import { Scroll } from "./scroll.js";
 
 export class TextArea extends View {
@@ -14,7 +12,7 @@ export class TextArea extends View {
   color = 0xffffffff;
   private lines: string[] = [];
 
-  override passthrough = false;
+  // override passthrough = false;
 
   private scroll!: Scroll;
   private label!: View;
@@ -41,14 +39,12 @@ export class TextArea extends View {
 
     this.children = [
       this.scroll = $(Scroll, { background: 0x0000ff11 },
-        $(Border, { background: 0x00ff0011, padding: 2 },
-          this.label = $(View, {
-            adjust: () => { this.adjustTextLabel() },
-            draw: () => { this.drawTextLabel() },
-            // onmou: () => { this.drawTextLabel() },
-          },
-            this._cursor = $(View, { visible: false, w: this.font.width, h: this.font.height })
-          )
+        this.label = $(View, {
+          adjust: () => { this.adjustTextLabel() },
+          draw: () => { this.drawTextLabel() },
+          // onmou: () => { this.drawTextLabel() },
+        },
+          this._cursor = $(View, { visible: false, w: this.font.width, h: this.font.height })
         )
       )
     ];

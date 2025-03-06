@@ -9,7 +9,7 @@ export default (filename?: string) => {
     background: 0x00990033,
   });
 
-  const s = filename ? fs.get(filename)! : 'foo\nbar\n\nhello world';
+  const s = filename ? fs.get(filename)! : 'foo\nbar\n\nhello worldfoo\nbar\n\nhello worldfoo\nbar\n\nhello worldfoo\nbar\n\nhello worldfoo\nbar\n\nhello worldfoo\nbar\n\nhello world';
   textarea.text = s
   // textarea.colors[10] = 0x0000ffff;
   // textarea.colors[5] = 0xffff0099;
