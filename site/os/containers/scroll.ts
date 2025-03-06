@@ -15,7 +15,8 @@ export class Scroll extends View {
   bary = $(View, { h: 3, background: 0x00000099 }, this.tracky);
 
   scrollVisibleClaims = 0;
-  hoveringChildren = false;
+  cancelTracker?: () => void;
+  cancelClaim?: ReturnType<typeof setTimeout>;
 
   override init(): void {
     this.addChild(this.barx);
@@ -25,15 +26,6 @@ export class Scroll extends View {
       this.barx.visible = n > 0;
       this.bary.visible = n > 0;
     })
-
-    sys.trackMouse({
-      move: () => {
-        if (this.hoveringChildren) {
-          this.scrollVisibleClaims++;
-          setTimeout(() => { this.scrollVisibleClaims-- }, 500)
-        }
-      }
-    });
 
     this.$data.w.watch(() => this.adjustTracks());
     this.$data.h.watch(() => this.adjustTracks());
@@ -71,11 +63,25 @@ export class Scroll extends View {
   }
 
   override onMouseEntered(): void {
-    this.hoveringChildren = true;
+    this.cancelTracker = sys.trackMouse({
+      move: () => {
+        console.log('mv')
+
+        if (this.cancelClaim) {
+          clearTimeout(this.cancelClaim);
+        }
+        else {
+          this.scrollVisibleClaims++;
+        }
+
+        setTimeout(() => { this.scrollVisibleClaims-- }, 500);
+      }
+    });
   }
 
   override onMouseExited(): void {
-    this.hoveringChildren = false;
+    this.cancelTracker?.();
+    delete this.cancelTracker;
   }
 
   override layout(): void {
@@ -103,6 +109,9 @@ export class Scroll extends View {
   }
 
   override onScroll(up: boolean): void {
+    this.scrollVisibleClaims++;
+    setTimeout(() => this.scrollVisibleClaims--, 500);
+
     const sy = sys.keys['Shift'] ? 'scrollx' : 'scrolly';
     this[sy] += up ? -this.amount : this.amount;
 
