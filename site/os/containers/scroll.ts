@@ -52,17 +52,28 @@ export class Scroll extends View {
 
   private dragTrack(track: View) {
     this.scrollVisibleClaims++;
-    const o = { x: this.scrollx, y: this.scrolly };
+
+    const o = { x: this.trackx.y, y: this.tracky.x };
     const drag = dragMove(o);
     const move = () => {
       drag();
-      if (track === this.trackx) this.scrolly = o.y;
-      if (track === this.tracky) this.scrollx = o.x;
-      this.fixScrollPos();
-      this.layoutTree();
+
+      if (track === this.trackx) this.trackx.y = o.y;
+      if (track === this.tracky) this.tracky.x = o.x;
+
+      // this.scrolly = Math.round((this.trackx.y / (this.barx.h - this.trackx.h)) * this.firstChild!.h);
+
+      // console.log(this.scrolly)
+
+
+
+      // // this.scrolly = o.y;
+      // // this.scrollx = o.x;
+      // this.fixScrollPos();
+      // this.layoutTree();
     }
     const up = () => {
-      this.scrollVisibleClaims--;
+      setTimeout(() => { this.scrollVisibleClaims-- }, 500);
     };
     sys.trackMouse({ move, up });
   }
@@ -70,6 +81,8 @@ export class Scroll extends View {
   override onMouseEntered(): void {
     this.cancelTracker = sys.trackMouse({
       move: () => {
+        console.log('mv')
+
         if (this.cancelClaim) {
           clearTimeout(this.cancelClaim);
         }
