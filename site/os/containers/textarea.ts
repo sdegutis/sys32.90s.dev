@@ -118,8 +118,7 @@ export class TextArea extends Label {
   }
 
   private constrainCursorCol() {
-    const max = Math.min(this.lines[this.row].length, this.end);
-    this.col = Math.min(this.col, max);
+    this.col = Math.min(this.lines[this.row].length, this.end);
   }
 
   private blink?: ReturnType<typeof setInterval>;
