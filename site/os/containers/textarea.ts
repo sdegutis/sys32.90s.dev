@@ -8,7 +8,7 @@ export class TextArea extends Label {
 
   row = 0;
   col = 0;
-  icol = 0;
+  end = 0;
 
   // colors: number[] = [];
 
@@ -22,15 +22,12 @@ export class TextArea extends Label {
 
     this.$data.cursorColor.watch(c => this._cursor.background = c);
 
-    this.$data.row.watch(() => this.fixCursorPos());
-    this.$data.icol.watch(() => this.fixCursorPos());
-
     this.$data.col.watch(() => this.reflectCursorPos());
     this.$data.row.watch(() => this.reflectCursorPos());
 
     this.$data.text.watch(() => {
       console.log(this.lines)
-      this.fixCursorPos();
+      this.constrainCursorCol();
     });
   }
 
@@ -87,44 +84,42 @@ export class TextArea extends Label {
 
     if (key === 'Home') {
       this.restartBlinking();
-      this.icol = 0;
+      this.end = this.col = 0;
     }
 
     if (key === 'End') {
       this.restartBlinking();
-      this.icol = Infinity;
+      this.end = this.col = this.lines[this.row].length;
     }
 
     if (key === 'ArrowRight') {
       this.restartBlinking();
-      console.log(!isFinite(this.icol))
-      this.icol++;
+      this.end = this.col = Math.min(this.col + 1, this.lines[this.row].length);
     }
 
     if (key === 'ArrowLeft') {
       this.restartBlinking();
-      this.icol--;
-      if (this.icol < 0) this.icol = 0;
+      this.end = this.col = Math.max(0, this.col - 1);
     }
 
     if (key === 'ArrowDown') {
       this.restartBlinking();
       this.row = Math.min(this.row + 1, this.lines.length - 1);
+      this.constrainCursorCol();
     }
 
     if (key === 'ArrowUp') {
       this.restartBlinking();
       this.row = Math.max(0, this.row - 1);
+      this.constrainCursorCol();
     }
 
     return true;
   }
 
-  private fixCursorPos() {
-    const max = this.lines[this.row].length;
-    let col = this.icol;
-    if (col > max) col = max;
-    this.col = col;
+  private constrainCursorCol() {
+    const max = Math.min(this.lines[this.row].length, this.end);
+    this.col = Math.min(this.col, max);
   }
 
   private blink?: ReturnType<typeof setInterval>;
