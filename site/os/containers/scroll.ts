@@ -14,14 +14,17 @@ export class Scroll extends View {
   barx = $(View, { w: 3, background: 0x00000099 }, this.trackx);
   bary = $(View, { h: 3, background: 0x00000099 }, this.tracky);
 
-  hoveredAny = false;
+  scrollVisibleClaims = 0;
 
   override init(): void {
     this.addChild(this.barx);
     this.addChild(this.bary);
 
-    this.barx.$data.visible = this.$data.hoveredAny;
-    this.bary.$data.visible = this.$data.hoveredAny;
+    this.$data.scrollVisibleClaims.watch((n) => {
+      this.barx.visible = n > 0;
+      this.bary.visible = n > 0;
+    })
+
 
     this.$data.w.watch(() => this.adjustTracks());
     this.$data.h.watch(() => this.adjustTracks());
@@ -42,6 +45,7 @@ export class Scroll extends View {
   }
 
   private dragTrack(track: View) {
+    this.scrollVisibleClaims++;
     const o = { x: this.scrollx, y: this.scrolly };
     const drag = dragMove(o);
     const move = () => {
@@ -51,15 +55,16 @@ export class Scroll extends View {
       this.fixScrollPos();
       this.layoutTree();
     }
-    sys.trackMouse({ move })
+    const up = () => { this.scrollVisibleClaims-- }
+    sys.trackMouse({ move, up })
   }
 
   override onMouseEntered(): void {
-    this.hoveredAny = true;
+    this.scrollVisibleClaims++;
   }
 
   override onMouseExited(): void {
-    this.hoveredAny = false;
+    this.scrollVisibleClaims--;
   }
 
   override layout(): void {
