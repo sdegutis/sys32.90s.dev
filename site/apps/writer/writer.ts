@@ -5,6 +5,7 @@ import { Panel } from "../../os/core/panel.js";
 import { makeVacuumLayout } from "../../os/util/layouts.js";
 import { fs } from "../../os/fs/fs.js";
 import { Border } from "../../os/containers/border.js";
+import { passedFocus } from "../../os/util/unsure.js";
 
 export default (filename?: string) => {
 
@@ -18,8 +19,8 @@ export default (filename?: string) => {
 
   const panel = $(Panel, { title: 'writer', w: 120, h: 100, },
     $(View, { layout: makeVacuumLayout(), background: 0x44444433 },
-      $(Scroll, { background: 0x0000ff11 },
-        $(Border, { padding: 2 }, textarea)
+      $(Scroll, { background: 0x0000ff11, ...passedFocus },
+        $(Border, { padding: 2, ...passedFocus }, textarea)
       )
     )
   );
