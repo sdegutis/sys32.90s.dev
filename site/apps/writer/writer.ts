@@ -1,11 +1,7 @@
-import { Scroll } from "../../os/containers/scroll.js";
 import { TextArea } from "../../os/containers/textarea.js";
-import { $, View } from "../../os/core/view.js";
 import { Panel } from "../../os/core/panel.js";
-import { makeVacuumLayout } from "../../os/util/layouts.js";
+import { $ } from "../../os/core/view.js";
 import { fs } from "../../os/fs/fs.js";
-import { Border } from "../../os/containers/border.js";
-import { passedFocus } from "../../os/util/unsure.js";
 
 export default (filename?: string) => {
 
@@ -18,6 +14,8 @@ export default (filename?: string) => {
   // textarea.colors[10] = 0x0000ffff;
   // textarea.colors[5] = 0xffff0099;
   // textarea.colors.length = 0
+
+  // textarea.color = 0x009999ff;
 
   const panel = $(Panel, { title: 'writer', w: 120, h: 100, },
     textarea

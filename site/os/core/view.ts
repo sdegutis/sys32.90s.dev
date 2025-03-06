@@ -26,7 +26,7 @@ export class View extends Dynamic {
   adopted?(): void;
   abandoned?(): void;
 
-  data = makeDynamic({});
+  // data = makeDynamic({});
 
   id = '';
 

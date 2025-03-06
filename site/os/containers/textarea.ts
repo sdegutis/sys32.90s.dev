@@ -36,12 +36,16 @@ export class TextArea extends View {
       this.layoutTree();
     })
 
+    // passthrough: false,
+    //   onFocus(this: Partial<View>) { this.firstChild?.focus() },
+
     this.children = [
-      this.scroll = $(Scroll, { background: 0x0000ff11, ...passedFocus },
-        $(Border, { background: 0x00ff0011, padding: 2, ...passedFocus },
+      this.scroll = $(Scroll, { background: 0x0000ff11 },
+        $(Border, { background: 0x00ff0011, padding: 2 },
           this.label = $(View, {
             adjust: () => { this.adjustTextLabel() },
-            draw: () => { this.drawTextLabel() }
+            draw: () => { this.drawTextLabel() },
+            // onmou: () => { this.drawTextLabel() },
           },
             this._cursor = $(View, { visible: false, w: this.font.width, h: this.font.height })
           )

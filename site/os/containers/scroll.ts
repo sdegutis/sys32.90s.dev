@@ -1,5 +1,5 @@
 import { sys } from "../core/system.js";
-import { View } from "../core/view.js";
+import { $, View } from "../core/view.js";
 
 export class Scroll extends View {
 
@@ -7,12 +7,31 @@ export class Scroll extends View {
   scrolly = 0;
   amount = 6;
 
+  barx = $(View, { w: 3, background: 0x770000cc });
+  bary = $(View, { h: 3, background: 0x770000cc });
+
+  override init(): void {
+    this.addChild(this.barx);
+    this.addChild(this.bary);
+
+    this.barx.$data.visible = this.$data.hovered;
+    this.bary.$data.visible = this.$data.hovered;
+  }
+
   override layout(): void {
     if (!this.firstChild) return;
 
     this._adjust();
     this.firstChild.x = -this.scrollx;
     this.firstChild.y = -this.scrolly;
+
+    this.barx.x = this.w - this.barx.w;
+    this.barx.y = 0;
+    this.barx.h = this.h;
+
+    this.bary.y = this.h - this.bary.h;
+    this.bary.x = 0;
+    this.bary.w = this.w;
   }
 
   override onScroll(up: boolean): void {
