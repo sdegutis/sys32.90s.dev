@@ -45,9 +45,8 @@ export class TextField extends View {
   }
 
   override adjust(): void {
-    const s = this.font.calcSize(' '.repeat(this.length));
-    this.w = s.w;
-    this.h = s.h;
+    this.w = this.font.width * this.length + (this.font.xgap * (this.length - 1));
+    this.h = this.font.height;
   }
 
   override onKeyDown(key: string): boolean {

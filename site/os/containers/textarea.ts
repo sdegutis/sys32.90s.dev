@@ -8,7 +8,7 @@ export class TextArea extends Label {
   override passthrough = false;
 
   override draw(): void {
-    // super.draw();
+    super.draw();
 
     let c = this.color;
 

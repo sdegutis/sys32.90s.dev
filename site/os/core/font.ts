@@ -9,6 +9,9 @@ export class Font {
   width: number;
   height: number;
 
+  xgap = 1;
+  ygap = 2;
+
   constructor(data: string) {
     this.charsheet = Bitmap.fromString(data);
     this.width = this.charsheet.width / 16;
@@ -19,28 +22,6 @@ export class Font {
       const y = Math.floor(i / 16) * this.height;
       this.chars[ch] = this.charsheet.makeView(x, y, this.width, this.height);
     }
-  }
-
-  calcSize(text: string) {
-    let x = 0;
-    let w = 0;
-    let h = 1;
-
-    for (let i = 0; i < text.length; i++) {
-      if (text[i] === '\n') {
-        h++;
-        x = 0;
-      }
-      else {
-        x++;
-        w = Math.max(x, w);
-      }
-    }
-
-    return {
-      w: w * (this.width + 1) - 1,
-      h: h * (this.height + 2) - 2,
-    };
   }
 
   print(x: number, y: number, c: number, text: string) {
@@ -58,8 +39,8 @@ export class Font {
 
       const map = this.chars[ch];
 
-      const px = x + (posx * (this.width + 1));
-      const py = y + (posy * (this.height + 2));
+      const px = x + (posx * (this.width + this.xgap));
+      const py = y + (posy * (this.height + this.ygap));
 
       map.draw(px, py, c);
 

@@ -8,23 +8,27 @@ export class Label extends View {
   color = 0xffffffff;
   override passthrough = true;
 
-  lines = [];
+  lines: string[] = [];
 
   override init(): void {
     this.font = mem.font;
-    this.$data.text.watch(t => {
-
+    this.$data.text.watch((t: string) => {
+      this.lines = t.split('\n');
     })
   }
 
   override adjust(): void {
-    const size = this.font.calcSize(this.text);
-    this.w = size.w;
-    this.h = size.h;
+    let w = 0;
+    for (const line of this.lines) {
+      if (line.length > w) w = line.length;
+    }
+    this.w = w * this.font.width + (w - 1) * this.font.xgap;
+    this.h = (this.lines.length * this.font.height) + ((this.lines.length - 1) * this.font.ygap);
   }
 
   override draw() {
     super.draw();
+
     this.font.print(0, 0, this.color, this.text);
   }
 
