@@ -22,9 +22,9 @@ export class Scroll extends View {
     this.addChild(this.barx);
     this.addChild(this.bary);
 
-    this.$data.scrollVisibleClaims.watch((n) => {
-      this.barx.visible = n > 0;
-      this.bary.visible = n > 0;
+    this.$data.scrollVisibleClaims.watch((claims) => {
+      this.barx.visible = (claims > 0) && (this.firstChild!.h > this.h);
+      this.bary.visible = (claims > 0) && (this.firstChild!.w > this.w);
     })
 
     this.$data.w.watch(() => this.adjustTracks());
