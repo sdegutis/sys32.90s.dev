@@ -8,8 +8,13 @@ export class Label extends View {
   color = 0xffffffff;
   override passthrough = true;
 
+  lines = [];
+
   override init(): void {
     this.font = mem.font;
+    this.$data.text.watch(t => {
+
+    })
   }
 
   override adjust(): void {
