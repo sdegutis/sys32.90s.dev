@@ -1,5 +1,5 @@
 import { Listener } from "../util/events.js";
-import { opendb } from "./db.js";
+import { opendb } from "../util/db.js";
 import { type Drive, type DriveNotificationType } from "./drive.js";
 import { MountedDrive } from "./mount.js";
 import { SysDrive } from "./sys.js";

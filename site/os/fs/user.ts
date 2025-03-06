@@ -1,4 +1,4 @@
-import { opendb } from "./db.js";
+import { opendb } from "../util/db.js";
 import type { Drive, DriveItem, DriveNotificationType } from "./drive.js";
 
 export class UserDrive implements Drive {
