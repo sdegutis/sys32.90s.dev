@@ -5,7 +5,6 @@ import { fs } from "./os/fs/fs.js";
 
 await fs.mountUserDrives();
 
-mem.init();
 sys.init();
 ws.init();
 

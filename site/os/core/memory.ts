@@ -2,23 +2,9 @@ import { fs } from "../fs/fs.js";
 import { Reactive } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { Cursor } from "./cursor.js";
+import { makeDynamic } from "./dyn.js";
 import { Font } from "./font.js";
 import { sys } from "./system.js";
-import { Dynamic } from "./view.js";
-
-class Memory extends Dynamic {
-
-  font!: Font;
-  pointer!: Cursor;
-  menubuttonImage!: Bitmap;
-
-  init() {
-    this.font = new Font(fs.get('sys/font1.font')!);
-    this.pointer = Cursor.fromBitmap(Bitmap.fromString(fs.get('sys/pointer.bitmap')!));
-    this.menubuttonImage = Bitmap.fromString(fs.get('sys/menubutton.bitmap')!);
-  }
-
-}
 
 function livefile<T>(path: string, to: (content: string) => T) {
   const s = fs.get(path)!;
@@ -33,4 +19,8 @@ function livefile<T>(path: string, to: (content: string) => T) {
   return r;
 }
 
-export const mem = new Memory();
+export const mem = makeDynamic({
+  $font: livefile('sys/font1.font', s => new Font(s)),
+  $pointer: livefile('sys/pointer.bitmap', s => Cursor.fromBitmap(Bitmap.fromString(s))),
+  $menubuttonImage: livefile('sys/menubutton.bitmap', s => Bitmap.fromString(s)),
+});
