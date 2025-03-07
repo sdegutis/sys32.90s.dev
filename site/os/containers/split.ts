@@ -2,7 +2,7 @@ import { Bitmap } from "../core/bitmap.js"
 import { crt } from "../core/crt.js"
 import { Cursor } from "../core/cursor.js"
 import { sys } from "../core/system.js"
-import { $, View } from "../core/view.js"
+import { $, $data, View } from "../core/view.js"
 import { dragMove } from "../util/selections.js"
 
 const xresize = Cursor.fromBitmap(new Bitmap([0x00000099, 0xffffffff, 0xfffffffe], 5, [
@@ -67,7 +67,6 @@ class SplitDivider extends View {
         s.pos = b[dx]
         if (s.min && s.pos < s.min) s.pos = s.min
         if (s.max && s.pos > s[dw] - s.max) s.pos = s[dw] - s.max
-        sys.layoutTree(this.split)
       },
       up: () => this.pressed = false,
     })
@@ -93,6 +92,7 @@ export class Split extends View {
     while (this.children.length < 2) {
       this.addChild($(View, {}))
     }
+    $data(this, 'pos').watch(() => sys.layoutTree(this))
   }
 
   override layout(): void {

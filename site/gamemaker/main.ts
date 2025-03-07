@@ -92,20 +92,15 @@ export default function gamemaker() {
   const tab1 = new Reactive<Tab>('code')
   const tab2 = new Reactive<Tab>('gfx')
 
-  const menus = $(SplitX, { adjust() { this.h = this.firstChild!.h } },
-    makeTabMenu(tabs, tab1, tab2),
-    makeTabMenu(tabs, tab2, tab1),
-  )
-
   const split = $(SplitX, { pos: 320 / 2, resizable: true },
     $((TabPane<Tab>), { mine: tab1, tabs }),
     $((TabPane<Tab>), { mine: tab2, tabs })
   )
 
-  $data(split, 'pos').watch(pos => {
-    menus.pos = pos
-    sys.layoutTree()
-  })
+  const menus = $(SplitX, { $pos: $data(split, 'pos'), adjust() { this.h = this.firstChild!.h } },
+    makeTabMenu(tabs, tab1, tab2),
+    makeTabMenu(tabs, tab2, tab1),
+  )
 
   const root = $(PanedYA, {}, menus, split)
 
