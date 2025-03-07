@@ -1,5 +1,8 @@
+import { GroupX } from "../os/containers/group.js"
 import { SplitX } from "../os/containers/split.js"
 import { TextArea } from "../os/containers/textarea.js"
+import { Button } from "../os/controls/button.js"
+import { Label } from "../os/controls/label.js"
 import { sys } from "../os/core/system.js"
 import { $, View } from "../os/core/view.js"
 import { Reactive } from "../os/util/events.js"
@@ -15,6 +18,38 @@ export function draw() {
   drawrectf(0,0,20,20,0x99000099)
 }
 `
+
+
+function makeTabMenu<Tab extends string>(
+  tabs: Record<Tab, View>,
+  tab1: Reactive<Tab>,
+  tab2: Reactive<Tab>,
+) {
+  return $(GroupX, { background: 0x333333ff },
+    ...Object.keys(tabs).map((text) => {
+      const button = $(Button, {
+        padding: 2,
+        onClick: () => {
+          const tab = text as Tab
+          if (tab2.data === tab) {
+            tab2.update(tab1.data)
+          }
+          tab1.update(tab)
+        }
+      },
+        $(Label, { text })
+      )
+
+      tab1.watch(t => {
+        const selected = t === text
+        button.background = selected ? 0xffffff33 : 0x00000000
+      })
+
+      return button
+    })
+  )
+}
+
 
 class CodeEditor extends View {
 
@@ -71,14 +106,13 @@ export default function gamemaker() {
   const tab1 = new Reactive<Tab>('code')
   const tab2 = new Reactive<Tab>('gfx')
 
-  const pane1 = $(TabPane<Tab>, { tabs, mine: tab1, other: tab2 })
-  const pane2 = $(TabPane<Tab>, { tabs, mine: tab2, other: tab1 })
+  const menu1 = makeTabMenu(tabs, tab1, tab2)
+  const menu2 = makeTabMenu(tabs, tab2, tab1)
+
+  const pane1 = $(TabPane<Tab>, { tabs, mine: tab1, menu: menu1 })
+  const pane2 = $(TabPane<Tab>, { tabs, mine: tab2, menu: menu2 })
 
   const root = $(SplitX, { pos: 320 / 2, resizable: true }, pane1, pane2)
-
-
-
-
 
 
 
