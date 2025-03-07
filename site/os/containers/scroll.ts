@@ -1,5 +1,5 @@
 import { sys } from "../core/system.js";
-import { $, View } from "../core/view.js";
+import { $, $data, View } from "../core/view.js";
 import { dragMove } from "../util/selections.js";
 
 export class Scroll extends View {
@@ -27,15 +27,15 @@ export class Scroll extends View {
     this.barx.onMouseExited = () => this.scrollVisibleClaims--;
     this.bary.onMouseExited = () => this.scrollVisibleClaims--;
 
-    this.$data.scrollVisibleClaims.watch((claims) => {
+    $data(this, 'scrollVisibleClaims').watch((claims) => {
       this.barx.visible = (claims > 0) && (this.firstChild!.h > this.h);
       this.bary.visible = (claims > 0) && (this.firstChild!.w > this.w);
     })
 
-    this.$data.w.watch(() => this.adjustTracks());
-    this.$data.h.watch(() => this.adjustTracks());
-    this.$data.scrollx.watch(() => this.adjustTracks());
-    this.$data.scrolly.watch(() => this.adjustTracks());
+    $data(this, 'w').watch(() => this.adjustTracks());
+    $data(this, 'h').watch(() => this.adjustTracks());
+    $data(this, 'scrollx').watch(() => this.adjustTracks());
+    $data(this, 'scrolly').watch(() => this.adjustTracks());
   }
 
   private adjustTracks() {

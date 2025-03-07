@@ -13,7 +13,7 @@ import { dragMove, dragResize } from "../util/selections.js";
 import { Bitmap } from "./bitmap.js";
 import { Cursor } from "./cursor.js";
 import { sys } from "./system.js";
-import { $, View } from "./view.js";
+import { $, $data, View } from "./view.js";
 
 const minImage = new Bitmap([0x333333ff], 4, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,]);
 const maxImage = new Bitmap([0x333333ff], 4, [1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1,]);
@@ -135,8 +135,8 @@ export class Panel extends View {
 
     ];
 
-    this.$data.title.watch(s => this.find<Label>('titleLabel')!.text = s)
-    this.$data.panelFocused.watch(b => { this.find<Border>('border')!.borderColor = b ? 0x005599ff : 0x00559944; });
+    $data(this, 'title').watch(s => this.find<Label>('titleLabel')!.text = s)
+    $data(this, 'panelFocused').watch(b => { this.find<Border>('border')!.borderColor = b ? 0x005599ff : 0x00559944; });
   }
 
   close() {

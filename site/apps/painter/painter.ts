@@ -7,7 +7,7 @@ import { Label } from "../../os/controls/label.js";
 import { Slider } from "../../os/controls/slider.js";
 import { Panel } from "../../os/core/panel.js";
 import { sys } from "../../os/core/system.js";
-import { $, View } from "../../os/core/view.js";
+import { $, $data, View } from "../../os/core/view.js";
 import { fs } from "../../os/fs/fs.js";
 import { showPrompt } from "../../os/util/dialog.js";
 import { makeStripeDrawer } from "../../os/util/draw.js";
@@ -32,7 +32,7 @@ export default (filepath?: string) => {
     $(PanedXB, { gap: 1 },
       $(PanedYB, { gap: 1 },
         $(Scroll, { background: 0x222222ff, draw: makeStripeDrawer(), },
-          $(PaintView, { id: 'paintView', color: COLORS[3], $data: { zoom: $zoom } }),
+          $(PaintView, { id: 'paintView', color: COLORS[3], $zoom }),
           $(ResizerView, { id: 'resizer', background: 0x00000077, w: 4, h: 4, })
         ),
         $(SpacedX, {},
@@ -46,7 +46,7 @@ export default (filepath?: string) => {
             $(Button, { id: 'grid-button', onClick() { paintView.showGrid = !paintView.showGrid } },
               $(Label, { text: 'grid' })
             ),
-            $(Slider, { knobSize: 3, w: 20, min: 1, max: 12, $data: { val: $zoom } })
+            $(Slider, { knobSize: 3, w: 20, min: 1, max: 12, $val: $zoom })
           )
         )
       ),
@@ -64,17 +64,17 @@ export default (filepath?: string) => {
   const pencilTool = panel.find<View>('pencilTool')!;
   const eraserTool = panel.find<View>('eraserTool')!;
 
-  paintView.$data.width.watch(n => widthLabel.text = n.toString());
-  paintView.$data.height.watch(n => heightLabel.text = n.toString());
+  $data(paintView, 'width').watch(n => widthLabel.text = n.toString());
+  $data(paintView, 'height').watch(n => heightLabel.text = n.toString());
 
-  widthLabel.$data.text.watch(() => { widthLabel.parent?.layoutTree() });
-  heightLabel.$data.text.watch(() => { heightLabel.parent?.layoutTree() });
+  $data(widthLabel, 'text').watch(() => { widthLabel.parent?.layoutTree() });
+  $data(heightLabel, 'text').watch(() => { heightLabel.parent?.layoutTree() });
 
-  paintView.$data.zoom.watch(n => zoomLabel.text = n.toString());
-  paintView.$data.zoom.watch(n => panel.layoutTree());
+  $data(paintView, 'zoom').watch(n => zoomLabel.text = n.toString());
+  $data(paintView, 'zoom').watch(n => panel.layoutTree());
 
-  paintView.$data.tool.watch(t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff);
-  paintView.$data.tool.watch(t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff);
+  $data(paintView, 'tool').watch(t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff);
+  $data(paintView, 'tool').watch(t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff);
 
   async function addColor() {
     const colorCode = await showPrompt('enter color code:');
@@ -92,9 +92,9 @@ export default (filepath?: string) => {
     const border = $(Button, { padding: 1, onClick: () => { paintView.color = color; } }, colorView);
 
     multiplex({
-      currentColor: paintView.$data.color,
-      hovered: border.$data.hovered,
-      pressed: border.$data.pressed,
+      currentColor: $data(paintView, 'color'),
+      hovered: $data(border, 'hovered'),
+      pressed: $data(border, 'pressed'),
     }).watch(data => {
       let c = 0;
       if (data.currentColor === color) c = 0xffffff77;
@@ -110,7 +110,7 @@ export default (filepath?: string) => {
     makeColorButton(color);
   }
 
-  paintView.$data.color.watch(color => colorLabel.text = '0x' + color.toString(16).padStart(8, '0'));
+  $data(paintView, 'color').watch(color => colorLabel.text = '0x' + color.toString(16).padStart(8, '0'));
 
   function doMenu() {
     showMenu([
@@ -161,7 +161,7 @@ export default (filepath?: string) => {
     return false;
   };
 
-  paintView.$data.color.watch(color => {
+  $data(paintView, 'color').watch(color => {
     if (!colorsWithButtons.has(color)) {
       makeColorButton(color);
       toolArea.parent?.layoutTree();

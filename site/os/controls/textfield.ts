@@ -1,6 +1,6 @@
 import { crt34 } from "../core/font.js";
 import { sys } from "../core/system.js";
-import { $, View } from "../core/view.js";
+import { $, $data, View } from "../core/view.js";
 import { Label } from "./label.js";
 
 export class TextField extends View {
@@ -28,13 +28,13 @@ export class TextField extends View {
   }
 
   override init(): void {
-    this._field.$data.color = this.$data.color;
-    this._cursor.$data.color = this.$data.cursorColor;
+    $data(this._field, 'color', $data(this, 'color'));
+    $data(this._cursor, 'color', $data(this, 'cursorColor'));
     this.font = crt34;
-    this._field.$data.font = this.$data.font;
-    this._cursor.$data.font = this.$data.font;
+    $data(this._field, 'font', $data(this, 'font'));
+    $data(this._cursor, 'font', $data(this, 'font'));
     this.children = [this._field, this._cursor];
-    this.$data.text.watch(s => this.showText());
+    $data(this, 'text').watch(s => this.showText());
   }
 
   override layout(): void {

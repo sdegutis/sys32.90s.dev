@@ -8,7 +8,7 @@ import { Bitmap } from "../../os/core/bitmap.js";
 import { CHARSET, crt34, Font } from "../../os/core/font.js";
 import { Panel } from "../../os/core/panel.js";
 import { sys } from "../../os/core/system.js";
-import { $, View } from "../../os/core/view.js";
+import { $, $data, View } from "../../os/core/view.js";
 import { fs } from "../../os/fs/fs.js";
 import { multiplex, Reactive } from "../../os/util/events.js";
 import { CharView } from "./charview.js";
@@ -22,9 +22,9 @@ const SAMPLE_TEXT = [
 
 export default async (filename?: string) => {
 
-  const $myfont = new Reactive(crt34);
-  const $width = new Reactive($myfont.data.width);
-  const $height = new Reactive($myfont.data.height);
+  const $font = new Reactive(crt34);
+  const $width = new Reactive($font.data.width);
+  const $height = new Reactive($font.data.height);
 
   function rebuildWhole() {
     const w = $width.data;
@@ -34,10 +34,10 @@ export default async (filename?: string) => {
     for (const [i, ch] of CHARSET.entries()) {
       const x = i % 16;
       const y = Math.floor(i / 16);
-      $myfont.data.chars[ch].draw(x * w, y * h, 1, src);
+      $font.data.chars[ch].draw(x * w, y * h, 1, src);
     }
 
-    $myfont.update(new Font((src.toString())));
+    $font.update(new Font((src.toString())));
   }
 
   rebuildWhole();
@@ -46,17 +46,17 @@ export default async (filename?: string) => {
   const $hovered = new Reactive('');
 
   if (filename) {
-    $myfont.update(new Font(fs.get(filename)!));
-    $width.update($myfont.data.width);
-    $height.update($myfont.data.height);
+    $font.update(new Font(fs.get(filename)!));
+    $width.update($font.data.width);
+    $height.update($font.data.height);
   }
 
   const charViews = new Map<string, CharView>();
 
   for (const char of CHARSET) {
-    const view = $(CharView, { char, $data: { font: $myfont, width: $width, height: $height, zoom: $zoom } });
+    const view = $(CharView, { char, $font, $width, $height, $zoom });
     charViews.set(char, view);
-    view.$data.hovered.watch((h) => { if (h) $hovered.update(char); });
+    $data(view, 'hovered').watch((h) => { if (h) $hovered.update(char); });
   }
 
   const panel = $(Panel, { title: 'fontmaker', },
@@ -92,26 +92,26 @@ export default async (filename?: string) => {
       ),
       $(Border, { background: 0x000000ff, u: 2 },
         $(GroupY, { gap: 3, align: 'a' },
-          $(Label, { text: SAMPLE_TEXT, color: 0x999900ff, $data: { font: $myfont } }),
+          $(Label, { text: SAMPLE_TEXT, color: 0x999900ff, $font: $font }),
           $(GroupX, { gap: 10, },
             $(GroupX, { gap: 2 },
               $(Label, { text: 'width:', color: 0xffffff33 }),
               $(Label, { id: 'width-label' }),
-              $(Slider, { min: 1, max: 12, w: 20, knobSize: 3, $data: { val: $width } }),
+              $(Slider, { min: 1, max: 12, w: 20, knobSize: 3, $val: $width }),
             ),
             $(GroupX, { gap: 2 },
               $(Label, { text: 'height:', color: 0xffffff33 }),
               $(Label, { id: 'height-label' }),
-              $(Slider, { min: 1, max: 12, w: 20, knobSize: 3, $data: { val: $height } }),
+              $(Slider, { min: 1, max: 12, w: 20, knobSize: 3, $val: $height }),
             ),
             $(GroupX, { gap: 2 },
               $(Label, { text: 'zoom:', color: 0xffffff33 }),
               $(Label, { id: 'zoom-label' }),
-              $(Slider, { min: 1, max: 5, w: 20, knobSize: 3, $data: { val: $zoom } }),
+              $(Slider, { min: 1, max: 5, w: 20, knobSize: 3, $val: $zoom }),
             ),
             $(GroupX, { gap: 2 },
               $(Label, { text: 'hover:', color: 0xffffff33 }),
-              $(Label, { $data: { text: $hovered } }),
+              $(Label, { $text: $hovered }),
             ),
           )
         )
@@ -135,7 +135,7 @@ export default async (filename?: string) => {
     if (key === 's' && sys.keys['Control']) {
 
       if (filename) {
-        fs.put(filename, $myfont.data.charsheet.toString())
+        fs.put(filename, $font.data.charsheet.toString())
       }
 
       return true;

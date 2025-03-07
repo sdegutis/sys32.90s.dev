@@ -1,5 +1,5 @@
 import { crt34 } from "../core/font.js";
-import { View } from "../core/view.js";
+import { $data, View } from "../core/view.js";
 
 export class Label extends View {
 
@@ -12,7 +12,7 @@ export class Label extends View {
 
   override init(): void {
     this.font = crt34;
-    this.$data.text.watch((t: string) => {
+    $data(this, 'text').watch((t: string) => {
       this.lines = t.split('\n');
     })
   }

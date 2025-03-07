@@ -1,6 +1,6 @@
 import { crt34 } from "../core/font.js";
 import { sys } from "../core/system.js";
-import { $, View } from "../core/view.js";
+import { $, $data, View } from "../core/view.js";
 import { makeVacuumLayout } from "../util/layouts.js";
 import { Scroll } from "./scroll.js";
 
@@ -52,7 +52,7 @@ export class TextArea extends View {
       )
     ];
 
-    this.$data.cursorColor.watch(c => this._cursor.background = c);
+    $data(this, 'cursorColor').watch(c => this._cursor.background = c);
   }
 
   private drawTextLabel() {

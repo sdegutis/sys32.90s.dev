@@ -7,15 +7,7 @@ import { sys } from "./system.js";
 
 const pointer = Cursor.fromBitmap(Bitmap.fromString(fs.get('sys/pointer.bitmap')!));
 
-export class Dynamic {
-
-  $data = Object.create(null) as {
-    [K in keyof this]: Reactive<any>
-  };
-
-}
-
-export class View extends Dynamic {
+export class View {
 
   init?(): void;
   onScroll?(up: boolean): void;
@@ -29,8 +21,6 @@ export class View extends Dynamic {
   adjust?(): void;
   adopted?(): void;
   abandoned?(): void;
-
-  // data = makeDynamic({});
 
   id = '';
 
@@ -113,93 +103,50 @@ export class View extends Dynamic {
 
 }
 
+type With$Data<T> = { [K in keyof T as `$${K & string}`]: Reactive<T[K]> };
+
 export function $<T extends View>(
   ctor: { new(): T; },
-  config: Partial<Omit<T, '$data'> & { $data: Partial<T['$data']> }>,
+  config: Partial<T & With$Data<T>>,
   ...children: View[]
 ): T {
   const view = new ctor();
-  Object.assign(view, { children }, config);
-  makeDynamicOld(view);
+  view.children = children;
+  Object.assign(view, config);
+  makeDynamic(view);
   view.init?.();
   return view;
 }
 
-export function makeDynamicOld<T extends Dynamic>(o: T) {
+const $sources = new WeakMap<View, Map<string, Reactive<any>>>();
+
+export function $data<T extends View, K extends keyof T, R extends Reactive<T[K]>>(o: T, k: K, v?: R): R {
+  if (v) $sources.get(o)!.set(k as string, v);
+  return $sources.get(o)!.get(k as string) as R;
+}
+
+export function makeDynamic<T extends View>(o: T) {
+  const map = new Map<string, Reactive<any>>();
+  $sources.set(o, map);
+
   for (let [key, val] of Object.entries(o)) {
-    if (key === '$data') continue;
-    if (typeof val === 'function') continue;
+    if (val instanceof Function) continue;
     if (val instanceof Listener) continue;
     if (val instanceof Array) continue;
     if (Object.getOwnPropertyDescriptor(o, key)?.get) continue;
-
-    o.$data[key as keyof T] ??= new Reactive(val);
-
-    Object.defineProperty(o, key, {
-      enumerable: true,
-      set: (v) => o.$data[key as keyof T].update(v),
-      get: () => o.$data[key as keyof T].data,
-    });
-  }
-  for (let key of Object.keys(o['$data'])) {
-    if (Object.getOwnPropertyDescriptor(o, key)?.get) continue;
-
-    Object.defineProperty(o, key, {
-      enumerable: true,
-      set: (v) => o.$data[key as keyof T].update(v),
-      get: () => o.$data[key as keyof T].data,
-    });
-  }
-}
-
-
-
-type Dyn<T> = T
-  & { [K in keyof T as K extends `$${infer S}` ? S : never]: T[K] extends Reactive<infer R> ? R : never }
-  & { [K in keyof T as K extends `$${string}` ? never : `$${K & string}`]: Reactive<T[K]> };
-
-type EnsureReactive<T> = { [K in keyof T as K extends `$${string}` ? K : never]: Reactive<any> };
-
-type No$$ = { [K in `$$${string}`]: never };
-
-export function makeDynamic<T extends EnsureReactive<T>>(o: T & No$$): Dyn<T> {
-  for (let [key, val] of Object.entries(o)) {
-    if (key.startsWith('$')) {
-      const dkey = key as keyof T;
-      Object.defineProperty(o, dkey, {
-        value: val,
-        enumerable: false,
-        configurable: true,
-        writable: true,
-      });
-      Object.defineProperty(o, key.slice(1), {
-        configurable: true,
-        enumerable: true,
-        set: (v) => (o[dkey] as Reactive<any>).update(v),
-        get: () => (o[dkey] as Reactive<any>).data,
-      });
-    }
-  }
-  for (let [key, val] of Object.entries(o)) {
     if (!key.startsWith('$')) {
-      const dkey = `$${key}` as keyof T;
-      if (!o[dkey]) {
-        Object.defineProperty(o, dkey, {
-          value: new Reactive(val),
-          enumerable: false,
-          configurable: true,
-          writable: true,
-        });
-      }
-      if (!Object.getOwnPropertyDescriptor(o, key)?.get) {
-        Object.defineProperty(o, key, {
-          configurable: true,
-          enumerable: true,
-          set: (v) => (o[dkey] as Reactive<any>).update(v),
-          get: () => (o[dkey] as Reactive<any>).data,
-        });
-      }
+      map.set(key, new Reactive(val));
+      Object.defineProperty(o, key, {
+        get() { return $data(this, key).data },
+        set(v) { return $data(this, key).update(v) },
+        enumerable: true,
+      });
     }
   }
-  return o as any;
+
+  for (let [key, r] of Object.entries(o)) {
+    if (key.startsWith('$')) {
+      map.set(key.slice(1), r);
+    }
+  }
 }
