@@ -10,8 +10,6 @@ export class TextArea extends View {
   color = 0xffffffff
   private lines: string[] = ['']
 
-  // override passthrough = false
-
   private scroll!: Scroll
   private label!: View
   private _cursor!: View
@@ -33,17 +31,17 @@ export class TextArea extends View {
   override layout = makeVacuumLayout()
 
   override init(): void {
-    // passthrough: false,
-    //   onFocus(this: Partial<View>) { this.firstChild?.focus() },
-
     this.children = [
-      this.scroll = $(Scroll, {},
+      this.scroll = $(Scroll, {
+        onMouseDown: (key) => this.onMouseDown(key),
+      },
         this.label = $(View, {
           adjust: () => { this.adjustTextLabel() },
           draw: () => { this.drawTextLabel() },
-          // onmou: () => { this.drawTextLabel() },
+          onMouseDown: (key) => this.onMouseDown(key),
         },
           this._cursor = $(View, {
+            onMouseDown: (key) => this.onMouseDown(key),
             visible: false,
             w: this.font.width + this.font.xgap,
             h: this.font.height + this.font.ygap,
@@ -54,6 +52,27 @@ export class TextArea extends View {
 
     this.reflectCursorPos()
     $data(this, 'cursorColor').watch(c => this._cursor.background = c)
+  }
+
+  override onMouseDown(button: number): void {
+    sys.focus(this)
+
+    let x = this.mouse.x - this.label.x
+    let y = this.mouse.y - this.label.y
+
+    const row = Math.floor(y / (this.font.height + this.font.ygap))
+    const col = Math.floor(x / (this.font.width + this.font.xgap))
+
+    this.row = Math.min(row, this.lines.length - 1)
+    this.end = this.col = col
+    this.fixCol()
+    this.restartBlinking()
+    this.reflectCursorPos()
+    this.scrollCursorIntoView()
+    sys.layoutTree(this)
+
+    console.log(row, col)
+
   }
 
   private drawTextLabel() {
