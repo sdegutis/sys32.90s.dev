@@ -10,6 +10,4 @@ await ws.addProgram("fontmaker", import.meta.resolve("./apps/fontmaker/"))
 
 // ws.showDesktop()
 
-// ws.launch('gamemaker')
-
 gamemaker()

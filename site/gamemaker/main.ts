@@ -18,20 +18,49 @@ export function draw() {
 }
 `
 
+class TabPane extends PanedYA {
+
+}
+
+class CodeEditor extends View {
+
+  textarea = $(TextArea, { background: 0x000077ff })
+
+  get text() { return this.textarea.text }
+  set text(s: string) { this.textarea.text = s }
+
+  override layout = makeVacuumLayout()
+
+  override init(): void {
+    this.children = [this.textarea]
+  }
+
+}
+
+class SpriteEditor extends View {
+
+  override background = 0x770000ff
+
+}
+
 export default function gamemaker() {
 
-  const textarea = $(TextArea, { background: 0x000077ff, text: sample.trimStart() })
-
-  const spriteEditor = $(View, { background: 0x99000099 })
+  const textarea = $(CodeEditor, { text: sample.trimStart() })
+  const spriteEditor = $(SpriteEditor, {})
 
   const menu1 = $(GroupX, { background: 0x333333ff }, $(Button, { padding: 2 }, $(Label, { text: 'foo' })))
   const menu2 = $(GroupX, { background: 0x333333ff }, $(Button, { padding: 2 }, $(Label, { text: 'bar' })))
 
-  sys.layoutTree(menu1)
-  sys.layoutTree(menu2)
 
-  const pane1 = $(PanedYA, {}, menu1, textarea)
-  const pane2 = $(PanedYA, {}, menu2, spriteEditor)
+  const pane1 = $(TabPane, {}, menu1, textarea)
+  const pane2 = $(TabPane, {}, menu2, spriteEditor)
+
+
+
+
+
+
+
 
   const root = $(SplitX, { pos: 320 / 2 }, pane1, pane2)
 
