@@ -1,7 +1,7 @@
 import { PanedXA, PanedYA } from "../../os/containers/paned.js";
 import { Button } from "../../os/controls/button.js";
 import { Label } from "../../os/controls/label.js";
-import { Panel } from "../../os/core/panel.js";
+import { Panel } from "../../os/desktop/panel.js";
 import { $, $data, View } from "../../os/core/view.js";
 import { makeStripeDrawer } from "../../os/util/draw.js";
 import { multiplex } from "../../os/util/events.js";

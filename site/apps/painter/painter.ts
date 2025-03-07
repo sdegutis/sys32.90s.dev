@@ -5,7 +5,7 @@ import { SpacedX } from "../../os/containers/spaced.js";
 import { Button } from "../../os/controls/button.js";
 import { Label } from "../../os/controls/label.js";
 import { Slider } from "../../os/controls/slider.js";
-import { Panel } from "../../os/core/panel.js";
+import { Panel } from "../../os/desktop/panel.js";
 import { sys } from "../../os/core/system.js";
 import { $, $data, View } from "../../os/core/view.js";
 import { fs } from "../../os/fs/fs.js";

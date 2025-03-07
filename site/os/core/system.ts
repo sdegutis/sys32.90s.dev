@@ -1,6 +1,6 @@
 import { Listener } from "../util/events.js";
 import { crt } from "./crt.js";
-import { Panel } from "./panel.js";
+import { Panel } from "../desktop/panel.js";
 import { $, View } from "./view.js";
 
 class System {

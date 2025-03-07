@@ -1,5 +1,5 @@
 import { TextArea } from "../../os/containers/textarea.js";
-import { Panel } from "../../os/core/panel.js";
+import { Panel } from "../../os/desktop/panel.js";
 import { sys } from "../../os/core/system.js";
 import { $ } from "../../os/core/view.js";
 import { fs } from "../../os/fs/fs.js";

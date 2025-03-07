@@ -4,7 +4,7 @@ import { PanedYB } from "../containers/paned.js";
 import { Spaced } from "../containers/spaced.js";
 import { Button } from "../controls/button.js";
 import { Label } from "../controls/label.js";
-import { Panel } from "../core/panel.js";
+import { Panel } from "./panel.js";
 import { sys } from "../core/system.js";
 import { $, $data, View } from "../core/view.js";
 import { makeVacuumLayout } from "../util/layouts.js";

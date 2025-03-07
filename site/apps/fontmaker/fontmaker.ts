@@ -6,7 +6,7 @@ import { Label } from "../../os/controls/label.js";
 import { Slider } from "../../os/controls/slider.js";
 import { Bitmap } from "../../os/core/bitmap.js";
 import { CHARSET, crt34, Font } from "../../os/core/font.js";
-import { Panel } from "../../os/core/panel.js";
+import { Panel } from "../../os/desktop/panel.js";
 import { sys } from "../../os/core/system.js";
 import { $, $data, View } from "../../os/core/view.js";
 import { fs } from "../../os/fs/fs.js";
