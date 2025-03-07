@@ -1,5 +1,9 @@
+import { GroupX } from "../os/containers/group.js"
+import { PanedYA } from "../os/containers/paned.js"
 import { SplitX } from "../os/containers/split.js"
 import { TextArea } from "../os/containers/textarea.js"
+import { Button } from "../os/controls/button.js"
+import { Label } from "../os/controls/label.js"
 import { sys } from "../os/core/system.js"
 import { $, View } from "../os/core/view.js"
 import { makeVacuumLayout } from "../os/util/layouts.js"
@@ -8,26 +12,24 @@ import { give } from "./bridge.js"
 
 const prelude = `import {${Object.keys(api)}} from '${window.origin}/gamemaker/api.js'\n`
 
-export default function gamemaker() {
-
-  const textarea = $(TextArea, { background: 0x000077ff })
-
-  textarea.text = `
+const sample = `
 export function draw() {
   drawrectf(0,0,20,20,0x99000099)
 }
-`.trimStart()
+`
 
+export default function gamemaker() {
 
-  const editorView = $(View, {
-    layout: makeVacuumLayout(),
-  },
-    textarea
-  )
+  const textarea = $(TextArea, { background: 0x000077ff, text: sample.trimStart() })
+  const editorView = $(View, { layout: makeVacuumLayout(), }, textarea)
 
-  const root = $(SplitX, { pos: 320 / 2 },
-    editorView
-  )
+  const menu1 = $(GroupX, {}, $(Button, $(Label, { text: 'foo' })))
+  const menu2 = $(GroupX, {}, $(Button, $(Label, { text: 'foo' })))
+
+  const pane1 = $(PanedYA, {}, menu1, editorView)
+  const pane2 = $(PanedYA, {}, menu2, editorView)
+
+  const root = $(SplitX, { pos: 320 / 2 }, pane1, pane2)
 
   let _draw: (() => void) | undefined
   function draw() {
