@@ -11,15 +11,13 @@ import { makeVacuumLayout } from "../util/layouts.js";
 import { showMenu, type MenuItem } from "../util/menu.js";
 import { Clock } from "./clock.js";
 
-let big = false;
-
 class Workspace {
 
-  private desktop!: View;
-  private taskbar!: View;
-  private progbuttons!: View;
+  private desktop: View;
+  private taskbar: View;
+  private progbuttons: View;
 
-  init() {
+  constructor() {
 
     sys.root.layout = makeVacuumLayout();
 

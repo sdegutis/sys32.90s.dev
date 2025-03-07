@@ -1,7 +1,5 @@
 import { ws } from "./os/desktop/workspace.js";
 
-ws.init();
-
 await ws.addProgram('filer', import.meta.resolve('./apps/filer/'));
 await ws.addProgram('settings', import.meta.resolve('./apps/settings/'));
 await ws.addProgram('mapmaker', import.meta.resolve('./apps/mapmaker/'));
