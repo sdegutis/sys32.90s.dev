@@ -52,6 +52,7 @@ export class TextArea extends View {
       )
     ];
 
+    this.reflectCursorPos();
     $data(this, 'cursorColor').watch(c => this._cursor.background = c);
   }
 
