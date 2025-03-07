@@ -25,7 +25,7 @@ export class TextArea extends View {
 
   highlightings: Record<string, [number, RegExp]> = {}
 
-  cursorColor = 0x99000099
+  cursorColor = 0x0000FF99
 
   row = 0
   col = 0
