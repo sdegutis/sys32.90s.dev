@@ -24,8 +24,8 @@ export default function gamemaker() {
 
   const spriteEditor = $(View, { background: 0x99000099 })
 
-  const menu1 = $(GroupX, {}, $(Button, {}, $(Label, { text: 'foo' })))
-  const menu2 = $(GroupX, {}, $(Button, {}, $(Label, { text: 'bar' })))
+  const menu1 = $(GroupX, { background: 0x333333ff }, $(Button, { padding: 2 }, $(Label, { text: 'foo' })))
+  const menu2 = $(GroupX, { background: 0x333333ff }, $(Button, { padding: 2 }, $(Label, { text: 'bar' })))
 
   sys.layoutTree(menu1)
   sys.layoutTree(menu2)
