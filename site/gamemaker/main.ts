@@ -45,6 +45,7 @@ class TabPane<Tab extends string> extends PanedYA {
 
     this.mine.watch(t => {
       this.children = [menu, this.tabs[t]]
+      sys.layoutTree()
     })
   }
 
@@ -104,14 +105,14 @@ export default function gamemaker() {
   const pane1 = $(TabPane<Tab>, { tabs, mine: tab1, other: tab2 })
   const pane2 = $(TabPane<Tab>, { tabs, mine: tab2, other: tab1 })
 
-
-
-
-
-
-
-
   const root = $(SplitX, { pos: 320 / 2 }, pane1, pane2)
+
+
+
+
+
+
+
 
   let _draw: (() => void) | undefined
   const draw = () => {
