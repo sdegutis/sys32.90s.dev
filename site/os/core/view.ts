@@ -97,12 +97,12 @@ export class View {
     return null
   }
 
-  $ChildUsedAsConfig = undefined
+  YouForgotConfig: undefined
 
 }
 
 type $Reactives<T> = { [K in keyof T as `$${K & string}`]: Reactive<T[K]> }
-type DontForgetConfig = { $ChildUsedAsConfig: never }
+type DontForgetConfig = { YouForgotConfig: never }
 // type UnpartialThis<T> = { [K in keyof T]: T[K] extends (...args: infer A) => infer R ? (this: number, ...args: A) => R : T[K] }
 
 export function $<T extends View>(
