@@ -70,9 +70,6 @@ export class TextArea extends View {
     this.reflectCursorPos()
     this.scrollCursorIntoView()
     sys.layoutTree(this)
-
-    console.log(row, col)
-
   }
 
   private drawTextLabel() {
