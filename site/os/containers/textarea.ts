@@ -4,6 +4,13 @@ import { $, $data, View } from "../core/view.js"
 import { makeVacuumLayout } from "../util/layouts.js"
 import { Scroll } from "./scroll.js"
 
+const tohighlight: Record<string, [number, RegExp]> = {
+  keyw: [0x990099ff, /(export|function)/g],
+  punc: [0xffffff77, /([(){}=])/g],
+  call: [0x0000ffff, /([a-zA-Z.]+)\(/g],
+  nums: [0x999900ff, /(0x[0-9a-fA-F]+|[0-9.]+)/g],
+}
+
 export class TextArea extends View {
 
   font = crt34
@@ -17,6 +24,7 @@ export class TextArea extends View {
   get text() { return this.lines.join('\n') }
   set text(s: string) {
     this.lines = s.split('\n')
+    this.highlight()
     this.row = Math.min(this.row, this.lines.length - 1)
     this.fixCol()
     sys.layoutTree(this)
@@ -29,6 +37,25 @@ export class TextArea extends View {
   end = 0
 
   override layout = makeVacuumLayout()
+
+  private colors: number[][] = []
+
+  highlight() {
+    this.colors.length = this.lines.length
+    for (let i = 0; i < this.lines.length; i++) {
+      const line = this.lines[i]
+      const cline = Array(line.length).fill(this.color)
+      this.colors[i] = cline
+      for (const [col, regex] of Object.values(tohighlight)) {
+        for (const m of line.matchAll(regex)) {
+          cline.fill(col, m.index, m.index + m[1].length)
+        }
+      }
+    }
+
+    console.log(this.lines)
+    console.log(this.colors)
+  }
 
   override init(): void {
     this.children = [
@@ -79,7 +106,7 @@ export class TextArea extends View {
       for (let x = 0; x < line.length; x++) {
         const char = this.font.chars[line[x]]
         const px = x * this.font.width + x * this.font.xgap
-        char.draw(px, py, this.color)
+        char.draw(px, py, this.colors[y][x])
       }
     }
   }

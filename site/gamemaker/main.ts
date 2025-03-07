@@ -68,6 +68,7 @@ export default function gamemaker() {
   textarea.text = `
 export function draw() {
   drawrectf(0,0,20,20,0x99000099)
+  foo = 3
 }
 `.trimStart()
 
