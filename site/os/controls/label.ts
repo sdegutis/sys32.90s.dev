@@ -1,17 +1,17 @@
-import { mem } from "../core/memory.js";
+import { crt34 } from "../core/font.js";
 import { View } from "../core/view.js";
 
 export class Label extends View {
 
   text = '';
-  font = mem.font;
+  font = crt34;
   color = 0xffffffff;
   override passthrough = true;
 
   lines: string[] = [];
 
   override init(): void {
-    this.font = mem.font;
+    this.font = crt34;
     this.$data.text.watch((t: string) => {
       this.lines = t.split('\n');
     })

@@ -6,12 +6,12 @@ import { Button, ClickCounter } from "../controls/button.js";
 import { ImageView } from "../controls/image.js";
 import { Label } from "../controls/label.js";
 import { ws } from "../desktop/workspace.js";
+import { fs } from "../fs/fs.js";
 import { Listener } from "../util/events.js";
 import { makeVacuumLayout } from "../util/layouts.js";
 import { dragMove, dragResize } from "../util/selections.js";
 import { Bitmap } from "./bitmap.js";
 import { Cursor } from "./cursor.js";
-import { mem } from "./memory.js";
 import { sys } from "./system.js";
 import { $, View } from "./view.js";
 
@@ -19,6 +19,8 @@ const minImage = new Bitmap([0x333333ff], 4, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 const maxImage = new Bitmap([0x333333ff], 4, [1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1,]);
 const axeImage = new Bitmap([0x333333ff], 4, [1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,]);
 const adjImage = new Bitmap([0xffffff77], 3, [0, 0, 1, 0, 0, 1, 1, 1, 1,]);
+
+const menubuttonImage = Bitmap.fromString(fs.get('sys/menubutton.bitmap')!);
 
 const adjCursor = Cursor.fromBitmap(new Bitmap([0x000000cc, 0xffffffff, 0xfffffffe], 5, [
   0, 1, 1, 1, 0,
@@ -83,7 +85,7 @@ export class Panel extends View {
           $(Spaced, { onMouseDown: titleBarMouseDown, },
             $(Border, {},
               $(GroupX, { gap: 1 },
-                $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.onMenu?.() }, $(ImageView, { image: mem.menubuttonImage })),
+                $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.onMenu?.() }, $(ImageView, { image: menubuttonImage })),
                 $(Label, { id: 'titleLabel', color: 0xaaaaaaff })
               )
             ),

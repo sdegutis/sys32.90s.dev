@@ -5,8 +5,7 @@ import { Scroll } from "../../os/containers/scroll.js";
 import { Label } from "../../os/controls/label.js";
 import { Slider } from "../../os/controls/slider.js";
 import { Bitmap } from "../../os/core/bitmap.js";
-import { CHARSET, Font } from "../../os/core/font.js";
-import { mem } from "../../os/core/memory.js";
+import { CHARSET, crt34, Font } from "../../os/core/font.js";
 import { Panel } from "../../os/core/panel.js";
 import { sys } from "../../os/core/system.js";
 import { $, View } from "../../os/core/view.js";
@@ -23,7 +22,7 @@ const SAMPLE_TEXT = [
 
 export default async (filename?: string) => {
 
-  const $myfont = new Reactive(mem.font);
+  const $myfont = new Reactive(crt34);
   const $width = new Reactive($myfont.data.width);
   const $height = new Reactive($myfont.data.height);
 

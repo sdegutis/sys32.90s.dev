@@ -1,3 +1,4 @@
+import { fs } from "../fs/fs.js";
 import { Bitmap, type BitmapLike } from "./bitmap.js";
 
 export const CHARSET = Array(95).keys().map(i => String.fromCharCode(i + 32)).toArray();
@@ -49,3 +50,5 @@ export class Font {
   }
 
 }
+
+export const crt34 = new Font(fs.get('sys/crt34.font')!);

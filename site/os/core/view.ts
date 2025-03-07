@@ -1,8 +1,11 @@
+import { fs } from "../fs/fs.js";
 import { Listener, Reactive } from "../util/events.js";
+import { Bitmap } from "./bitmap.js";
 import { crt } from "./crt.js";
-import type { Cursor } from "./cursor.js";
-import { mem } from "./memory.js";
+import { Cursor } from "./cursor.js";
 import { sys } from "./system.js";
+
+const pointer = Cursor.fromBitmap(Bitmap.fromString(fs.get('sys/pointer.bitmap')!));
 
 export class Dynamic {
 
@@ -47,7 +50,7 @@ export class View extends Dynamic {
   get lastChild(): View | undefined { return this.children[this.children.length - 1]; }
 
   mouse = { x: 0, y: 0 };
-  cursor: Cursor | null = mem.pointer;
+  cursor: Cursor | null = pointer;
 
   parent?: View;
 
