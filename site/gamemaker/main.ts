@@ -11,13 +11,21 @@ const prelude = `import {${Object.keys(api)}} from '${window.origin}/gamemaker/a
 export default function gamemaker() {
 
   const textarea = $(TextArea, { background: 0x000077ff })
+
+  textarea.text = `
+export function draw() {
+  drawrectf(0,0,20,20,0x99000099)
+}
+`.trimStart()
+
+
   const editorView = $(View, {
     layout: makeVacuumLayout(),
   },
     textarea
   )
 
-  const panel = $(SplitX, { pos: 320 / 2 },
+  const root = $(SplitX, { pos: 320 / 2 },
     editorView
   )
 
@@ -59,17 +67,11 @@ export default function gamemaker() {
     if (!running) return
     _draw = undefined
     gametick?.()
-    sys.root.children = [panel]
+    sys.root.children = [root]
     sys.focus(textarea)
     sys.layoutTree()
     running = false
   }
-
-  textarea.text = `
-export function draw() {
-  drawrectf(0,0,20,20,0x99000099)
-}
-`.trimStart()
 
   sys.root.onKeyDown = key => {
     if (key === 'r' && sys.keys['Control']) { runGame(); return true }
@@ -77,9 +79,8 @@ export function draw() {
     return false
   }
 
-
   sys.root.layout = makeVacuumLayout()
-  sys.root.children = [panel]
+  sys.root.children = [root]
   sys.layoutTree()
   sys.focus(textarea)
 }
