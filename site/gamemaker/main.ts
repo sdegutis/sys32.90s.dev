@@ -1,10 +1,11 @@
 import { GroupX } from "../os/containers/group.js"
+import { PanedYA } from "../os/containers/paned.js"
 import { SplitX } from "../os/containers/split.js"
 import { TextArea } from "../os/containers/textarea.js"
 import { Button } from "../os/controls/button.js"
 import { Label } from "../os/controls/label.js"
 import { sys } from "../os/core/system.js"
-import { $, View } from "../os/core/view.js"
+import { $, $data, View } from "../os/core/view.js"
 import { Reactive } from "../os/util/events.js"
 import { makeVacuumLayout } from "../os/util/layouts.js"
 import * as api from './api.js'
@@ -100,7 +101,7 @@ export default function gamemaker() {
     code: codeEditor,
     gfx: spriteEditor,
     map: mapEditor,
-    docs: docsViewer,
+    help: docsViewer,
   }
 
   const tab1 = new Reactive<Tab>('code')
@@ -109,10 +110,30 @@ export default function gamemaker() {
   const menu1 = makeTabMenu(tabs, tab1, tab2)
   const menu2 = makeTabMenu(tabs, tab2, tab1)
 
-  const pane1 = $(TabPane<Tab>, { tabs, mine: tab1, menu: menu1 })
-  const pane2 = $(TabPane<Tab>, { tabs, mine: tab2, menu: menu2 })
+  const pane1 = $(TabPane<Tab>, { mine: tab1, tabs })
+  const pane2 = $(TabPane<Tab>, { mine: tab2, tabs })
 
-  const root = $(SplitX, { pos: 320 / 2, resizable: true }, pane1, pane2)
+  const menus = $(SplitX, {
+    adjust() {
+      this.h = this.firstChild!.h
+    },
+    layout() {
+      this.firstChild!.x = 0
+      this.firstChild!.w = this.pos!
+      this.lastChild!.x = this.pos!
+      this.lastChild!.w = this.w! - this.pos!
+    },
+  }, menu1, menu2)
+
+  const split = $(SplitX, { pos: 320 / 2, resizable: true }, pane1, pane2)
+
+  $data(split, 'pos').watch(pos => {
+    menus.pos = pos
+    sys.layoutTree()
+  })
+
+  const root = $(PanedYA, {}, menus, split)
+
 
 
 
