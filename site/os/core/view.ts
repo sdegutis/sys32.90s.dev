@@ -103,15 +103,15 @@ type With$Data<T> = { [K in keyof T as `$${K & string}`]: Reactive<T[K]> }
 
 export function $<T extends View>(
   ctor: { new(): T },
-  config: Partial<T & With$Data<T>>,
+  config: Partial<Omit<T, '$ChildUsedAsConfig'> & { $ChildUsedAsConfig: false } & With$Data<T>>,
   ...children: View[]
-): T {
+): T & { $ChildUsedAsConfig: true } {
   const view = new ctor()
   view.children = children
   Object.assign(view, config)
   makeDynamic(view)
   view.init?.()
-  return view
+  return view as any
 }
 
 export function $data<T extends View, K extends keyof T, R extends Reactive<T[K]>>(o: T, k: K, v?: R): R {

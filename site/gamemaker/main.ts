@@ -21,13 +21,17 @@ export function draw() {
 export default function gamemaker() {
 
   const textarea = $(TextArea, { background: 0x000077ff, text: sample.trimStart() })
-  const editorView = $(View, { layout: makeVacuumLayout(), }, textarea)
 
-  const menu1 = $(GroupX, {}, $(Button, $(Label, { text: 'foo' })))
-  const menu2 = $(GroupX, {}, $(Button, $(Label, { text: 'foo' })))
+  const spriteEditor = $(View, { background: 0x99000099 })
 
-  const pane1 = $(PanedYA, {}, menu1, editorView)
-  const pane2 = $(PanedYA, {}, menu2, editorView)
+  const menu1 = $(GroupX, {}, $(Button, {}, $(Label, { text: 'foo' })))
+  const menu2 = $(GroupX, {}, $(Button, {}, $(Label, { text: 'bar' })))
+
+  sys.layoutTree(menu1)
+  sys.layoutTree(menu2)
+
+  const pane1 = $(PanedYA, {}, menu1, textarea)
+  const pane2 = $(PanedYA, {}, menu2, spriteEditor)
 
   const root = $(SplitX, { pos: 320 / 2 }, pane1, pane2)
 

@@ -5,7 +5,7 @@ import { $, View } from "./view.js"
 class System {
 
   root = $(View, { background: 0x00000000 })
-  focused = this.root
+  focused: View = this.root
   keys: Record<string, boolean> = {}
   mouse = { x: 0, y: 0 }
 
@@ -14,7 +14,7 @@ class System {
   needsRedraw = true
 
   private allHovered = new Set<View>()
-  private hovered = this.root
+  private hovered: View = this.root
 
   private mouseMoved = new Listener()
   private mouseUp = new Listener()
