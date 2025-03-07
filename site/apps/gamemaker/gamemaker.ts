@@ -23,7 +23,12 @@ export default (filepath?: string) => {
     editorView
   );
 
-  const gameView = $(View, { background: 0x000000ff, cursor: null });
+  let _draw: (() => void) | undefined;
+  function draw() {
+    _draw?.();
+  }
+
+  const gameView = $(View, { background: 0x000000ff, cursor: null, draw });
 
   let gametick: (() => void) | undefined;
 
@@ -36,25 +41,31 @@ export default (filepath?: string) => {
 
     running = true;
 
-    const blob = new Blob([textarea.text], { type: 'application/javascript' })
+    const prelude = `import {crt} from '${window.origin}/os/core/crt.js';\n`;
+    const blob = new Blob([prelude + textarea.text], { type: 'application/javascript' })
     const url = URL.createObjectURL(blob);
     const mod = await import(url);
 
-    if (typeof mod.draw === 'function') {
-      gametick = sys.onTick.watch(mod.draw.bind({
-        rectfill: (x: number, y: number, w: number, h: number, c: number) => crt.rectFill(x, y, w, h, c),
-      }));
+    _draw = mod.draw;
+
+    if (typeof mod.tick === 'function') {
+      gametick = sys.onTick.watch(mod.tick);
     }
   }
 
   function stopGame() {
     if (!running) return
+    _draw = undefined;
     gametick?.();
     sys.exitFullscreen()
     running = false
   }
 
-  textarea.text = ''
+  textarea.text = `
+export function draw() {
+  crt.rectFill(0,0,20,20,0x99000099)
+}
+`.trimStart();
 
   panel.show();
 
