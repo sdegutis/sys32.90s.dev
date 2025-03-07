@@ -67,7 +67,7 @@ class SplitDivider extends View {
         s.pos = b[dx];
         if (s.min && s.pos < s.min) s.pos = s.min;
         if (s.max && s.pos > s[dw] - s.max) s.pos = s[dw] - s.max;
-        this.split.layoutTree();
+        sys.layoutTree(this.split);
       },
       up: () => this.pressed = false,
     });

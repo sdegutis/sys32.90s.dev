@@ -128,7 +128,7 @@ export default async (filename?: string) => {
   });
 
   multiplex({ w: $width, h: $height, z: $zoom, o: $hovered }).watch(() => {
-    panel.layoutTree();
+    sys.layoutTree(panel);
   });
 
   panel.onKeyDown = (key) => {

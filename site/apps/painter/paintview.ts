@@ -132,7 +132,7 @@ export class PaintView extends View {
       }
     }
 
-    this.parent?.layoutTree();
+    sys.layoutTree(this.parent!);
   }
 
 }

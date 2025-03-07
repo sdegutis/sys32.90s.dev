@@ -31,7 +31,7 @@ export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
     )
   );
 
-  menu.layoutTree();
+  sys.layoutTree(menu);
 
   if (menu.y + menu.h > sys.root.h) {
     menu.y = sys.mouse.y - menu.h;
@@ -40,6 +40,6 @@ export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
   adjust?.(menu);
 
   sys.root.addChild(menu);
-  menu.focus();
-  menu.layoutTree();
+  sys.focus(menu);
+  sys.layoutTree(menu);
 }

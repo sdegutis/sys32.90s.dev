@@ -69,7 +69,7 @@ export function draw() {
 
   panel.show();
 
-  textarea.focus();
+  sys.focus(textarea);
 
   // sys.enterFullscreen(editorView)
 

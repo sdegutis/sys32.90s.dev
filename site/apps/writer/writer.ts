@@ -26,7 +26,7 @@ function makeFilePanel(opts: {
 
   file.watch(s => {
     panel.title = !s ? `${title}:[no file]` : `${title}:${s}`;
-    panel.layoutTree();
+    sys.layoutTree(panel);
   });
 
   if (file.data) {
@@ -84,6 +84,6 @@ export default (filepath?: string) => {
 
   panel.show();
 
-  textarea.focus();
+  sys.focus(textarea);
 
 };

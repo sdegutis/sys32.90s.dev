@@ -61,7 +61,7 @@ export class Scroll extends View {
       if (track === this.trackx) this.scrolly = Math.round((o.y / (this.barx.h - this.trackx.h)) * this.firstChild!.h);
       if (track === this.tracky) this.scrollx = Math.round((o.x / (this.bary.w - this.tracky.w)) * this.firstChild!.w);
 
-      this.layoutTree();
+      sys.layoutTree(this);
     }
     const up = () => {
       setTimeout(() => { this.scrollVisibleClaims-- }, 500);
@@ -116,7 +116,7 @@ export class Scroll extends View {
     const sy = sys.keys['Shift'] ? 'scrollx' : 'scrolly';
     this[sy] += up ? -this.amount : this.amount;
 
-    this.layoutTree();
+    sys.layoutTree(this);
   }
 
   private fixScrollPos() {

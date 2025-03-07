@@ -56,8 +56,8 @@ export async function showPrompt(text: string) {
   function cancel() { p.resolve(''); }
 
   sys.root.addChild(overlay);
-  dialog.find('field')!.focus();
-  overlay.layoutTree();
+  sys.focus(dialog.find('field')!);
+  sys.layoutTree(overlay);
 
   p.promise.then(() => overlay.remove());
 
@@ -102,8 +102,8 @@ export async function showConfirm(text: string) {
   function cancel() { p.resolve(false); }
 
   sys.root.addChild(overlay);
-  dialog.focus();
-  overlay.layoutTree();
+  sys.focus(dialog);
+  sys.layoutTree(overlay);
 
   p.promise.then(() => overlay.remove());
 

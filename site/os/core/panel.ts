@@ -124,7 +124,7 @@ export class Panel extends View {
                 resize();
                 if (this.w < this.minw) this.w = this.minw;
                 if (this.h < this.minh) this.h = this.minh;
-                this.layoutTree();
+                sys.layoutTree(this);
               }
             });
           },
@@ -155,7 +155,7 @@ export class Panel extends View {
       this.w = this.lastPos.w;
       this.h = this.lastPos.h;
       this.lastPos = undefined!;
-      this.layoutTree();
+      sys.layoutTree(this);
     }
     else {
       this.lastPos = { x: this.x, y: this.y, w: this.w, h: this.h };
@@ -176,14 +176,14 @@ export class Panel extends View {
       //   this.y = Math.round((b.y - a.y) * p + a.y);
       //   this.w = Math.round((b.w - a.w) * p + a.w);
       //   this.h = Math.round((b.h - a.h) * p + a.h);
-      //   this.layoutTree();
+      //   sys.layoutTree(this);
       // });
 
       this.x = 0;
       this.y = 0;
       this.w = this.parent!.w;
       this.h = this.parent!.h;
-      this.layoutTree();
+      sys.layoutTree(this);
     }
 
   }

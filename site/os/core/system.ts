@@ -61,7 +61,7 @@ class System {
     crt.canvas.onmousedown = (e) => {
       e.preventDefault();
       crt.canvas.focus();
-      this.hovered.focus();
+      this.focus(this.hovered);
       this.hovered.onMouseDown?.(e.button);
       this.needsRedraw = true;
     };

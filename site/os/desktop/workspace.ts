@@ -68,28 +68,29 @@ class Workspace {
       background: 0x440000ff,
       onClick: () => {
         panel.show();
-        panel.focus();
+        sys.focus(panel);
       }
     },
       label
     );
     this.progbuttons.addChild(button);
-    this.progbuttons.layoutTree();
+    sys.layoutTree(this.progbuttons);
 
     $data(panel, 'title').watch(s => label.text = s);
-    $data(label, 'text').watch(s => { this.progbuttons.layoutTree(); });
+    $data(label, 'text').watch(s => { sys.layoutTree(this.progbuttons); });
 
     panel.didClose.watch(() => {
       button.parent?.removeChild(button);
-      this.progbuttons.layoutTree();
-      this.desktop.children.at(-1)?.focus();
+      sys.layoutTree(this.progbuttons);
+      const lastPanel = this.desktop.children.at(-1);
+      lastPanel && sys.focus(lastPanel);
     });
 
     $data(panel, 'panelFocused').watch(is => {
       button.background = is ? 0x770000ff : 0x330000ff;
     });
 
-    panel.focus();
+    sys.focus(panel);
     sys.layoutTree();
   }
 

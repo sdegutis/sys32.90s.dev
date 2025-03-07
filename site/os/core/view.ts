@@ -3,7 +3,6 @@ import { Listener, Reactive } from "../util/events.js";
 import { Bitmap } from "./bitmap.js";
 import { crt } from "./crt.js";
 import { Cursor } from "./cursor.js";
-import { sys } from "./system.js";
 
 const pointer = Cursor.fromBitmap(Bitmap.fromString(fs.get('sys/pointer.bitmap')!));
 
@@ -78,14 +77,6 @@ export class View {
     if ((this.background & 0x000000ff) > 0) {
       crt.rectFill(0, 0, this.w, this.h, this.background);
     }
-  }
-
-  focus() {
-    sys.focus(this);
-  }
-
-  layoutTree() {
-    sys.layoutTree(this);
   }
 
   remove() {

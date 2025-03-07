@@ -67,11 +67,11 @@ export default (filepath?: string) => {
   $data(paintView, 'width').watch(n => widthLabel.text = n.toString());
   $data(paintView, 'height').watch(n => heightLabel.text = n.toString());
 
-  $data(widthLabel, 'text').watch(() => { widthLabel.parent?.layoutTree() });
-  $data(heightLabel, 'text').watch(() => { heightLabel.parent?.layoutTree() });
+  $data(widthLabel, 'text').watch(() => { sys.layoutTree(widthLabel.parent!) });
+  $data(heightLabel, 'text').watch(() => { sys.layoutTree(heightLabel.parent!) });
 
   $data(paintView, 'zoom').watch(n => zoomLabel.text = n.toString());
-  $data(paintView, 'zoom').watch(n => panel.layoutTree());
+  $data(paintView, 'zoom').watch(n => sys.layoutTree(panel));
 
   $data(paintView, 'tool').watch(t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff);
   $data(paintView, 'tool').watch(t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff);
@@ -80,7 +80,7 @@ export default (filepath?: string) => {
     const colorCode = await showPrompt('enter color code:');
     const color = parseInt('0x' + colorCode, 16);
     makeColorButton(color);
-    toolArea.parent?.layoutTree();
+    sys.layoutTree(toolArea.parent!);
   }
 
   const colorsWithButtons = new Set<number>();
@@ -121,7 +121,7 @@ export default (filepath?: string) => {
 
   filesource.watch(s => {
     panel.title = !s ? `painter:[no file]` : `painter:${s}`;
-    panel.layoutTree();
+    sys.layoutTree(panel);
   });
 
   if (filesource.data) {
@@ -164,7 +164,7 @@ export default (filepath?: string) => {
   $data(paintView, 'color').watch(color => {
     if (!colorsWithButtons.has(color)) {
       makeColorButton(color);
-      toolArea.parent?.layoutTree();
+      sys.layoutTree(toolArea.parent!);
     }
   });
 

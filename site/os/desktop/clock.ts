@@ -1,4 +1,5 @@
 import { Label } from "../controls/label.js";
+import { sys } from "../core/system.js";
 
 export class Clock extends Label {
 
@@ -12,7 +13,7 @@ export class Clock extends Label {
   override adopted(): void {
     this.timer = setInterval((() => {
       this.updateTime();
-      this.parent?.layoutTree();
+      sys.layoutTree(this.parent!);
     }), 1000);
   }
 
