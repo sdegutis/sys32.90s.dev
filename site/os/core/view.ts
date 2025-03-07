@@ -97,7 +97,7 @@ export class View {
     return null
   }
 
-  $ChildUsedAsConfig = true
+  $ChildUsedAsConfig = undefined
 
 }
 
