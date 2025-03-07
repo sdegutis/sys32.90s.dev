@@ -37,19 +37,19 @@ class CodeEditor extends View {
 
 class SpriteEditor extends View {
 
-  override background = 0x770000ff
+  override background = 0x000000ff
 
 }
 
 class MapEditor extends View {
 
-  override background = 0x330000ff
+  override background = 0x000000ff
 
 }
 
 class DocsViewer extends View {
 
-  override background = 0x007700ff
+  override background = 0x000000ff
 
 }
 
