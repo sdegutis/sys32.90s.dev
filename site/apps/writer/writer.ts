@@ -1,5 +1,4 @@
 import { TextArea } from "../../os/containers/textarea.js";
-import { makeDynamic } from "../../os/core/dyn.js";
 import { Panel } from "../../os/core/panel.js";
 import { sys } from "../../os/core/system.js";
 import { $ } from "../../os/core/view.js";
@@ -16,7 +15,7 @@ function makeFilePanel(opts: {
 }) {
   const panel = opts.panel;
   const title = panel.title;
-  const file = makeDynamic({ path: opts.filepath });
+  const file = new Reactive(opts.filepath);
 
   panel.onMenu = function doMenu() {
     showMenu([
@@ -25,13 +24,13 @@ function makeFilePanel(opts: {
     ])
   };
 
-  file.$path.watch(s => {
+  file.watch(s => {
     panel.title = !s ? `${title}:[no file]` : `${title}:${s}`;
     panel.layoutTree();
   });
 
-  if (file.path) {
-    const s = fs.get(file.path);
+  if (file.data) {
+    const s = fs.get(file.data);
     if (s) {
       opts.loadData(s);
     }
@@ -40,21 +39,21 @@ function makeFilePanel(opts: {
   async function loadFile() {
     const s = await showPrompt('file path?');
     if (!s) return;
-    file.path = s;
+    file.update(s);
 
-    const data = fs.get(file.path);
+    const data = fs.get(file.data!);
     if (data) {
       opts.loadData(data);
     }
   }
 
   async function saveFile() {
-    if (!file.path) {
+    if (!file.data) {
       const s = await showPrompt('file path?');
       if (!s) return;
-      file.path = s;
+      file.update(s);
     }
-    fs.put(file.path, opts.saveData());
+    fs.put(file.data!, opts.saveData());
   }
 
   panel.onKeyDown = (key) => {
