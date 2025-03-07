@@ -32,10 +32,7 @@ export default function gamemaker() {
   const root = $(SplitX, { pos: 320 / 2 }, pane1, pane2)
 
   let _draw: (() => void) | undefined
-  function draw() {
-    _draw?.()
-    sys.needsRedraw = true
-  }
+  const draw = () => { _draw?.(); sys.needsRedraw = true }
 
   const gameView = $(View, { background: 0x000000ff, cursor: null, draw })
 

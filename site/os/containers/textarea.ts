@@ -5,7 +5,7 @@ import { makeVacuumLayout } from "../util/layouts.js"
 import { Scroll } from "./scroll.js"
 
 const tohighlight: Record<string, [number, RegExp]> = {
-  keyw: [0x990099ff, /(export|function)/g],
+  keyw: [0x990099ff, /(export|function|let|const)/g],
   punc: [0xffffff77, /([(){}=,])/g],
   call: [0x0099ffff, /([a-zA-Z.]+)\(/g],
   nums: [0x999900ff, /(0x[0-9a-fA-F]+|[0-9.]+)/g],
