@@ -1,9 +1,9 @@
 import { opendb } from "../util/db.js"
 import { Listener } from "../util/events.js"
 import { type Drive, type DriveNotificationType } from "./drive.js"
-import { MountedDrive } from "./mount.js"
-import { SysDrive } from "./sys.js"
-import { UserDrive } from "./user.js"
+import { MountedDrive } from "./mountfs.js"
+import { SysDrive } from "./sysfs.js"
+import { UserDrive } from "./userfs.js"
 
 class FS {
 
