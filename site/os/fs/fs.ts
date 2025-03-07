@@ -15,14 +15,15 @@ class FS {
     this.addDrive('sys', new SysDrive());
   }
 
-  async mountUserDrives() {
+  userDrivesMounted = new Promise<void>(async resolve => {
     await this.addDrive('user', new UserDrive());
 
     this.mounts = await opendb<{ drive: string, dir: FileSystemDirectoryHandle }>('mounts', 'drive');
     for (const { drive, dir } of await this.mounts.all()) {
       await this.addDrive(drive, new MountedDrive(dir));
     }
-  }
+    resolve();
+  });
 
   async mount(drive: string, folder: FileSystemDirectoryHandle) {
     this.mounts.set({ drive, dir: folder });

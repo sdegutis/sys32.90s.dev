@@ -1,8 +1,5 @@
 import { sys } from "./os/core/system.js";
 import { ws } from "./os/desktop/workspace.js";
-import { fs } from "./os/fs/fs.js";
-
-await fs.mountUserDrives();
 
 sys.init();
 ws.init();
