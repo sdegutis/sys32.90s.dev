@@ -1,7 +1,6 @@
 import { Listener, Reactive } from "../util/events.js";
 import { crt } from "./crt.js";
 import type { Cursor } from "./cursor.js";
-import { makeDynamic } from "./dyn.js";
 import { mem } from "./memory.js";
 import { sys } from "./system.js";
 
