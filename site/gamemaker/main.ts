@@ -3,6 +3,9 @@ import { TextArea } from "../os/containers/textarea.js"
 import { sys } from "../os/core/system.js"
 import { $, View } from "../os/core/view.js"
 import { makeVacuumLayout } from "../os/util/layouts.js"
+import * as api from './api.js'
+
+const prelude = `import {${Object.keys(api)}} from '${window.origin}/gamemaker/api.js'\n`
 
 export default function gamemaker() {
 
@@ -38,7 +41,6 @@ export default function gamemaker() {
 
     running = true
 
-    const prelude = `import {crt} from '${window.origin}/os/core/crt.js'\n`
     const blob = new Blob([prelude + textarea.text], { type: 'application/javascript' })
     const url = URL.createObjectURL(blob)
     const mod = await import(url)
@@ -62,7 +64,7 @@ export default function gamemaker() {
 
   textarea.text = `
 export function draw() {
-  crt.rectFill(0,0,20,20,0x99000099)
+  drawrectf(0,0,20,20,0x99000099)
 }
 `.trimStart()
 
