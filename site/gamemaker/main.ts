@@ -10,11 +10,6 @@ export default function gamemaker() {
   const textarea = $(TextArea, { background: 0x000077ff });
   const editorView = $(View, {
     layout: makeVacuumLayout(),
-    onKeyDown: key => {
-      if (key === 'r' && sys.keys['Control']) { runGame(); return true; }
-      if (key === 'Escape') { stopGame(); return true; }
-      return false;
-    },
   },
     textarea
   );
@@ -26,6 +21,7 @@ export default function gamemaker() {
   let _draw: (() => void) | undefined;
   function draw() {
     _draw?.();
+    sys.needsRedraw = true;
   }
 
   const gameView = $(View, { background: 0x000000ff, cursor: null, draw });
@@ -37,7 +33,9 @@ export default function gamemaker() {
   async function runGame() {
     if (running) return;
 
-    editorView.parent!.children = [gameView];
+    sys.root.children = [gameView];
+    sys.focus(gameView);
+    sys.layoutTree();
 
     running = true;
 
@@ -57,7 +55,9 @@ export default function gamemaker() {
     if (!running) return;
     _draw = undefined;
     gametick?.();
-    gameView.parent!.children = [editorView];
+    sys.root.children = [panel];
+    sys.focus(textarea);
+    sys.layoutTree();
     running = false;
   }
 
@@ -66,6 +66,13 @@ export function draw() {
   crt.rectFill(0,0,20,20,0x99000099)
 }
 `.trimStart();
+
+  sys.root.onKeyDown = key => {
+    if (key === 'r' && sys.keys['Control']) { runGame(); return true; }
+    if (key === 'Escape') { stopGame(); return true; }
+    return false;
+  };
+
 
   sys.root.layout = makeVacuumLayout();
   sys.root.children = [panel];
