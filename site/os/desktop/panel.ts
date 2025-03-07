@@ -8,7 +8,7 @@ import { Label } from "../controls/label.js"
 import { Bitmap } from "../core/bitmap.js"
 import { Cursor } from "../core/cursor.js"
 import { sys } from "../core/system.js"
-import { $, $data, View } from "../core/view.js"
+import { $, $$data, View } from "../core/view.js"
 import { fs } from "../fs/fs.js"
 import { Listener } from "../util/events.js"
 import { makeVacuumLayout } from "../util/layouts.js"
@@ -135,8 +135,8 @@ export class Panel extends View {
 
     ]
 
-    $data(this, 'title').watch(s => this.find<Label>('titleLabel')!.text = s)
-    $data(this, 'panelFocused').watch(b => { this.find<Border>('border')!.borderColor = b ? 0x005599ff : 0x00559944 })
+    $$data(this, 'title').watch(s => this.find<Label>('titleLabel')!.text = s)
+    $$data(this, 'panelFocused').watch(b => { this.find<Border>('border')!.borderColor = b ? 0x005599ff : 0x00559944 })
   }
 
   close() {

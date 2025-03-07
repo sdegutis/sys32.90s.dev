@@ -4,12 +4,12 @@ import { PanedYB } from "../containers/paned.js"
 import { Spaced } from "../containers/spaced.js"
 import { Button } from "../controls/button.js"
 import { Label } from "../controls/label.js"
-import { Panel } from "./panel.js"
 import { sys } from "../core/system.js"
-import { $, $data, View } from "../core/view.js"
+import { $, $$data, View } from "../core/view.js"
 import { makeVacuumLayout } from "../util/layouts.js"
 import { showMenu, type MenuItem } from "../util/menu.js"
 import { Clock } from "./clock.js"
+import { Panel } from "./panel.js"
 
 class Workspace {
 
@@ -65,8 +65,8 @@ class Workspace {
     this.progbuttons.addChild(button)
     sys.layoutTree(this.progbuttons)
 
-    $data(panel, 'title').watch(s => label.text = s)
-    $data(label, 'text').watch(s => { sys.layoutTree(this.progbuttons) })
+    $$data(panel, 'title').watch(s => label.text = s)
+    $$data(label, 'text').watch(s => { sys.layoutTree(this.progbuttons) })
 
     panel.didClose.watch(() => {
       button.parent?.removeChild(button)
@@ -75,7 +75,7 @@ class Workspace {
       lastPanel && sys.focus(lastPanel)
     })
 
-    $data(panel, 'panelFocused').watch(is => {
+    $$data(panel, 'panelFocused').watch(is => {
       button.background = is ? 0x770000ff : 0x330000ff
     })
 

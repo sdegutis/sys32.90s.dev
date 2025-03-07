@@ -118,7 +118,7 @@ export function $<T extends View>(
   return view
 }
 
-export function $data<T extends View, K extends keyof T, R extends Reactive<T[K]>>(o: T, k: K, v?: R): R {
+export function $$data<T extends View, K extends keyof T, R extends Reactive<T[K]>>(o: T, k: K, v?: R): R {
   const $$data = (o as unknown as T & { $$data: { [K in keyof T]: Reactive<T[K]> } }).$$data
   if (v) $$data[k] = v
   return $$data[k] as R

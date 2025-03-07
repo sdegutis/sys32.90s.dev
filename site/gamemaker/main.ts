@@ -3,7 +3,7 @@ import { SplitX } from "../os/containers/split.js"
 import { TextArea } from "../os/containers/textarea.js"
 import { Label } from "../os/controls/label.js"
 import { sys } from "../os/core/system.js"
-import { $, $data, View } from "../os/core/view.js"
+import { $, $$data, View } from "../os/core/view.js"
 import { Reactive } from "../os/util/events.js"
 import { centerLayout, makeVacuumLayout } from "../os/util/layouts.js"
 import * as api from './api.js'
@@ -97,7 +97,7 @@ export default function gamemaker() {
     $((TabPane<Tab>), { mine: tab2, tabs })
   )
 
-  const menus = $(SplitX, { $pos: $data(split, 'pos'), adjust() { this.h = this.firstChild!.h } },
+  const menus = $(SplitX, { $pos: $$data(split, 'pos'), adjust() { this.h = this.firstChild!.h } },
     makeTabMenu(tabs, tab1, tab2),
     makeTabMenu(tabs, tab2, tab1),
   )

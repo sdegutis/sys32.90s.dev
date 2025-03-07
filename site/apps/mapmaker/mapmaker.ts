@@ -1,8 +1,8 @@
 import { PanedXA, PanedYA } from "../../os/containers/paned.js"
 import { Button } from "../../os/controls/button.js"
 import { Label } from "../../os/controls/label.js"
+import { $, $$data, View } from "../../os/core/view.js"
 import { Panel } from "../../os/desktop/panel.js"
-import { $, $data, View } from "../../os/core/view.js"
 import { makeStripeDrawer } from "../../os/util/draw.js"
 import { multiplex } from "../../os/util/events.js"
 import { makeFlowLayoutY, makeVacuumLayout } from "../../os/util/layouts.js"
@@ -47,8 +47,8 @@ export default () => {
 
               multiplex({
                 currentTool: map.currentTool,
-                hovered: $data(button, 'hovered'),
-                pressed: $data(button, 'pressed'),
+                hovered: $$data(button, 'hovered'),
+                pressed: $$data(button, 'pressed'),
               }).watch(data => {
                 let color = 0
                 if (data.currentTool === i) color = 0xffffff77

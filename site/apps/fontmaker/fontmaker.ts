@@ -7,7 +7,7 @@ import { Slider } from "../../os/controls/slider.js"
 import { Bitmap } from "../../os/core/bitmap.js"
 import { CHARSET, crt34, Font } from "../../os/core/font.js"
 import { sys } from "../../os/core/system.js"
-import { $, $data, View } from "../../os/core/view.js"
+import { $, $$data, View } from "../../os/core/view.js"
 import { Panel } from "../../os/desktop/panel.js"
 import { fs } from "../../os/fs/fs.js"
 import { multiplex, Reactive } from "../../os/util/events.js"
@@ -56,7 +56,7 @@ export default async (filename?: string) => {
   for (const char of CHARSET) {
     const view = $(CharView, { char, $font, $width, $height, $zoom })
     charViews.set(char, view)
-    $data(view, 'hovered').watch((h) => { if (h) $hovered.update(char) })
+    $$data(view, 'hovered').watch((h) => { if (h) $hovered.update(char) })
   }
 
   const panel = $(Panel, { title: 'fontmaker', },
