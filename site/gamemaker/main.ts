@@ -1,10 +1,11 @@
 import { PanedYA } from "../os/containers/paned.js"
 import { SplitX } from "../os/containers/split.js"
 import { TextArea } from "../os/containers/textarea.js"
+import { Label } from "../os/controls/label.js"
 import { sys } from "../os/core/system.js"
 import { $, $data, View } from "../os/core/view.js"
 import { Reactive } from "../os/util/events.js"
-import { makeVacuumLayout } from "../os/util/layouts.js"
+import { centerLayout, makeVacuumLayout } from "../os/util/layouts.js"
 import * as api from './api.js'
 import { give } from "./bridge.js"
 import { makeTabMenu, TabPane } from "./tabs.js"
@@ -53,6 +54,12 @@ class MapEditor extends View {
 class DocsViewer extends View {
 
   override background = 0x000000ff
+
+  override layout = centerLayout
+
+  override init(): void {
+    this.children = [$(Label, { text: 'coming soon' })]
+  }
 
 }
 
