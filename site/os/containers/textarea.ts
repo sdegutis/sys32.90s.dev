@@ -154,12 +154,13 @@ export class TextArea extends View {
 
   override onKeyDown(key: string): boolean {
     if (key === 'Home') {
+      const firstNonSpace = this.lines[this.row].match(/[^\s]/)?.index ?? 0
       if (sys.keys['Control']) {
         this.row = 0
         this.end = this.col = 0
       }
-      else if (this.col === 0) {
-        this.end = this.col = this.lines[this.row].match(/[^\s]/)?.index ?? 0
+      else if (this.col !== firstNonSpace) {
+        this.end = this.col = firstNonSpace
       }
       else {
         this.end = this.col = 0
