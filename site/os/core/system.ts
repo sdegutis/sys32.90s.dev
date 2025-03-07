@@ -4,8 +4,8 @@ import { $, View } from "./view.js";
 
 class System {
 
-  root!: View;
-  focused !: View;
+  root = $(View, { background: 0x00000000 });
+  focused = this.root;
   keys: Record<string, boolean> = {};
   mouse = { x: 0, y: 0 };
 
@@ -14,16 +14,12 @@ class System {
   needsRedraw = true;
 
   private allHovered = new Set<View>();
-  private hovered!: View;
+  private hovered = this.root;
 
   private mouseMoved = new Listener();
   private mouseUp = new Listener();
 
-  init() {
-    this.root = $(View, { background: 0x00000000 });
-    this.focused = this.root;
-    this.hovered = this.root;
-
+  constructor() {
     this.resize(crt.canvas.width, crt.canvas.height);
     this.addListeners();
     this.startTicks();

@@ -1,7 +1,5 @@
-import { sys } from "./os/core/system.js";
 import { ws } from "./os/desktop/workspace.js";
 
-sys.init();
 ws.init();
 
 await ws.addProgram('filer', import.meta.resolve('./apps/filer/'));
