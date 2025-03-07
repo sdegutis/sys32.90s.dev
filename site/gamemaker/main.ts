@@ -92,15 +92,7 @@ export default function gamemaker() {
   const tab1 = new Reactive<Tab>('code')
   const tab2 = new Reactive<Tab>('gfx')
 
-  const menus = $(SplitX, {
-    adjust() { this.h = this.firstChild!.h },
-    layout() {
-      this.firstChild!.x = 0
-      this.firstChild!.w = this.pos!
-      this.lastChild!.x = this.pos!
-      this.lastChild!.w = this.w! - this.pos!
-    },
-  },
+  const menus = $(SplitX, { adjust() { this.h = this.firstChild!.h } },
     makeTabMenu(tabs, tab1, tab2),
     makeTabMenu(tabs, tab2, tab1),
   )
