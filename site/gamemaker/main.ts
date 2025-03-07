@@ -1,15 +1,12 @@
-import { GroupX } from "../os/containers/group.js"
-import { PanedYA } from "../os/containers/paned.js"
 import { SplitX } from "../os/containers/split.js"
 import { TextArea } from "../os/containers/textarea.js"
-import { Button } from "../os/controls/button.js"
-import { Label } from "../os/controls/label.js"
 import { sys } from "../os/core/system.js"
 import { $, View } from "../os/core/view.js"
 import { Reactive } from "../os/util/events.js"
 import { makeVacuumLayout } from "../os/util/layouts.js"
 import * as api from './api.js'
 import { give } from "./bridge.js"
+import { TabPane } from "./tabs.js"
 
 const prelude = `import {${Object.keys(api)}} from '${window.origin}/gamemaker/api.js'\n`
 
@@ -18,39 +15,6 @@ export function draw() {
   drawrectf(0,0,20,20,0x99000099)
 }
 `
-
-class TabPane<Tab extends string> extends PanedYA {
-
-  tabs!: Record<Tab, View>
-
-  mine!: Reactive<Tab>
-  other!: Reactive<Tab>
-
-  override init(): void {
-    const menu = $(GroupX, { background: 0x333333ff },
-      ...Object.keys(this.tabs).map((text) => {
-        return $(Button, {
-          padding: 2,
-          onClick: () => {
-            const tab = text as Tab
-            if (this.other.data === tab) {
-              this.other.update(this.mine.data)
-            }
-            this.mine.update(tab)
-          }
-        },
-          $(Label, { text }))
-      })
-    )
-
-    this.mine.watch(t => {
-      this.children = [menu, this.tabs[t]]
-      sys.layoutTree()
-      sys.focus(this.tabs[t])
-    })
-  }
-
-}
 
 class CodeEditor extends View {
 
