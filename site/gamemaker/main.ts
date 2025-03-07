@@ -6,6 +6,7 @@ import { Button } from "../os/controls/button.js"
 import { Label } from "../os/controls/label.js"
 import { sys } from "../os/core/system.js"
 import { $, View } from "../os/core/view.js"
+import { Reactive } from "../os/util/events.js"
 import { makeVacuumLayout } from "../os/util/layouts.js"
 import * as api from './api.js'
 import { give } from "./bridge.js"
@@ -18,7 +19,34 @@ export function draw() {
 }
 `
 
-class TabPane extends PanedYA {
+class TabPane<Tab extends string> extends PanedYA {
+
+  tabs!: Record<Tab, View>
+
+  mine!: Reactive<Tab>
+  other!: Reactive<Tab>
+
+  override init(): void {
+    const menu = $(GroupX, { background: 0x333333ff },
+      ...Object.keys(this.tabs).map((text) => {
+        return $(Button, {
+          padding: 2,
+          onClick: () => {
+            const tab = text as Tab
+            if (this.other.data === tab) {
+              this.other.update(this.mine.data)
+            }
+            this.mine.update(tab)
+          }
+        },
+          $(Label, { text }))
+      })
+    )
+
+    this.mine.watch(t => {
+      this.children = [menu, this.tabs[t]]
+    })
+  }
 
 }
 
@@ -43,17 +71,38 @@ class SpriteEditor extends View {
 
 }
 
+class MapEditor extends View {
+
+  override background = 0x330000ff
+
+}
+
+class DocsViewer extends View {
+
+  override background = 0x007700ff
+
+}
+
 export default function gamemaker() {
 
-  const textarea = $(CodeEditor, { text: sample.trimStart() })
+  const codeEditor = $(CodeEditor, { text: sample.trimStart() })
   const spriteEditor = $(SpriteEditor, {})
+  const mapEditor = $(MapEditor, {})
+  const docsViewer = $(DocsViewer, {})
 
-  const menu1 = $(GroupX, { background: 0x333333ff }, $(Button, { padding: 2 }, $(Label, { text: 'foo' })))
-  const menu2 = $(GroupX, { background: 0x333333ff }, $(Button, { padding: 2 }, $(Label, { text: 'bar' })))
+  type Tab = keyof typeof tabs
+  const tabs = {
+    code: codeEditor,
+    gfx: spriteEditor,
+    map: mapEditor,
+    docs: docsViewer,
+  }
 
+  const tab1 = new Reactive<Tab>('code')
+  const tab2 = new Reactive<Tab>('gfx')
 
-  const pane1 = $(TabPane, {}, menu1, textarea)
-  const pane2 = $(TabPane, {}, menu2, spriteEditor)
+  const pane1 = $(TabPane<Tab>, { tabs, mine: tab1, other: tab2 })
+  const pane2 = $(TabPane<Tab>, { tabs, mine: tab2, other: tab1 })
 
 
 
@@ -65,7 +114,10 @@ export default function gamemaker() {
   const root = $(SplitX, { pos: 320 / 2 }, pane1, pane2)
 
   let _draw: (() => void) | undefined
-  const draw = () => { _draw?.(); sys.needsRedraw = true }
+  const draw = () => {
+    _draw?.()
+    sys.needsRedraw = true
+  }
 
   const gameView = $(View, { background: 0x000000ff, cursor: null, draw })
 
@@ -76,7 +128,7 @@ export default function gamemaker() {
   async function runGame() {
     if (running) return
 
-    give(textarea.text.toUpperCase())
+    give(codeEditor.text.toUpperCase())
 
     sys.root.children = [gameView]
     sys.focus(gameView)
@@ -84,7 +136,7 @@ export default function gamemaker() {
 
     running = true
 
-    const blob = new Blob([prelude + textarea.text], { type: 'application/javascript' })
+    const blob = new Blob([prelude + codeEditor.text], { type: 'application/javascript' })
     const url = URL.createObjectURL(blob)
     const mod = await import(url)
 
@@ -100,19 +152,25 @@ export default function gamemaker() {
     _draw = undefined
     gametick?.()
     sys.root.children = [root]
-    sys.focus(textarea)
+    sys.focus(codeEditor)
     sys.layoutTree()
     running = false
   }
 
   sys.root.onKeyDown = key => {
-    if (key === 'r' && sys.keys['Control']) { runGame(); return true }
-    if (key === 'Escape') { stopGame(); return true }
+    if (key === 'r' && sys.keys['Control']) {
+      runGame()
+      return true
+    }
+    if (key === 'Escape') {
+      stopGame()
+      return true
+    }
     return false
   }
 
   sys.root.layout = makeVacuumLayout()
   sys.root.children = [root]
   sys.layoutTree()
-  sys.focus(textarea)
+  sys.focus(codeEditor)
 }
