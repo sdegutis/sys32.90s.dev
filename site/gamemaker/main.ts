@@ -18,11 +18,20 @@ export function draw() {
 }
 `
 
-
+const highlightings: Record<string, [number, RegExp]> = {
+  keyw: [0xff00ffcc, /(export|function|let|const)/g],
+  punc: [0xffffff77, /([(){}=,])/g],
+  call: [0x0099ffff, /([a-zA-Z.]+)\(/g],
+  spcl: [0xcccc00ff, new RegExp(`(${Object.keys(api).reverse().join('|')})`, 'g')],
+  nums: [0x00ffffff, /(0x[0-9a-fA-F]+|[0-9.]+)/g],
+}
 
 class CodeEditor extends View {
 
-  textarea = $(TextArea, { background: 0x000077ff })
+  textarea = $(TextArea, {
+    background: 0x112244ff,
+    highlightings
+  })
 
   get text() { return this.textarea.text }
   set text(s: string) { this.textarea.text = s }
@@ -82,9 +91,7 @@ export default function gamemaker() {
   const tab2 = new Reactive<Tab>('gfx')
 
   const menus = $(SplitX, {
-    adjust() {
-      this.h = this.firstChild!.h
-    },
+    adjust() { this.h = this.firstChild!.h },
     layout() {
       this.firstChild!.x = 0
       this.firstChild!.w = this.pos!
@@ -93,7 +100,7 @@ export default function gamemaker() {
     },
   },
     makeTabMenu(tabs, tab1, tab2),
-    makeTabMenu(tabs, tab2, tab1)
+    makeTabMenu(tabs, tab2, tab1),
   )
 
   const split = $(SplitX, { pos: 320 / 2, resizable: true },

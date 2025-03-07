@@ -4,13 +4,6 @@ import { $, $data, View } from "../core/view.js"
 import { makeVacuumLayout } from "../util/layouts.js"
 import { Scroll } from "./scroll.js"
 
-const tohighlight: Record<string, [number, RegExp]> = {
-  keyw: [0x990099ff, /(export|function|let|const)/g],
-  punc: [0xffffff77, /([(){}=,])/g],
-  call: [0x0099ffff, /([a-zA-Z.]+)\(/g],
-  nums: [0x999900ff, /(0x[0-9a-fA-F]+|[0-9.]+)/g],
-}
-
 export class TextArea extends View {
 
   font = crt34
@@ -30,6 +23,8 @@ export class TextArea extends View {
     sys.layoutTree(this)
   }
 
+  highlightings: Record<string, [number, RegExp]> = {}
+
   cursorColor = 0x99000099
 
   row = 0
@@ -46,7 +41,7 @@ export class TextArea extends View {
       const line = this.lines[i]
       const cline = Array(line.length).fill(this.color)
       this.colors[i] = cline
-      for (const [col, regex] of Object.values(tohighlight)) {
+      for (const [col, regex] of Object.values(this.highlightings)) {
         for (const m of line.matchAll(regex)) {
           cline.fill(col, m.index, m.index + m[1].length)
         }
