@@ -1,16 +1,13 @@
-import { GroupX } from "../os/containers/group.js"
 import { PanedYA } from "../os/containers/paned.js"
 import { SplitX } from "../os/containers/split.js"
 import { TextArea } from "../os/containers/textarea.js"
-import { Button } from "../os/controls/button.js"
-import { Label } from "../os/controls/label.js"
 import { sys } from "../os/core/system.js"
 import { $, $data, View } from "../os/core/view.js"
 import { Reactive } from "../os/util/events.js"
 import { makeVacuumLayout } from "../os/util/layouts.js"
 import * as api from './api.js'
 import { give } from "./bridge.js"
-import { TabPane } from "./tabs.js"
+import { makeTabMenu, TabPane } from "./tabs.js"
 
 const prelude = `import {${Object.keys(api)}} from '${window.origin}/gamemaker/api.js'\n`
 
@@ -20,36 +17,6 @@ export function draw() {
 }
 `
 
-
-function makeTabMenu<Tab extends string>(
-  tabs: Record<Tab, View>,
-  tab1: Reactive<Tab>,
-  tab2: Reactive<Tab>,
-) {
-  return $(GroupX, { background: 0x333333ff },
-    ...Object.keys(tabs).map((text) => {
-      const button = $(Button, {
-        padding: 2,
-        onClick: () => {
-          const tab = text as Tab
-          if (tab2.data === tab) {
-            tab2.update(tab1.data)
-          }
-          tab1.update(tab)
-        }
-      },
-        $(Label, { text })
-      )
-
-      tab1.watch(t => {
-        const selected = t === text
-        button.background = selected ? 0xffffff33 : 0x00000000
-      })
-
-      return button
-    })
-  )
-}
 
 
 class CodeEditor extends View {
@@ -107,12 +74,6 @@ export default function gamemaker() {
   const tab1 = new Reactive<Tab>('code')
   const tab2 = new Reactive<Tab>('gfx')
 
-  const menu1 = makeTabMenu(tabs, tab1, tab2)
-  const menu2 = makeTabMenu(tabs, tab2, tab1)
-
-  const pane1 = $(TabPane<Tab>, { mine: tab1, tabs })
-  const pane2 = $(TabPane<Tab>, { mine: tab2, tabs })
-
   const menus = $(SplitX, {
     adjust() {
       this.h = this.firstChild!.h
@@ -123,9 +84,15 @@ export default function gamemaker() {
       this.lastChild!.x = this.pos!
       this.lastChild!.w = this.w! - this.pos!
     },
-  }, menu1, menu2)
+  },
+    makeTabMenu(tabs, tab1, tab2),
+    makeTabMenu(tabs, tab2, tab1)
+  )
 
-  const split = $(SplitX, { pos: 320 / 2, resizable: true }, pane1, pane2)
+  const split = $(SplitX, { pos: 320 / 2, resizable: true },
+    $((TabPane<Tab>), { mine: tab1, tabs }),
+    $((TabPane<Tab>), { mine: tab2, tabs })
+  )
 
   $data(split, 'pos').watch(pos => {
     menus.pos = pos
