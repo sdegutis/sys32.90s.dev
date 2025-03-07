@@ -16,7 +16,7 @@ export class TabPane<Tab extends string> extends PanedYA {
   override init(): void {
     const menu = $(GroupX, { background: 0x333333ff },
       ...Object.keys(this.tabs).map((text) => {
-        return $(Button, {
+        const button = $(Button, {
           padding: 2,
           onClick: () => {
             const tab = text as Tab
@@ -26,7 +26,15 @@ export class TabPane<Tab extends string> extends PanedYA {
             this.mine.update(tab)
           }
         },
-          $(Label, { text }))
+          $(Label, { text })
+        )
+
+        this.mine.watch(t => {
+          const selected = t === text
+          button.background = selected ? 0xffffff33 : 0x00000000
+        })
+
+        return button
       })
     )
 
