@@ -1,5 +1,8 @@
 import { crt } from "../os/core/crt.js"
+import { sys } from "../os/core/system.js"
 import { data } from "./bridge.js"
+
+export const keys = sys.keys
 
 export function take() {
   return data
