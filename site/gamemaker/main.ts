@@ -74,7 +74,7 @@ export default function gamemaker() {
   const pane1 = $(TabPane<Tab>, { tabs, mine: tab1, other: tab2 })
   const pane2 = $(TabPane<Tab>, { tabs, mine: tab2, other: tab1 })
 
-  const root = $(SplitX, { pos: 320 / 2 }, pane1, pane2)
+  const root = $(SplitX, { pos: 320 / 2, resizable: true }, pane1, pane2)
 
 
 
