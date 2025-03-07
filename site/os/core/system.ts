@@ -1,6 +1,5 @@
 import { Listener } from "../util/events.js";
 import { crt } from "./crt.js";
-import { Panel } from "../desktop/panel.js";
 import { $, View } from "./view.js";
 
 class System {
@@ -194,7 +193,7 @@ class System {
     }
   }
 
-  focusedPanel: Panel | undefined;
+  focusedPanel: View | undefined;
 
   focus(view: View) {
     if (view === this.focused) return;
@@ -209,7 +208,7 @@ class System {
     let newFocusedPanel;
     let node: View | undefined = view;
     while (node) {
-      if (node instanceof Panel) {
+      if (node.canBaseFocus) {
         newFocusedPanel = node;
         break;
       }
@@ -217,9 +216,9 @@ class System {
     }
 
     if (newFocusedPanel !== this.focusedPanel) {
-      this.focusedPanel?.onPanelBlur();
+      this.focusedPanel?.onBaseBlur?.();
       this.focusedPanel = newFocusedPanel;
-      this.focusedPanel?.onPanelFocus();
+      this.focusedPanel?.onBaseFocus?.();
     }
   }
 

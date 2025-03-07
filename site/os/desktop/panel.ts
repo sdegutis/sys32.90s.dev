@@ -5,15 +5,15 @@ import { Spaced } from "../containers/spaced.js";
 import { Button, ClickCounter } from "../controls/button.js";
 import { ImageView } from "../controls/image.js";
 import { Label } from "../controls/label.js";
-import { ws } from "./workspace.js";
-import { fs } from "../fs/fs.js";
-import { Listener } from "../util/events.js";
-import { makeVacuumLayout } from "../util/layouts.js";
-import { dragMove, dragResize } from "../util/selections.js";
 import { Bitmap } from "../core/bitmap.js";
 import { Cursor } from "../core/cursor.js";
 import { sys } from "../core/system.js";
 import { $, $data, View } from "../core/view.js";
+import { fs } from "../fs/fs.js";
+import { Listener } from "../util/events.js";
+import { makeVacuumLayout } from "../util/layouts.js";
+import { dragMove, dragResize } from "../util/selections.js";
+import { ws } from "./workspace.js";
 
 const minImage = new Bitmap([0x333333ff], 4, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,]);
 const maxImage = new Bitmap([0x333333ff], 4, [1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1,]);
@@ -197,12 +197,14 @@ export class Panel extends View {
     this.visible = false;
   }
 
-  onPanelFocus(): void {
+  override canBaseFocus = true;
+
+  override onBaseFocus(): void {
     this.parent?.addChild(this);
     this.panelFocused = true;
   }
 
-  onPanelBlur(): void {
+  override onBaseBlur(): void {
     this.panelFocused = false;
   }
 

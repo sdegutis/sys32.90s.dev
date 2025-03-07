@@ -21,6 +21,9 @@ export class View {
   adopted?(): void;
   abandoned?(): void;
 
+  onBaseFocus?(): void;
+  onBaseBlur?(): void;
+
   id = '';
 
   x = 0;
@@ -32,6 +35,8 @@ export class View {
   visible = true;
   focused = false;
   hovered = false;
+
+  canBaseFocus = false;
 
   private _children: View[] = [];
   get children(): ReadonlyArray<View> { return this._children; }
