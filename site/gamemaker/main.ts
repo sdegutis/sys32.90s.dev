@@ -28,7 +28,7 @@ const highlightings: Record<string, [number, RegExp]> = {
 
 class CodeEditor extends View {
 
-  textarea = $(TextArea, {
+  private textarea = $(TextArea, {
     background: 0x112244ff,
     highlightings
   })
