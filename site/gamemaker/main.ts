@@ -4,6 +4,7 @@ import { sys } from "../os/core/system.js"
 import { $, View } from "../os/core/view.js"
 import { makeVacuumLayout } from "../os/util/layouts.js"
 import * as api from './api.js'
+import { give } from "./bridge.js"
 
 const prelude = `import {${Object.keys(api)}} from '${window.origin}/gamemaker/api.js'\n`
 
@@ -34,6 +35,8 @@ export default function gamemaker() {
 
   async function runGame() {
     if (running) return
+
+    give(textarea.text.toUpperCase())
 
     sys.root.children = [gameView]
     sys.focus(gameView)

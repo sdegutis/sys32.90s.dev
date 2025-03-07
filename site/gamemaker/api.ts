@@ -1,4 +1,9 @@
 import { crt } from "../os/core/crt.js"
+import { data } from "./bridge.js"
+
+export function take() {
+  return data
+}
 
 export function drawrectf(x: number, y: number, w: number, h: number, c: number) {
   crt.rectFill(x, y, w, h, c)
