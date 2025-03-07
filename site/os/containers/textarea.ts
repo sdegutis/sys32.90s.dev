@@ -158,6 +158,9 @@ export class TextArea extends View {
         this.row = 0
         this.end = this.col = 0
       }
+      else if (this.col === 0) {
+        this.end = this.col = this.lines[this.row].match(/[^\s]/)?.index ?? 0
+      }
       else {
         this.end = this.col = 0
       }
