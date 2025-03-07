@@ -1,1 +1,1 @@
-export const files: Record<string, string>;
+export const files: Record<string, string>

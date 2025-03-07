@@ -1,56 +1,56 @@
-import { View } from "../core/view.js";
+import { View } from "../core/view.js"
 
 export class Paned extends View {
 
-  gap = 0;
-  dir: 'x' | 'y' = 'x';
-  vacuum: 'a' | 'b' = 'a';
+  gap = 0
+  dir: 'x' | 'y' = 'x'
+  vacuum: 'a' | 'b' = 'a'
 
   override layout(): void {
-    const [a, b] = this.children;
-    const favored = ({ a, b })[this.vacuum];
+    const [a, b] = this.children
+    const favored = ({ a, b })[this.vacuum]
 
-    const dx = this.dir;
-    const dw = dx === 'x' ? 'w' : 'h';
-    const vv = favored[dw];
+    const dx = this.dir
+    const dw = dx === 'x' ? 'w' : 'h'
+    const vv = favored[dw]
 
-    a.x = b.x = 0;
-    a.y = b.y = 0;
-    a.w = b.w = this.w;
-    a.h = b.h = this.h;
+    a.x = b.x = 0
+    a.y = b.y = 0
+    a.w = b.w = this.w
+    a.h = b.h = this.h
 
     if (this.vacuum === 'a') {
-      const pos = vv;
-      a[dw] = pos;
-      b[dx] = pos + this.gap;
-      b[dw] = this[dw] - a[dw] - this.gap;
+      const pos = vv
+      a[dw] = pos
+      b[dx] = pos + this.gap
+      b[dw] = this[dw] - a[dw] - this.gap
     }
     else {
-      const pos = this[dw] - vv - this.gap;
-      a[dw] = pos;
-      b[dx] = pos + this.gap;
-      b[dw] = vv;
+      const pos = this[dw] - vv - this.gap
+      a[dw] = pos
+      b[dx] = pos + this.gap
+      b[dw] = vv
     }
   }
 
 }
 
 export class PanedXA extends Paned {
-  override dir = 'x' as const;
-  override vacuum = 'a' as const;
+  override dir = 'x' as const
+  override vacuum = 'a' as const
 }
 
 export class PanedXB extends Paned {
-  override dir = 'x' as const;
-  override vacuum = 'b' as const;
+  override dir = 'x' as const
+  override vacuum = 'b' as const
 }
 
 export class PanedYA extends Paned {
-  override dir = 'y' as const;
-  override vacuum = 'a' as const;
+  override dir = 'y' as const
+  override vacuum = 'a' as const
 }
 
 export class PanedYB extends Paned {
-  override dir = 'y' as const;
-  override vacuum = 'b' as const;
+  override dir = 'y' as const
+  override vacuum = 'b' as const
 }

@@ -1,12 +1,12 @@
-import { Border } from "../containers/border.js";
-import { GroupY } from "../containers/group.js";
-import { Button } from "../controls/button.js";
-import { Label } from "../controls/label.js";
-import { crt } from "../core/crt.js";
-import { sys } from "../core/system.js";
-import { $, View } from "../core/view.js";
+import { Border } from "../containers/border.js"
+import { GroupY } from "../containers/group.js"
+import { Button } from "../controls/button.js"
+import { Label } from "../controls/label.js"
+import { crt } from "../core/crt.js"
+import { sys } from "../core/system.js"
+import { $, View } from "../core/view.js"
 
-export type MenuItem = '-' | { text: string, onClick: () => void };
+export type MenuItem = '-' | { text: string, onClick: () => void }
 
 export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
   const menu = $(Border, {
@@ -17,8 +17,8 @@ export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
     passthrough: false,
     onBlur() { menu.remove() },
     onKeyDown() {
-      menu.remove();
-      return true;
+      menu.remove()
+      return true
     },
   },
     $(GroupY, { align: '-' },
@@ -29,17 +29,17 @@ export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
         )
       )
     )
-  );
+  )
 
-  sys.layoutTree(menu);
+  sys.layoutTree(menu)
 
   if (menu.y + menu.h > sys.root.h) {
-    menu.y = sys.mouse.y - menu.h;
+    menu.y = sys.mouse.y - menu.h
   }
 
-  adjust?.(menu);
+  adjust?.(menu)
 
-  sys.root.addChild(menu);
-  sys.focus(menu);
-  sys.layoutTree(menu);
+  sys.root.addChild(menu)
+  sys.focus(menu)
+  sys.layoutTree(menu)
 }

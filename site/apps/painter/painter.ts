@@ -1,32 +1,32 @@
-import { GroupX } from "../../os/containers/group.js";
-import { PanedXB, PanedYB } from "../../os/containers/paned.js";
-import { Scroll } from "../../os/containers/scroll.js";
-import { SpacedX } from "../../os/containers/spaced.js";
-import { Button } from "../../os/controls/button.js";
-import { Label } from "../../os/controls/label.js";
-import { Slider } from "../../os/controls/slider.js";
-import { Panel } from "../../os/desktop/panel.js";
-import { sys } from "../../os/core/system.js";
-import { $, $data, View } from "../../os/core/view.js";
-import { fs } from "../../os/fs/fs.js";
-import { showPrompt } from "../../os/util/dialog.js";
-import { makeStripeDrawer } from "../../os/util/draw.js";
-import { multiplex, Reactive } from "../../os/util/events.js";
-import { makeFlowLayout } from "../../os/util/layouts.js";
-import { showMenu } from "../../os/util/menu.js";
-import { PaintView } from "./paintview.js";
-import { ResizerView } from "./resizer.js";
+import { GroupX } from "../../os/containers/group.js"
+import { PanedXB, PanedYB } from "../../os/containers/paned.js"
+import { Scroll } from "../../os/containers/scroll.js"
+import { SpacedX } from "../../os/containers/spaced.js"
+import { Button } from "../../os/controls/button.js"
+import { Label } from "../../os/controls/label.js"
+import { Slider } from "../../os/controls/slider.js"
+import { Panel } from "../../os/desktop/panel.js"
+import { sys } from "../../os/core/system.js"
+import { $, $data, View } from "../../os/core/view.js"
+import { fs } from "../../os/fs/fs.js"
+import { showPrompt } from "../../os/util/dialog.js"
+import { makeStripeDrawer } from "../../os/util/draw.js"
+import { multiplex, Reactive } from "../../os/util/events.js"
+import { makeFlowLayout } from "../../os/util/layouts.js"
+import { showMenu } from "../../os/util/menu.js"
+import { PaintView } from "./paintview.js"
+import { ResizerView } from "./resizer.js"
 
 export default (filepath?: string) => {
 
-  const filesource = new Reactive(filepath);
+  const filesource = new Reactive(filepath)
 
-  const $zoom = new Reactive(4);
+  const $zoom = new Reactive(4)
 
-  let widthLabel: Label;
-  let heightLabel: Label;
-  let colorLabel: Label;
-  let zoomLabel: Label;
+  let widthLabel: Label
+  let heightLabel: Label
+  let colorLabel: Label
+  let zoomLabel: Label
 
   const panel = $(Panel, { title: 'painter', minw: 50, w: 180, h: 120, onMenu: () => doMenu() },
     $(PanedXB, { gap: 1 },
@@ -51,66 +51,66 @@ export default (filepath?: string) => {
         )
       ),
       $(View, { id: 'toolArea', w: 36, background: 0x99000033, layout: makeFlowLayout(), },
-        $(Button, { id: 'pencilTool', onClick: () => { paintView.tool = 'pencil'; } }, $(View, { passthrough: true, w: 4, h: 4 })),
-        $(Button, { id: 'eraserTool', onClick: () => { paintView.tool = 'eraser'; } }, $(View, { passthrough: true, w: 4, h: 4 })),
-        $(Button, { onClick: () => { addColor(); } }, $(Label, { text: '+' })),
+        $(Button, { id: 'pencilTool', onClick: () => { paintView.tool = 'pencil' } }, $(View, { passthrough: true, w: 4, h: 4 })),
+        $(Button, { id: 'eraserTool', onClick: () => { paintView.tool = 'eraser' } }, $(View, { passthrough: true, w: 4, h: 4 })),
+        $(Button, { onClick: () => { addColor() } }, $(Label, { text: '+' })),
       ),
     ),
-  );
+  )
 
-  const paintView = panel.find<PaintView>('paintView')!;
+  const paintView = panel.find<PaintView>('paintView')!
 
-  const toolArea = panel.find<View>('toolArea')!;
-  const pencilTool = panel.find<View>('pencilTool')!;
-  const eraserTool = panel.find<View>('eraserTool')!;
+  const toolArea = panel.find<View>('toolArea')!
+  const pencilTool = panel.find<View>('pencilTool')!
+  const eraserTool = panel.find<View>('eraserTool')!
 
-  $data(paintView, 'width').watch(n => widthLabel.text = n.toString());
-  $data(paintView, 'height').watch(n => heightLabel.text = n.toString());
+  $data(paintView, 'width').watch(n => widthLabel.text = n.toString())
+  $data(paintView, 'height').watch(n => heightLabel.text = n.toString())
 
-  $data(widthLabel, 'text').watch(() => { sys.layoutTree(widthLabel.parent!) });
-  $data(heightLabel, 'text').watch(() => { sys.layoutTree(heightLabel.parent!) });
+  $data(widthLabel, 'text').watch(() => { sys.layoutTree(widthLabel.parent!) })
+  $data(heightLabel, 'text').watch(() => { sys.layoutTree(heightLabel.parent!) })
 
-  $data(paintView, 'zoom').watch(n => zoomLabel.text = n.toString());
-  $data(paintView, 'zoom').watch(n => sys.layoutTree(panel));
+  $data(paintView, 'zoom').watch(n => zoomLabel.text = n.toString())
+  $data(paintView, 'zoom').watch(n => sys.layoutTree(panel))
 
-  $data(paintView, 'tool').watch(t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff);
-  $data(paintView, 'tool').watch(t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff);
+  $data(paintView, 'tool').watch(t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff)
+  $data(paintView, 'tool').watch(t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff)
 
   async function addColor() {
-    const colorCode = await showPrompt('enter color code:');
-    const color = parseInt('0x' + colorCode, 16);
-    makeColorButton(color);
-    sys.layoutTree(toolArea.parent!);
+    const colorCode = await showPrompt('enter color code:')
+    const color = parseInt('0x' + colorCode, 16)
+    makeColorButton(color)
+    sys.layoutTree(toolArea.parent!)
   }
 
-  const colorsWithButtons = new Set<number>();
+  const colorsWithButtons = new Set<number>()
 
   function makeColorButton(color: number) {
-    colorsWithButtons.add(color);
+    colorsWithButtons.add(color)
 
-    const colorView = $(View, { passthrough: true, w: 4, h: 4, background: color, });
-    const border = $(Button, { padding: 1, onClick: () => { paintView.color = color; } }, colorView);
+    const colorView = $(View, { passthrough: true, w: 4, h: 4, background: color, })
+    const border = $(Button, { padding: 1, onClick: () => { paintView.color = color } }, colorView)
 
     multiplex({
       currentColor: $data(paintView, 'color'),
       hovered: $data(border, 'hovered'),
       pressed: $data(border, 'pressed'),
     }).watch(data => {
-      let c = 0;
-      if (data.currentColor === color) c = 0xffffff77;
-      else if (data.pressed) c = 0xffffff11;
-      else if (data.hovered) c = 0xffffff33;
-      border.borderColor = c;
-    });
+      let c = 0
+      if (data.currentColor === color) c = 0xffffff77
+      else if (data.pressed) c = 0xffffff11
+      else if (data.hovered) c = 0xffffff33
+      border.borderColor = c
+    })
 
-    toolArea.addChild(border);
+    toolArea.addChild(border)
   }
 
   for (const color of COLORS) {
-    makeColorButton(color);
+    makeColorButton(color)
   }
 
-  $data(paintView, 'color').watch(color => colorLabel.text = '0x' + color.toString(16).padStart(8, '0'));
+  $data(paintView, 'color').watch(color => colorLabel.text = '0x' + color.toString(16).padStart(8, '0'))
 
   function doMenu() {
     showMenu([
@@ -120,55 +120,55 @@ export default (filepath?: string) => {
   }
 
   filesource.watch(s => {
-    panel.title = !s ? `painter:[no file]` : `painter:${s}`;
-    sys.layoutTree(panel);
-  });
+    panel.title = !s ? `painter:[no file]` : `painter:${s}`
+    sys.layoutTree(panel)
+  })
 
   if (filesource.data) {
-    const s = fs.get(filesource.data);
+    const s = fs.get(filesource.data)
     if (s) {
-      paintView.loadBitmap(s);
+      paintView.loadBitmap(s)
     }
   }
 
   async function loadFile() {
-    const s = await showPrompt('file path?');
-    if (!s) return;
-    filesource.update(s);
+    const s = await showPrompt('file path?')
+    if (!s) return
+    filesource.update(s)
 
-    const data = fs.get(filesource.data!)!;
-    paintView.loadBitmap(data);
+    const data = fs.get(filesource.data!)!
+    paintView.loadBitmap(data)
   }
 
   async function saveFile() {
     if (!filesource.data) {
-      const s = await showPrompt('file path?');
-      if (!s) return;
-      filesource.update(s);
+      const s = await showPrompt('file path?')
+      if (!s) return
+      filesource.update(s)
     }
-    fs.put(filesource.data!, paintView.toBitmap().toString());
+    fs.put(filesource.data!, paintView.toBitmap().toString())
   }
 
   panel.onKeyDown = (key) => {
     if (key === 'o' && sys.keys['Control']) {
-      loadFile();
-      return true;
+      loadFile()
+      return true
     }
     else if (key === 's' && sys.keys['Control']) {
-      saveFile();
-      return true;
+      saveFile()
+      return true
     }
-    return false;
-  };
+    return false
+  }
 
   $data(paintView, 'color').watch(color => {
     if (!colorsWithButtons.has(color)) {
-      makeColorButton(color);
-      sys.layoutTree(toolArea.parent!);
+      makeColorButton(color)
+      sys.layoutTree(toolArea.parent!)
     }
-  });
+  })
 
-  panel.show();
+  panel.show()
 }
 
 
@@ -181,11 +181,11 @@ export default (filepath?: string) => {
 //   0xffcd75ff, 0xa7f070ff, 0x38b764ff, 0x257179ff,
 //   0x29366fff, 0x3b5dc9ff, 0x41a6f6ff, 0x73eff7ff,
 //   0xf4f4f4ff, 0x94b0c2ff, 0x566c86ff, 0x333c57ff,
-// ];
+// ]
 
 const COLORS = [
   0x000000ff, 0x1D2B53ff, 0x7E2553ff, 0x008751ff,
   0xAB5236ff, 0x5F574Fff, 0xC2C3C7ff, 0xFFF1E8ff,
   0xFF004Dff, 0xFFA300ff, 0xFFEC27ff, 0x00E436ff,
   0x29ADFFff, 0x83769Cff, 0xFF77A8ff, 0xFFCCAAff,
-];
+]

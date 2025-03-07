@@ -1,15 +1,15 @@
-import { Border } from "../../os/containers/border.js";
-import { GroupX, GroupY } from "../../os/containers/group.js";
-import { Button } from "../../os/controls/button.js";
-import { Label } from "../../os/controls/label.js";
-import { Panel } from "../../os/desktop/panel.js";
-import { sys } from "../../os/core/system.js";
-import { $, View } from "../../os/core/view.js";
-import { Reactive } from "../../os/util/events.js";
-import { centerLayout } from "../../os/util/layouts.js";
+import { Border } from "../../os/containers/border.js"
+import { GroupX, GroupY } from "../../os/containers/group.js"
+import { Button } from "../../os/controls/button.js"
+import { Label } from "../../os/controls/label.js"
+import { Panel } from "../../os/desktop/panel.js"
+import { sys } from "../../os/core/system.js"
+import { $, View } from "../../os/core/view.js"
+import { Reactive } from "../../os/util/events.js"
+import { centerLayout } from "../../os/util/layouts.js"
 
 export default () => {
-  const thesize = new Reactive('320x180');
+  const thesize = new Reactive('320x180')
 
   thesize.watch(s => {
     const [w, h] = s.split('x')
@@ -17,12 +17,12 @@ export default () => {
     sys.layoutTree()
   })
 
-  const size1 = makeSizeButton('320x180');
-  const size2 = makeSizeButton('640x360');
+  const size1 = makeSizeButton('320x180')
+  const size2 = makeSizeButton('640x360')
 
   function makeSizeButton(size: string) {
     return $(Button, {
-      init(this: Button) { this.find('checkbox')!.addChild(this.overlay!); },
+      init(this: Button) { this.find('checkbox')!.addChild(this.overlay!) },
       onClick(this: Button) { thesize.update(size) }
     },
       $(GroupX, { gap: 2, },
@@ -36,7 +36,7 @@ export default () => {
         ),
         $(Label, { text: size }),
       )
-    );
+    )
   }
 
   const panel = $(Panel, { title: 'settings', w: 100, h: 60 },
@@ -55,6 +55,6 @@ export default () => {
     )
   )
 
-  panel.show();
+  panel.show()
 
-};
+}

@@ -1,28 +1,28 @@
-import { Border } from "../containers/border.js";
-import { GroupX, GroupY } from "../containers/group.js";
-import { Button } from "../controls/button.js";
-import { Label } from "../controls/label.js";
-import { TextField } from "../controls/textfield.js";
-import { sys } from "../core/system.js";
-import { $, View } from "../core/view.js";
-import { centerLayout } from "./layouts.js";
-import { dragMove } from "./selections.js";
-import { passedFocus } from "./unsure.js";
+import { Border } from "../containers/border.js"
+import { GroupX, GroupY } from "../containers/group.js"
+import { Button } from "../controls/button.js"
+import { Label } from "../controls/label.js"
+import { TextField } from "../controls/textfield.js"
+import { sys } from "../core/system.js"
+import { $, View } from "../core/view.js"
+import { centerLayout } from "./layouts.js"
+import { dragMove } from "./selections.js"
+import { passedFocus } from "./unsure.js"
 
 function expandToFitContainer(this: View) {
-  this.x = 0;
-  this.y = 0;
-  this.w = this.parent!.w;
-  this.h = this.parent!.h;
+  this.x = 0
+  this.y = 0
+  this.w = this.parent!.w
+  this.h = this.parent!.h
 }
 
 export async function showPrompt(text: string) {
-  const p = Promise.withResolvers<string>();
+  const p = Promise.withResolvers<string>()
 
   const dialog = $(Border, {
     padding: 1, borderColor: 0x99000099, passthrough: false, onMouseDown: () => {
-      const move = dragMove(dialog);
-      sys.trackMouse({ move });
+      const move = dragMove(dialog)
+      sys.trackMouse({ move })
     }
   },
     $(Border, { padding: 3, background: 0x000000ff },
@@ -37,40 +37,40 @@ export async function showPrompt(text: string) {
         )
       )
     )
-  );
+  )
 
   const overlay = $(View, {
     adjust: expandToFitContainer,
     layout: centerLayout,
     background: 0x00000033,
     onKeyDown(key) {
-      if (key === 'Escape') { cancel(); return true; }
-      return false;
+      if (key === 'Escape') { cancel(); return true }
+      return false
     },
     onMouseDown: cancel,
   },
     dialog
-  );
+  )
 
-  function accept() { p.resolve(dialog.find<TextField>('field')!.text); }
-  function cancel() { p.resolve(''); }
+  function accept() { p.resolve(dialog.find<TextField>('field')!.text) }
+  function cancel() { p.resolve('') }
 
-  sys.root.addChild(overlay);
-  sys.focus(dialog.find('field')!);
-  sys.layoutTree(overlay);
+  sys.root.addChild(overlay)
+  sys.focus(dialog.find('field')!)
+  sys.layoutTree(overlay)
 
-  p.promise.then(() => overlay.remove());
+  p.promise.then(() => overlay.remove())
 
-  return p.promise;
+  return p.promise
 }
 
 export async function showConfirm(text: string) {
-  const p = Promise.withResolvers<boolean>();
+  const p = Promise.withResolvers<boolean>()
 
   const dialog = $(Border, {
     padding: 1, borderColor: 0x99000099, passthrough: false, onMouseDown: () => {
-      const move = dragMove(dialog);
-      sys.trackMouse({ move });
+      const move = dragMove(dialog)
+      sys.trackMouse({ move })
     }
   },
     $(Border, { padding: 3, background: 0x000000ff },
@@ -82,30 +82,30 @@ export async function showConfirm(text: string) {
         )
       )
     )
-  );
+  )
 
   const overlay = $(View, {
     adjust: expandToFitContainer,
     layout: centerLayout,
     background: 0x00000033,
     onKeyDown(key) {
-      if (key === 'Escape') { cancel(); return true; }
-      if (key === 'Enter') { accept(); return true; }
-      return false;
+      if (key === 'Escape') { cancel(); return true }
+      if (key === 'Enter') { accept(); return true }
+      return false
     },
     onMouseDown: cancel,
   },
     dialog
-  );
+  )
 
-  function accept() { p.resolve(true); }
-  function cancel() { p.resolve(false); }
+  function accept() { p.resolve(true) }
+  function cancel() { p.resolve(false) }
 
-  sys.root.addChild(overlay);
-  sys.focus(dialog);
-  sys.layoutTree(overlay);
+  sys.root.addChild(overlay)
+  sys.focus(dialog)
+  sys.layoutTree(overlay)
 
-  p.promise.then(() => overlay.remove());
+  p.promise.then(() => overlay.remove())
 
-  return p.promise;
+  return p.promise
 }
