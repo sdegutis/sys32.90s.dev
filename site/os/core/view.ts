@@ -97,15 +97,18 @@ export class View {
     return null
   }
 
+  $ChildUsedAsConfig = true
+
 }
 
-type With$Data<T> = { [K in keyof T as `$${K & string}`]: Reactive<T[K]> }
+type With$<T> = { [K in keyof T as `$${K & string}`]: Reactive<T[K]> }
+type DontForgetConfig = { $ChildUsedAsConfig: never }
 
 export function $<T extends View>(
   ctor: { new(): T },
-  config: Partial<Omit<T, '$ChildUsedAsConfig'> & { $ChildUsedAsConfig: false } & With$Data<T>>,
+  config: Partial<T & DontForgetConfig & With$<T>>,
   ...children: View[]
-): T & { $ChildUsedAsConfig: true } {
+): T {
   const view = new ctor()
   view.children = children
   Object.assign(view, config)
