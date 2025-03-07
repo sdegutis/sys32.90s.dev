@@ -281,19 +281,6 @@ class System {
     crt.clip.y2 = cy2;
   }
 
-  private oldroot?: View[];
-
-  enterFullscreen(view: View) {
-    this.oldroot = [...this.root.children];
-    this.root.children = [view];
-    this.layoutTree();
-  }
-
-  exitFullscreen() {
-    this.root.children = this.oldroot!;
-    delete this.oldroot;
-  }
-
 }
 
 export const sys = new System();

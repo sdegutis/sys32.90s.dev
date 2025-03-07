@@ -1,5 +1,5 @@
 import { TextArea } from "../../os/containers/textarea.js";
-import { crt } from "../../os/core/crt.js";
+// import * from "../../os/core/crt.js";
 import { Panel } from "../../os/core/panel.js";
 import { sys } from "../../os/core/system.js";
 import { $, View } from "../../os/core/view.js";
@@ -37,7 +37,7 @@ export default (filepath?: string) => {
   async function runGame() {
     if (running) return
 
-    sys.enterFullscreen(gameView)
+    editorView.parent!.children = [gameView]
 
     running = true;
 
@@ -57,7 +57,7 @@ export default (filepath?: string) => {
     if (!running) return
     _draw = undefined;
     gametick?.();
-    sys.exitFullscreen()
+    gameView.parent!.children = [editorView]
     running = false
   }
 
@@ -71,6 +71,6 @@ export function draw() {
 
   textarea.focus();
 
-  sys.enterFullscreen(editorView)
+  // sys.enterFullscreen(editorView)
 
 };
