@@ -46,6 +46,7 @@ class TabPane<Tab extends string> extends PanedYA {
     this.mine.watch(t => {
       this.children = [menu, this.tabs[t]]
       sys.layoutTree()
+      sys.focus(this.tabs[t])
     })
   }
 
@@ -62,6 +63,10 @@ class CodeEditor extends View {
 
   override init(): void {
     this.children = [this.textarea]
+  }
+
+  override onFocus(): void {
+    sys.focus(this.textarea)
   }
 
 }
