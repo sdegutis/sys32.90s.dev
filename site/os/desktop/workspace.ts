@@ -13,40 +13,31 @@ import { Clock } from "./clock.js";
 
 class Workspace {
 
-  private desktop: View;
-  private taskbar: View;
-  private progbuttons: View;
+  private desktop = $(View, {
+    background: 0x222222ff
+  });
 
-  constructor() {
-
-    sys.root.layout = makeVacuumLayout();
-
-    this.desktop = $(View, {
-      background: 0x222222ff
-    });
-
-    const progMenuButton = $(Button, {
+  private progbuttons = $(GroupX, { gap: 1 },
+    $(Button, {
       padding: 2,
       background: 0x222222ff,
       onClick: () => this.showProgMenu(),
-    }, $(Label, { text: 'run' }));
+    }, $(Label, { text: 'run' }))
+  );
 
-    this.progbuttons = $(GroupX, { gap: 1 },
-      progMenuButton
-    );
+  private taskbar = $(Spaced, { background: 0x000000ff },
+    this.progbuttons,
+    $(Border, { padding: 2 }, $(Clock, {})),
+  );
 
-    this.taskbar = $(Spaced, { background: 0x000000ff },
-      this.progbuttons,
-      $(Border, { padding: 2 }, $(Clock, {})),
-    );
-
+  showDesktop() {
+    sys.root.layout = makeVacuumLayout();
     sys.root.children = [
       $(PanedYB, {},
         this.desktop,
         this.taskbar
       )
     ];
-
     sys.layoutTree();
   }
 
