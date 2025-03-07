@@ -14,6 +14,7 @@ const prelude = `import {${Object.keys(api)}} from '${window.origin}/gamemaker/a
 
 const sample = `
 export function draw() {
+  //cls()
   drawrectf(0,0,20,20,0x99000099)
 }
 `
@@ -24,6 +25,7 @@ const highlightings: Record<string, [number, RegExp]> = {
   call: [0x0099ffff, /([a-zA-Z.]+)\(/g],
   spcl: [0xcccc00ff, new RegExp(`(${[...Object.keys(api).reverse(), 'draw', 'tick'].join('|')})`, 'g')],
   nums: [0x00ffffff, /(0x[0-9a-fA-F]+|[0-9.]+)/g],
+  cmnt: [0x33ff3377, /(\/\/.+)/g],
 }
 
 class CodeEditor extends View {
