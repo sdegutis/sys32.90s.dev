@@ -101,12 +101,13 @@ export class View {
 
 }
 
-type With$<T> = { [K in keyof T as `$${K & string}`]: Reactive<T[K]> }
+type $Reactives<T> = { [K in keyof T as `$${K & string}`]: Reactive<T[K]> }
 type DontForgetConfig = { $ChildUsedAsConfig: never }
+// type UnpartialThis<T> = { [K in keyof T]: T[K] extends (...args: infer A) => infer R ? (this: number, ...args: A) => R : T[K] }
 
 export function $<T extends View>(
   ctor: { new(): T },
-  config: Partial<T & DontForgetConfig & With$<T>>,
+  config: Partial<T & DontForgetConfig & $Reactives<T>>,
   ...children: View[]
 ): T {
   const view = new ctor()
@@ -114,7 +115,7 @@ export function $<T extends View>(
   Object.assign(view, config)
   makeDynamic(view)
   view.init?.()
-  return view as any
+  return view
 }
 
 export function $data<T extends View, K extends keyof T, R extends Reactive<T[K]>>(o: T, k: K, v?: R): R {
