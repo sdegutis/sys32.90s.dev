@@ -6,8 +6,8 @@ import { Scroll } from "./scroll.js"
 
 const tohighlight: Record<string, [number, RegExp]> = {
   keyw: [0x990099ff, /(export|function)/g],
-  punc: [0xffffff77, /([(){}=])/g],
-  call: [0x0000ffff, /([a-zA-Z.]+)\(/g],
+  punc: [0xffffff77, /([(){}=,])/g],
+  call: [0x0099ffff, /([a-zA-Z.]+)\(/g],
   nums: [0x999900ff, /(0x[0-9a-fA-F]+|[0-9.]+)/g],
 }
 
@@ -52,9 +52,6 @@ export class TextArea extends View {
         }
       }
     }
-
-    console.log(this.lines)
-    console.log(this.colors)
   }
 
   override init(): void {
@@ -267,6 +264,7 @@ export class TextArea extends View {
       return false
     }
 
+    this.highlight()
     this.restartBlinking()
     this.reflectCursorPos()
     this.scrollCursorIntoView()
