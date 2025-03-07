@@ -1,12 +1,12 @@
 import { crt } from "../../os/core/crt.js";
-import type { Font } from "../../os/core/font.js";
+import { crt34 } from "../../os/core/font.js";
 import { sys } from "../../os/core/system.js";
 import { View } from "../../os/core/view.js";
 
 export class CharView extends View {
 
   char!: string;
-  font!: Font;
+  font = crt34;
 
   override cursor = null;
 
