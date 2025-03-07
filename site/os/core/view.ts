@@ -118,16 +118,14 @@ export function $<T extends View>(
   return view;
 }
 
-const $sources = new WeakMap<View, Map<string, Reactive<any>>>();
-
 export function $data<T extends View, K extends keyof T, R extends Reactive<T[K]>>(o: T, k: K, v?: R): R {
-  if (v) $sources.get(o)!.set(k as string, v);
-  return $sources.get(o)!.get(k as string) as R;
+  const $data = (o as unknown as T & { $$data: { [K in keyof T]: Reactive<T[K]> } }).$$data;
+  if (v) $data[k] = v;
+  return $data[k] as R;
 }
 
 export function makeDynamic<T extends View>(o: T) {
-  const map = new Map<string, Reactive<any>>();
-  $sources.set(o, map);
+  const $$data: Record<string, Reactive<any>> = Object.create(null);
 
   for (let [key, val] of Object.entries(o)) {
     if (val instanceof Function) continue;
@@ -135,18 +133,21 @@ export function makeDynamic<T extends View>(o: T) {
     if (val instanceof Array) continue;
     if (Object.getOwnPropertyDescriptor(o, key)?.get) continue;
     if (!key.startsWith('$')) {
-      map.set(key, new Reactive(val));
+      $$data[key] = new Reactive(val);
       Object.defineProperty(o, key, {
-        get() { return $data(this, key).data },
-        set(v) { return $data(this, key).update(v) },
+        get: () => $$data[key].data,
+        set: (v) => $$data[key].update(v),
         enumerable: true,
       });
     }
   }
 
   for (let [key, r] of Object.entries(o)) {
+    if (key === '$$data') continue;
     if (key.startsWith('$')) {
-      map.set(key.slice(1), r);
+      $$data[key.slice(1)] = r;
     }
   }
+
+  Object.defineProperty(o, '$$data', { enumerable: false, writable: false, value: $$data });
 }
