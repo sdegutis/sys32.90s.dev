@@ -23,7 +23,7 @@ export class SpriteEditor extends View {
   override layout = vacuumAllLayout
 
   override init(): void {
-    const $ncol = new Reactive<Color>({ p: 'sweet24', i: 0 })
+    const $ncol = new Reactive<Color>({ p: 'vinik24', i: 8 })
     const $width = new Reactive(8)
     const $height = new Reactive(8)
 
