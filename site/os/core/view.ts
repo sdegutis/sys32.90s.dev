@@ -101,9 +101,10 @@ export class View {
 
 }
 
-type $Reactives<T> = { [K in keyof T as `$${K & string}`]: Reactive<T[K]> }
+type No$Reactive = Array<any> | Function | Listener | undefined
+type $Reactives<T> = { [K in keyof T as T[K] extends No$Reactive ? never : `$${K & string}`]: Reactive<T[K]> }
 type DontForgetConfig = { YouForgotConfig: never }
-// type UnpartialThis<T> = { [K in keyof T]: T[K] extends (...args: infer A) => infer R ? (this: number, ...args: A) => R : T[K] }
+// type UnpartialThis<T> = { [K in keyof T]?: T[K] extends (...args: infer A) => infer R ? (this: T, ...args: A) => R : T[K] }
 
 export function $<T extends View>(
   ctor: { new(): T },

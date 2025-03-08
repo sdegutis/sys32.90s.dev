@@ -1,8 +1,27 @@
 import { Border } from "../os/containers/border.js"
 import { GridX } from "../os/containers/grid.js"
 import { SplitY } from "../os/containers/split.js"
-import { $, View } from "../os/core/view.js"
+import { Button } from "../os/controls/button.js"
+import { $, $$data, View } from "../os/core/view.js"
+import { Reactive } from "../os/util/events.js"
 import { centerLayout, vacuumAllLayout } from "../os/util/layouts.js"
+
+class ColorButton extends Button {
+
+  selected = false
+
+  override init(): void {
+    super.init()
+
+    $$data(this, 'selected').watch(s => {
+
+    })
+
+    // this.overlay.remove()
+    // $$data(this, 'borderColor', $$data(this.overlay, 'background'))
+  }
+
+}
 
 export class SpriteEditor extends View {
 
@@ -11,13 +30,20 @@ export class SpriteEditor extends View {
   override layout = vacuumAllLayout
 
   override init(): void {
+    const $color = new Reactive(palettes.vinik24[0])
+
     this.children = [
       $(SplitY, { pos: 70, resizable: true },
         $(View, { background: 0x000000ff, layout: centerLayout },
-          $(Border, { background: 0xffffff22, padding: 1 },
-            $(GridX, { cols: 4, gap: 1, },
-              ...palettes.vinik24.map(n =>
-                $(View, { w: 7, h: 7, background: n })
+          $(Border, { background: 0xffffff22, padding: 0 },
+            $(GridX, { cols: 4, gap: -1 },
+              ...palettes.vinik24.map(n => {
+                const button = $(ColorButton, { padding: 1, onClick: () => $color.update(n) },
+                  $(View, { w: 7, h: 7, passthrough: true, background: n })
+                )
+                $color.watch(c => button.selected = c === n)
+                return button
+              }
               )
             )
           )
