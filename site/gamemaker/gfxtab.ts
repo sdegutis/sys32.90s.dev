@@ -1,9 +1,11 @@
 import { Border } from "../os/containers/border.js"
 import { GridX } from "../os/containers/grid.js"
+import { GroupY } from "../os/containers/group.js"
 import { SplitY } from "../os/containers/split.js"
 import { Button } from "../os/controls/button.js"
+import { Label } from "../os/controls/label.js"
 import { $, View } from "../os/core/view.js"
-import { Reactive } from "../os/util/events.js"
+import { multiplex, Reactive } from "../os/util/events.js"
 import { centerLayout, vacuumAllLayout } from "../os/util/layouts.js"
 
 export class SpriteEditor extends View {
@@ -13,27 +15,45 @@ export class SpriteEditor extends View {
   override layout = vacuumAllLayout
 
   override init(): void {
-    const $color = new Reactive(palettes.vinik24[0])
+    const $palette = new Reactive<keyof typeof palettes>('sweet24')
+    const $colori = new Reactive(0)
+    const $color = multiplex({ index: $colori, palette: $palette }).adapt(d => palettes[d.palette][d.index])
 
     this.children = [
       $(SplitY, { pos: 70, resizable: true },
         $(View, { background: 0x000000ff, layout: centerLayout },
-          $(Border, { background: 0xffffff22, padding: 0 },
-            $(GridX, { cols: 4, gap: -1 },
-              ...palettes.vinik24.map(n => {
-                const button = $(Button, {
-                  padding: 1,
-                  selectedBorderColor: 0xffffffff,
-                  onClick: () => $color.update(n),
+
+          $(GroupY, {},
+            $(GroupY, {},
+
+              ...Object.keys(palettes).map((name) => {
+                return $(Button, {
+                  padding: 2,
+                  $selected: $palette.adapt(p => p === name),
+                  onClick: () => { $palette.update(name as keyof typeof palettes) },
                 },
-                  $(View, { w: 7, h: 7, passthrough: true, background: n })
+                  $(Label, { text: name })
                 )
-                $color.watch(c => button.selected = c === n)
-                return button
-              }
+              })
+
+            ),
+            $(Border, { background: 0xffffff22, padding: 0 },
+              $(GridX, { cols: 4, gap: -1 },
+                ...palettes.vinik24.map((color, i) => {
+                  const button = $(Button, {
+                    padding: 1,
+                    $selected: $colori.adapt(index => index === i),
+                    selectedBorderColor: 0xffffffff,
+                    onClick: () => $colori.update(i),
+                  },
+                    $(View, { w: 7, h: 7, passthrough: true, $background: $palette.adapt(p => palettes[p][i]) })
+                  )
+                  return button
+                }
+                )
               )
-            )
-          )
+            ))
+
         ),
         $(SplitY, { pos: 30, resizable: true },
           $(View, { background: 0x222222ff }),
