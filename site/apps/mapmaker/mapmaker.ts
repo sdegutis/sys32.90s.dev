@@ -4,7 +4,6 @@ import { Label } from "../../os/controls/label.js"
 import { $, View } from "../../os/core/view.js"
 import { Panel } from "../../os/desktop/panel.js"
 import { makeStripeDrawer } from "../../os/util/draw.js"
-import { multiplex } from "../../os/util/events.js"
 import { makeFlowLayoutY, makeVacuumLayout } from "../../os/util/layouts.js"
 import { EditableMap } from "./map.js"
 import { COLORS } from "./mapcolors.js"
@@ -39,26 +38,13 @@ export default () => {
             $(Label, { text: 'grid' })
           ),
           $(View, { layout: makeFlowLayoutY() },
-            ...COLORS.map((col, i) => {
-
-              const button = $(Button, { padding: 1, onClick: () => { map.currentTool.update(i) } },
-                $(View, { passthrough: true, w: 4, h: 4, background: col })
-              )
-
-              multiplex({
-                currentTool: map.currentTool,
-                hovered: button.$data('hovered'),
-                pressed: button.$data('pressed'),
-              }).watch(data => {
-                let color = 0
-                if (data.currentTool === i) color = 0xffffff77
-                else if (data.pressed) color = 0xffffff11
-                else if (data.hovered) color = 0xffffff33
-                button.borderColor = color
-              })
-
-              return button
-            })
+            ...COLORS.map((col, i) => $(Button, {
+              padding: 1,
+              $selected: map.currentTool.adapt(n => n === i),
+              onClick: () => { map.currentTool.update(i) },
+            },
+              $(View, { passthrough: true, w: 4, h: 4, background: col })
+            ))
           )
         ),
         $(View, { background: 0x333344ff, layout: makeVacuumLayout() },

@@ -44,6 +44,12 @@ export class Reactive<T> {
     return done
   }
 
+  adapt<U>(fn: (data: T) => U) {
+    const r = new Reactive(fn(this.data))
+    this.watch(d => r.update(fn(d)))
+    return r
+  }
+
   destroy() {
     this.changed.destroy()
   }
