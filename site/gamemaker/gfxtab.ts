@@ -6,9 +6,11 @@ import { SplitY } from "../os/containers/split.js"
 import { Button } from "../os/controls/button.js"
 import { Label } from "../os/controls/label.js"
 import { crt } from "../os/core/crt.js"
+import { sys } from "../os/core/system.js"
 import { $, View } from "../os/core/view.js"
 import { multiplex, Reactive } from "../os/util/events.js"
 import { makeCollapseAdjust, vacuumAllLayout } from "../os/util/layouts.js"
+import { dragMove } from "../os/util/selections.js"
 
 export class SpriteEditor extends View {
 
@@ -34,20 +36,68 @@ export class SpriteEditor extends View {
 
 }
 
-class Sprite {
-
-
-
-}
-
 class SpriteCanvas extends View {
 
   color = 0x00000000
+  zoom = 1
 
+  // override layout = centerLayout
+
+  override init(): void {
+    this.children = [
+      $(SpriteDrawer, { $color: this.$data('color'), $zoom: this.$data('zoom') })
+    ]
+  }
+
+  override onMouseDown(button: number): void {
+    if (sys.keys[' ']) {
+      const move = dragMove(this.firstChild!)
+      sys.trackMouse({ move })
+    }
+  }
+
+  override onScroll(up: boolean): void {
+    const min = 1
+    const max = 8
+    this.zoom = Math.min(max, Math.max(min, this.zoom + (up ? +1 : -1)))
+  }
+
+}
+
+class SpriteDrawer extends View {
+
+  override background = 0x000000ff
   override cursor = null
 
+  color = 0x00000000
+  zoom = 1
+
+  width = 8
+  height = 8
+
+  override init(): void {
+    this.$watch('zoom', () => sys.layoutTree(this.parent!))
+  }
+
+  override onMouseDown(button: number): void {
+    if (sys.keys[' ']) {
+      this.parent!.onMouseDown!(button)
+      return
+    }
+  }
+
+  override adjust(): void {
+    this.w = this.width * this.zoom
+    this.h = this.height * this.zoom
+  }
+
   override draw(): void {
-    crt.pset(this.mouse.x, this.mouse.y, this.color)
+    super.draw()
+
+    const tx = Math.floor(this.mouse.x / this.zoom) * this.zoom
+    const ty = Math.floor(this.mouse.y / this.zoom) * this.zoom
+
+    crt.rectFill(tx, ty, this.zoom, this.zoom, this.color)
   }
 
 }
