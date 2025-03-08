@@ -109,6 +109,8 @@ class SpriteDrawer extends View {
   width = 8
   height = 8
 
+  spots: Record<string, number> = {}
+
   override init(): void {
     this.$watch('zoom', () => sys.layoutTree(this.parent!))
   }
@@ -118,14 +120,46 @@ class SpriteDrawer extends View {
     this.h = this.height * this.zoom
   }
 
+  override onMouseDown(button: number): void {
+    if (button === 0) {
+      sys.trackMouse({
+        move: () => {
+          const x = Math.floor(this.mouse.x / this.zoom)
+          const y = Math.floor(this.mouse.y / this.zoom)
+
+          const key = `${x},${y}`
+          this.spots[key] = this.color
+        }
+      })
+    }
+    else {
+      const x = Math.floor(this.mouse.x / this.zoom)
+      const y = Math.floor(this.mouse.y / this.zoom)
+
+      const key = `${x},${y}`
+      // this.color = this.spots[key]
+    }
+  }
+
   override draw(): void {
     super.draw()
 
-    if (this.hovered) {
-      const tx = Math.floor(this.mouse.x / this.zoom) * this.zoom
-      const ty = Math.floor(this.mouse.y / this.zoom) * this.zoom
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
+        const key = `${x},${y}`
+        const spot = this.spots[key]
+        if (spot) {
+          const px = x * this.zoom
+          const py = y * this.zoom
+          crt.rectFill(px, py, this.zoom, this.zoom, spot)
+        }
+      }
+    }
 
-      crt.rectFill(tx, ty, this.zoom, this.zoom, this.color)
+    if (this.hovered) {
+      const px = Math.floor(this.mouse.x / this.zoom) * this.zoom
+      const py = Math.floor(this.mouse.y / this.zoom) * this.zoom
+      crt.rectLine(px, py, this.zoom, this.zoom, 0x00009999)
     }
   }
 
