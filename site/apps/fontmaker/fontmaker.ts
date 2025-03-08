@@ -10,7 +10,7 @@ import { sys } from "../../os/core/system.js"
 import { $, View } from "../../os/core/view.js"
 import { Panel } from "../../os/desktop/panel.js"
 import { fs } from "../../os/fs/fs.js"
-import { multiplex, Reactive } from "../../os/util/events.js"
+import { Reactive } from "../../os/util/events.js"
 import { CharView } from "./charview.js"
 
 const SAMPLE_TEXT = [
@@ -123,13 +123,13 @@ export default async (filename?: string) => {
   $height.watch((n) => { panel.find<Label>('height-label')!.text = n.toString() })
   $zoom.watch((n) => { panel.find<Label>('zoom-label')!.text = n.toString() })
 
-  multiplex({ w: $width, h: $height }).watch(() => {
-    rebuildWhole()
-  })
+  $width.watch(rebuildWhole)
+  $height.watch(rebuildWhole)
 
-  multiplex({ w: $width, h: $height, z: $zoom, o: $hovered }).watch(() => {
-    sys.layoutTree(panel)
-  })
+  $width.watch(() => sys.layoutTree(panel))
+  $height.watch(() => sys.layoutTree(panel))
+  $zoom.watch(() => sys.layoutTree(panel))
+  $hovered.watch(() => sys.layoutTree(panel))
 
   panel.onKeyDown = (key) => {
     if (key === 's' && sys.keys['Control']) {
