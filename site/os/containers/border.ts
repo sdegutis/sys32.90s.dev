@@ -24,11 +24,9 @@ export class Border extends View {
   override draw(): void {
     super.draw()
     if ((this.borderColor & 0x000000ff) > 0) {
-      const p = this.padding
-      crt.rectFill(0, 0, this.w, p, this.borderColor)
-      crt.rectFill(0, this.h - p, this.w, p, this.borderColor)
-      crt.rectFill(0, p, p, this.h - p - p, this.borderColor)
-      crt.rectFill(this.w - p, p, p, this.h - p - p, this.borderColor)
+      for (let i = 0; i < this.padding; i++) {
+        crt.rectLine(i, i, this.w - i * 2, this.h - i * 2, this.borderColor)
+      }
     }
   }
 
