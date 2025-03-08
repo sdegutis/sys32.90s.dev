@@ -134,14 +134,19 @@ class SpriteDrawer extends View {
       })
     }
     else {
-      const x = Math.floor(this.mouse.x / this.zoom)
-      const y = Math.floor(this.mouse.y / this.zoom)
+      sys.trackMouse({
+        move: () => {
+          const x = Math.floor(this.mouse.x / this.zoom)
+          const y = Math.floor(this.mouse.y / this.zoom)
 
-      const key = `${x},${y}`
-      const spot = this.spots[key]
-      if (spot) {
-        this.$ncol.update(spot)
-      }
+          const key = `${x},${y}`
+          delete this.spots[key]
+        }
+      })
+      // const spot = this.spots[key]
+      // if (spot) {
+      //   this.$ncol.update(spot)
+      // }
     }
   }
 
