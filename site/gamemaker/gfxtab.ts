@@ -3,6 +3,35 @@ import { SplitY } from "../os/containers/split.js"
 import { $, View } from "../os/core/view.js"
 import { centerLayout, vacuumAllLayout } from "../os/util/layouts.js"
 
+export class SpriteEditor extends View {
+
+  override background = 0x000000ff
+
+  override layout = vacuumAllLayout
+
+  override init(): void {
+    this.children = [
+      $(SplitY, { pos: 70, resizable: true },
+        $(View, { background: 0x000000ff, layout: centerLayout },
+          $(Border, { background: 0xffffff22, padding: 1 },
+            $(GridX, { cols: 4, gap: 1, },
+              ...palettes.vinik24.map(n =>
+                $(View, { w: 7, h: 7, background: n })
+              )
+            )
+          )
+        ),
+        $(SplitY, { pos: 30, resizable: true },
+          $(View, { background: 0x222222ff }),
+          $(View, { background: 0x333333ff }),
+        ),
+      )
+    ]
+  }
+
+}
+
+
 class GridX extends View {
 
   cols = 10
@@ -35,36 +64,6 @@ class GridX extends View {
   }
 
 }
-
-export class SpriteEditor extends View {
-
-  override background = 0x000000ff
-
-  override layout = vacuumAllLayout
-
-  override init(): void {
-    this.children = [
-      $(SplitY, { pos: 70, resizable: true },
-        $(View, { background: 0x000000ff, layout: centerLayout },
-          $(Border, { background: 0xffffff22, padding: 1 },
-            $(GridX, { cols: 4, gap: 1, },
-              ...palettes.vinik24.map(n =>
-                $(View, { w: 7, h: 7, background: n })
-              )
-            )
-          )
-        ),
-        $(SplitY, { pos: 30, resizable: true },
-          $(View, { background: 0x222222ff }),
-          $(View, { background: 0x333333ff }),
-        ),
-      )
-    ]
-    console.log(this.children)
-  }
-
-}
-
 
 const palettes = {
 
