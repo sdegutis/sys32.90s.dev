@@ -188,7 +188,7 @@ class ColorChooser extends View {
 
     this.children = [
       $(Border, { background: 0x00000033, padding: 2 },
-        $(GroupY, { align: 'a' },
+        $(GroupY, {},
           $(GroupY, {},
 
             ...Object.keys(palettes).map((name) => {
