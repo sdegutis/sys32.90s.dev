@@ -1,3 +1,4 @@
+import { ResizerView } from "../apps/painter/resizer.js"
 import { Border } from "../os/containers/border.js"
 import { GridX } from "../os/containers/grid.js"
 import { GroupY } from "../os/containers/group.js"
@@ -45,7 +46,8 @@ class SpriteCanvas extends View {
 
   override init(): void {
     this.children = [
-      $(SpriteDrawer, { $color: this.$data('color'), $zoom: this.$data('zoom') })
+      $(SpriteDrawer, { $color: this.$data('color'), $zoom: this.$data('zoom') }),
+      $(ResizerView<SpriteDrawer>, {})
     ]
   }
 
@@ -98,6 +100,12 @@ class SpriteDrawer extends View {
     const ty = Math.floor(this.mouse.y / this.zoom) * this.zoom
 
     crt.rectFill(tx, ty, this.zoom, this.zoom, this.color)
+  }
+
+  resize(width: number, height: number) {
+    this.width = width
+    this.height = height
+    sys.layoutTree(this.parent!)
   }
 
 }

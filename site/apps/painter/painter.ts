@@ -33,7 +33,7 @@ export default (filepath?: string) => {
       $(PanedYB, { gap: 1 },
         $(Scroll, { background: 0x222222ff, draw: makeStripeDrawer(), },
           $(PaintView, { id: 'paintView', color: COLORS[3], $zoom }),
-          $(ResizerView, { id: 'resizer', background: 0x00000077, w: 4, h: 4, })
+          $(ResizerView<PaintView>, {})
         ),
         $(SpacedX, {},
           $(GroupX, {},

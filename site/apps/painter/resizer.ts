@@ -1,11 +1,14 @@
 import { sys } from "../../os/core/system.js"
 import { View } from "../../os/core/view.js"
 import { dragResize } from "../../os/util/selections.js"
-import type { PaintView } from "./paintview.js"
 
-export class ResizerView extends View {
+export class ResizerView<T extends View & { zoom: number; resize(w: number, h: number): void }> extends View {
 
-  previousSibling<T extends View>() {
+  override background = 0x00000077
+  override w = 4
+  override h = 4
+
+  previousSibling() {
     if (!this.parent) return null
     const i = this.parent.children.indexOf(this)
     if (i < 1) return null
@@ -19,7 +22,7 @@ export class ResizerView extends View {
   }
 
   override onMouseDown() {
-    const paintView = this.previousSibling<PaintView>()!
+    const paintView = this.previousSibling()!
     const o = { w: paintView.w, h: paintView.h }
     const fn = dragResize(o)
 
