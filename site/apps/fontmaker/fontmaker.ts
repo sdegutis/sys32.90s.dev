@@ -90,7 +90,7 @@ export default async (filename?: string) => {
           ...charViews.values()
         )
       ),
-      $(Border, { background: 0x000000ff, u: 2 },
+      $(Border, { background: 0x000000ff },
         $(GroupY, { gap: 3, align: 'a' },
           $(Label, { text: SAMPLE_TEXT, color: 0x999900ff, $font: $font }),
           $(GroupX, { gap: 10, },

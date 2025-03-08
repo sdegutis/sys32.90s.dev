@@ -3,10 +3,10 @@ import { View } from "../core/view.js"
 
 export class Border extends View {
 
-  u = 0
-  d = 0
-  l = 0
-  r = 0
+  private u = 0
+  private d = 0
+  private l = 0
+  private r = 0
   set padding(n: number) { this.u = this.d = this.l = this.r = n }
 
   borderColor = 0x00000000
