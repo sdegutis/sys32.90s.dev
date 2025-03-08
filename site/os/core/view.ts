@@ -125,7 +125,10 @@ export function $<T extends View>(
   view.children = children
   Object.assign(view, config)
   makeDynamic(view)
-  view.init?.()
+  const protos = []
+  let proto: T | undefined = view
+  while (proto = Object.getPrototypeOf(proto)) protos.push(proto)
+  while (proto = protos.pop()) proto.init?.call(view)
   return view
 }
 
