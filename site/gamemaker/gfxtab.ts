@@ -18,6 +18,13 @@ import { dragMove } from "../os/util/selections.js"
 
 type Color = { p: keyof typeof palettes, i: number }
 
+class Sprite {
+
+  width = 8
+  height = 8
+
+}
+
 export class SpriteEditor extends View {
 
   override background = 0x000000ff
