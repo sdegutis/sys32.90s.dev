@@ -11,9 +11,11 @@ import { crt } from "../os/core/crt.js"
 import { Cursor } from "../os/core/cursor.js"
 import { sys } from "../os/core/system.js"
 import { $, View } from "../os/core/view.js"
-import { multiplex, Reactive } from "../os/util/events.js"
+import { Reactive } from "../os/util/events.js"
 import { makeCollapseAdjust, vacuumAllLayout } from "../os/util/layouts.js"
 import { dragMove } from "../os/util/selections.js"
+
+type Color = { p: keyof typeof palettes, i: number }
 
 export class SpriteEditor extends View {
 
@@ -21,16 +23,15 @@ export class SpriteEditor extends View {
   override layout = vacuumAllLayout
 
   override init(): void {
-    const $color = new Reactive(0)
-
+    const $ncol = new Reactive<Color>({ p: 'sweet24', i: 0 })
     const $width = new Reactive(8)
     const $height = new Reactive(8)
 
     this.children = [
       $(PanedYA, {},
         $(PanedXB, { background: 0xffffff22, adjust() { this.h = this.lastChild!.h } },
-          $(SpriteCanvas, { $color, $width, $height, top: this }),
-          $(ColorChooser, { $color, $width, $height })
+          $(SpriteCanvas, { $ncol, $width, $height, top: this }),
+          $(ColorChooser, { $ncol, $width, $height })
         ),
         $(SplitY, { pos: 30, resizable: true },
           $(View, { background: 0x000000ff }),
@@ -56,8 +57,7 @@ class SpriteCanvas extends View {
 
   $width!: Reactive<number>
   $height!: Reactive<number>
-
-  color = 0x00000000
+  $ncol!: Reactive<Color>
   zoom = 4
 
   drawer!: SpriteDrawer
@@ -67,12 +67,12 @@ class SpriteCanvas extends View {
   override cursor = moveCursor
 
   override init(): void {
-    const $color = this.$data('color')
     const $zoom = this.$data('zoom')
+    const $ncol = this.$ncol
 
     this.children = [
       $(View, { passthrough: true },
-        this.drawer = $(SpriteDrawer, { top: this.top, x: 10, y: 10, $color, $zoom, $width: this.$width, $height: this.$height }),
+        this.drawer = $(SpriteDrawer, { top: this.top, x: 10, y: 10, $ncol, $zoom, $width: this.$width, $height: this.$height }),
         $(ResizerView<SpriteDrawer>, {})
       )
     ]
@@ -103,13 +103,13 @@ class SpriteDrawer extends View {
   override background = 0x000000ff
   override cursor = null
 
-  color = 0x00000000
+  $ncol!: Reactive<Color>
   zoom = 1
 
   width = 8
   height = 8
 
-  spots: Record<string, number> = {}
+  spots: Record<string, Color> = {}
 
   override init(): void {
     this.$watch('zoom', () => sys.layoutTree(this.parent!))
@@ -128,7 +128,7 @@ class SpriteDrawer extends View {
           const y = Math.floor(this.mouse.y / this.zoom)
 
           const key = `${x},${y}`
-          this.spots[key] = this.color
+          this.spots[key] = this.$ncol.data
         }
       })
     }
@@ -137,7 +137,10 @@ class SpriteDrawer extends View {
       const y = Math.floor(this.mouse.y / this.zoom)
 
       const key = `${x},${y}`
-      // this.color = this.spots[key]
+      const spot = this.spots[key]
+      if (spot) {
+        this.$ncol.update(spot)
+      }
     }
   }
 
@@ -151,7 +154,8 @@ class SpriteDrawer extends View {
         if (spot) {
           const px = x * this.zoom
           const py = y * this.zoom
-          crt.rectFill(px, py, this.zoom, this.zoom, spot)
+          const col = palettes[spot.p][spot.i]
+          crt.rectFill(px, py, this.zoom, this.zoom, col)
         }
       }
     }
@@ -175,18 +179,12 @@ class ColorChooser extends View {
 
   $width!: Reactive<number>
   $height!: Reactive<number>
+  $ncol!: Reactive<Color>
 
-  color = 0x00000000
   override adjust = makeCollapseAdjust
 
   override init(): void {
-    const $palette = new Reactive<keyof typeof palettes>('sweet24')
-    const $colori = new Reactive(0)
-
-    multiplex({ p: $palette, i: $colori }).watch(d => { this.color = palettes[d.p][d.i] })
-
-    $palette.watch(p => this.color = palettes[$palette.data][$colori.data])
-    $colori.watch(p => this.color = palettes[$palette.data][$colori.data])
+    const $ncol = this.$ncol
 
     this.children = [
       $(Border, { background: 0x00000033, padding: 2 },
@@ -196,8 +194,10 @@ class ColorChooser extends View {
             ...Object.keys(palettes).map((name) => {
               return $(Button, {
                 padding: 2,
-                $selected: $palette.adapt(p => p === name),
-                onClick: () => { $palette.update(name as keyof typeof palettes) },
+                $selected: $ncol.adapt(d => d.p === name),
+                onClick: () => {
+                  $ncol.update(({ p: name as keyof typeof palettes, i: this.$ncol.data.i }))
+                },
               },
                 $(Label, { text: name })
               )
@@ -209,11 +209,11 @@ class ColorChooser extends View {
               ...palettes.vinik24.map((color, i) => {
                 const button = $(Button, {
                   padding: 1,
-                  $selected: $colori.adapt(index => index === i),
+                  $selected: this.$ncol.adapt(col => col.i === i),
                   selectedBorderColor: 0xffffffff,
-                  onClick: () => $colori.update(i),
+                  onClick: () => $ncol.update({ i, p: this.$ncol.data.p }),
                 },
-                  $(View, { w: 7, h: 7, passthrough: true, $background: $palette.adapt(p => palettes[p][i]) })
+                  $(View, { w: 7, h: 7, passthrough: true, $background: $ncol.adapt(d => palettes[d.p][i]) })
                 )
                 return button
               }
