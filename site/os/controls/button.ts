@@ -65,15 +65,22 @@ export class Button extends Border {
     })
 
     this.changebg.watch(data => {
-      if (data.selected) this.overlay.background = this.selectedBackground
-      else if (data.pressed) this.overlay.background = this.pressBackground
-      else if (data.hovered) this.overlay.background = this.hoverBackground
-      else this.overlay.background = 0x00000000
-
-      if (data.selected) this.overlay.borderColor = this.selectedBorderColor
-      else if (data.pressed) this.overlay.borderColor = this.pressBorderColor
-      else if (data.hovered) this.overlay.borderColor = this.hoverBorderColor
-      else this.overlay.borderColor = 0x00000000
+      if (data.selected) {
+        this.overlay.background = this.selectedBackground
+        this.overlay.borderColor = this.selectedBorderColor
+      }
+      else if (data.pressed) {
+        this.overlay.background = this.pressBackground
+        this.overlay.borderColor = this.pressBorderColor
+      }
+      else if (data.hovered) {
+        this.overlay.background = this.hoverBackground
+        this.overlay.borderColor = this.hoverBorderColor
+      }
+      else {
+        this.overlay.background = 0x00000000
+        this.overlay.borderColor = 0x00000000
+      }
     })
   }
 
