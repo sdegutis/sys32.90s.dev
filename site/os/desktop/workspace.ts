@@ -6,7 +6,6 @@ import { Button } from "../controls/button.js"
 import { Label } from "../controls/label.js"
 import { sys } from "../core/system.js"
 import { $, $$data, View } from "../core/view.js"
-import { makeVacuumLayout } from "../util/layouts.js"
 import { showMenu, type MenuItem } from "../util/menu.js"
 import { Clock } from "./clock.js"
 import { Panel } from "./panel.js"
@@ -30,14 +29,13 @@ class Workspace {
     $(Border, { padding: 2 }, $(Clock, {})),
   )
 
+  private root = $(PanedYB, {},
+    this.desktop,
+    this.taskbar
+  )
+
   showDesktop() {
-    sys.root.layout = makeVacuumLayout()
-    sys.root.children = [
-      $(PanedYB, {},
-        this.desktop,
-        this.taskbar
-      )
-    ]
+    sys.root.addChild(this.root)
     sys.layoutTree()
   }
 
@@ -104,6 +102,7 @@ class Workspace {
       }).toArray(),
       '-',
       { text: 'settings', onClick: () => settings() },
+      { text: 'hide', onClick: () => this.root.remove() },
     ], menu => {
       menu.x = 0
       menu.y = this.taskbar.y - menu.h

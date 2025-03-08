@@ -1,5 +1,14 @@
 import { View } from "../core/view.js"
 
+export function vacuumAllLayout(this: View) {
+  for (const c of this.children) {
+    c.x = 0
+    c.y = 0
+    c.w = this.w
+    c.h = this.h
+  }
+}
+
 export function makeVacuumLayout(padding = 0) {
   return function (this: View) {
     const c = this.firstChild

@@ -2,8 +2,8 @@ import { PanedYA } from "../os/containers/paned.js"
 import { SplitX } from "../os/containers/split.js"
 import { sys } from "../os/core/system.js"
 import { $, $$data, View } from "../os/core/view.js"
+import { ws } from "../os/desktop/workspace.js"
 import { Reactive } from "../os/util/events.js"
-import { makeVacuumLayout } from "../os/util/layouts.js"
 import * as api from './api.js'
 import { give } from "./bridge.js"
 import { CodeEditor } from "./codeeditor.js"
@@ -104,6 +104,11 @@ export default function gamemaker() {
       runGame()
       return true
     }
+    if (key === 'D' && sys.keys['Control']) {
+      ws.showDesktop()
+      sys.layoutTree()
+      return true
+    }
     if (key === 'Escape') {
       stopGame()
       return true
@@ -111,7 +116,6 @@ export default function gamemaker() {
     return false
   }
 
-  sys.root.layout = makeVacuumLayout()
   sys.root.children = [root]
   sys.layoutTree()
   sys.focus(codeEditor)

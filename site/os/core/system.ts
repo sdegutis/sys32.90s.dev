@@ -1,11 +1,16 @@
 import { Listener } from "../util/events.js"
+import { vacuumAllLayout } from "../util/layouts.js"
 import { crt } from "./crt.js"
 import { $, View } from "./view.js"
 
 class System {
 
-  root = $(View, { background: 0x00000000 })
-  focused: View = this.root
+  readonly root = $(View, {
+    background: 0x00000000,
+    layout: vacuumAllLayout,
+  })
+
+  focused = this.root
   keys: Record<string, boolean> = {}
   mouse = { x: 0, y: 0 }
 
@@ -14,13 +19,14 @@ class System {
   needsRedraw = true
 
   private allHovered = new Set<View>()
-  private hovered: View = this.root
+  private hovered = this.root
 
   private mouseMoved = new Listener()
   private mouseUp = new Listener()
 
   constructor() {
-    this.resize(crt.canvas.width, crt.canvas.height)
+    this.root.w = crt.canvas.width
+    this.root.h = crt.canvas.height
     this.addListeners()
     this.startTicks()
   }
