@@ -1,6 +1,6 @@
 import { Border } from "../containers/border.js"
 import { sys } from "../core/system.js"
-import { $, View } from "../core/view.js"
+import { $ } from "../core/view.js"
 import { multiplex, Reactive } from "../util/events.js"
 
 export class ClickCounter {
@@ -24,14 +24,26 @@ export class ClickCounter {
 export class Button extends Border {
 
   pressed = false
-  private counter = new ClickCounter()
+  selected = false
 
-  hoverColor = 0xffffff22
-  pressColor = 0xffffff11
+  hoverBackground = 0xffffff22
+  pressBackground = 0xffffff11
+  selectedBackground = 0xffffff33
+
+  hoverBorderColor = 0x00000000
+  pressBorderColor = 0x00000000
+  selectedBorderColor = 0x00000000
+
+  private counter = new ClickCounter()
 
   override passthrough = false
 
-  overlay = $(View, {
+  override set padding(n: number) {
+    super.padding = n
+    this.overlay.padding = n
+  }
+
+  overlay = $(Border, {
     passthrough: true,
     layout() {
       if (!this.parent) return
@@ -53,13 +65,19 @@ export class Button extends Border {
     this.changebg = multiplex({
       pressed: this.$data('pressed'),
       hovered: this.$data('hovered'),
+      selected: this.$data('selected'),
     })
 
     this.changebg.watch(data => {
-      let c = 0x00000000
-      if (data.pressed) c = this.pressColor
-      else if (data.hovered) c = this.hoverColor
-      this.overlay.background = c
+      if (data.selected) this.overlay.background = this.selectedBackground
+      else if (data.pressed) this.overlay.background = this.pressBackground
+      else if (data.hovered) this.overlay.background = this.hoverBackground
+      else this.overlay.background = 0x00000000
+
+      if (data.selected) this.overlay.borderColor = this.selectedBorderColor
+      else if (data.pressed) this.overlay.borderColor = this.pressBorderColor
+      else if (data.hovered) this.overlay.borderColor = this.hoverBorderColor
+      else this.overlay.borderColor = 0x00000000
     })
   }
 

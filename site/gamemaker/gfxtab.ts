@@ -6,19 +6,6 @@ import { $, View } from "../os/core/view.js"
 import { Reactive } from "../os/util/events.js"
 import { centerLayout, vacuumAllLayout } from "../os/util/layouts.js"
 
-class ColorButton extends Button {
-
-  selected = false
-
-  override init(): void {
-    super.init()
-    this.$watch('selected', s => {
-
-    })
-  }
-
-}
-
 export class SpriteEditor extends View {
 
   override background = 0x000000ff
@@ -34,7 +21,11 @@ export class SpriteEditor extends View {
           $(Border, { background: 0xffffff22, padding: 0 },
             $(GridX, { cols: 4, gap: -1 },
               ...palettes.vinik24.map(n => {
-                const button = $(ColorButton, { padding: 1, onClick: () => $color.update(n) },
+                const button = $(Button, {
+                  padding: 1,
+                  selectedBorderColor: 0xffffffff,
+                  onClick: () => $color.update(n),
+                },
                   $(View, { w: 7, h: 7, passthrough: true, background: n })
                 )
                 $color.watch(c => button.selected = c === n)
