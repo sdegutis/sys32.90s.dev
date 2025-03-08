@@ -12,7 +12,6 @@ import { vacuumAllLayout } from "../os/util/layouts.js"
 export class SpriteEditor extends View {
 
   override background = 0x000000ff
-
   override layout = vacuumAllLayout
 
   override init(): void {
@@ -26,7 +25,7 @@ export class SpriteEditor extends View {
 
           $(View, {}),
 
-          $(Border, { background: 0x00000077, padding: 2 },
+          $(Border, { background: 0x00000033, padding: 2 },
             $(GroupY, {},
               $(GroupY, {},
 
