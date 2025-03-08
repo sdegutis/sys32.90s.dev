@@ -11,6 +11,7 @@ import { crt } from "../os/core/crt.js"
 import { Cursor } from "../os/core/cursor.js"
 import { sys } from "../os/core/system.js"
 import { $, View } from "../os/core/view.js"
+import { makeStripeDrawer } from "../os/util/draw.js"
 import { Reactive } from "../os/util/events.js"
 import { makeCollapseAdjust, vacuumAllLayout } from "../os/util/layouts.js"
 import { dragMove } from "../os/util/selections.js"
@@ -63,7 +64,7 @@ class SpriteCanvas extends View {
   drawer!: SpriteDrawer
 
   override layout = vacuumAllLayout
-
+  override draw = makeStripeDrawer(4, 2)
   override cursor = moveCursor
 
   override init(): void {
@@ -71,7 +72,7 @@ class SpriteCanvas extends View {
     const $ncol = this.$ncol
 
     this.children = [
-      $(View, { passthrough: true },
+      $(View, { passthrough: true, },
         this.drawer = $(SpriteDrawer, { top: this.top, x: 10, y: 10, $ncol, $zoom, $width: this.$width, $height: this.$height }),
         $(ResizerView<SpriteDrawer>, {})
       )
@@ -100,7 +101,7 @@ class SpriteDrawer extends View {
 
   top!: View
 
-  override background = 0x000000ff
+  override background = 0x00000033
   override cursor = null
 
   $ncol!: Reactive<Color>
@@ -188,7 +189,7 @@ class ColorChooser extends View {
 
     this.children = [
       $(Border, { background: 0x00000033, padding: 2 },
-        $(GroupY, {},
+        $(GroupY, { gap: 1 },
           $(GroupY, {},
 
             ...Object.keys(palettes).map((name) => {
