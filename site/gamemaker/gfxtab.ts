@@ -244,6 +244,7 @@ class ColorChooser extends View {
                 const button = $(Button, {
                   padding: 1,
                   $selected: this.$ncol.adapt(col => col.i === i),
+                  selectedBackground: 0x00000000,
                   selectedBorderColor: 0xffffffff,
                   onClick: () => $ncol.update({ i, p: this.$ncol.data.p }),
                 },
