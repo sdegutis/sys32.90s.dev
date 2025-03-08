@@ -11,7 +11,7 @@ import { Panel } from "../../os/desktop/panel.js"
 import { fs } from "../../os/fs/fs.js"
 import { showPrompt } from "../../os/util/dialog.js"
 import { makeStripeDrawer } from "../../os/util/draw.js"
-import { multiplex, Reactive } from "../../os/util/events.js"
+import { Reactive } from "../../os/util/events.js"
 import { makeFlowLayout } from "../../os/util/layouts.js"
 import { showMenu } from "../../os/util/menu.js"
 import { PaintView } from "./paintview.js"
@@ -87,23 +87,13 @@ export default (filepath?: string) => {
 
   function makeColorButton(color: number) {
     colorsWithButtons.add(color)
-
-    const colorView = $(View, { passthrough: true, w: 4, h: 4, background: color, })
-    const border = $(Button, { padding: 1, onClick: () => { paintView.color = color } }, colorView)
-
-    multiplex({
-      currentColor: paintView.$data('color'),
-      hovered: border.$data('hovered'),
-      pressed: border.$data('pressed'),
-    }).watch(data => {
-      let c = 0
-      if (data.currentColor === color) c = 0xffffff77
-      else if (data.pressed) c = 0xffffff11
-      else if (data.hovered) c = 0xffffff33
-      border.borderColor = c
-    })
-
-    toolArea.addChild(border)
+    toolArea.addChild($(Button, {
+      padding: 1,
+      $selected: paintView.$data('color').adapt(c => c === color),
+      onClick: () => { paintView.color = color }
+    },
+      $(View, { passthrough: true, w: 4, h: 4, background: color, })
+    ))
   }
 
   for (const color of COLORS) {
