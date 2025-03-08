@@ -46,15 +46,20 @@ class SpriteCanvas extends View {
 
   override init(): void {
     this.children = [
-      $(SpriteDrawer, { $color: this.$data('color'), $zoom: this.$data('zoom') }),
+      $(SpriteDrawer, { x: 10, y: 10, $color: this.$data('color'), $zoom: this.$data('zoom') }),
       $(ResizerView<SpriteDrawer>, {})
     ]
   }
 
   override onMouseDown(button: number): void {
     if (sys.keys[' ']) {
-      const move = dragMove(this.firstChild!)
-      sys.trackMouse({ move })
+      const drag = dragMove(this.firstChild!)
+      sys.trackMouse({
+        move: () => {
+          drag()
+          sys.layoutTree(this)
+        }
+      })
     }
   }
 
