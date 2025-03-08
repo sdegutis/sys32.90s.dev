@@ -38,11 +38,6 @@ export class Button extends Border {
 
   override passthrough = false
 
-  override set padding(n: number) {
-    super.padding = n
-    this.overlay.padding = n
-  }
-
   overlay = $(Border, {
     passthrough: true,
     layout() {
@@ -57,6 +52,7 @@ export class Button extends Border {
 
   override init(): void {
     this.addChild(this.overlay)
+    this.overlay.$data('padding', this.$data('padding'))
   }
 
   private changebg: Reactive<any> | undefined
