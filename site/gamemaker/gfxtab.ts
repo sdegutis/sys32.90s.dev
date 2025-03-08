@@ -23,11 +23,14 @@ export class SpriteEditor extends View {
   override init(): void {
     const $color = new Reactive(0)
 
+    const $width = new Reactive(8)
+    const $height = new Reactive(8)
+
     this.children = [
       $(PanedYA, {},
         $(PanedXB, { background: 0xffffff22, adjust() { this.h = this.lastChild!.h } },
-          $(SpriteCanvas, { $color }),
-          $(ColorChooser, { $color })
+          $(SpriteCanvas, { $color, $width, $height, top: this }),
+          $(ColorChooser, { $color, $width, $height })
         ),
         $(SplitY, { pos: 30, resizable: true },
           $(View, { background: 0x000000ff }),
@@ -49,8 +52,13 @@ const moveCursor = Cursor.fromBitmap(new Bitmap([0x000000cc, 0xffffffff, 0xfffff
 
 class SpriteCanvas extends View {
 
+  top!: View
+
+  $width!: Reactive<number>
+  $height!: Reactive<number>
+
   color = 0x00000000
-  zoom = 1
+  zoom = 4
 
   drawer!: SpriteDrawer
 
@@ -62,24 +70,12 @@ class SpriteCanvas extends View {
     const $color = this.$data('color')
     const $zoom = this.$data('zoom')
 
-    const $width = new Reactive(8)
-    const $height = new Reactive(8)
-
     this.children = [
-      $(PanedXB, { passthrough: true },
-        $(View, { passthrough: true },
-          this.drawer = $(SpriteDrawer, { top: this, x: 10, y: 10, $color, $zoom, $width, $height }),
-          $(ResizerView<SpriteDrawer>, {})
-        ),
-        $(Border, { padding: 1, background: 0x00000077 },
-          $(GroupY, { gap: 1 },
-            $(GroupX, {}, $(Label, { text: 'w:', color: 0xffffff33 }), $(Label, { $text: $width.adapt(n => n.toString()) })),
-            $(GroupX, {}, $(Label, { text: 'h:', color: 0xffffff33 }), $(Label, { $text: $height.adapt(n => n.toString()) })),
-          )
-        )
+      $(View, { passthrough: true },
+        this.drawer = $(SpriteDrawer, { top: this.top, x: 10, y: 10, $color, $zoom, $width: this.$width, $height: this.$height }),
+        $(ResizerView<SpriteDrawer>, {})
       )
     ]
-    console.log(this.children)
   }
 
   override onMouseDown(button: number): void {
@@ -143,6 +139,9 @@ class SpriteDrawer extends View {
 
 class ColorChooser extends View {
 
+  $width!: Reactive<number>
+  $height!: Reactive<number>
+
   color = 0x00000000
   override adjust = makeCollapseAdjust
 
@@ -157,7 +156,7 @@ class ColorChooser extends View {
 
     this.children = [
       $(Border, { background: 0x00000033, padding: 2 },
-        $(GroupY, {},
+        $(GroupY, { align: 'a' },
           $(GroupY, {},
 
             ...Object.keys(palettes).map((name) => {
@@ -186,7 +185,15 @@ class ColorChooser extends View {
               }
               )
             )
-          ))
+          ),
+          $(Border, { padding: 1 },
+            $(GroupX, { gap: 3, },
+              $(GroupX, {}, $(Label, { text: 'w:', color: 0xffffff33 }), $(Label, { $text: this.$width.adapt(n => n.toString()) })),
+              $(GroupX, {}, $(Label, { text: 'h:', color: 0xffffff33 }), $(Label, { $text: this.$height.adapt(n => n.toString()) })),
+            )
+          )
+
+        )
       )
     ]
   }
