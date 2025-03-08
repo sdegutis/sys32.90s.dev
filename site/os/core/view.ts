@@ -107,7 +107,7 @@ export class View {
     this.$data(key).watch(fn)
   }
 
-  YouForgotConfig: undefined
+  _YouForgotConfig_: undefined
 
 }
 
