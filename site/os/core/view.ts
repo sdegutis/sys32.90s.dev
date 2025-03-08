@@ -97,6 +97,10 @@ export class View {
     return null
   }
 
+  watch<K extends keyof this>(key: K, fn: (val: this[K]) => void) {
+    $$data(this, key).watch(fn)
+  }
+
   YouForgotConfig: undefined
 
 }

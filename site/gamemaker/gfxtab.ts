@@ -2,7 +2,7 @@ import { Border } from "../os/containers/border.js"
 import { GridX } from "../os/containers/grid.js"
 import { SplitY } from "../os/containers/split.js"
 import { Button } from "../os/controls/button.js"
-import { $, $$data, View } from "../os/core/view.js"
+import { $, View } from "../os/core/view.js"
 import { Reactive } from "../os/util/events.js"
 import { centerLayout, vacuumAllLayout } from "../os/util/layouts.js"
 
@@ -12,13 +12,9 @@ class ColorButton extends Button {
 
   override init(): void {
     super.init()
-
-    $$data(this, 'selected').watch(s => {
+    this.watch('selected', s => {
 
     })
-
-    // this.overlay.remove()
-    // $$data(this, 'borderColor', $$data(this.overlay, 'background'))
   }
 
 }
