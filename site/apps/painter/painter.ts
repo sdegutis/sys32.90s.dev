@@ -64,17 +64,17 @@ export default (filepath?: string) => {
   const pencilTool = panel.find<View>('pencilTool')!
   const eraserTool = panel.find<View>('eraserTool')!
 
-  paintView.$data('width').watch(n => widthLabel.text = n.toString())
-  paintView.$data('height').watch(n => heightLabel.text = n.toString())
+  paintView.$watch('width', n => widthLabel.text = n.toString())
+  paintView.$watch('height', n => heightLabel.text = n.toString())
 
-  widthLabel.$data('text').watch(() => { sys.layoutTree(widthLabel.parent!) })
-  heightLabel.$data('text').watch(() => { sys.layoutTree(heightLabel.parent!) })
+  widthLabel.$watch('text', () => { sys.layoutTree(widthLabel.parent!) })
+  heightLabel.$watch('text', () => { sys.layoutTree(heightLabel.parent!) })
 
-  paintView.$data('zoom').watch(n => zoomLabel.text = n.toString())
-  paintView.$data('zoom').watch(n => sys.layoutTree(panel))
+  paintView.$watch('zoom', n => zoomLabel.text = n.toString())
+  paintView.$watch('zoom', n => sys.layoutTree(panel))
 
-  paintView.$data('tool').watch(t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff)
-  paintView.$data('tool').watch(t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff)
+  paintView.$watch('tool', t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff)
+  paintView.$watch('tool', t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff)
 
   async function addColor() {
     const colorCode = await showPrompt('enter color code:')

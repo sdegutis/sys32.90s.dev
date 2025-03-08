@@ -56,7 +56,7 @@ export default async (filename?: string) => {
   for (const char of CHARSET) {
     const view = $(CharView, { char, $font, $width, $height, $zoom })
     charViews.set(char, view)
-    view.$data('hovered').watch((h) => { if (h) $hovered.update(char) })
+    view.$watch('hovered', (h) => { if (h) $hovered.update(char) })
   }
 
   const panel = $(Panel, { title: 'fontmaker', },
