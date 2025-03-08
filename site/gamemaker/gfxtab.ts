@@ -9,7 +9,7 @@ import { Label } from "../os/controls/label.js"
 import { Bitmap } from "../os/core/bitmap.js"
 import { crt } from "../os/core/crt.js"
 import { Cursor } from "../os/core/cursor.js"
-import { $ } from "../os/core/dyn.js"
+import { $, Dynamic } from "../os/core/dyn.js"
 import { sys } from "../os/core/system.js"
 import { View } from "../os/core/view.js"
 import { makeStripeDrawer } from "../os/util/draw.js"
@@ -19,16 +19,16 @@ import { dragMove } from "../os/util/selections.js"
 
 type Color = { p: keyof typeof palettes, i: number }
 
-class Sprite {
+class Sprite extends Dynamic {
+
+  width = 8
+  height = 8
 
   images: SpriteImage[] = []
 
 }
 
 class SpriteImage {
-
-  width = 8
-  height = 8
 
 
 
@@ -42,12 +42,12 @@ export class SpriteEditor extends View {
   override init(): void {
     const sprites: Sprite[] = []
 
-    const sprite = new Sprite()
+    const sprite = $(Sprite, {})
     sprites.push(sprite)
 
     const $ncol = new Reactive<Color>({ p: 'vinik24', i: 8 })
-    const $width = new Reactive(8)
-    const $height = new Reactive(8)
+    const $width = sprite.$data('width')
+    const $height = sprite.$data('height')
 
     this.children = [
       $(PanedYA, {},

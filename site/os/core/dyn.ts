@@ -1,6 +1,5 @@
 import { Listener, Reactive } from "../util/events.js"
 
-
 export class Dynamic {
 
   $data<K extends keyof this, R extends Reactive<this[K]>>(k: K, v?: R): R {
@@ -29,7 +28,7 @@ type DontForgetConfig = { YouForgotConfig: never }
 export function $<T extends Dynamic>(
   ctor: { new(): T },
   config: Partial<T & DontForgetConfig & $Reactives<T>>,
-  ...children: T extends { children: infer C } ? C extends ArrayLike<any> ? C : never : never
+  ...children: T extends { children: ArrayLike<infer C> } ? C[] : never[]
 ): T {
   const view = new ctor()
   Object.assign(view, { children }, config)
