@@ -1,7 +1,7 @@
 import { PanedYA } from "../os/containers/paned.js"
 import { SplitX } from "../os/containers/split.js"
 import { sys } from "../os/core/system.js"
-import { $, $$data } from "../os/core/view.js"
+import { $ } from "../os/core/view.js"
 import { ws } from "../os/desktop/workspace.js"
 import { Reactive } from "../os/util/events.js"
 import { CodeEditor } from "./codetab.js"
@@ -40,7 +40,7 @@ export default function gamemaker() {
     $((TabPane<Tab>), { mine: tab2, tabs })
   )
 
-  const menus = $(SplitX, { $pos: $$data(split, 'pos'), adjust() { this.h = this.firstChild!.h } },
+  const menus = $(SplitX, { $pos: split.$data('pos'), adjust() { this.h = this.firstChild!.h } },
     makeTabMenu(tabs, tab1, tab2),
     makeTabMenu(tabs, tab2, tab1),
   )

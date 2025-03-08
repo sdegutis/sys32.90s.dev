@@ -97,8 +97,14 @@ export class View {
     return null
   }
 
+  $data<K extends keyof this, R extends Reactive<this[K]>>(k: K, v?: R): R {
+    const $$data: { [K in keyof this]: Reactive<this[K]> } = (this as any).$$data
+    if (v) $$data[k] = v
+    return $$data[k] as R
+  }
+
   $watch<K extends keyof this>(key: K, fn: (val: this[K]) => void) {
-    $$data(this, key).watch(fn)
+    this.$data(key).watch(fn)
   }
 
   YouForgotConfig: undefined
@@ -121,12 +127,6 @@ export function $<T extends View>(
   makeDynamic(view)
   view.init?.()
   return view
-}
-
-export function $$data<T extends View, K extends keyof T, R extends Reactive<T[K]>>(o: T, k: K, v?: R): R {
-  const $$data = (o as unknown as T & { $$data: { [K in keyof T]: Reactive<T[K]> } }).$$data
-  if (v) $$data[k] = v
-  return $$data[k] as R
 }
 
 export function makeDynamic<T extends View>(o: T) {

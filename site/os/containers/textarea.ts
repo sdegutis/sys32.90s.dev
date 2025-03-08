@@ -1,6 +1,6 @@
 import { crt34 } from "../core/font.js"
 import { sys } from "../core/system.js"
-import { $, $$data, View } from "../core/view.js"
+import { $, View } from "../core/view.js"
 import { makeVacuumLayout } from "../util/layouts.js"
 import { Scroll } from "./scroll.js"
 
@@ -70,7 +70,7 @@ export class TextArea extends View {
     ]
 
     this.reflectCursorPos()
-    $$data(this, 'cursorColor').watch(c => this._cursor.background = c)
+    this.$watch('cursorColor', c => this._cursor.background = c)
   }
 
   override onMouseDown(button: number): void {

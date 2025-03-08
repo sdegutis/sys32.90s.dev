@@ -1,6 +1,6 @@
 import { Border } from "../containers/border.js"
 import { sys } from "../core/system.js"
-import { $, $$data, View } from "../core/view.js"
+import { $, View } from "../core/view.js"
 import { multiplex, Reactive } from "../util/events.js"
 
 export class ClickCounter {
@@ -51,8 +51,8 @@ export class Button extends Border {
 
   override adopted(): void {
     this.changebg = multiplex({
-      pressed: $$data(this, 'pressed'),
-      hovered: $$data(this, 'hovered'),
+      pressed: this.$data('pressed'),
+      hovered: this.$data('hovered'),
     })
 
     this.changebg.watch(data => {

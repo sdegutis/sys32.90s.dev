@@ -5,7 +5,7 @@ import { Spaced } from "../containers/spaced.js"
 import { Button } from "../controls/button.js"
 import { Label } from "../controls/label.js"
 import { sys } from "../core/system.js"
-import { $, $$data, View } from "../core/view.js"
+import { $, View } from "../core/view.js"
 import { showMenu, type MenuItem } from "../util/menu.js"
 import { Clock } from "./clock.js"
 import { Panel } from "./panel.js"
@@ -63,8 +63,8 @@ class Workspace {
     this.progbuttons.addChild(button)
     sys.layoutTree(this.progbuttons)
 
-    $$data(panel, 'title').watch(s => label.text = s)
-    $$data(label, 'text').watch(s => { sys.layoutTree(this.progbuttons) })
+    panel.$watch('title', s => label.text = s)
+    label.$watch('text', s => { sys.layoutTree(this.progbuttons) })
 
     panel.didClose.watch(() => {
       button.parent?.removeChild(button)
@@ -73,7 +73,7 @@ class Workspace {
       lastPanel && sys.focus(lastPanel)
     })
 
-    $$data(panel, 'panelFocused').watch(is => {
+    panel.$watch('panelFocused', is => {
       button.background = is ? 0x770000ff : 0x330000ff
     })
 

@@ -6,7 +6,7 @@ import { Button } from "../../os/controls/button.js"
 import { Label } from "../../os/controls/label.js"
 import { Slider } from "../../os/controls/slider.js"
 import { sys } from "../../os/core/system.js"
-import { $, $$data, View } from "../../os/core/view.js"
+import { $, View } from "../../os/core/view.js"
 import { Panel } from "../../os/desktop/panel.js"
 import { fs } from "../../os/fs/fs.js"
 import { showPrompt } from "../../os/util/dialog.js"
@@ -64,17 +64,17 @@ export default (filepath?: string) => {
   const pencilTool = panel.find<View>('pencilTool')!
   const eraserTool = panel.find<View>('eraserTool')!
 
-  $$data(paintView, 'width').watch(n => widthLabel.text = n.toString())
-  $$data(paintView, 'height').watch(n => heightLabel.text = n.toString())
+  paintView.$data('width').watch(n => widthLabel.text = n.toString())
+  paintView.$data('height').watch(n => heightLabel.text = n.toString())
 
-  $$data(widthLabel, 'text').watch(() => { sys.layoutTree(widthLabel.parent!) })
-  $$data(heightLabel, 'text').watch(() => { sys.layoutTree(heightLabel.parent!) })
+  widthLabel.$data('text').watch(() => { sys.layoutTree(widthLabel.parent!) })
+  heightLabel.$data('text').watch(() => { sys.layoutTree(heightLabel.parent!) })
 
-  $$data(paintView, 'zoom').watch(n => zoomLabel.text = n.toString())
-  $$data(paintView, 'zoom').watch(n => sys.layoutTree(panel))
+  paintView.$data('zoom').watch(n => zoomLabel.text = n.toString())
+  paintView.$data('zoom').watch(n => sys.layoutTree(panel))
 
-  $$data(paintView, 'tool').watch(t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff)
-  $$data(paintView, 'tool').watch(t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff)
+  paintView.$data('tool').watch(t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff)
+  paintView.$data('tool').watch(t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff)
 
   async function addColor() {
     const colorCode = await showPrompt('enter color code:')
@@ -92,9 +92,9 @@ export default (filepath?: string) => {
     const border = $(Button, { padding: 1, onClick: () => { paintView.color = color } }, colorView)
 
     multiplex({
-      currentColor: $$data(paintView, 'color'),
-      hovered: $$data(border, 'hovered'),
-      pressed: $$data(border, 'pressed'),
+      currentColor: paintView.$data('color'),
+      hovered: border.$data('hovered'),
+      pressed: border.$data('pressed'),
     }).watch(data => {
       let c = 0
       if (data.currentColor === color) c = 0xffffff77
@@ -110,7 +110,7 @@ export default (filepath?: string) => {
     makeColorButton(color)
   }
 
-  $$data(paintView, 'color').watch(color => colorLabel.text = '0x' + color.toString(16).padStart(8, '0'))
+  paintView.$watch('color', color => colorLabel.text = '0x' + color.toString(16).padStart(8, '0'))
 
   function doMenu() {
     showMenu([
@@ -161,7 +161,7 @@ export default (filepath?: string) => {
     return false
   }
 
-  $$data(paintView, 'color').watch(color => {
+  paintView.$watch('color', color => {
     if (!colorsWithButtons.has(color)) {
       makeColorButton(color)
       sys.layoutTree(toolArea.parent!)
