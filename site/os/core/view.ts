@@ -129,7 +129,7 @@ export function $<T extends View>(
   return view
 }
 
-export function makeDynamic<T extends View>(o: T) {
+function makeDynamic<T extends View>(o: T) {
   const $$data: Record<string, Reactive<any>> = Object.create(null)
 
   for (let [key, val] of Object.entries(o)) {
