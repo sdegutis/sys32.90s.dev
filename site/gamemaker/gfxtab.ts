@@ -164,7 +164,7 @@ class SpriteDrawer extends View {
     if (this.hovered) {
       const px = Math.floor(this.mouse.x / this.zoom) * this.zoom
       const py = Math.floor(this.mouse.y / this.zoom) * this.zoom
-      crt.rectLine(px, py, this.zoom, this.zoom, 0x00009999)
+      crt.rectLine(px, py, this.zoom, this.zoom, 0x1199ff99)
     }
   }
 
