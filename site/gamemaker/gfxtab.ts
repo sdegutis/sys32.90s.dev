@@ -12,7 +12,7 @@ class ColorButton extends Button {
 
   override init(): void {
     super.init()
-    this.watch('selected', s => {
+    this.$watch('selected', s => {
 
     })
   }
