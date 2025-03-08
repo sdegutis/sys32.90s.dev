@@ -1,7 +1,7 @@
 import { ResizerView } from "../apps/painter/resizer.js"
 import { Border } from "../os/containers/border.js"
 import { GridX } from "../os/containers/grid.js"
-import { GroupY } from "../os/containers/group.js"
+import { GroupX, GroupY } from "../os/containers/group.js"
 import { PanedXB, PanedYA } from "../os/containers/paned.js"
 import { SplitY } from "../os/containers/split.js"
 import { Button } from "../os/controls/button.js"
@@ -62,14 +62,20 @@ class SpriteCanvas extends View {
     const $color = this.$data('color')
     const $zoom = this.$data('zoom')
 
+    const $width = new Reactive(8)
+    const $height = new Reactive(8)
+
     this.children = [
       $(PanedXB, { passthrough: true },
         $(View, { passthrough: true },
-          this.drawer = $(SpriteDrawer, { x: 10, y: 10, $color, $zoom }),
+          this.drawer = $(SpriteDrawer, { top: this, x: 10, y: 10, $color, $zoom, $width, $height }),
           $(ResizerView<SpriteDrawer>, {})
         ),
-        $(GroupY, {},
-          $(Label, { text: 'test' })
+        $(Border, { padding: 1, background: 0x00000077 },
+          $(GroupY, { gap: 1 },
+            $(GroupX, {}, $(Label, { text: 'w:', color: 0xffffff33 }), $(Label, { $text: $width.adapt(n => n.toString()) })),
+            $(GroupX, {}, $(Label, { text: 'h:', color: 0xffffff33 }), $(Label, { $text: $height.adapt(n => n.toString()) })),
+          )
         )
       )
     ]
@@ -96,6 +102,8 @@ class SpriteCanvas extends View {
 
 class SpriteDrawer extends View {
 
+  top!: View
+
   override background = 0x000000ff
   override cursor = null
 
@@ -117,16 +125,18 @@ class SpriteDrawer extends View {
   override draw(): void {
     super.draw()
 
-    const tx = Math.floor(this.mouse.x / this.zoom) * this.zoom
-    const ty = Math.floor(this.mouse.y / this.zoom) * this.zoom
+    if (this.hovered) {
+      const tx = Math.floor(this.mouse.x / this.zoom) * this.zoom
+      const ty = Math.floor(this.mouse.y / this.zoom) * this.zoom
 
-    crt.rectFill(tx, ty, this.zoom, this.zoom, this.color)
+      crt.rectFill(tx, ty, this.zoom, this.zoom, this.color)
+    }
   }
 
   resize(width: number, height: number) {
-    this.width = width
-    this.height = height
-    sys.layoutTree(this.parent!)
+    this.width = Math.max(1, width)
+    this.height = Math.max(1, height)
+    sys.layoutTree(this.top)
   }
 
 }
