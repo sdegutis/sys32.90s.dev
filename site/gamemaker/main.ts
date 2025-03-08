@@ -1,13 +1,15 @@
 import { PanedYA } from "../os/containers/paned.js"
 import { SplitX } from "../os/containers/split.js"
-import { TextArea } from "../os/containers/textarea.js"
-import { Label } from "../os/controls/label.js"
 import { sys } from "../os/core/system.js"
 import { $, $$data, View } from "../os/core/view.js"
 import { Reactive } from "../os/util/events.js"
-import { centerLayout, makeVacuumLayout } from "../os/util/layouts.js"
+import { makeVacuumLayout } from "../os/util/layouts.js"
 import * as api from './api.js'
 import { give } from "./bridge.js"
+import { CodeEditor } from "./codeeditor.js"
+import { DocsViewer } from "./docsviewer.js"
+import { MapEditor } from "./mapeditor.js"
+import { SpriteEditor } from "./spriteeditor.js"
 import { makeTabMenu, TabPane } from "./tabs.js"
 
 const prelude = `import {${Object.keys(api)}} from '${window.origin}/gamemaker/api.js'\n`
@@ -18,61 +20,6 @@ export function draw() {
   drawrectf(0,0,20,20,0x99000099)
 }
 `
-
-const highlightings: Record<string, [number, RegExp]> = {
-  keyw: [0xff00ffcc, /(export|function|let|const)/g],
-  punc: [0xffffff77, /([(){}=,])/g],
-  call: [0x0099ffff, /([a-zA-Z.]+)\(/g],
-  spcl: [0xcccc00ff, new RegExp(`(${[...Object.keys(api).reverse(), 'draw', 'tick'].join('|')})`, 'g')],
-  nums: [0x00ffffff, /(0x[0-9a-fA-F]+|[0-9.]+)/g],
-  cmnt: [0x33ff3377, /(\/\/.+)/g],
-}
-
-class CodeEditor extends View {
-
-  private textarea = $(TextArea, {
-    background: 0x112244ff,
-    highlightings
-  })
-
-  get text() { return this.textarea.text }
-  set text(s: string) { this.textarea.text = s }
-
-  override layout = makeVacuumLayout()
-
-  override init(): void {
-    this.children = [this.textarea]
-  }
-
-  override onFocus(): void {
-    sys.focus(this.textarea)
-  }
-
-}
-
-class SpriteEditor extends View {
-
-  override background = 0x000000ff
-
-}
-
-class MapEditor extends View {
-
-  override background = 0x000000ff
-
-}
-
-class DocsViewer extends View {
-
-  override background = 0x000000ff
-
-  override layout = centerLayout
-
-  override init(): void {
-    this.children = [$(Label, { text: 'coming soon' })]
-  }
-
-}
 
 export default function gamemaker() {
 
