@@ -5,6 +5,7 @@ import { PanedXB, PanedYA } from "../os/containers/paned.js"
 import { SplitY } from "../os/containers/split.js"
 import { Button } from "../os/controls/button.js"
 import { Label } from "../os/controls/label.js"
+import { crt } from "../os/core/crt.js"
 import { $, View } from "../os/core/view.js"
 import { multiplex, Reactive } from "../os/util/events.js"
 import { makeCollapseAdjust, vacuumAllLayout } from "../os/util/layouts.js"
@@ -20,11 +21,8 @@ export class SpriteEditor extends View {
     this.children = [
       $(PanedYA, {},
         $(PanedXB, { background: 0xffffff22, adjust() { this.h = this.lastChild!.h } },
-
-          $(View, {}),
-
+          $(SpriteCanvas, { $color }),
           $(ColorChooser, { $color })
-
         ),
         $(SplitY, { pos: 30, resizable: true },
           $(View, { background: 0x000000ff }),
@@ -36,6 +34,23 @@ export class SpriteEditor extends View {
 
 }
 
+class Sprite {
+
+
+
+}
+
+class SpriteCanvas extends View {
+
+  color = 0x00000000
+
+  override cursor = null
+
+  override draw(): void {
+    crt.pset(this.mouse.x, this.mouse.y, this.color)
+  }
+
+}
 
 class ColorChooser extends View {
 
