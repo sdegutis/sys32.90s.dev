@@ -28,7 +28,7 @@ type DontForgetConfig = { YouForgotConfig: never }
 export function $<T extends Dynamic>(
   ctor: { new(): T },
   config: Partial<T & DontForgetConfig & $Reactives<T>>,
-  ...children: T extends { children: ArrayLike<infer C> } ? C[] : never[]
+  ...children: T extends { children?: ArrayLike<infer C> } ? C[] : never[]
 ): T {
   const view = new ctor()
   Object.assign(view, { children }, config)
