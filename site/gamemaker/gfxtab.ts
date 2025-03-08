@@ -20,8 +20,16 @@ type Color = { p: keyof typeof palettes, i: number }
 
 class Sprite {
 
+  images: SpriteImage[] = []
+
+}
+
+class SpriteImage {
+
   width = 8
   height = 8
+
+
 
 }
 
@@ -31,6 +39,11 @@ export class SpriteEditor extends View {
   override layout = vacuumAllLayout
 
   override init(): void {
+    const sprites: Sprite[] = []
+
+    const sprite = new Sprite()
+    sprites.push(sprite)
+
     const $ncol = new Reactive<Color>({ p: 'vinik24', i: 8 })
     const $width = new Reactive(8)
     const $height = new Reactive(8)
