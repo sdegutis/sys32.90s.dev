@@ -7,7 +7,7 @@ import { Button } from "../os/controls/button.js"
 import { Label } from "../os/controls/label.js"
 import { $, View } from "../os/core/view.js"
 import { multiplex, Reactive } from "../os/util/events.js"
-import { vacuumAllLayout } from "../os/util/layouts.js"
+import { makeCollapseAdjust, vacuumAllLayout } from "../os/util/layouts.js"
 
 export class SpriteEditor extends View {
 
@@ -15,9 +15,7 @@ export class SpriteEditor extends View {
   override layout = vacuumAllLayout
 
   override init(): void {
-    const $palette = new Reactive<keyof typeof palettes>('sweet24')
-    const $colori = new Reactive(0)
-    const $color = multiplex({ index: $colori, palette: $palette }).adapt(d => palettes[d.palette][d.index])
+    const $color = new Reactive(0)
 
     this.children = [
       $(PanedYA, {},
@@ -25,38 +23,7 @@ export class SpriteEditor extends View {
 
           $(View, {}),
 
-          $(Border, { background: 0x00000033, padding: 2 },
-            $(GroupY, {},
-              $(GroupY, {},
-
-                ...Object.keys(palettes).map((name) => {
-                  return $(Button, {
-                    padding: 2,
-                    $selected: $palette.adapt(p => p === name),
-                    onClick: () => { $palette.update(name as keyof typeof palettes) },
-                  },
-                    $(Label, { text: name })
-                  )
-                })
-
-              ),
-              $(Border, { padding: 0 },
-                $(GridX, { cols: 4, gap: -1 },
-                  ...palettes.vinik24.map((color, i) => {
-                    const button = $(Button, {
-                      padding: 1,
-                      $selected: $colori.adapt(index => index === i),
-                      selectedBorderColor: 0xffffffff,
-                      onClick: () => $colori.update(i),
-                    },
-                      $(View, { w: 7, h: 7, passthrough: true, $background: $palette.adapt(p => palettes[p][i]) })
-                    )
-                    return button
-                  }
-                  )
-                )
-              ))
-          )
+          $(ColorChooser, { $color })
 
         ),
         $(SplitY, { pos: 30, resizable: true },
@@ -69,6 +36,58 @@ export class SpriteEditor extends View {
 
 }
 
+
+class ColorChooser extends View {
+
+  color = 0x00000000
+  override adjust = makeCollapseAdjust
+
+  override init(): void {
+    const $palette = new Reactive<keyof typeof palettes>('sweet24')
+    const $colori = new Reactive(0)
+
+    multiplex({ p: $palette, i: $colori }).watch(d => { this.color = palettes[d.p][d.i] })
+
+    $palette.watch(p => this.color = palettes[$palette.data][$colori.data])
+    $colori.watch(p => this.color = palettes[$palette.data][$colori.data])
+
+    this.children = [
+      $(Border, { background: 0x00000033, padding: 2 },
+        $(GroupY, {},
+          $(GroupY, {},
+
+            ...Object.keys(palettes).map((name) => {
+              return $(Button, {
+                padding: 2,
+                $selected: $palette.adapt(p => p === name),
+                onClick: () => { $palette.update(name as keyof typeof palettes) },
+              },
+                $(Label, { text: name })
+              )
+            })
+
+          ),
+          $(Border, { padding: 0 },
+            $(GridX, { cols: 4, gap: -1 },
+              ...palettes.vinik24.map((color, i) => {
+                const button = $(Button, {
+                  padding: 1,
+                  $selected: $colori.adapt(index => index === i),
+                  selectedBorderColor: 0xffffffff,
+                  onClick: () => $colori.update(i),
+                },
+                  $(View, { w: 7, h: 7, passthrough: true, $background: $palette.adapt(p => palettes[p][i]) })
+                )
+                return button
+              }
+              )
+            )
+          ))
+      )
+    ]
+  }
+
+}
 
 const palettes = {
 
