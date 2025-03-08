@@ -1,6 +1,7 @@
+import { $ } from "../core/dyn.js"
 import { crt34 } from "../core/font.js"
 import { sys } from "../core/system.js"
-import { $, View } from "../core/view.js"
+import { View } from "../core/view.js"
 import { Label } from "./label.js"
 
 export class TextField extends View {

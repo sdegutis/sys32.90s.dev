@@ -1,7 +1,7 @@
 import { PanedYA } from "../os/containers/paned.js"
 import { SplitX } from "../os/containers/split.js"
+import { $ } from "../os/core/dyn.js"
 import { sys } from "../os/core/system.js"
-import { $ } from "../os/core/view.js"
 import { ws } from "../os/desktop/workspace.js"
 import { Reactive } from "../os/util/events.js"
 import { CodeEditor } from "./codetab.js"

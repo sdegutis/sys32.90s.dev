@@ -1,6 +1,6 @@
 import { Border } from "../containers/border.js"
+import { $ } from "../core/dyn.js"
 import { sys } from "../core/system.js"
-import { $ } from "../core/view.js"
 import { multiplex, Reactive } from "../util/events.js"
 
 export class ClickCounter {

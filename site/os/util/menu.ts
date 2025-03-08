@@ -3,8 +3,9 @@ import { GroupY } from "../containers/group.js"
 import { Button } from "../controls/button.js"
 import { Label } from "../controls/label.js"
 import { crt } from "../core/crt.js"
+import { $ } from "../core/dyn.js"
 import { sys } from "../core/system.js"
-import { $, View } from "../core/view.js"
+import { View } from "../core/view.js"
 
 export type MenuItem = '-' | { text: string, onClick: () => void }
 

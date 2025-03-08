@@ -1,7 +1,8 @@
 import { Listener } from "../util/events.js"
 import { vacuumAllLayout } from "../util/layouts.js"
 import { crt } from "./crt.js"
-import { $, View } from "./view.js"
+import { $ } from "./dyn.js"
+import { View } from "./view.js"
 
 class System {
 

@@ -1,5 +1,6 @@
 import { Label } from "../os/controls/label.js"
-import { $, View } from "../os/core/view.js"
+import { $ } from "../os/core/dyn.js"
+import { View } from "../os/core/view.js"
 import { centerLayout } from "../os/util/layouts.js"
 
 export class DocsViewer extends View {
