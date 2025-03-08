@@ -6,7 +6,9 @@ import { PanedXB, PanedYA } from "../os/containers/paned.js"
 import { SplitY } from "../os/containers/split.js"
 import { Button } from "../os/controls/button.js"
 import { Label } from "../os/controls/label.js"
+import { Bitmap } from "../os/core/bitmap.js"
 import { crt } from "../os/core/crt.js"
+import { Cursor } from "../os/core/cursor.js"
 import { sys } from "../os/core/system.js"
 import { $, View } from "../os/core/view.js"
 import { multiplex, Reactive } from "../os/util/events.js"
@@ -37,30 +39,51 @@ export class SpriteEditor extends View {
 
 }
 
+const moveCursor = Cursor.fromBitmap(new Bitmap([0x000000cc, 0xffffffff, 0xfffffffe], 5, [
+  0, 1, 1, 1, 0,
+  1, 1, 2, 1, 1,
+  1, 2, 3, 2, 1,
+  1, 1, 2, 1, 1,
+  0, 1, 1, 1, 0,
+]))
+
 class SpriteCanvas extends View {
 
   color = 0x00000000
   zoom = 1
 
-  // override layout = centerLayout
+  drawer!: SpriteDrawer
+
+  override layout = vacuumAllLayout
+
+  override cursor = moveCursor
 
   override init(): void {
+    const $color = this.$data('color')
+    const $zoom = this.$data('zoom')
+
     this.children = [
-      $(SpriteDrawer, { x: 10, y: 10, $color: this.$data('color'), $zoom: this.$data('zoom') }),
-      $(ResizerView<SpriteDrawer>, {})
+      $(PanedXB, { passthrough: true },
+        $(View, { passthrough: true },
+          this.drawer = $(SpriteDrawer, { x: 10, y: 10, $color, $zoom }),
+          $(ResizerView<SpriteDrawer>, {})
+        ),
+        $(GroupY, {},
+          $(Label, { text: 'test' })
+        )
+      )
     ]
+    console.log(this.children)
   }
 
   override onMouseDown(button: number): void {
-    if (sys.keys[' ']) {
-      const drag = dragMove(this.firstChild!)
-      sys.trackMouse({
-        move: () => {
-          drag()
-          sys.layoutTree(this)
-        }
-      })
-    }
+    const drag = dragMove(this.drawer)
+    sys.trackMouse({
+      move: () => {
+        drag()
+        sys.layoutTree(this)
+      }
+    })
   }
 
   override onScroll(up: boolean): void {
@@ -84,13 +107,6 @@ class SpriteDrawer extends View {
 
   override init(): void {
     this.$watch('zoom', () => sys.layoutTree(this.parent!))
-  }
-
-  override onMouseDown(button: number): void {
-    if (sys.keys[' ']) {
-      this.parent!.onMouseDown!(button)
-      return
-    }
   }
 
   override adjust(): void {
