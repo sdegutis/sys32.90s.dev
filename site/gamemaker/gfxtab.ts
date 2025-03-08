@@ -110,7 +110,7 @@ class SpriteCanvas extends View {
   }
 
   override onScroll(up: boolean): void {
-    if (sys.keys['Control']) {
+    if (!sys.keys['Control']) {
       const min = 1
       const max = 8
       this.zoom = Math.min(max, Math.max(min, this.zoom + (up ? +1 : -1)))
