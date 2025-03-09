@@ -184,7 +184,7 @@ export default () => {
   showfiles()
 
   const panel = $(Panel, { title: 'filer', w: 150, h: 100, },
-    $(SplitX, { background: 0xffffff11, pos: 50, resizable: true, dividerColor: 0x33333300 },
+    $(SplitX, { background: 0xffffff11, pos: 50, dividerColor: 0x33333300 },
       $(Scroll, { w: 40, background: 0x00000077, }, sidelist),
       $(PanedYA, {},
         breadcrumbs,

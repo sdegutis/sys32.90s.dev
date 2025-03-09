@@ -83,27 +83,15 @@ export class Split extends View {
   dividerColor = 0x33333300
   dividerColorHover = 0xffffff33
   dividerColorPress = 0x1177ffcc
-  resizable = false
 
-  private resizer?: View
+  private resizer = $(SplitDivider, { split: this })
 
   override init(): void {
-    while (this.children.length < 2) {
-      this.addChild($(View))
-    }
     this.$watch('pos', () => sys.layoutTree(this))
+    this.addChild(this.resizer)
   }
 
   override layout(): void {
-    if (this.resizable && !this.resizer) {
-      this.resizer = $(SplitDivider, { split: this })
-      this.addChild(this.resizer)
-    }
-    else if (!this.resizable && this.resizer) {
-      this.resizer = undefined!
-      this.removeChild(this.resizer)
-    }
-
     const dx = this.dir
     const dw = dx === 'x' ? 'w' : 'h'
     const [a, b] = this.children

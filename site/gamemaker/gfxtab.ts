@@ -73,7 +73,7 @@ export class SpriteEditor extends View {
           $(SpriteCanvas, { $ncol, $width, $height, top: this }),
           $(ColorChooser, { $ncol, $width, $height })
         ),
-        $(SplitY, { pos: 30, resizable: true },
+        $(SplitY, { pos: 30 },
           $(View, { background: 0x000000ff }),
           $(View, { background: 0x333333ff }),
         ),

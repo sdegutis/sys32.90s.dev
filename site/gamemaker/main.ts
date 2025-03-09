@@ -35,7 +35,7 @@ export default function gamemaker() {
   const tab1 = new Reactive<Tab>('code')
   const tab2 = new Reactive<Tab>('gfx')
 
-  const split = $(SplitX, { pos: 320 / 2, resizable: true },
+  const split = $(SplitX, { pos: 320 / 2, min: 50, max: 20 },
     $((TabPane<Tab>), { mine: tab1, tabs }),
     $((TabPane<Tab>), { mine: tab2, tabs })
   )
