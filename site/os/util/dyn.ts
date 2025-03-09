@@ -1,6 +1,6 @@
 import { Listener, Reactive } from "./events.js"
 
-export class Dynamic {
+export class Addressable {
 
   init?(): void
 
@@ -21,7 +21,7 @@ type $Reactives<T> = { [K in keyof T as T[K] extends No$Reactive ? never : `$${K
 type DontForgetConfig = { YouForgotConfig: never }
 type PartialExceptMethodThis<T> = { [K in keyof T]?: T[K] extends (undefined | ((...args: infer A) => infer R)) ? (this: T, ...args: A) => R : T[K] }
 
-export function $<T extends Dynamic>(
+export function $<T extends Addressable>(
   ctor: { new(): T },
   config?: PartialExceptMethodThis<T & DontForgetConfig & $Reactives<T>>,
   ...children: T extends { children?: ArrayLike<infer C> } ? C[] : never[]
@@ -37,7 +37,7 @@ export function $<T extends Dynamic>(
   return view
 }
 
-function makeDynamic<T extends Dynamic>(o: T) {
+function makeDynamic<T extends Addressable>(o: T) {
   const $$refs: Record<string, Reactive<any>> = Object.create(null)
 
   for (let [key, val] of Object.entries(o)) {

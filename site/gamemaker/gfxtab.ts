@@ -12,13 +12,13 @@ import { Cursor } from "../os/core/cursor.js"
 import { sys } from "../os/core/system.js"
 import { View } from "../os/core/view.js"
 import { makeStripeDrawer } from "../os/util/draw.js"
-import { $, Dynamic } from "../os/util/dyn.js"
+import { $, Addressable } from "../os/util/dyn.js"
 import { vacuumAllLayout } from "../os/util/layouts.js"
 import { dragMove } from "../os/util/selections.js"
 
 type Color = { p: keyof typeof palettes, i: number }
 
-class Spritesheet extends Dynamic {
+class Spritesheet extends Addressable {
 
   sprites: Sprite[] = [$(Sprite)]
   current = 0
@@ -36,7 +36,7 @@ class Spritesheet extends Dynamic {
 
 }
 
-class Sprite extends Dynamic {
+class Sprite extends Addressable {
 
   width = 8
   height = 8
@@ -55,7 +55,7 @@ class Sprite extends Dynamic {
 
 }
 
-class SpriteImage extends Dynamic {
+class SpriteImage extends Addressable {
 
   sprite: Sprite = null!
 

@@ -1,12 +1,12 @@
 import { fs } from "../fs/fs.js"
-import { Dynamic } from "../util/dyn.js"
+import { Addressable } from "../util/dyn.js"
 import { Bitmap } from "./bitmap.js"
 import { crt } from "./crt.js"
 import { Cursor } from "./cursor.js"
 
 const pointer = Cursor.fromBitmap(Bitmap.fromString(fs.get('sys/pointer.bitmap')!))
 
-export class View extends Dynamic {
+export class View extends Addressable {
 
   onScroll?(up: boolean): void
   onKeyDown?(key: string): boolean
