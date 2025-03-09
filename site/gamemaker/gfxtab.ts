@@ -97,7 +97,7 @@ class SpriteCanvas extends View {
 
   $width!: Reactive<number>
   $height!: Reactive<number>
-  $ncol!: Reactive<Color>
+  ncol: Color = null!
   zoom = 4
 
   drawer!: SpriteDrawer
@@ -108,7 +108,7 @@ class SpriteCanvas extends View {
 
   override init(): void {
     const $zoom = this.$data('zoom')
-    const $ncol = this.$ncol
+    const $ncol = this.$data('ncol')
 
     this.children = [
       $(View, { passthrough: true, },
@@ -135,10 +135,10 @@ class SpriteCanvas extends View {
       this.zoom = Math.min(max, Math.max(min, this.zoom + (up ? +1 : -1)))
     }
     else {
-      let i = this.$ncol.data.i + (up ? +1 : -1)
+      let i = this.ncol.i + (up ? +1 : -1)
       if (i < 0) i = 23
       if (i > 23) i = 0
-      this.$ncol.update({ p: this.$ncol.data.p, i })
+      this.ncol = { p: this.ncol.p, i }
     }
   }
 
@@ -151,7 +151,7 @@ class SpriteDrawer extends View {
   override background = 0x00000033
   override cursor = null
 
-  $ncol!: Reactive<Color>
+  ncol: Color = null!
   zoom = 1
 
   width = 8
@@ -176,7 +176,7 @@ class SpriteDrawer extends View {
           const y = Math.floor(this.mouse.y / this.zoom)
 
           const key = `${x},${y}`
-          this.spots[key] = this.$ncol.data
+          this.spots[key] = this.ncol
         }
       })
     }
@@ -232,10 +232,10 @@ class ColorChooser extends Border {
 
   $width!: Reactive<number>
   $height!: Reactive<number>
-  $ncol!: Reactive<Color>
+  ncol: Color = null!
 
   override init(): void {
-    const $ncol = this.$ncol
+    const $ncol = this.$data('ncol')
 
     this.children = [
       $(Border, { background: 0x00000033, padding: 2 },
@@ -247,7 +247,7 @@ class ColorChooser extends Border {
                 padding: 2,
                 $selected: $ncol.adapt(d => d.p === name),
                 onClick: () => {
-                  $ncol.update(({ p: name as keyof typeof palettes, i: this.$ncol.data.i }))
+                  this.ncol = { ...this.ncol, p: name as keyof typeof palettes }
                 },
               },
                 $(Label, { text: name })
@@ -260,10 +260,10 @@ class ColorChooser extends Border {
               ...palettes.vinik24.map((color, i) => {
                 const button = $(Button, {
                   padding: 1,
-                  $selected: this.$ncol.adapt(col => col.i === i),
+                  $selected: $ncol.adapt(col => col.i === i),
                   selectedBackground: 0x00000000,
                   selectedBorderColor: 0xffffffff,
-                  onClick: () => $ncol.update({ i, p: this.$ncol.data.p }),
+                  onClick: () => this.ncol = { ...this.ncol, i },
                 },
                   $(View, { w: 7, h: 7, passthrough: true, $background: $ncol.adapt(d => palettes[d.p][i]) })
                 )
