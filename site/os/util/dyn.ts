@@ -12,8 +12,6 @@ export class Dynamic {
     this.$data(key).watch(fn)
   }
 
-  _YouForgotConfig_: undefined
-
   init?(): void
 }
 
@@ -25,7 +23,7 @@ type PartialExceptMethodThis<T> = { [K in keyof T]?: T[K] extends (undefined | (
 
 export function $<T extends Dynamic>(
   ctor: { new(): T },
-  config: PartialExceptMethodThis<T & DontForgetConfig & $Reactives<T>>,
+  config?: PartialExceptMethodThis<T & DontForgetConfig & $Reactives<T>>,
   ...children: T extends { children?: ArrayLike<infer C> } ? C[] : never[]
 ): T {
   const view = new ctor()
