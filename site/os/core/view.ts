@@ -56,10 +56,16 @@ export class View extends Dynamic {
     })
   }
 
-  addChild(child: View, pos?: number) {
+  moveChild(child: View, pos = this.children.length) {
+    const i = this.children.indexOf(child)
+    if (i === -1) return
+    this.children = this.children.toSpliced(i, 1).toSpliced(pos, 0, child)
+    child.adopted?.()
+  }
+
+  addChild(child: View, pos = this.children.length) {
     child.parent?.removeChild(child)
-    const i = pos ?? this.children.length
-    this.children = this.children.toSpliced(i, 0, child)
+    this.children = this.children.toSpliced(pos, 0, child)
     child.parent = this
     child.adopted?.()
   }

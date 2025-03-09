@@ -11,7 +11,6 @@ import { sys } from "../core/system.js"
 import { View } from "../core/view.js"
 import { fs } from "../fs/fs.js"
 import { $ } from "../util/dyn.js"
-import { Listener } from "../util/events.js"
 import { vacuumFirstLayout } from "../util/layouts.js"
 import { dragMove, dragResize } from "../util/selections.js"
 import { ws } from "./workspace.js"
@@ -32,8 +31,6 @@ const adjCursor = Cursor.fromBitmap(new Bitmap([0x000000cc, 0xffffffff, 0xffffff
 ]))
 
 export class Panel extends View {
-
-  didClose = new Listener()
 
   onMenu?(): void
 
@@ -138,8 +135,7 @@ export class Panel extends View {
   }
 
   close() {
-    this.parent!.removeChild(this)
-    this.didClose.dispatch()
+    this.remove()
   }
 
   minimize() {
@@ -198,7 +194,7 @@ export class Panel extends View {
   override canBaseFocus = true
 
   override onBaseFocus(): void {
-    this.parent?.addChild(this)
+    this.parent?.moveChild(this)
     this.panelFocused = true
   }
 

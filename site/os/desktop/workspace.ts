@@ -28,6 +28,57 @@ class Workspace {
   private readonly desktop = $(View, { background: 0x222222ff })
   private readonly root = $(PanedYB, {}, this.desktop, this.taskbar)
 
+  private progs = new Map<Panel, () => void>()
+
+  constructor() {
+
+    this.desktop.$watch('children', (current, old) => {
+
+      for (const view of current) {
+        const panel = view as Panel
+        if (!old.includes(panel)) {
+          const button = $(Button, {
+            padding: 2,
+            $background: panel.$data('panelFocused').adapt<number>(is => is ? 0x770000ff : 0x330000ff),
+            onClick: () => {
+              panel.show()
+              sys.focus(panel)
+            }
+          },
+            $(Label, { $text: panel.$data('title') })
+          )
+
+          this.progbuttons.addChild(button)
+          sys.layoutTree(this.progbuttons)
+
+          const done1 = panel.$watch('title', s => { sys.layoutTree(this.progbuttons) })
+
+          sys.focus(panel)
+          sys.layoutTree()
+
+          this.progs.set(panel, () => {
+            button.remove()
+            done1()
+            sys.layoutTree(this.progbuttons)
+
+            const lastPanel = this.desktop.children.at(-1)
+            lastPanel && sys.focus(lastPanel)
+          })
+        }
+      }
+
+      for (const view of old) {
+        const panel = view as Panel
+        if (!current.includes(panel)) {
+          this.progs.get(panel)?.()
+          this.progs.delete(panel)
+        }
+      }
+
+    })
+
+  }
+
   showDesktop() {
     sys.root.addChild(this.root)
     sys.layoutTree()
@@ -40,32 +91,6 @@ class Workspace {
     panel.x = (topPanel?.x ?? 0) + 12
     panel.y = (topPanel?.y ?? 0) + 12
     this.desktop.addChild(panel)
-
-    const label = $(Label, { $text: panel.$data('title') })
-    const button = $(Button, {
-      padding: 2,
-      $background: panel.$data('panelFocused').adapt<number>(is => is ? 0x770000ff : 0x330000ff),
-      onClick: () => {
-        panel.show()
-        sys.focus(panel)
-      }
-    },
-      label
-    )
-    this.progbuttons.addChild(button)
-    sys.layoutTree(this.progbuttons)
-
-    label.$watch('text', s => { sys.layoutTree(this.progbuttons) })
-
-    panel.didClose.watch(() => {
-      button.parent?.removeChild(button)
-      sys.layoutTree(this.progbuttons)
-      const lastPanel = this.desktop.children.at(-1)
-      lastPanel && sys.focus(lastPanel)
-    })
-
-    sys.focus(panel)
-    sys.layoutTree()
   }
 
   async addProgram(name: string, path: string) {
