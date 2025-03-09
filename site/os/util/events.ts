@@ -26,7 +26,7 @@ export class Listener<T = void, U = void> {
 export class Reactive<T> {
 
   readonly data
-  private changed = new Listener<T>()
+  private changed = new Listener<[T, T]>()
 
   constructor(data: T) {
     this.data = data
@@ -34,13 +34,14 @@ export class Reactive<T> {
 
   update(data: T) {
     if (data === this.data) return
+    const old = this.data;
     (this as any).data = data
-    this.changed.dispatch(data)
+    this.changed.dispatch([data, old])
   }
 
-  watch(fn: (data: T) => void) {
-    const done = this.changed.watch(fn)
-    fn(this.data)
+  watch(fn: (data: T, old: T) => void) {
+    const done = this.changed.watch((d) => fn(d[0], d[1]))
+    fn(this.data, this.data)
     return done
   }
 
