@@ -10,50 +10,65 @@ export class Runner {
   editor: { text: string } & View
   removegametick: (() => void) | undefined
   running = false
-  _draw: (() => void) | undefined
+
+  module: any
+
   gameView = $(View, {
     background: 0x000000ff,
     cursor: null,
-    draw: () => this.draw(),
+    draw: () => {
+      try {
+        this.module.draw?.()
+        sys.needsRedraw = true
+      } catch (e) { this.fail(e) }
+    },
   })
+
+  tick() {
+    try {
+      this.module.tick?.()
+    } catch (e) { this.fail(e) }
+  }
 
   constructor(editor: { text: string } & View) {
     this.editor = editor
   }
 
-  draw() {
-    this._draw?.()
-    sys.needsRedraw = true
-  }
-
   async start() {
-    if (this.running) return
+    if (this.running) this.stop()
+    this.running = true
+
+    const blob = new Blob([prelude + this.editor.text], { type: 'application/javascript' })
+
+    try {
+      this.module = await import(URL.createObjectURL(blob))
+    }
+    catch (e) {
+      this.fail(e)
+      return
+    }
+
+    this.removegametick = sys.onTick.watch(() => this.tick())
 
     sys.root.addChild(this.gameView)
     sys.focus(this.gameView)
     sys.layoutTree()
-
-    this.running = true
-
-    const blob = new Blob([prelude + this.editor.text], { type: 'application/javascript' })
-    const url = URL.createObjectURL(blob)
-    const mod = await import(url)
-
-    this._draw = mod.draw
-
-    if (typeof mod.tick === 'function') {
-      this.removegametick = sys.onTick.watch(mod.tick)
-    }
   }
 
   stop() {
     if (!this.running) return
-    this._draw = undefined
+    this.running = false
+
     this.removegametick?.()
     this.gameView.remove()
-    sys.focus(this.editor)
+
     sys.layoutTree()
-    this.running = false
+    sys.focus(this.editor)
+  }
+
+  private fail(e: any) {
+    console.error(e)
+    this.stop()
   }
 
 }

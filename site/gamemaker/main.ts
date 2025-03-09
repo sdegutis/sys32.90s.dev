@@ -50,7 +50,6 @@ export default function gamemaker() {
 
   sys.root.onKeyDown = key => {
     if (key === 'r' && sys.keys['Control']) {
-      root.visible = false
       runner.start()
       return true
     }
@@ -59,7 +58,6 @@ export default function gamemaker() {
       return true
     }
     if (key === 'Escape') {
-      root.visible = true
       runner.stop()
       return true
     }
