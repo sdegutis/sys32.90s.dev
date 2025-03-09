@@ -2,7 +2,7 @@ import { crt34 } from "../core/font.js"
 import { sys } from "../core/system.js"
 import { View } from "../core/view.js"
 import { $ } from "../util/dyn.js"
-import { makeVacuumLayout } from "../util/layouts.js"
+import { vacuumFirstLayout } from "../util/layouts.js"
 import { Scroll } from "./scroll.js"
 
 export class TextArea extends View {
@@ -32,7 +32,7 @@ export class TextArea extends View {
   col = 0
   end = 0
 
-  override layout = makeVacuumLayout()
+  override layout = vacuumFirstLayout
 
   private colors: number[][] = []
 

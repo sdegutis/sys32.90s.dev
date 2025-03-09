@@ -12,7 +12,7 @@ import { View } from "../core/view.js"
 import { fs } from "../fs/fs.js"
 import { $ } from "../util/dyn.js"
 import { Listener } from "../util/events.js"
-import { makeVacuumLayout } from "../util/layouts.js"
+import { vacuumFirstLayout } from "../util/layouts.js"
 import { dragMove, dragResize } from "../util/selections.js"
 import { ws } from "./workspace.js"
 
@@ -38,7 +38,7 @@ export class Panel extends View {
   onMenu?(): void
 
   override background = 0x070707ee
-  override layout = makeVacuumLayout(0)
+  override layout = vacuumFirstLayout
 
   title = ''
 
@@ -79,7 +79,7 @@ export class Panel extends View {
 
     this.children = [
 
-      $(Border, { padding: 1, layout: makeVacuumLayout(1), $borderColor: this.$data('panelFocused').adapt<number>(b => b ? 0x005599ff : 0x00559944) },
+      $(Border, { padding: 1, layout: vacuumFirstLayout, $borderColor: this.$data('panelFocused').adapt<number>(b => b ? 0x005599ff : 0x00559944) },
 
         $(PanedYA, {},
 

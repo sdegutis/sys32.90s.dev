@@ -5,7 +5,7 @@ import { View } from "../../os/core/view.js"
 import { Panel } from "../../os/desktop/panel.js"
 import { makeStripeDrawer } from "../../os/util/draw.js"
 import { $ } from "../../os/util/dyn.js"
-import { makeFlowLayout, makeVacuumLayout } from "../../os/util/layouts.js"
+import { makeFlowLayout, vacuumFirstLayout } from "../../os/util/layouts.js"
 import { EditableMap } from "./map.js"
 import { COLORS } from "./mapcolors.js"
 import { MapView } from "./mapview.js"
@@ -16,7 +16,7 @@ export default () => {
   let mapView: MapView
 
   const panel = $(Panel, { title: 'mapmaker', },
-    $(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
+    $(View, { layout: vacuumFirstLayout, background: 0xffffff11 },
 
       $(PanedXA, {
         onScroll: (up) => {
@@ -48,7 +48,7 @@ export default () => {
             ))
           )
         ),
-        $(View, { background: 0x333344ff, layout: makeVacuumLayout() },
+        $(View, { background: 0x333344ff, layout: vacuumFirstLayout },
           $(View, {
             background: 0x222222ff,
             draw: makeStripeDrawer(4, 2)

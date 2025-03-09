@@ -9,15 +9,13 @@ export function vacuumAllLayout(this: View) {
   }
 }
 
-export function makeVacuumLayout(padding = 0) {
-  return function (this: View) {
-    const c = this.firstChild
-    if (c) {
-      c.x = padding
-      c.y = padding
-      c.w = this.w - padding * 2
-      c.h = this.h - padding * 2
-    }
+export function vacuumFirstLayout(this: View) {
+  const c = this.firstChild
+  if (c) {
+    c.x = 0
+    c.y = 0
+    c.w = this.w
+    c.h = this.h
   }
 }
 

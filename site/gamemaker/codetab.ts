@@ -2,7 +2,7 @@ import { TextArea } from "../os/containers/textarea.js"
 import { sys } from "../os/core/system.js"
 import { View } from "../os/core/view.js"
 import { $ } from "../os/util/dyn.js"
-import { makeVacuumLayout } from "../os/util/layouts.js"
+import { vacuumFirstLayout } from "../os/util/layouts.js"
 import * as api from './api.js'
 
 const highlightings: Record<string, [number, RegExp]> = {
@@ -24,7 +24,7 @@ export class CodeEditor extends View {
   get text() { return this.textarea.text }
   set text(s: string) { this.textarea.text = s }
 
-  override layout = makeVacuumLayout()
+  override layout = vacuumFirstLayout
 
   override init(): void {
     this.children = [this.textarea]

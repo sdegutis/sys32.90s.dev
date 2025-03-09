@@ -5,7 +5,7 @@ import { sys } from "../os/core/system.js"
 import { View } from "../os/core/view.js"
 import { $ } from "../os/util/dyn.js"
 import type { Reactive } from "../os/util/events.js"
-import { makeVacuumLayout } from "../os/util/layouts.js"
+import { vacuumFirstLayout } from "../os/util/layouts.js"
 
 export function makeTabMenu<Tab extends string>(
   tabs: Record<Tab, View>,
@@ -39,7 +39,7 @@ export function makeTabMenu<Tab extends string>(
 
 export class TabPane<Tab extends string> extends View {
 
-  override layout = makeVacuumLayout()
+  override layout = vacuumFirstLayout
 
   tabs!: Record<Tab, View>
   mine!: Reactive<Tab>
