@@ -14,7 +14,7 @@ import { View } from "../os/core/view.js"
 import { makeStripeDrawer } from "../os/util/draw.js"
 import { $, Dynamic } from "../os/util/dyn.js"
 import { Reactive } from "../os/util/events.js"
-import { makeCollapseAdjust, vacuumAllLayout } from "../os/util/layouts.js"
+import { collapseAdjust, vacuumAllLayout } from "../os/util/layouts.js"
 import { dragMove } from "../os/util/selections.js"
 
 type Color = { p: keyof typeof palettes, i: number }
@@ -234,7 +234,7 @@ class ColorChooser extends View {
   $height!: Reactive<number>
   $ncol!: Reactive<Color>
 
-  override adjust = makeCollapseAdjust
+  override adjust = collapseAdjust
 
   override init(): void {
     const $ncol = this.$ncol

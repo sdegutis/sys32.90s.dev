@@ -21,7 +21,7 @@ export function makeVacuumLayout(padding = 0) {
   }
 }
 
-export function makeCollapseAdjust(this: View) {
+export function collapseAdjust(this: View) {
   this.w = this.firstChild?.w ?? 0
   this.h = this.firstChild?.h ?? 0
 }
