@@ -11,7 +11,7 @@ export class Dynamic {
   }
 
   $watch<K extends keyof this>(key: K, fn: (val: this[K], old: this[K]) => void) {
-    this.$data(key).watch(fn)
+    return this.$data(key).watch(fn)
   }
 
 }
