@@ -47,20 +47,28 @@ function makeDynamic<T extends Addressable>(o: T) {
     if (Object.getOwnPropertyDescriptor(o, key)?.get) continue
     if (!key.startsWith('$')) {
       $$refs[key] = new Reactive(val)
-      Object.defineProperty(o, key, {
-        get: () => $$refs[key].data,
-        set: (v) => $$refs[key].update(v),
-        enumerable: true,
-      })
+      addKey<T>(o, key, $$refs)
     }
   }
 
   for (let [key, r] of Object.entries(o)) {
     if (key === '$$refs') continue
     if (key.startsWith('$')) {
-      $$refs[key.slice(1)] = r
+      key = key.slice(1)
+      $$refs[key] = r
+      if (!Object.getOwnPropertyDescriptor(o, key)?.get) {
+        addKey(o, key, $$refs)
+      }
     }
   }
 
   Object.defineProperty(o, '$$refs', { enumerable: false, writable: false, value: $$refs })
+}
+
+function addKey<T extends Addressable>(o: T, key: string, $$refs: Record<string, Reactive<any>>) {
+  Object.defineProperty(o, key, {
+    get: () => $$refs[key].data,
+    set: (v) => $$refs[key].update(v),
+    enumerable: true,
+  })
 }

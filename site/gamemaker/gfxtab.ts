@@ -100,7 +100,7 @@ const moveCursor = Cursor.fromBitmap(new Bitmap([0x000000cc, 0xffffffff, 0xfffff
 
 class SpriteCanvas extends View {
 
-  sheet: Spritesheet = null!
+  sheet!: Spritesheet
   zoom = 4
   drawer!: SpriteDrawer
 
@@ -144,7 +144,7 @@ class SpriteCanvas extends View {
 
 class SpriteDrawer extends View {
 
-  sheet: Spritesheet = null!
+  sheet!: Spritesheet
 
   override background = 0x00000033
   override cursor = null
@@ -241,7 +241,7 @@ class SpriteDrawer extends View {
 
 class ColorChooser extends Border {
 
-  sheet: Spritesheet = null!
+  sheet!: Spritesheet
 
   override init(): void {
     const $color = this.sheet.$ref('color')
