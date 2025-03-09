@@ -44,10 +44,10 @@ export default (filepath?: string) => {
         ),
         $(SpacedX, {},
           $(GroupX, {},
-            $(Label, { color: 0xffffff33, text: 'w:' }), widthLabel = $(Label, { $text: paintView.$data('width').adapt(n => n.toString()) }),
-            $(Label, { color: 0xffffff33, text: ' h:' }), heightLabel = $(Label, { $text: paintView.$data('height').adapt(n => n.toString()) }),
+            $(Label, { color: 0xffffff33, text: 'w:' }), widthLabel = $(Label, { $text: paintView.$ref('width').adapt(n => n.toString()) }),
+            $(Label, { color: 0xffffff33, text: ' h:' }), heightLabel = $(Label, { $text: paintView.$ref('height').adapt(n => n.toString()) }),
             $(Label, { color: 0xffffff33, text: ' c:' }), colorLabel = $(Label),
-            $(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel = $(Label, { $text: paintView.$data('zoom').adapt(n => n.toString()) }),
+            $(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel = $(Label, { $text: paintView.$ref('zoom').adapt(n => n.toString()) }),
           ),
           $(GroupX, { gap: 1 },
             $(Button, { onClick() { paintView.showGrid = !paintView.showGrid } },
@@ -96,7 +96,7 @@ export default (filepath?: string) => {
     colorsWithButtons.add(color)
     toolArea.addChild($(Button, {
       padding: 1,
-      $selected: paintView.$data('color').adapt(c => c === color),
+      $selected: paintView.$ref('color').adapt(c => c === color),
       onClick: () => { paintView.color = color }
     },
       $(View, { passthrough: true, w: 4, h: 4, background: color, })

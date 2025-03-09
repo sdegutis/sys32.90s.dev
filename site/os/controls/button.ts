@@ -51,7 +51,7 @@ export class Button extends Border {
 
   override init(): void {
     this.addChild(this.overlay)
-    this.overlay.$data('padding', this.$data('padding'))
+    this.overlay.$ref('padding', this.$ref('padding'))
 
     this.$watch('pressed', () => this.changeBackground())
     this.$watch('hovered', () => this.changeBackground())

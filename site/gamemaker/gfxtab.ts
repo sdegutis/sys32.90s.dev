@@ -77,8 +77,8 @@ export class SpriteEditor extends View {
     this.children = [
       $(PanedYA, {},
         $(PanedXB, { background: 0xffffff22, adjust() { this.h = this.lastChild!.h } },
-          $(SpriteCanvas, { $sheet: this.$data('sheet') }),
-          $(ColorChooser, { $sheet: this.$data('sheet') })
+          $(SpriteCanvas, { $sheet: this.$ref('sheet') }),
+          $(ColorChooser, { $sheet: this.$ref('sheet') })
         ),
         $(SplitY, { pos: 30 },
           $(View, { background: 0x000000ff }),
@@ -109,11 +109,11 @@ class SpriteCanvas extends View {
   override cursor = moveCursor
 
   override init(): void {
-    const $zoom = this.$data('zoom')
+    const $zoom = this.$ref('zoom')
 
     this.children = [
       $(View, { passthrough: true, },
-        this.drawer = $(SpriteDrawer, { x: 10, y: 10, $sheet: this.$data('sheet'), $zoom }),
+        this.drawer = $(SpriteDrawer, { x: 10, y: 10, $sheet: this.$ref('sheet'), $zoom }),
         $(ResizerView<SpriteDrawer>)
       )
     ]
@@ -244,7 +244,7 @@ class ColorChooser extends Border {
   sheet: Spritesheet = null!
 
   override init(): void {
-    const $color = this.sheet.$data('color')
+    const $color = this.sheet.$ref('color')
 
     this.children = [
       $(Border, { background: 0x00000033, padding: 2 },
@@ -283,8 +283,8 @@ class ColorChooser extends Border {
           ),
           $(Border, { padding: 1 },
             $(GroupX, { gap: 3, },
-              $(GroupX, {}, $(Label, { text: 'w:', color: 0xffffff33 }), $(Label, { $text: this.sheet.sprite.$data('width').adapt(n => n.toString()) })),
-              $(GroupX, {}, $(Label, { text: 'h:', color: 0xffffff33 }), $(Label, { $text: this.sheet.sprite.$data('height').adapt(n => n.toString()) })),
+              $(GroupX, {}, $(Label, { text: 'w:', color: 0xffffff33 }), $(Label, { $text: this.sheet.sprite.$ref('width').adapt(n => n.toString()) })),
+              $(GroupX, {}, $(Label, { text: 'h:', color: 0xffffff33 }), $(Label, { $text: this.sheet.sprite.$ref('height').adapt(n => n.toString()) })),
             )
           )
 

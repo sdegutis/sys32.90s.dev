@@ -40,7 +40,7 @@ export default function gamemaker() {
     $((TabPane<Tab>), { mine: tab2, tabs })
   )
 
-  const menus = $(SplitX, { $pos: split.$data('pos'), adjust() { this.h = this.firstChild!.h } },
+  const menus = $(SplitX, { $pos: split.$ref('pos'), adjust() { this.h = this.firstChild!.h } },
     makeTabMenu(tabs, tab1, tab2),
     makeTabMenu(tabs, tab2, tab1),
   )

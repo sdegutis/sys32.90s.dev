@@ -38,9 +38,9 @@ class Workspace {
         const panel = view as Panel
         if (!old.includes(panel)) {
           const button = $(Button, {
-            padding: 2, $background: panel.$data('panelFocused').adapt<number>(is => is ? 0x770000ff : 0x330000ff),
+            padding: 2, $background: panel.$ref('panelFocused').adapt<number>(is => is ? 0x770000ff : 0x330000ff),
             onClick: () => { panel.show(); sys.focus(panel) }
-          }, $(Label, { $text: panel.$data('title') }))
+          }, $(Label, { $text: panel.$ref('title') }))
 
           this.progbuttons.addChild(button)
           this.progs.set(panel, button)

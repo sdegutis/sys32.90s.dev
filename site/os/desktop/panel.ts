@@ -76,7 +76,7 @@ export class Panel extends View {
 
     this.children = [
 
-      $(Border, { padding: 1, ...vacuumFirstLayout, $borderColor: this.$data('panelFocused').adapt<number>(b => b ? 0x005599ff : 0x00559944) },
+      $(Border, { padding: 1, ...vacuumFirstLayout, $borderColor: this.$ref('panelFocused').adapt<number>(b => b ? 0x005599ff : 0x00559944) },
 
         $(PanedYA, {},
 
@@ -84,7 +84,7 @@ export class Panel extends View {
             $(Border, {},
               $(GroupX, { gap: 1 },
                 $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.onMenu?.() }, $(ImageView, { image: menubuttonImage })),
-                $(Label, { $text: this.$data('title'), color: 0xaaaaaaff })
+                $(Label, { $text: this.$ref('title'), color: 0xaaaaaaff })
               )
             ),
             $(Group, { gap: 0 },

@@ -4,14 +4,14 @@ export class Dynamic {
 
   init?(): void
 
-  $data<K extends keyof this, R extends Reactive<this[K]>>(k: K, v?: R): R {
-    const $$data: { [K in keyof this]: Reactive<this[K]> } = (this as any).$$data
-    if (v) $$data[k] = v
-    return $$data[k] as R
+  $ref<K extends keyof this, R extends Reactive<this[K]>>(k: K, v?: R): R {
+    const $$refs: { [K in keyof this]: Reactive<this[K]> } = (this as any).$$refs
+    if (v) $$refs[k] = v
+    return $$refs[k] as R
   }
 
   $watch<K extends keyof this>(key: K, fn: (val: this[K], old: this[K]) => void) {
-    return this.$data(key).watch(fn)
+    return this.$ref(key).watch(fn)
   }
 
 }
@@ -38,7 +38,7 @@ export function $<T extends Dynamic>(
 }
 
 function makeDynamic<T extends Dynamic>(o: T) {
-  const $$data: Record<string, Reactive<any>> = Object.create(null)
+  const $$refs: Record<string, Reactive<any>> = Object.create(null)
 
   for (let [key, val] of Object.entries(o)) {
     if (val instanceof Function) continue
@@ -46,21 +46,21 @@ function makeDynamic<T extends Dynamic>(o: T) {
     if (val instanceof Listener) continue
     if (Object.getOwnPropertyDescriptor(o, key)?.get) continue
     if (!key.startsWith('$')) {
-      $$data[key] = new Reactive(val)
+      $$refs[key] = new Reactive(val)
       Object.defineProperty(o, key, {
-        get: () => $$data[key].data,
-        set: (v) => $$data[key].update(v),
+        get: () => $$refs[key].data,
+        set: (v) => $$refs[key].update(v),
         enumerable: true,
       })
     }
   }
 
   for (let [key, r] of Object.entries(o)) {
-    if (key === '$$data') continue
+    if (key === '$$refs') continue
     if (key.startsWith('$')) {
-      $$data[key.slice(1)] = r
+      $$refs[key.slice(1)] = r
     }
   }
 
-  Object.defineProperty(o, '$$data', { enumerable: false, writable: false, value: $$data })
+  Object.defineProperty(o, '$$refs', { enumerable: false, writable: false, value: $$refs })
 }

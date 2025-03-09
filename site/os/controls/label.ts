@@ -12,7 +12,7 @@ export class Label extends View {
 
   override init(): void {
     this.font = crt34
-    this.$data('lines', this.$data('text').adapt(s => s.split('\n')))
+    this.$ref('lines', this.$ref('text').adapt(s => s.split('\n')))
   }
 
   override adjust(): void {

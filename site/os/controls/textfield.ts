@@ -29,11 +29,11 @@ export class TextField extends View {
   }
 
   override init(): void {
-    this._field.$data('color', this.$data('color'))
-    this._cursor.$data('color', this.$data('cursorColor'))
+    this._field.$ref('color', this.$ref('color'))
+    this._cursor.$ref('color', this.$ref('cursorColor'))
     this.font = crt34
-    this._field.$data('font', this.$data('font'))
-    this._cursor.$data('font', this.$data('font'))
+    this._field.$ref('font', this.$ref('font'))
+    this._cursor.$ref('font', this.$ref('font'))
     this.children = [this._field, this._cursor]
     this.$watch('text', s => this.showText())
   }
