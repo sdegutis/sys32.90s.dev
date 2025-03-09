@@ -50,7 +50,7 @@ class Workspace {
 
     this.desktop.addChild(panel)
 
-    const label = $(Label)
+    const label = $(Label, { $text: panel.$data('title') })
     const button = $(Button, {
       padding: 2,
       background: 0x440000ff,
@@ -64,7 +64,6 @@ class Workspace {
     this.progbuttons.addChild(button)
     sys.layoutTree(this.progbuttons)
 
-    panel.$watch('title', s => label.text = s)
     label.$watch('text', s => { sys.layoutTree(this.progbuttons) })
 
     panel.didClose.watch(() => {

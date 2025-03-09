@@ -9,3 +9,6 @@ await ws.addProgram("writer", import.meta.resolve("./apps/writer/"))
 await ws.addProgram("fontmaker", import.meta.resolve("./apps/fontmaker/"))
 
 gamemaker()
+
+ws.showDesktop()
+ws.launch('painter')
