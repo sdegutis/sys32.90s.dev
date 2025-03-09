@@ -44,10 +44,10 @@ export default (filepath?: string) => {
         ),
         $(SpacedX, {},
           $(GroupX, {},
-            $(Label, { color: 0xffffff33, text: 'w:' }), widthLabel = $(Label),
-            $(Label, { color: 0xffffff33, text: ' h:' }), heightLabel = $(Label),
+            $(Label, { color: 0xffffff33, text: 'w:' }), widthLabel = $(Label, { $text: paintView.$data('width').adapt(n => n.toString()) }),
+            $(Label, { color: 0xffffff33, text: ' h:' }), heightLabel = $(Label, { $text: paintView.$data('height').adapt(n => n.toString()) }),
             $(Label, { color: 0xffffff33, text: ' c:' }), colorLabel = $(Label),
-            $(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel = $(Label),
+            $(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel = $(Label, { $text: paintView.$data('zoom').adapt(n => n.toString()) }),
           ),
           $(GroupX, { gap: 1 },
             $(Button, { onClick() { paintView.showGrid = !paintView.showGrid } },
@@ -76,13 +76,8 @@ export default (filepath?: string) => {
     ),
   )
 
-  paintView.$watch('width', n => widthLabel.text = n.toString())
-  paintView.$watch('height', n => heightLabel.text = n.toString())
-
   widthLabel.$watch('text', () => { sys.layoutTree(widthLabel.parent!) })
   heightLabel.$watch('text', () => { sys.layoutTree(heightLabel.parent!) })
-
-  paintView.$watch('zoom', n => zoomLabel.text = n.toString())
   paintView.$watch('zoom', n => sys.layoutTree(panel))
 
   paintView.$watch('tool', t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff)
