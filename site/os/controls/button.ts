@@ -1,7 +1,6 @@
 import { Border } from "../containers/border.js"
 import { sys } from "../core/system.js"
 import { $ } from "../util/dyn.js"
-import { multiplex, Reactive } from "../util/events.js"
 
 export class ClickCounter {
 
@@ -53,40 +52,29 @@ export class Button extends Border {
   override init(): void {
     this.addChild(this.overlay)
     this.overlay.$data('padding', this.$data('padding'))
+
+    this.$watch('pressed', () => this.changeBackground())
+    this.$watch('hovered', () => this.changeBackground())
+    this.$watch('selected', () => this.changeBackground())
   }
 
-  private changebg: Reactive<any> | undefined
-
-  override adopted(): void {
-    this.changebg = multiplex({
-      pressed: this.$data('pressed'),
-      hovered: this.$data('hovered'),
-      selected: this.$data('selected'),
-    })
-
-    this.changebg.watch(data => {
-      if (data.selected) {
-        this.overlay.background = this.selectedBackground
-        this.overlay.borderColor = this.selectedBorderColor
-      }
-      else if (data.pressed) {
-        this.overlay.background = this.pressBackground
-        this.overlay.borderColor = this.pressBorderColor
-      }
-      else if (data.hovered) {
-        this.overlay.background = this.hoverBackground
-        this.overlay.borderColor = this.hoverBorderColor
-      }
-      else {
-        this.overlay.background = 0x00000000
-        this.overlay.borderColor = 0x00000000
-      }
-    })
-  }
-
-  override abandoned(): void {
-    this.changebg?.destroy()
-    this.changebg = undefined
+  private changeBackground() {
+    if (this.selected) {
+      this.overlay.background = this.selectedBackground
+      this.overlay.borderColor = this.selectedBorderColor
+    }
+    else if (this.pressed) {
+      this.overlay.background = this.pressBackground
+      this.overlay.borderColor = this.pressBorderColor
+    }
+    else if (this.hovered) {
+      this.overlay.background = this.hoverBackground
+      this.overlay.borderColor = this.hoverBorderColor
+    }
+    else {
+      this.overlay.background = 0x00000000
+      this.overlay.borderColor = 0x00000000
+    }
   }
 
   override onMouseDown(button: number): void {
