@@ -44,16 +44,14 @@ class Workspace {
     if (this.desktop.children.includes(panel)) return
 
     const topPanel = this.desktop.children.at(-1)
-
     panel.x = (topPanel?.x ?? 0) + 12
     panel.y = (topPanel?.y ?? 0) + 12
-
     this.desktop.addChild(panel)
 
     const label = $(Label, { $text: panel.$data('title') })
     const button = $(Button, {
       padding: 2,
-      background: 0x440000ff,
+      $background: panel.$data('panelFocused').adapt<number>(is => is ? 0x770000ff : 0x330000ff),
       onClick: () => {
         panel.show()
         sys.focus(panel)
@@ -71,10 +69,6 @@ class Workspace {
       sys.layoutTree(this.progbuttons)
       const lastPanel = this.desktop.children.at(-1)
       lastPanel && sys.focus(lastPanel)
-    })
-
-    panel.$watch('panelFocused', is => {
-      button.background = is ? 0x770000ff : 0x330000ff
     })
 
     sys.focus(panel)
