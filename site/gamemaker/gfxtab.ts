@@ -24,13 +24,31 @@ class Sprite extends Dynamic {
   width = 8
   height = 8
 
-  images: SpriteImage[] = []
+  images: SpriteImage[] = [
+    $(SpriteImage, {})
+  ]
+
+  override init(): void {
+    this.$watch('images', images => {
+      for (const image of images) {
+        image.sprite = this
+      }
+    })
+  }
 
 }
 
-class SpriteImage {
+class SpriteImage extends Dynamic {
 
+  sprite: Sprite = null!
 
+  override init(): void {
+    this.$watch('sprite', s => {
+
+      console.log(s)
+    })
+
+  }
 
 }
 
@@ -40,10 +58,10 @@ export class SpriteEditor extends View {
   override layout = vacuumAllLayout
 
   override init(): void {
-    const sprites: Sprite[] = []
+    const sprites: Sprite[] = [$(Sprite)]
 
-    const sprite = $(Sprite)
-    sprites.push(sprite)
+    const sprite = sprites[0]
+    console.log(sprite.images[0])
 
     const $ncol = new Reactive<Color>({ p: 'vinik24', i: 8 })
     const $width = sprite.$data('width')
