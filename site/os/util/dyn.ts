@@ -28,7 +28,8 @@ export function $<T extends Dynamic>(
   ...children: T extends { children?: ArrayLike<infer C> } ? C[] : never[]
 ): T {
   const view = new ctor()
-  Object.assign(view, { children }, config)
+  if ('children' in view) view.children = children
+  Object.assign(view, config)
   makeDynamic(view)
   const protos = []
   let proto: T | undefined = view
