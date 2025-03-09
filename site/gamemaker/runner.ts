@@ -10,25 +10,13 @@ export class Runner {
   editor: { text: string } & View
   removegametick: (() => void) | undefined
   running = false
-
   module: any
 
   gameView = $(View, {
     background: 0x000000ff,
     cursor: null,
-    draw: () => {
-      try {
-        this.module.draw?.()
-        sys.needsRedraw = true
-      } catch (e) { this.fail(e) }
-    },
+    draw: () => this.draw(),
   })
-
-  tick() {
-    try {
-      this.module.tick?.()
-    } catch (e) { this.fail(e) }
-  }
 
   constructor(editor: { text: string } & View) {
     this.editor = editor
@@ -64,6 +52,20 @@ export class Runner {
 
     sys.layoutTree()
     sys.focus(this.editor)
+  }
+
+  private draw() {
+    try {
+      View.prototype.draw.call(this)
+      this.module.draw?.()
+      sys.needsRedraw = true
+    } catch (e) { this.fail(e) }
+  }
+
+  private tick() {
+    try {
+      this.module.tick?.()
+    } catch (e) { this.fail(e) }
   }
 
   private fail(e: any) {
