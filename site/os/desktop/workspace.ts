@@ -27,7 +27,7 @@ class Workspace {
 
   private taskbar = $(Spaced, { background: 0x000000ff },
     this.progbuttons,
-    $(Border, { padding: 2 }, $(Clock, {})),
+    $(Border, { padding: 2 }, $(Clock)),
   )
 
   private root = $(PanedYB, {},
@@ -50,7 +50,7 @@ class Workspace {
 
     this.desktop.addChild(panel)
 
-    const label = $(Label, {})
+    const label = $(Label)
     const button = $(Button, {
       padding: 2,
       background: 0x440000ff,

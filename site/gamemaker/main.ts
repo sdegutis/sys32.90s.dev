@@ -20,9 +20,9 @@ export function draw() {
 
 export default function gamemaker() {
   const codeEditor = $(CodeEditor, { text: sample.trimStart() })
-  const spriteEditor = $(SpriteEditor, {})
-  const mapEditor = $(MapEditor, {})
-  const docsViewer = $(DocsViewer, {})
+  const spriteEditor = $(SpriteEditor)
+  const mapEditor = $(MapEditor)
+  const docsViewer = $(DocsViewer)
 
   type Tab = keyof typeof tabs
   const tabs = {

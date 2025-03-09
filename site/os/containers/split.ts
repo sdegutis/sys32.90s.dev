@@ -91,7 +91,7 @@ export class Split extends View {
 
   override init(): void {
     while (this.children.length < 2) {
-      this.addChild($(View, {}))
+      this.addChild($(View))
     }
     this.$watch('pos', () => sys.layoutTree(this))
   }

@@ -42,7 +42,7 @@ export class SpriteEditor extends View {
   override init(): void {
     const sprites: Sprite[] = []
 
-    const sprite = $(Sprite, {})
+    const sprite = $(Sprite)
     sprites.push(sprite)
 
     const $ncol = new Reactive<Color>({ p: 'vinik24', i: 8 })
@@ -95,7 +95,7 @@ class SpriteCanvas extends View {
     this.children = [
       $(View, { passthrough: true, },
         this.drawer = $(SpriteDrawer, { top: this.top, x: 10, y: 10, $ncol, $zoom, $width: this.$width, $height: this.$height }),
-        $(ResizerView<SpriteDrawer>, {})
+        $(ResizerView<SpriteDrawer>)
       )
     ]
   }
