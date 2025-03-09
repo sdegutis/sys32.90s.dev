@@ -38,20 +38,14 @@ class Workspace {
         const panel = view as Panel
         if (!old.includes(panel)) {
           const button = $(Button, {
-            padding: 2,
-            $background: panel.$data('panelFocused').adapt<number>(is => is ? 0x770000ff : 0x330000ff),
-            onClick: () => {
-              panel.show()
-              sys.focus(panel)
-            }
-          },
-            $(Label, { $text: panel.$data('title') })
-          )
-
-          panel.$watch('title', s => { sys.layoutTree() })
+            padding: 2, $background: panel.$data('panelFocused').adapt<number>(is => is ? 0x770000ff : 0x330000ff),
+            onClick: () => { panel.show(); sys.focus(panel) }
+          }, $(Label, { $text: panel.$data('title') }))
 
           this.progbuttons.addChild(button)
           this.progs.set(panel, button)
+
+          panel.$watch('title', s => { sys.layoutTree() })
         }
       }
 
