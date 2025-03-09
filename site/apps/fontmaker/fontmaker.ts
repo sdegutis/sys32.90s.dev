@@ -65,14 +65,14 @@ export default async (filename?: string) => {
       $(Scroll, {},
         $(View, {
           background: 0x44444499,
-          adjust(this: View) {
+          adjust() {
             const padding = 1 * $zoom.data
             const gap = 1 * $zoom.data
             const child = this.firstChild!
             this.w = padding * 2 + (child.w * 16) + (gap * 15)
             this.h = padding * 2 + (child.h * 6) + (gap * 5)
           },
-          layout(this: View) {
+          layout() {
             const padding = 1 * $zoom.data
             const gap = 1 * $zoom.data
 

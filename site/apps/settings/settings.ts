@@ -23,15 +23,15 @@ export default () => {
 
   function makeSizeButton(size: string) {
     return $(Button, {
-      init(this: Button) { this.find('checkbox')!.addChild(this.overlay!) },
-      onClick(this: Button) { thesize.update(size) }
+      init() { this.find('checkbox')!.addChild(this.overlay) },
+      onClick() { thesize.update(size) }
     },
       $(GroupX, { gap: 2, },
         $(Border, { id: 'checkbox', borderColor: 0xffffff33, padding: 1, },
           $(Border, { padding: 1 },
             $(View, {
               id: 'checkmark', passthrough: true, background: 0xffffffff, w: 2, h: 2,
-              init(this: View) { thesize.watch(selected => this.visible = selected === size) },
+              init() { thesize.watch(selected => this.visible = selected === size) },
             })
           )
         ),

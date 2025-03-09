@@ -24,7 +24,7 @@ export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
   },
     $(GroupY, { align: '-' },
       ...items.map(it => it === '-'
-        ? $(View, { h: 5, draw(this: View) { crt.rectFill(0, 2, this.w, 1, 0xffffff11) } })
+        ? $(View, { h: 5, draw() { crt.rectFill(0, 2, this.w, 1, 0xffffff11) } })
         : $(Button, { padding: 2, onClick: it.onClick },
           $(Label, { text: it.text })
         )

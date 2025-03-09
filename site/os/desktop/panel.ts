@@ -98,7 +98,7 @@ export class Panel extends View {
           ),
 
           $(Group, {
-            layout: function (this: View) {
+            layout() {
               const c = this.firstChild!
               c.x = pad
               c.y = 0
@@ -113,9 +113,9 @@ export class Panel extends View {
           passthrough: false,
           image: adjImage,
           cursor: adjCursor,
-          layout: function () {
-            this.x = this.parent!.w - this.w!
-            this.y = this.parent!.h - this.h!
+          layout() {
+            this.x = this.parent!.w - this.w
+            this.y = this.parent!.h - this.h
           },
           onMouseDown: () => {
             this.lastPos = undefined!

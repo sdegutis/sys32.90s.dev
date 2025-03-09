@@ -22,12 +22,12 @@ export class Dynamic {
 type No$Reactive = Array<any> | Function | Listener | undefined
 type $Reactives<T> = { [K in keyof T as T[K] extends No$Reactive ? never : `$${K & string}`]: Reactive<T[K]> }
 type DontForgetConfig = { YouForgotConfig: never }
-// type UnpartialThis<T> = { [K in keyof T]?: T[K] extends (...args: infer A) => infer R ? (this: T, ...args: A) => R : T[K] }
+type PartialExceptMethodThis<T> = { [K in keyof T]?: T[K] extends (undefined | ((...args: infer A) => infer R)) ? (this: T, ...args: A) => R : T[K] }
 
 
 export function $<T extends Dynamic>(
   ctor: { new(): T },
-  config: Partial<T & DontForgetConfig & $Reactives<T>>,
+  config: PartialExceptMethodThis<T & DontForgetConfig & $Reactives<T>>,
   ...children: T extends { children?: ArrayLike<infer C> } ? C[] : never[]
 ): T {
   const view = new ctor()
