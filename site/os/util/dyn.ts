@@ -32,8 +32,8 @@ export function $<T extends Dynamic>(
   makeDynamic(view)
   const protos = []
   let proto: T | undefined = view
-  while (proto = Object.getPrototypeOf(proto)) protos.push(proto)
-  while (proto = protos.pop()) proto.init?.call(view)
+  while (proto = Object.getPrototypeOf(proto)) if (Object.hasOwn(proto, 'init')) protos.push(proto)
+  while (proto = protos.pop()) proto.init!.call(view)
   return view
 }
 
