@@ -21,7 +21,6 @@ type $Reactives<T> = { [K in keyof T as T[K] extends No$Reactive ? never : `$${K
 type DontForgetConfig = { YouForgotConfig: never }
 type PartialExceptMethodThis<T> = { [K in keyof T]?: T[K] extends (undefined | ((...args: infer A) => infer R)) ? (this: T, ...args: A) => R : T[K] }
 
-
 export function $<T extends Dynamic>(
   ctor: { new(): T },
   config?: PartialExceptMethodThis<T & DontForgetConfig & $Reactives<T>>,
