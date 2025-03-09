@@ -13,27 +13,20 @@ import { Panel } from "./panel.js"
 
 class Workspace {
 
-  private desktop = $(View, {
-    background: 0x222222ff
-  })
+  private readonly progbuttons = $(GroupX, { gap: 1 })
+  private readonly runButton = $(Button, {
+    padding: 2,
+    background: 0x222222ff,
+    onClick: () => this.showProgMenu(),
+  }, $(Label, { text: 'run' }))
 
-  private progbuttons = $(GroupX, { gap: 1 },
-    $(Button, {
-      padding: 2,
-      background: 0x222222ff,
-      onClick: () => this.showProgMenu(),
-    }, $(Label, { text: 'run' }))
-  )
+  private readonly clock = $(Border, { padding: 2 }, $(Clock))
+  private readonly taskbar = $(Spaced, { background: 0x000000ff },
+    $(GroupX, { gap: 1 }, this.runButton, this.progbuttons),
+    this.clock)
 
-  private taskbar = $(Spaced, { background: 0x000000ff },
-    this.progbuttons,
-    $(Border, { padding: 2 }, $(Clock)),
-  )
-
-  private root = $(PanedYB, {},
-    this.desktop,
-    this.taskbar
-  )
+  private readonly desktop = $(View, { background: 0x222222ff })
+  private readonly root = $(PanedYB, {}, this.desktop, this.taskbar)
 
   showDesktop() {
     sys.root.addChild(this.root)
