@@ -37,14 +37,10 @@ export class View extends Dynamic {
 
   canBaseFocus = false
 
-  get firstChild(): View | undefined { return this.children[0] }
-  get lastChild(): View | undefined { return this.children[this.children.length - 1] }
-
   mouse = { x: 0, y: 0 }
   cursor: Cursor | null = pointer
 
   parent?: View
-
   children: ReadonlyArray<View> = []
 
   override init(): void {
@@ -77,6 +73,9 @@ export class View extends Dynamic {
     child.parent = undefined!
     child.abandoned?.()
   }
+
+  get firstChild(): View | undefined { return this.children[0] }
+  get lastChild(): View | undefined { return this.children[this.children.length - 1] }
 
   draw() {
     if ((this.background & 0x000000ff) > 0) {
