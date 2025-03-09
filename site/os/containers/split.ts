@@ -23,12 +23,10 @@ const yresize = Cursor.fromBitmap(new Bitmap([0x00000099, 0xffffffff, 0xfffffffe
 class SplitDivider extends View {
 
   pressed = false
-  split: Split
+  split!: Split
 
-  constructor(split: Split) {
-    super()
-    this.split = split
-    this.background = split.dividerColor
+  override init(): void {
+    this.background = this.split.dividerColor
     this.cursor = this.split.dir === 'x' ? xresize : yresize
   }
 
@@ -98,7 +96,7 @@ export class Split extends View {
 
   override layout(): void {
     if (this.resizable && !this.resizer) {
-      this.resizer = new SplitDivider(this)
+      this.resizer = $(SplitDivider, { split: this })
       this.addChild(this.resizer)
     }
     else if (!this.resizable && this.resizer) {
