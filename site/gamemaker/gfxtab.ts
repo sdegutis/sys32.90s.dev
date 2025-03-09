@@ -13,7 +13,6 @@ import { sys } from "../os/core/system.js"
 import { View } from "../os/core/view.js"
 import { makeStripeDrawer } from "../os/util/draw.js"
 import { $, Dynamic } from "../os/util/dyn.js"
-import { Reactive } from "../os/util/events.js"
 import { vacuumAllLayout } from "../os/util/layouts.js"
 import { dragMove } from "../os/util/selections.js"
 
@@ -22,6 +21,18 @@ type Color = { p: keyof typeof palettes, i: number }
 class Spritesheet extends Dynamic {
 
   sprites: Sprite[] = [$(Sprite)]
+  current = 0
+
+  color: Color = { p: 'vinik24', i: 8 }
+
+  get sprite() { return this.sprites[this.current] }
+
+  changeColorBy(n: number) {
+    let i = this.color.i + n
+    if (i < 0) i = 23
+    if (i > 23) i = 0
+    this.color = { p: this.color.p, i }
+  }
 
 }
 
@@ -60,20 +71,14 @@ export class SpriteEditor extends View {
   override background = 0x000000ff
   override layout = vacuumAllLayout.layout
 
+  sheet = $(Spritesheet)
+
   override init(): void {
-    const sheet = $(Spritesheet)
-
-    const sprite = sheet.sprites[0]
-
-    const $ncol = new Reactive<Color>({ p: 'vinik24', i: 8 })
-    const $width = sprite.$data('width')
-    const $height = sprite.$data('height')
-
     this.children = [
       $(PanedYA, {},
         $(PanedXB, { background: 0xffffff22, adjust() { this.h = this.lastChild!.h } },
-          $(SpriteCanvas, { $ncol, $width, $height, top: this }),
-          $(ColorChooser, { $ncol, $width, $height })
+          $(SpriteCanvas, { $sheet: this.$data('sheet') }),
+          $(ColorChooser, { $sheet: this.$data('sheet') })
         ),
         $(SplitY, { pos: 30 },
           $(View, { background: 0x000000ff }),
@@ -95,13 +100,8 @@ const moveCursor = Cursor.fromBitmap(new Bitmap([0x000000cc, 0xffffffff, 0xfffff
 
 class SpriteCanvas extends View {
 
-  top!: View
-
-  $width!: Reactive<number>
-  $height!: Reactive<number>
-  ncol: Color = null!
+  sheet: Spritesheet = null!
   zoom = 4
-
   drawer!: SpriteDrawer
 
   override layout = vacuumAllLayout.layout
@@ -110,11 +110,10 @@ class SpriteCanvas extends View {
 
   override init(): void {
     const $zoom = this.$data('zoom')
-    const $ncol = this.$data('ncol')
 
     this.children = [
       $(View, { passthrough: true, },
-        this.drawer = $(SpriteDrawer, { top: this.top, x: 10, y: 10, $ncol, $zoom, $width: this.$width, $height: this.$height }),
+        this.drawer = $(SpriteDrawer, { x: 10, y: 10, $sheet: this.$data('sheet'), $zoom }),
         $(ResizerView<SpriteDrawer>)
       )
     ]
@@ -137,10 +136,7 @@ class SpriteCanvas extends View {
       this.zoom = Math.min(max, Math.max(min, this.zoom + (up ? +1 : -1)))
     }
     else {
-      let i = this.ncol.i + (up ? +1 : -1)
-      if (i < 0) i = 23
-      if (i > 23) i = 0
-      this.ncol = { p: this.ncol.p, i }
+      this.sheet.changeColorBy(up ? +1 : -1)
     }
   }
 
@@ -148,16 +144,12 @@ class SpriteCanvas extends View {
 
 class SpriteDrawer extends View {
 
-  top!: View
+  sheet: Spritesheet = null!
 
   override background = 0x00000033
   override cursor = null
 
-  ncol: Color = null!
   zoom = 1
-
-  width = 8
-  height = 8
 
   spots: Record<string, Color> = {}
 
@@ -166,8 +158,8 @@ class SpriteDrawer extends View {
   }
 
   override adjust(): void {
-    this.w = this.width * this.zoom
-    this.h = this.height * this.zoom
+    this.w = this.sheet.sprite.width * this.zoom
+    this.h = this.sheet.sprite.height * this.zoom
   }
 
   override onMouseDown(button: number): void {
@@ -188,7 +180,7 @@ class SpriteDrawer extends View {
             const y = Math.floor(this.mouse.y / this.zoom)
 
             const key = `${x},${y}`
-            this.spots[key] = this.ncol
+            this.spots[key] = this.sheet.color
           }
         })
       }
@@ -200,7 +192,7 @@ class SpriteDrawer extends View {
       const key = `${x},${y}`
       const spot = this.spots[key]
       if (spot) {
-        this.ncol = spot
+        this.sheet.color = spot
       }
     }
     else {
@@ -219,8 +211,8 @@ class SpriteDrawer extends View {
   override draw(): void {
     super.draw()
 
-    for (let y = 0; y < this.height; y++) {
-      for (let x = 0; x < this.width; x++) {
+    for (let y = 0; y < this.sheet.sprite.height; y++) {
+      for (let x = 0; x < this.sheet.sprite.width; x++) {
         const key = `${x},${y}`
         const spot = this.spots[key]
         if (spot) {
@@ -240,21 +232,19 @@ class SpriteDrawer extends View {
   }
 
   resize(width: number, height: number) {
-    this.width = Math.max(1, width)
-    this.height = Math.max(1, height)
-    sys.layoutTree(this.top)
+    this.sheet.sprite.width = Math.max(1, width)
+    this.sheet.sprite.height = Math.max(1, height)
+    sys.layoutTree()
   }
 
 }
 
 class ColorChooser extends Border {
 
-  $width!: Reactive<number>
-  $height!: Reactive<number>
-  ncol: Color = null!
+  sheet: Spritesheet = null!
 
   override init(): void {
-    const $ncol = this.$data('ncol')
+    const $color = this.sheet.$data('color')
 
     this.children = [
       $(Border, { background: 0x00000033, padding: 2 },
@@ -264,9 +254,9 @@ class ColorChooser extends Border {
             ...Object.keys(palettes).map((name) => {
               return $(Button, {
                 padding: 2,
-                $selected: $ncol.adapt(d => d.p === name),
+                $selected: $color.adapt(d => d.p === name),
                 onClick: () => {
-                  this.ncol = { ...this.ncol, p: name as keyof typeof palettes }
+                  $color.update({ i: $color.data.i, p: name as keyof typeof palettes })
                 },
               },
                 $(Label, { text: name })
@@ -279,12 +269,12 @@ class ColorChooser extends Border {
               ...palettes.vinik24.map((color, i) => {
                 const button = $(Button, {
                   padding: 1,
-                  $selected: $ncol.adapt(col => col.i === i),
+                  $selected: $color.adapt(col => col.i === i),
                   selectedBackground: 0x00000000,
                   selectedBorderColor: 0xffffffff,
-                  onClick: () => this.ncol = { ...this.ncol, i },
+                  onClick: () => $color.update({ p: $color.data.p, i }),
                 },
-                  $(View, { w: 7, h: 7, passthrough: true, $background: $ncol.adapt(d => palettes[d.p][i]) })
+                  $(View, { w: 7, h: 7, passthrough: true, $background: $color.adapt(d => palettes[d.p][i]) })
                 )
                 return button
               }
@@ -293,8 +283,8 @@ class ColorChooser extends Border {
           ),
           $(Border, { padding: 1 },
             $(GroupX, { gap: 3, },
-              $(GroupX, {}, $(Label, { text: 'w:', color: 0xffffff33 }), $(Label, { $text: this.$width.adapt(n => n.toString()) })),
-              $(GroupX, {}, $(Label, { text: 'h:', color: 0xffffff33 }), $(Label, { $text: this.$height.adapt(n => n.toString()) })),
+              $(GroupX, {}, $(Label, { text: 'w:', color: 0xffffff33 }), $(Label, { $text: this.sheet.sprite.$data('width').adapt(n => n.toString()) })),
+              $(GroupX, {}, $(Label, { text: 'h:', color: 0xffffff33 }), $(Label, { $text: this.sheet.sprite.$data('height').adapt(n => n.toString()) })),
             )
           )
 
