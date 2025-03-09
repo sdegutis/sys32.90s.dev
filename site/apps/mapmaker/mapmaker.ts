@@ -5,7 +5,7 @@ import { View } from "../../os/core/view.js"
 import { Panel } from "../../os/desktop/panel.js"
 import { makeStripeDrawer } from "../../os/util/draw.js"
 import { $ } from "../../os/util/dyn.js"
-import { makeFlowLayoutY, makeVacuumLayout } from "../../os/util/layouts.js"
+import { makeFlowLayout, makeVacuumLayout } from "../../os/util/layouts.js"
 import { EditableMap } from "./map.js"
 import { COLORS } from "./mapcolors.js"
 import { MapView } from "./mapview.js"
@@ -38,7 +38,7 @@ export default () => {
           },
             $(Label, { text: 'grid' })
           ),
-          $(View, { layout: makeFlowLayoutY() },
+          $(View, { layout: makeFlowLayout() },
             ...COLORS.map((col, i) => $(Button, {
               padding: 1,
               $selected: map.currentTool.adapt(n => n === i),

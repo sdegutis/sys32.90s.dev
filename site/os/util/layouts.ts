@@ -55,31 +55,3 @@ export function makeFlowLayout(padding = 0, gap = 0) {
     }
   }
 }
-
-export function makeFlowLayoutY(padding = 0, gap = 0) {
-  return function (this: View) {
-    let x = padding
-    let y = padding
-    let h = 0
-
-    const dw = 'h'
-    const dh = 'w'
-    const dx = 'y'
-    const dy = 'x'
-
-    for (let i = 0; i < this.children.length; i++) {
-      const child = this.children[i]
-
-      if (x + child[dw] > this[dw] && i > 0) {
-        x = padding
-        y += h + gap
-        h = 0
-      }
-
-      child[dx] = x
-      child[dy] = y
-      x += child[dw] + gap
-      if (child[dh] > h) h = child[dh]
-    }
-  }
-}
