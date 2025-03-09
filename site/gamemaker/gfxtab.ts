@@ -180,6 +180,16 @@ class SpriteDrawer extends View {
         }
       })
     }
+    else if (sys.keys['Control']) {
+      const x = Math.floor(this.mouse.x / this.zoom)
+      const y = Math.floor(this.mouse.y / this.zoom)
+
+      const key = `${x},${y}`
+      const spot = this.spots[key]
+      if (spot) {
+        this.ncol = spot
+      }
+    }
     else {
       sys.trackMouse({
         move: () => {
@@ -190,10 +200,6 @@ class SpriteDrawer extends View {
           delete this.spots[key]
         }
       })
-      // const spot = this.spots[key]
-      // if (spot) {
-      //   this.$ncol.update(spot)
-      // }
     }
   }
 
