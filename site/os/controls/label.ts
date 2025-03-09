@@ -12,9 +12,7 @@ export class Label extends View {
 
   override init(): void {
     this.font = crt34
-    this.$watch('text', t => {
-      this.lines = t.split('\n')
-    })
+    this.$data('lines', this.$data('text').adapt(s => s.split('\n')))
   }
 
   override adjust(): void {
