@@ -3,34 +3,25 @@ import { sys } from "../core/system.js"
 
 export class Clock extends Label {
 
-  private timer?: ReturnType<typeof setInterval>
-
   override init(): void {
-    this.updateTime()
-  }
-
-  override adopted(): void {
-    this.timer = setInterval((() => {
-      this.updateTime()
-      sys.layoutTree(this.parent!)
-    }), 1000)
-  }
-
-  override abandoned(): void {
-    clearInterval(this.timer)
-    this.timer = undefined!
-  }
-
-  private updateTime() {
-    this.text = new Date().toLocaleTimeString('en-us')
+    let timer: ReturnType<typeof setInterval> | undefined = undefined
+    this.$watch('parent', (p) => {
+      clearInterval(timer)
+      if (p) {
+        timer = setInterval((() => {
+          this.text = new Date().toLocaleTimeString('en-us')
+          sys.layoutTree(this.parent!)
+        }), 1000)
+      }
+    })
   }
 
   // override draw(): void {
   //   super.draw()
 
-  //   this.sys.crt.raw = true
-  //   this.sys.crt.rectFill(10, 2, 200, 100, 0x0000ff88)
-  //   this.sys.crt.raw = false
+  //   crt.raw = true
+  //   crt.rectFill(10, 2, 200, 100, 0x0000ff88)
+  //   crt.raw = false
   // }
 
 }

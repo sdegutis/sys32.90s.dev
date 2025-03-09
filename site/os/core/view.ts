@@ -17,8 +17,6 @@ export class View extends Dynamic {
   onBlur?(): void
   layout?(): void
   adjust?(): void
-  adopted?(): void
-  abandoned?(): void
 
   onBaseFocus?(): void
   onBaseBlur?(): void
@@ -38,20 +36,18 @@ export class View extends Dynamic {
   mouse = { x: 0, y: 0 }
   cursor: Cursor | null = pointer
 
-  parent?: View
+  parent: View | undefined = undefined
   children: ReadonlyArray<View> = []
 
   override init(): void {
     this.$watch('children', (children, old) => {
       for (const child of old) {
         if (child.parent === this) {
-          child.parent = undefined!
-          child.abandoned?.()
+          child.parent = undefined
         }
       }
       for (const child of children) {
         child.parent = this
-        child.adopted?.()
       }
     })
   }
@@ -60,22 +56,19 @@ export class View extends Dynamic {
     const i = this.children.indexOf(child)
     if (i === -1) return
     this.children = this.children.toSpliced(i, 1).toSpliced(pos, 0, child)
-    child.adopted?.()
   }
 
   addChild(child: View, pos = this.children.length) {
     child.parent?.removeChild(child)
     this.children = this.children.toSpliced(pos, 0, child)
     child.parent = this
-    child.adopted?.()
   }
 
   removeChild(child: View) {
     const i = this.children.indexOf(child)
     if (i === -1) return
     this.children = this.children.toSpliced(i, 1)
-    child.parent = undefined!
-    child.abandoned?.()
+    child.parent = undefined
   }
 
   get firstChild(): View | undefined { return this.children[0] }
