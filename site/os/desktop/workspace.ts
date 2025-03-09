@@ -40,14 +40,6 @@ class Workspace {
           const button = $(Button, {
             padding: 2,
             $background: panel.$data('panelFocused').adapt<number>(is => is ? 0x770000ff : 0x330000ff),
-            init: () => {
-              const done = panel.$watch('title', s => { sys.layoutTree(this.progbuttons) })
-              button.$watch('parent', parent => {
-                if (!parent) {
-                  done()
-                }
-              })
-            },
             onClick: () => {
               panel.show()
               sys.focus(panel)
@@ -55,6 +47,8 @@ class Workspace {
           },
             $(Label, { $text: panel.$data('title') })
           )
+
+          panel.$watch('title', s => { sys.layoutTree() })
 
           this.progbuttons.addChild(button)
           this.progs.set(panel, button)
