@@ -1,4 +1,4 @@
-import { Listener, Reactive } from "../util/events.js"
+import { Listener, Reactive } from "./events.js"
 
 export class Dynamic {
 

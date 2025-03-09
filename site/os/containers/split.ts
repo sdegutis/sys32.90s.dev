@@ -1,9 +1,9 @@
 import { Bitmap } from "../core/bitmap.js"
 import { crt } from "../core/crt.js"
 import { Cursor } from "../core/cursor.js"
-import { $ } from "../core/dyn.js"
 import { sys } from "../core/system.js"
 import { View } from "../core/view.js"
+import { $ } from "../util/dyn.js"
 import { dragMove } from "../util/selections.js"
 
 const xresize = Cursor.fromBitmap(new Bitmap([0x00000099, 0xffffffff, 0xfffffffe], 5, [

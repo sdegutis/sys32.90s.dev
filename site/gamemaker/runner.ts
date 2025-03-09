@@ -1,6 +1,6 @@
-import { $ } from "../os/core/dyn.js"
 import { sys } from "../os/core/system.js"
 import { View } from "../os/core/view.js"
+import { $ } from "../os/util/dyn.js"
 import * as api from './api.js'
 
 const prelude = `import {${Object.keys(api)}} from '${window.origin}/gamemaker/api.js'\n`

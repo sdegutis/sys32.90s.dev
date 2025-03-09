@@ -1,6 +1,6 @@
-import { $ } from "../core/dyn.js"
 import { sys } from "../core/system.js"
 import { View } from "../core/view.js"
+import { $ } from "../util/dyn.js"
 import { dragMove } from "../util/selections.js"
 
 export class Scroll extends View {

@@ -1,7 +1,7 @@
 import { TextArea } from "../os/containers/textarea.js"
-import { $ } from "../os/core/dyn.js"
 import { sys } from "../os/core/system.js"
 import { View } from "../os/core/view.js"
+import { $ } from "../os/util/dyn.js"
 import { makeVacuumLayout } from "../os/util/layouts.js"
 import * as api from './api.js'
 

@@ -1,9 +1,9 @@
 import { GroupX } from "../os/containers/group.js"
 import { Button } from "../os/controls/button.js"
 import { Label } from "../os/controls/label.js"
-import { $ } from "../os/core/dyn.js"
 import { sys } from "../os/core/system.js"
 import { View } from "../os/core/view.js"
+import { $ } from "../os/util/dyn.js"
 import type { Reactive } from "../os/util/events.js"
 import { makeVacuumLayout } from "../os/util/layouts.js"
 

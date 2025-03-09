@@ -1,9 +1,9 @@
 import { TextArea } from "../../os/containers/textarea.js"
-import { $ } from "../../os/core/dyn.js"
 import { sys } from "../../os/core/system.js"
 import { Panel } from "../../os/desktop/panel.js"
 import { fs } from "../../os/fs/fs.js"
 import { showPrompt } from "../../os/util/dialog.js"
+import { $ } from "../../os/util/dyn.js"
 import { Reactive } from "../../os/util/events.js"
 import { showMenu } from "../../os/util/menu.js"
 
