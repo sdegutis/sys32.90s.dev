@@ -10,13 +10,13 @@ export class Dynamic {
     return $$data[k] as R
   }
 
-  $watch<K extends keyof this>(key: K, fn: (val: this[K]) => void) {
+  $watch<K extends keyof this>(key: K, fn: (val: this[K], old: this[K]) => void) {
     this.$data(key).watch(fn)
   }
 
 }
 
-type No$Reactive = Array<any> | Function | Listener | Reactive<any> | undefined
+type No$Reactive = Function | Listener | Reactive<any> | undefined
 type $Reactives<T> = { [K in keyof T as T[K] extends No$Reactive ? never : `$${K & string}`]: Reactive<T[K]> }
 type DontForgetConfig = { YouForgotConfig: never }
 type PartialExceptMethodThis<T> = { [K in keyof T]?: T[K] extends (undefined | ((...args: infer A) => infer R)) ? (this: T, ...args: A) => R : T[K] }
@@ -45,7 +45,6 @@ function makeDynamic<T extends Dynamic>(o: T) {
     if (val instanceof Function) continue
     if (val instanceof Reactive) continue
     if (val instanceof Listener) continue
-    if (val instanceof Array) continue
     if (Object.getOwnPropertyDescriptor(o, key)?.get) continue
     if (!key.startsWith('$')) {
       $$data[key] = new Reactive(val)
