@@ -19,6 +19,12 @@ import { dragMove } from "../os/util/selections.js"
 
 type Color = { p: keyof typeof palettes, i: number }
 
+class Spritesheet extends Dynamic {
+
+  sprites: Sprite[] = [$(Sprite)]
+
+}
+
 class Sprite extends Dynamic {
 
   width = 8
@@ -44,10 +50,7 @@ class SpriteImage extends Dynamic {
 
   override init(): void {
     this.$watch('sprite', s => {
-
-      console.log(s)
     })
-
   }
 
 }
@@ -58,10 +61,9 @@ export class SpriteEditor extends View {
   override layout = vacuumAllLayout.layout
 
   override init(): void {
-    const sprites: Sprite[] = [$(Sprite)]
+    const sheet = $(Spritesheet)
 
-    const sprite = sprites[0]
-    console.log(sprite.images[0])
+    const sprite = sheet.sprites[0]
 
     const $ncol = new Reactive<Color>({ p: 'vinik24', i: 8 })
     const $width = sprite.$data('width')
