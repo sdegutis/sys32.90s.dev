@@ -97,17 +97,17 @@ export default async (filename?: string) => {
           $(GroupX, { gap: 10, },
             $(GroupX, { gap: 2 },
               $(Label, { text: 'width:', color: 0xffffff33 }),
-              $(Label, { id: 'width-label' }),
+              $(Label, { $text: $width.adapt(n => n.toString()) }),
               $(Slider, { min: 1, max: 12, w: 20, knobSize: 3, $val: $width }),
             ),
             $(GroupX, { gap: 2 },
               $(Label, { text: 'height:', color: 0xffffff33 }),
-              $(Label, { id: 'height-label' }),
+              $(Label, { $text: $height.adapt(n => n.toString()) }),
               $(Slider, { min: 1, max: 12, w: 20, knobSize: 3, $val: $height }),
             ),
             $(GroupX, { gap: 2 },
               $(Label, { text: 'zoom:', color: 0xffffff33 }),
-              $(Label, { id: 'zoom-label' }),
+              $(Label, { $text: $zoom.adapt(n => n.toString()) }),
               $(Slider, { min: 1, max: 5, w: 20, knobSize: 3, $val: $zoom }),
             ),
             $(GroupX, { gap: 2 },
@@ -119,10 +119,6 @@ export default async (filename?: string) => {
       )
     )
   )
-
-  $width.watch((n) => { panel.find<Label>('width-label')!.text = n.toString() })
-  $height.watch((n) => { panel.find<Label>('height-label')!.text = n.toString() })
-  $zoom.watch((n) => { panel.find<Label>('zoom-label')!.text = n.toString() })
 
   $width.watch(rebuildWhole)
   $height.watch(rebuildWhole)

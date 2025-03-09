@@ -13,6 +13,7 @@ import { MapView } from "./mapview.js"
 export default () => {
 
   const map = new EditableMap(50, 40)
+  let mapView: MapView
 
   const panel = $(Panel, { title: 'mapmaker', },
     $(View, { layout: makeVacuumLayout(), background: 0xffffff11 },
@@ -32,8 +33,7 @@ export default () => {
         $(PanedYA, { w: 19, background: 0x333333ff },
           $(Button, {
             background: 0x00000033, padding: 2, onClick: () => {
-              const mapView = panel.find<MapView>('mapview')!
-              return mapView.showGrid = !mapView.showGrid
+              mapView.showGrid = !mapView.showGrid
             }
           },
             $(Label, { text: 'grid' })
@@ -53,7 +53,7 @@ export default () => {
             background: 0x222222ff,
             draw: makeStripeDrawer(4, 2)
           },
-            $(MapView, { id: 'mapview', map })
+            mapView = $(MapView, { map })
           )
         )
       )

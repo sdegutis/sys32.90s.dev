@@ -29,11 +29,17 @@ export default (filepath?: string) => {
   let colorLabel: Label
   let zoomLabel: Label
 
+  let paintView: PaintView
+
+  let toolArea: View
+  let pencilTool: View
+  let eraserTool: View
+
   const panel = $(Panel, { title: 'painter', minw: 50, w: 180, h: 120, onMenu: () => doMenu() },
     $(PanedXB, { gap: 1 },
       $(PanedYB, { gap: 1 },
         $(Scroll, { background: 0x222222ff, draw: makeStripeDrawer(), },
-          $(PaintView, { id: 'paintView', color: COLORS[3], $zoom }),
+          paintView = $(PaintView, { color: COLORS[3], $zoom }),
           $(ResizerView<PaintView>)
         ),
         $(SpacedX, {},
@@ -44,26 +50,20 @@ export default (filepath?: string) => {
             $(Label, { color: 0xffffff33, text: ' z:' }), zoomLabel = $(Label),
           ),
           $(GroupX, { gap: 1 },
-            $(Button, { id: 'grid-button', onClick() { paintView.showGrid = !paintView.showGrid } },
+            $(Button, { onClick() { paintView.showGrid = !paintView.showGrid } },
               $(Label, { text: 'grid' })
             ),
             $(Slider, { knobSize: 3, w: 20, min: 1, max: 12, $val: $zoom })
           )
         )
       ),
-      $(View, { id: 'toolArea', w: 36, background: 0x99000033, layout: makeFlowLayout(), },
-        $(Button, { id: 'pencilTool', onClick: () => { paintView.tool = 'pencil' } }, $(View, { passthrough: true, w: 4, h: 4 })),
-        $(Button, { id: 'eraserTool', onClick: () => { paintView.tool = 'eraser' } }, $(View, { passthrough: true, w: 4, h: 4 })),
+      toolArea = $(View, { w: 36, background: 0x99000033, layout: makeFlowLayout(), },
+        pencilTool = $(Button, { onClick: () => { paintView.tool = 'pencil' } }, $(View, { passthrough: true, w: 4, h: 4 })),
+        eraserTool = $(Button, { onClick: () => { paintView.tool = 'eraser' } }, $(View, { passthrough: true, w: 4, h: 4 })),
         $(Button, { onClick: () => { addColor() } }, $(Label, { text: '+' })),
       ),
     ),
   )
-
-  const paintView = panel.find<PaintView>('paintView')!
-
-  const toolArea = panel.find<View>('toolArea')!
-  const pencilTool = panel.find<View>('pencilTool')!
-  const eraserTool = panel.find<View>('eraserTool')!
 
   paintView.$watch('width', n => widthLabel.text = n.toString())
   paintView.$watch('height', n => heightLabel.text = n.toString())

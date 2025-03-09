@@ -20,6 +20,8 @@ function expandToFitContainer(this: View) {
 export async function showPrompt(text: string) {
   const p = Promise.withResolvers<string>()
 
+  let field: TextField
+
   const dialog = $(Border, {
     padding: 1, borderColor: 0x99000099, passthrough: false, onMouseDown: () => {
       const move = dragMove(dialog)
@@ -30,7 +32,7 @@ export async function showPrompt(text: string) {
       $(GroupY, { gap: 3, align: 'a', },
         $(Label, { text }),
         $(Border, { padding: 2, background: 0x222222ff, ...passedFocus },
-          $(TextField, { id: 'field', onEnter: accept, })
+          field = $(TextField, { onEnter: accept, })
         ),
         $(GroupX, { gap: 2 },
           $(Button, { padding: 3, onClick: accept }, $(Label, { text: 'ok' })),
@@ -53,11 +55,11 @@ export async function showPrompt(text: string) {
     dialog
   )
 
-  function accept() { p.resolve(dialog.find<TextField>('field')!.text) }
+  function accept() { p.resolve(field.text) }
   function cancel() { p.resolve('') }
 
   sys.root.addChild(overlay)
-  sys.focus(dialog.find('field')!)
+  sys.focus(field)
   sys.layoutTree(overlay)
 
   p.promise.then(() => overlay.remove())

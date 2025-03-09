@@ -23,8 +23,6 @@ export class View extends Dynamic {
   onBaseFocus?(): void
   onBaseBlur?(): void
 
-  id = ''
-
   x = 0
   y = 0
   w = 0
@@ -85,15 +83,6 @@ export class View extends Dynamic {
 
   remove() {
     this.parent?.removeChild(this)
-  }
-
-  find<T extends View>(id: string): T | null {
-    if (this.id === id) return this as unknown as T
-    for (const child of this.children) {
-      const found = child.find<T>(id)
-      if (found) return found
-    }
-    return null
   }
 
 }

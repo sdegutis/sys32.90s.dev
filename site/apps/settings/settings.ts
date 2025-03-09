@@ -22,16 +22,13 @@ export default () => {
   const size2 = makeSizeButton('640x360')
 
   function makeSizeButton(size: string) {
-    return $(Button, {
-      init() { this.find('checkbox')!.addChild(this.overlay) },
-      onClick() { thesize.update(size) }
-    },
+    return $(Button, { onClick() { thesize.update(size) } },
       $(GroupX, { gap: 2, },
-        $(Border, { id: 'checkbox', borderColor: 0xffffff33, padding: 1, },
+        $(Border, { borderColor: 0xffffff33, padding: 1, },
           $(Border, { padding: 1 },
             $(View, {
-              id: 'checkmark', passthrough: true, background: 0xffffffff, w: 2, h: 2,
-              init() { thesize.watch(selected => this.visible = selected === size) },
+              passthrough: true, background: 0xffffffff, w: 2, h: 2,
+              $visible: thesize.adapt(s => s === size)
             })
           )
         ),

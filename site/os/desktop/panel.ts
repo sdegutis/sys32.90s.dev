@@ -79,7 +79,7 @@ export class Panel extends View {
 
     this.children = [
 
-      $(Border, { id: 'border', padding: 1, layout: makeVacuumLayout(1), },
+      $(Border, { padding: 1, layout: makeVacuumLayout(1), $borderColor: this.$data('panelFocused').adapt<number>(b => b ? 0x005599ff : 0x00559944) },
 
         $(PanedYA, {},
 
@@ -87,7 +87,7 @@ export class Panel extends View {
             $(Border, {},
               $(GroupX, { gap: 1 },
                 $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.onMenu?.() }, $(ImageView, { image: menubuttonImage })),
-                $(Label, { id: 'titleLabel', color: 0xaaaaaaff })
+                $(Label, { $text: this.$data('title'), color: 0xaaaaaaff })
               )
             ),
             $(Group, { gap: 0 },
@@ -135,9 +135,6 @@ export class Panel extends View {
       )
 
     ]
-
-    this.$watch('title', s => this.find<Label>('titleLabel')!.text = s)
-    this.$watch('panelFocused', b => { this.find<Border>('border')!.borderColor = b ? 0x005599ff : 0x00559944 })
   }
 
   close() {
