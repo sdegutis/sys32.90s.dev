@@ -28,7 +28,7 @@ class Workspace {
   private readonly desktop = $(View, { background: 0x222222ff })
   private readonly root = $(PanedYB, {}, this.desktop, this.taskbar)
 
-  private progs = new Map<Panel, () => void>()
+  private progs = new Map<Panel, Button>()
 
   constructor() {
 
@@ -40,6 +40,14 @@ class Workspace {
           const button = $(Button, {
             padding: 2,
             $background: panel.$data('panelFocused').adapt<number>(is => is ? 0x770000ff : 0x330000ff),
+            init: () => {
+              const done = panel.$watch('title', s => { sys.layoutTree(this.progbuttons) })
+              button.$watch('parent', parent => {
+                if (!parent) {
+                  done()
+                }
+              })
+            },
             onClick: () => {
               panel.show()
               sys.focus(panel)
@@ -49,32 +57,25 @@ class Workspace {
           )
 
           this.progbuttons.addChild(button)
-          sys.layoutTree(this.progbuttons)
-
-          const done1 = panel.$watch('title', s => { sys.layoutTree(this.progbuttons) })
-
-          sys.focus(panel)
-          sys.layoutTree()
-
-          this.progs.set(panel, () => {
-            button.remove()
-            done1()
-            sys.layoutTree(this.progbuttons)
-
-            const lastPanel = this.desktop.children.at(-1)
-            lastPanel && sys.focus(lastPanel)
-          })
+          this.progs.set(panel, button)
         }
       }
 
       for (const view of old) {
         const panel = view as Panel
         if (!current.includes(panel)) {
-          this.progs.get(panel)?.()
+          this.progs.get(panel)?.remove()
           this.progs.delete(panel)
         }
       }
 
+    })
+
+    this.desktop.$watch('children', () => {
+      sys.layoutTree()
+
+      const lastPanel = this.desktop.children.at(-1)
+      lastPanel && sys.focus(lastPanel)
     })
 
   }
