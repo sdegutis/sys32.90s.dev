@@ -253,7 +253,7 @@ export class TextArea extends View {
       this.end = this.col = 0
       sys.layoutTree(this)
     }
-    else if (key.length === 1 && !sys.keys['Control']) {
+    else if (key.length === 1 && !sys.keys['Control'] && !sys.keys['Alt']) {
       const [a, b] = this.halves()
       this.lines[this.row] = a + key + b
       this.col++

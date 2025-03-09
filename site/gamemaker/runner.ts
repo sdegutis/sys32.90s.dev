@@ -56,7 +56,7 @@ export class Runner {
 
   private draw() {
     try {
-      View.prototype.draw.call(this)
+      View.prototype.draw.call(this.gameView)
       this.module.draw?.()
       sys.needsRedraw = true
     } catch (e) { this.fail(e) }

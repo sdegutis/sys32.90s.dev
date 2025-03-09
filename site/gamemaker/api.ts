@@ -12,8 +12,8 @@ export function drawrectf(x: number, y: number, w: number, h: number, c: number)
   crt.rectFill(x, y, w, h, c)
 }
 
-export function cls() {
-  crt.rectFill(0, 0, 320, 180, 0x000000ff)
+export function cls(c = 0x000000ff) {
+  crt.rectFill(0, 0, 320, 180, c)
 }
 
 export function drawrect(x: number, y: number, w: number, h: number, c: number) {

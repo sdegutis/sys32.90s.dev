@@ -13,7 +13,7 @@ import { makeTabMenu, TabPane } from "./tabs.js"
 
 const sample = `
 export function draw() {
-  //cls()
+  //cls(0x99000099)
   drawrectf(0,0,20,20,0x99000099)
 }
 `
@@ -49,11 +49,11 @@ export default function gamemaker() {
   const runner = new Runner(codeEditor)
 
   sys.root.onKeyDown = key => {
-    if (key === 'r' && sys.keys['Control']) {
+    if (key === 'r' && sys.keys['Alt']) {
       runner.start()
       return true
     }
-    if (key === 'D' && sys.keys['Control']) {
+    if (key === 'D' && sys.keys['Alt']) {
       ws.showDesktop()
       return true
     }
