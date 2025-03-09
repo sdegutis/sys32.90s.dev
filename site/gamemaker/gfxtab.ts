@@ -42,7 +42,7 @@ class Sprite extends Addressable {
   height = 8
 
   images: SpriteImage[] = [
-    $(SpriteImage, {})
+    $(SpriteImage, { sprite: this })
   ]
 
   override init(): void {
@@ -57,7 +57,7 @@ class Sprite extends Addressable {
 
 class SpriteImage extends Addressable {
 
-  sprite: Sprite = null!
+  sprite!: Sprite
 
   override init(): void {
     this.$watch('sprite', s => {
