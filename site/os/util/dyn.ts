@@ -2,6 +2,8 @@ import { Listener, Reactive } from "./events.js"
 
 export class Dynamic {
 
+  init?(): void
+
   $data<K extends keyof this, R extends Reactive<this[K]>>(k: K, v?: R): R {
     const $$data: { [K in keyof this]: Reactive<this[K]> } = (this as any).$$data
     if (v) $$data[k] = v
@@ -12,7 +14,6 @@ export class Dynamic {
     this.$data(key).watch(fn)
   }
 
-  init?(): void
 }
 
 type No$Reactive = Array<any> | Function | Listener | undefined
