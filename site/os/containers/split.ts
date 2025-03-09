@@ -26,26 +26,32 @@ class SplitDivider extends View {
   split!: Split
 
   override init(): void {
-    this.background = this.split.dividerColor
+    const dividerColor = 0x33333300
+
+    this.background = dividerColor
     this.cursor = this.split.dir === 'x' ? xresize : yresize
   }
 
   override draw(): void {
     super.draw()
 
+    const dividerColorHover = 0xffffff33
+    const dividerColorPress = 0x1177ffcc
+    const dividerWidth = 1
+
     const dx = this.split.dir
     const dw = dx === 'x' ? 'w' : 'h'
 
-    const x = dx === 'x' ? Math.round((this[dw] - this.split.dividerWidth) / 2) : 0
-    const y = dx === 'y' ? Math.round((this[dw] - this.split.dividerWidth) / 2) : 0
-    const w = dx === 'x' ? this.split.dividerWidth : this.w
-    const h = dx === 'y' ? this.split.dividerWidth : this.h
+    const x = dx === 'x' ? Math.round((this[dw] - dividerWidth) / 2) : 0
+    const y = dx === 'y' ? Math.round((this[dw] - dividerWidth) / 2) : 0
+    const w = dx === 'x' ? dividerWidth : this.w
+    const h = dx === 'y' ? dividerWidth : this.h
 
     if (this.pressed) {
-      crt.rectFill(x, y, w, h, this.split.dividerColorPress)
+      crt.rectFill(x, y, w, h, dividerColorPress)
     }
     else if (this.hovered) {
-      crt.rectFill(x, y, w, h, this.split.dividerColorHover)
+      crt.rectFill(x, y, w, h, dividerColorHover)
     }
   }
 
@@ -79,10 +85,6 @@ export class Split extends View {
   min = 0
   max = 0
   dir: 'x' | 'y' = 'y'
-  dividerWidth = 1
-  dividerColor = 0x33333300
-  dividerColorHover = 0xffffff33
-  dividerColorPress = 0x1177ffcc
 
   private resizer = $(SplitDivider, { split: this })
 
@@ -113,7 +115,7 @@ export class Split extends View {
       this.resizer.h = this.h
 
       this.resizer[dx] = this.pos - 1
-      this.resizer[dw] = this.dividerWidth + 2
+      this.resizer[dw] = 2
     }
   }
 
