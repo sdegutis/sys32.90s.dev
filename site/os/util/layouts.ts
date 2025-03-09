@@ -19,11 +19,6 @@ export function vacuumFirstLayout(this: View) {
   }
 }
 
-export function collapseAdjust(this: View) {
-  this.w = this.firstChild?.w ?? 0
-  this.h = this.firstChild?.h ?? 0
-}
-
 export function centerLayout(this: View) {
   const c = this.firstChild
   if (c) {
