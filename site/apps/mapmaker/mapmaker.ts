@@ -1,3 +1,4 @@
+import { GridX } from "../../os/containers/grid.js"
 import { PanedXA, PanedYA } from "../../os/containers/paned.js"
 import { Button } from "../../os/controls/button.js"
 import { Label } from "../../os/controls/label.js"
@@ -5,7 +6,7 @@ import { View } from "../../os/core/view.js"
 import { Panel } from "../../os/desktop/panel.js"
 import { makeStripeDrawer } from "../../os/util/draw.js"
 import { $ } from "../../os/util/dyn.js"
-import { makeFlowLayout, vacuumFirstLayout } from "../../os/util/layouts.js"
+import { vacuumFirstLayout } from "../../os/util/layouts.js"
 import { EditableMap } from "./map.js"
 import { COLORS } from "./mapcolors.js"
 import { MapView } from "./mapview.js"
@@ -38,7 +39,7 @@ export default () => {
           },
             $(Label, { text: 'grid' })
           ),
-          $(View, { layout: makeFlowLayout() },
+          $(GridX, { cols: 3 },
             ...COLORS.map((col, i) => $(Button, {
               padding: 1,
               $selected: map.currentTool.adapt(n => n === i),

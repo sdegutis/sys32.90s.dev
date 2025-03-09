@@ -1,4 +1,5 @@
-import { GroupX } from "../../os/containers/group.js"
+import { GridX } from "../../os/containers/grid.js"
+import { GroupX, GroupY } from "../../os/containers/group.js"
 import { PanedXB, PanedYB } from "../../os/containers/paned.js"
 import { Scroll } from "../../os/containers/scroll.js"
 import { SpacedX } from "../../os/containers/spaced.js"
@@ -13,7 +14,6 @@ import { showPrompt } from "../../os/util/dialog.js"
 import { makeStripeDrawer } from "../../os/util/draw.js"
 import { $ } from "../../os/util/dyn.js"
 import { Reactive } from "../../os/util/events.js"
-import { makeFlowLayout } from "../../os/util/layouts.js"
 import { showMenu } from "../../os/util/menu.js"
 import { PaintView } from "./paintview.js"
 import { ResizerView } from "./resizer.js"
@@ -57,11 +57,22 @@ export default (filepath?: string) => {
           )
         )
       ),
-      toolArea = $(View, { w: 36, background: 0x99000033, layout: makeFlowLayout(), },
-        pencilTool = $(Button, { onClick: () => { paintView.tool = 'pencil' } }, $(View, { passthrough: true, w: 4, h: 4 })),
-        eraserTool = $(Button, { onClick: () => { paintView.tool = 'eraser' } }, $(View, { passthrough: true, w: 4, h: 4 })),
-        $(Button, { onClick: () => { addColor() } }, $(Label, { text: '+' })),
-      ),
+
+      $(GroupY, { align: 'a', gap: 2 },
+
+        $(GroupX, {},
+          pencilTool = $(Button, { onClick: () => { paintView.tool = 'pencil' } }, $(View, { passthrough: true, w: 4, h: 4 })),
+          eraserTool = $(Button, { onClick: () => { paintView.tool = 'eraser' } }, $(View, { passthrough: true, w: 4, h: 4 })),
+        ),
+
+        $(GroupX, {},
+          $(Button, { padding: 2, onClick: () => { addColor() } }, $(Label, { text: '+' })),
+        ),
+
+        toolArea = $(GridX, { cols: 3, background: 0x99000033, }),
+
+      )
+
     ),
   )
 

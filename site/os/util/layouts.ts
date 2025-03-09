@@ -31,25 +31,3 @@ export function centerLayout(this: View) {
     c.y = Math.round(this.h / 2 - c.h / 2)
   }
 }
-
-export function makeFlowLayout(padding = 0, gap = 0) {
-  return function (this: View) {
-    let x = padding
-    let y = padding
-    let h = 0
-    for (let i = 0; i < this.children.length; i++) {
-      const child = this.children[i]
-
-      if (x + child.w > this.w && i > 0) {
-        x = padding
-        y += h + gap
-        h = 0
-      }
-
-      child.x = x
-      child.y = y
-      x += child.w + gap
-      if (child.h > h) h = child.h
-    }
-  }
-}

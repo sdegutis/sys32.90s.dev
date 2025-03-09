@@ -8,7 +8,9 @@ export class GridX extends View {
   private get rows() { return Math.ceil(this.children.length / this.cols) }
 
   override adjust(): void {
-    const c = this.firstChild!
+    const c = this.firstChild
+    if (!c) return
+
     const rows = this.rows
     const cols = this.cols
     this.w = cols * c.w + this.gap * (cols - 1)
@@ -16,7 +18,9 @@ export class GridX extends View {
   }
 
   override layout(): void {
-    const c = this.firstChild!
+    const c = this.firstChild
+    if (!c) return
+
     const rows = this.rows
     const cols = this.cols
 
