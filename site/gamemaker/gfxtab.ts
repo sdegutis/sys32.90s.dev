@@ -170,15 +170,26 @@ class SpriteDrawer extends View {
 
   override onMouseDown(button: number): void {
     if (button === 0) {
-      sys.trackMouse({
-        move: () => {
-          const x = Math.floor(this.mouse.x / this.zoom)
-          const y = Math.floor(this.mouse.y / this.zoom)
+      if (sys.keys[' ']) {
+        const drag = dragMove(this)
+        sys.trackMouse({
+          move: () => {
+            drag()
+            sys.layoutTree(this.parent)
+          }
+        })
+      }
+      else {
+        sys.trackMouse({
+          move: () => {
+            const x = Math.floor(this.mouse.x / this.zoom)
+            const y = Math.floor(this.mouse.y / this.zoom)
 
-          const key = `${x},${y}`
-          this.spots[key] = this.ncol
-        }
-      })
+            const key = `${x},${y}`
+            this.spots[key] = this.ncol
+          }
+        })
+      }
     }
     else if (sys.keys['Control']) {
       const x = Math.floor(this.mouse.x / this.zoom)
