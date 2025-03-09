@@ -32,7 +32,7 @@ export class TextArea extends View {
   col = 0
   end = 0
 
-  override layout = vacuumFirstLayout
+  override layout = vacuumFirstLayout.layout
 
   private colors: number[][] = []
 

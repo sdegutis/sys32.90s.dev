@@ -8,7 +8,7 @@ class System {
 
   readonly root = $(View, {
     background: 0x00000000,
-    layout: vacuumAllLayout,
+    ...vacuumAllLayout,
   })
 
   focused = this.root

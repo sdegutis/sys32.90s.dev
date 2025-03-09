@@ -38,7 +38,7 @@ export class Panel extends View {
   onMenu?(): void
 
   override background = 0x070707ee
-  override layout = vacuumFirstLayout
+  override layout = vacuumFirstLayout.layout
 
   title = ''
 
@@ -79,7 +79,7 @@ export class Panel extends View {
 
     this.children = [
 
-      $(Border, { padding: 1, layout: vacuumFirstLayout, $borderColor: this.$data('panelFocused').adapt<number>(b => b ? 0x005599ff : 0x00559944) },
+      $(Border, { padding: 1, ...vacuumFirstLayout, $borderColor: this.$data('panelFocused').adapt<number>(b => b ? 0x005599ff : 0x00559944) },
 
         $(PanedYA, {},
 

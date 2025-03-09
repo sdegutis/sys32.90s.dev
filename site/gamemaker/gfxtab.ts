@@ -55,7 +55,7 @@ class SpriteImage extends Dynamic {
 export class SpriteEditor extends View {
 
   override background = 0x000000ff
-  override layout = vacuumAllLayout
+  override layout = vacuumAllLayout.layout
 
   override init(): void {
     const sprites: Sprite[] = [$(Sprite)]
@@ -102,7 +102,7 @@ class SpriteCanvas extends View {
 
   drawer!: SpriteDrawer
 
-  override layout = vacuumAllLayout
+  override layout = vacuumAllLayout.layout
   override draw = makeStripeDrawer(4, 2)
   override cursor = moveCursor
 

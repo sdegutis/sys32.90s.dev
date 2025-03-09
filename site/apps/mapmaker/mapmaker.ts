@@ -17,7 +17,7 @@ export default () => {
   let mapView: MapView
 
   const panel = $(Panel, { title: 'mapmaker', },
-    $(View, { layout: vacuumFirstLayout, background: 0xffffff11 },
+    $(View, { ...vacuumFirstLayout, background: 0xffffff11 },
 
       $(PanedXA, {
         onScroll: (up) => {
@@ -49,7 +49,7 @@ export default () => {
             ))
           )
         ),
-        $(View, { background: 0x333344ff, layout: vacuumFirstLayout },
+        $(View, { background: 0x333344ff, ...vacuumFirstLayout },
           $(View, {
             background: 0x222222ff,
             draw: makeStripeDrawer(4, 2)
