@@ -78,19 +78,21 @@ export class Panel extends View {
 
       $(Border, { padding: 1, ...vacuumFirstLayout, $borderColor: this.$ref('panelFocused').adapt<number>(b => b ? 0x005599ff : 0x00559944) },
 
-        $(PanedYA, {},
+        $(PanedYA, { gap: -1 },
 
           $(Spaced, { onMouseDown: titleBarMouseDown, },
-            $(Border, {},
+            $(Border, { padding: 1 },
               $(GroupX, { gap: 1 },
                 $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.onMenu?.() }, $(ImageView, { image: menubuttonImage })),
                 $(Label, { $text: this.$ref('title'), color: 0xaaaaaaff })
               )
             ),
-            $(Group, { gap: 0 },
-              $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.minimize() }, $(ImageView, { image: minImage })),
-              $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.maximize() }, $(ImageView, { image: maxImage })),
-              $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.close(), hoverBackground: 0x99000055, pressBackground: 0x44000099 }, $(ImageView, { image: axeImage }))
+            $(Border, { padding: 1 },
+              $(Group, { gap: 0 },
+                $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.minimize() }, $(ImageView, { image: minImage })),
+                $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.maximize() }, $(ImageView, { image: maxImage })),
+                $(Button, { background: 0x111111ff, padding: 2, onClick: () => this.close(), hoverBackground: 0x99000055, pressBackground: 0x44000099 }, $(ImageView, { image: axeImage }))
+              )
             )
           ),
 
