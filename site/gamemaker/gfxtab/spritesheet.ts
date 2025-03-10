@@ -1,13 +1,10 @@
 import { $, Addressable } from "../../os/util/dyn.js"
 import { multiplex } from "../../os/util/events.js"
-import type { Color } from "./palettes.js"
 
 export class Spritesheet extends Addressable {
 
   sprites: Sprite[] = [$(Sprite)]
   current = 0
-
-  color: Color = { p: 'vinik24', i: 8 }
 
   sprite: Sprite = null!
 
@@ -16,13 +13,6 @@ export class Spritesheet extends Addressable {
       sprites: this.$ref('sprites'),
       current: this.$ref('current'),
     }).adapt(d => d.sprites[d.current]))
-  }
-
-  changeColorBy(n: number) {
-    let i = this.color.i + n
-    if (i < 0) i = 23
-    if (i > 23) i = 0
-    this.color = { p: this.color.p, i }
   }
 
 }

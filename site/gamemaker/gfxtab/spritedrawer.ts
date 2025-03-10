@@ -8,6 +8,7 @@ import type { Spritesheet } from "./spritesheet.js"
 export class SpriteDrawer extends View {
 
   sheet!: Spritesheet
+  color: Color = null!
 
   override background = 0x00000033
   override cursor = null
@@ -43,7 +44,7 @@ export class SpriteDrawer extends View {
             const y = Math.floor(this.mouse.y / this.zoom)
 
             const key = `${x},${y}`
-            this.spots[key] = this.sheet.color
+            this.spots[key] = this.color
           }
         })
       }
@@ -55,7 +56,7 @@ export class SpriteDrawer extends View {
       const key = `${x},${y}`
       const spot = this.spots[key]
       if (spot) {
-        this.sheet.color = spot
+        this.color = spot
       }
     }
     else {

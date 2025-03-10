@@ -7,6 +7,7 @@ import { makeStripeDrawer } from "../../os/util/draw.js"
 import { $ } from "../../os/util/dyn.js"
 import { vacuumAllLayout } from "../../os/util/layouts.js"
 import { dragMove } from "../../os/util/selections.js"
+import type { Color } from "./palettes.js"
 import { SpriteDrawer } from "./spritedrawer.js"
 import type { Spritesheet } from "./spritesheet.js"
 
@@ -24,6 +25,8 @@ export class SpriteCanvas extends View {
   zoom = 4
   drawer!: SpriteDrawer
 
+  color: Color = null!
+
   override layout = vacuumAllLayout.layout
   override draw = makeStripeDrawer(4, 2)
   override cursor = moveCursor
@@ -33,7 +36,12 @@ export class SpriteCanvas extends View {
 
     this.children = [
       $(View, { passthrough: true, },
-        this.drawer = $(SpriteDrawer, { x: 10, y: 10, $sheet: this.$ref('sheet'), $zoom }),
+        this.drawer = $(SpriteDrawer, {
+          x: 10, y: 10,
+          $sheet: this.$ref('sheet'),
+          $color: this.$ref('color'),
+          $zoom
+        }),
         $(ResizerView<SpriteDrawer>)
       )
     ]
@@ -56,8 +64,15 @@ export class SpriteCanvas extends View {
       this.zoom = Math.min(max, Math.max(min, this.zoom + (up ? +1 : -1)))
     }
     else {
-      this.sheet.changeColorBy(up ? +1 : -1)
+      this.changeColorBy(up ? +1 : -1)
     }
+  }
+
+  private changeColorBy(n: number) {
+    let i = this.color.i + n
+    if (i < 0) i = 23
+    if (i > 23) i = 0
+    this.color = { p: this.color.p, i }
   }
 
 }

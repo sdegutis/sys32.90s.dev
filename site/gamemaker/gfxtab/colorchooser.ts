@@ -5,15 +5,16 @@ import { Button } from "../../os/controls/button.js"
 import { Label } from "../../os/controls/label.js"
 import { View } from "../../os/core/view.js"
 import { $ } from "../../os/util/dyn.js"
-import { palettes } from "./palettes.js"
+import { palettes, type Color } from "./palettes.js"
 import type { Spritesheet } from "./spritesheet.js"
 
 export class ColorChooser extends Border {
 
   sheet!: Spritesheet
+  color: Color = null!
 
   override init(): void {
-    const $color = this.sheet.$ref('color')
+    const $color = this.$ref('color')
 
     this.children = [
       $(Border, { background: 0x00000033, padding: 2 },
