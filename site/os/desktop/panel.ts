@@ -51,7 +51,10 @@ export class Panel extends View {
 
   override onResized(): void {
     this.layoutTree()
-    // this.layout()
+  }
+
+  override onChildResized(): void {
+    this.layoutTree()
   }
 
   override init(): void {
