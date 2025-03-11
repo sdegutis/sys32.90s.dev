@@ -37,6 +37,8 @@ export class Scroll extends View {
     this.$watch('h', () => this.adjustTracks())
     this.$watch('scrollx', () => this.adjustTracks())
     this.$watch('scrolly', () => this.adjustTracks())
+    this.$watch('scrollx', () => this.layout())
+    this.$watch('scrolly', () => this.layout())
   }
 
   private adjustTracks() {
