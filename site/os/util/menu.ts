@@ -20,9 +20,9 @@ export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
     onKeyDown() { menu.remove(); return true },
   },
     $(GroupY, { align: '-' },
-      ...items.map(it => it === '-'
-        ? $(View, { h: 5, draw() { crt.rectFill(0, 2, this.w, 1, 0xffffff11) } })
-        : $(Button, { padding: 2, onClick: it.onClick },
+      ...items.map(it => it === '-' ?
+        $(View, { h: 5, draw() { crt.rectFill(0, 2, this.w, 1, 0xffffff11) } }) :
+        $(Button, { padding: 2, onClick: it.onClick },
           $(Label, { text: it.text })
         )
       )
@@ -34,8 +34,6 @@ export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
   }
 
   adjust?.(menu)
-
-  console.log(menu)
 
   sys.root.addChild(menu)
   sys.focus(menu)

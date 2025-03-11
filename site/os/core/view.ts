@@ -52,24 +52,19 @@ export class View extends Addressable {
       this.onChildrenChanged()
     })
 
-    this.$watch('w', (w, old) => { if (w !== old) /* console.log(this, 'x', w, old), */ this.onResized('x') })
-    this.$watch('h', (h, old) => { if (h !== old) /* console.log(this, 'y', h, old), */ this.onResized('y') })
+    this.$watch('w', (w, old) => { if (w !== old) this.onResized() })
+    this.$watch('h', (h, old) => { if (h !== old) this.onResized() })
   }
 
   onChildrenChanged() {
     this.onChildResized()
   }
 
-  onResized(dir: 'x' | 'y') {
-    // console.log(this, 'onResized', dir)
+  onResized() {
     this.parent?.onChildResized?.()
   }
 
   onParentDidLayout() {
-    this.layoutTree()
-  }
-
-  layoutTree() {
     this.layout?.()
     for (const child of this.children) {
       child.onParentDidLayout()
@@ -77,9 +72,7 @@ export class View extends Addressable {
   }
 
   onChildResized() {
-    console.log(this, 'onChildResized')
     this.adjust?.()
-    this.parent?.onChildResized()
   }
 
   moveChild(child: View, pos = this.children.length) {

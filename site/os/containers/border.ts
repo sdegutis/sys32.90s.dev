@@ -15,6 +15,7 @@ export class Border extends View {
 
   override layout(): void {
     const c = this.firstChild
+    console.log('laying out', c)
     if (c) {
       c.x = this.padding
       c.y = this.padding

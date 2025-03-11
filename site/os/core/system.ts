@@ -13,6 +13,9 @@ class Root extends View {
   override onChildrenChanged(): void {
     this.onParentDidLayout()
   }
+  layoutTree() {
+    super.onParentDidLayout()
+  }
 }
 
 class System {
