@@ -19,7 +19,7 @@ export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
     onBlur() { menu.remove() },
     onKeyDown() { menu.remove(); return true },
   },
-    $(GroupY, { align: '-' },
+    $(GroupY, { align: 'a' },
       ...items.map(it => it === '-' ?
         $(View, { h: 5, draw() { crt.rectFill(0, 2, this.w, 1, 0xffffff11) } }) :
         $(Button, { padding: 2, onClick: it.onClick },

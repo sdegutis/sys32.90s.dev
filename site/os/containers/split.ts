@@ -33,7 +33,6 @@ class SplitDivider extends View {
 
   override onResized(): void { }
   override onChildResized(): void { }
-  override onChildrenChanged(): void { }
 
   override draw(): void {
     super.draw()
@@ -94,12 +93,12 @@ export class Split extends View {
   override init(): void {
     this.resizer = $(SplitDivider, { split: this })
     this.addChild(this.resizer)
-    this.$watch('pos', () => this.layout())
+    this.$watch('pos', () => this.layoutTree())
   }
 
-  // override onChildResized(): void {
-  //   // this.layout()
-  // }
+  override onChildResized(): void {
+    this.layoutTree()
+  }
 
   override layout(): void {
     const dx = this.dir
