@@ -15,6 +15,7 @@ function expandToFitContainer(this: View) {
   this.y = 0
   this.w = this.parent!.w
   this.h = this.parent!.h
+  centerLayout.call(this)
 }
 
 export async function showPrompt(text: string) {
@@ -43,8 +44,7 @@ export async function showPrompt(text: string) {
   )
 
   const overlay = $(View, {
-    adjust: expandToFitContainer,
-    layout: centerLayout,
+    layout: expandToFitContainer,
     background: 0x00000033,
     onKeyDown(key) {
       if (key === 'Escape') { cancel(); return true }
@@ -87,8 +87,7 @@ export async function showConfirm(text: string) {
   )
 
   const overlay = $(View, {
-    adjust: expandToFitContainer,
-    layout: centerLayout,
+    layout: expandToFitContainer,
     background: 0x00000033,
     onKeyDown(key) {
       if (key === 'Escape') { cancel(); return true }
