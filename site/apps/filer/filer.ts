@@ -7,7 +7,6 @@ import { Button } from "../../os/controls/button.js"
 import { ImageView } from "../../os/controls/image.js"
 import { Label } from "../../os/controls/label.js"
 import { Bitmap } from "../../os/core/bitmap.js"
-import { sys } from "../../os/core/system.js"
 import { Panel } from "../../os/desktop/panel.js"
 import { ws } from "../../os/desktop/workspace.js"
 import { fs } from "../../os/fs/fs.js"
@@ -41,7 +40,6 @@ export default () => {
         await folder.requestPermission({ mode: 'readwrite' })
         await fs.mount(drive, folder)
         addDriveButton(drive)
-        sys.layoutTree(panel)
       }
       catch { }
     }
@@ -57,7 +55,6 @@ export default () => {
       if (!name || fs.drives().includes(name)) return
       await fs.mkdirp([...currentBase, name].join(''))
       showfiles()
-      sys.layoutTree(panel)
     }
   }, $(Label, { text: 'new folder' }))
 
@@ -80,7 +77,6 @@ export default () => {
         }
       }, $(Label, { text: name }))
     })
-    sys.layoutTree(breadcrumbs.parent!)
 
     filelist.children = [
       ...folders.map(file => {
@@ -93,7 +89,6 @@ export default () => {
                   if (!(await showConfirm('are you sure?'))) return
                   await fs.rmdir([...base, file.name].join(''))
                   showfiles()
-                  sys.layoutTree(sidelist)
                 },
               },
               ])
@@ -120,7 +115,6 @@ export default () => {
                   if (!(await showConfirm('are you sure?'))) return
                   await fs.rm([...base, file.name].join(''))
                   showfiles()
-                  sys.layoutTree(sidelist)
                 },
               },
               ])
@@ -144,7 +138,6 @@ export default () => {
       filelist.children = [$(Border, { padding: 2 }, $(Label, { text: '[empty]', color: 0xffffff77 }))]
     }
 
-    sys.layoutTree(filelist)
   }
 
   function addDriveButton(drive: string) {
@@ -163,7 +156,6 @@ export default () => {
               onClick: () => {
                 fs.unmount(drive)
                 driveButton.remove()
-                sys.layoutTree(sidelist)
               },
             },
           ])
@@ -174,7 +166,6 @@ export default () => {
     )
 
     sidelist.addChild(driveButton, sidelist.children.indexOf(mountButton))
-    sys.layoutTree(sidelist.parent)
   }
 
   for (const drive of fs.drives()) {

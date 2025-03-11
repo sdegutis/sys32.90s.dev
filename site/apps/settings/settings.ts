@@ -15,7 +15,6 @@ export default () => {
   thesize.watch(s => {
     const [w, h] = s.split('x')
     sys.resize(+w, +h)
-    sys.layoutTree()
   })
 
   const size1 = makeSizeButton('320x180')

@@ -90,7 +90,6 @@ export class Split extends View {
 
   override init(): void {
     this.resizer = $(SplitDivider, { split: this })
-    this.$watch('pos', () => sys.layoutTree(this))
     this.addChild(this.resizer)
   }
 

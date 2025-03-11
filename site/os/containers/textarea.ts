@@ -21,7 +21,6 @@ export class TextArea extends View {
     this.highlight()
     this.row = Math.min(this.row, this.lines.length - 1)
     this.fixCol()
-    sys.layoutTree(this)
   }
 
   highlightings: Record<string, [number, RegExp]> = {}
@@ -89,7 +88,6 @@ export class TextArea extends View {
     this.restartBlinking()
     this.reflectCursorPos()
     this.scrollCursorIntoView()
-    sys.layoutTree(this)
   }
 
   private drawTextLabel() {
@@ -132,24 +130,20 @@ export class TextArea extends View {
 
     if (y < 0) {
       this.scroll.scrolly -= -y
-      sys.layoutTree(this)
     }
 
     if (x < 0) {
       this.scroll.scrollx -= -x
-      sys.layoutTree(this)
     }
 
     const maxy = this.scroll.h - this._cursor.h
     if (y > maxy) {
       this.scroll.scrolly -= maxy - y
-      sys.layoutTree(this)
     }
 
     const maxx = this.scroll.w - this._cursor.w
     if (x > maxx) {
       this.scroll.scrollx -= maxx - x
-      sys.layoutTree(this)
     }
   }
 
@@ -207,7 +201,6 @@ export class TextArea extends View {
       this.lines[this.row] = a + '  ' + b
       this.col += 2
       this.end = this.col
-      sys.layoutTree(this)
     }
     else if (key === 'Backspace') {
       if (this.col > 0) {
@@ -216,13 +209,11 @@ export class TextArea extends View {
           this.lines[this.row] = a.slice(0, -2) + b
           this.col -= 2
           this.end = this.col
-          sys.layoutTree(this)
         }
         else {
           this.lines[this.row] = a.slice(0, -1) + b
           this.col--
           this.end = this.col
-          sys.layoutTree(this)
         }
       }
       else if (this.row > 0) {
@@ -231,19 +222,16 @@ export class TextArea extends View {
         this.lines.splice(this.row, 1)
         this.row--
         this.col = this.end
-        sys.layoutTree(this)
       }
     }
     else if (key === 'Delete') {
       if (this.col < this.lines[this.row].length) {
         const [a, b] = this.halves()
         this.lines[this.row] = a + b.slice(1)
-        sys.layoutTree(this)
       }
       else if (this.row < this.lines.length - 1) {
         this.lines[this.row] += this.lines[this.row + 1]
         this.lines.splice(this.row + 1, 1)
-        sys.layoutTree(this)
       }
     }
     else if (key === 'Enter') {
@@ -251,14 +239,12 @@ export class TextArea extends View {
       this.lines[this.row] = a
       this.lines.splice(++this.row, 0, b)
       this.end = this.col = 0
-      sys.layoutTree(this)
     }
     else if (key.length === 1 && !sys.keys['Control'] && !sys.keys['Alt']) {
       const [a, b] = this.halves()
       this.lines[this.row] = a + key + b
       this.col++
       this.end = this.col
-      sys.layoutTree(this)
     }
     else {
       return false

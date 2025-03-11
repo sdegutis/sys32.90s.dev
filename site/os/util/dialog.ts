@@ -60,7 +60,6 @@ export async function showPrompt(text: string) {
 
   sys.root.addChild(overlay)
   sys.focus(field)
-  sys.layoutTree(overlay)
 
   p.promise.then(() => overlay.remove())
 
@@ -106,7 +105,6 @@ export async function showConfirm(text: string) {
 
   sys.root.addChild(overlay)
   sys.focus(dialog)
-  sys.layoutTree(overlay)
 
   p.promise.then(() => overlay.remove())
 

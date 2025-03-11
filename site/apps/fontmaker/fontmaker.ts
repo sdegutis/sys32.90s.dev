@@ -123,11 +123,6 @@ export default async (filename?: string) => {
   $width.watch(rebuildWhole)
   $height.watch(rebuildWhole)
 
-  $width.watch(() => sys.layoutTree(panel))
-  $height.watch(() => sys.layoutTree(panel))
-  $zoom.watch(() => sys.layoutTree(panel))
-  $hovered.watch(() => sys.layoutTree(panel))
-
   panel.onKeyDown = (key) => {
     if (key === 's' && sys.keys['Control']) {
 

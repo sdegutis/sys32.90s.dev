@@ -1,5 +1,4 @@
 import { Label } from "../controls/label.js"
-import { sys } from "../core/system.js"
 
 export class Clock extends Label {
 
@@ -10,7 +9,6 @@ export class Clock extends Label {
       if (p) {
         timer = setInterval((() => {
           this.text = new Date().toLocaleTimeString('en-us')
-          sys.layoutTree(this.parent!)
         }), 1000)
       }
     })

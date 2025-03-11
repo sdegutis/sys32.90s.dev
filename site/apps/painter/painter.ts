@@ -76,10 +76,6 @@ export default (filepath?: string) => {
     ),
   )
 
-  widthLabel.$watch('text', () => { sys.layoutTree(widthLabel.parent!) })
-  heightLabel.$watch('text', () => { sys.layoutTree(heightLabel.parent!) })
-  paintView.$watch('zoom', n => sys.layoutTree(panel))
-
   paintView.$watch('tool', t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff)
   paintView.$watch('tool', t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff)
 
@@ -87,7 +83,6 @@ export default (filepath?: string) => {
     const colorCode = await showPrompt('enter color code:')
     const color = parseInt('0x' + colorCode, 16)
     makeColorButton(color)
-    sys.layoutTree(toolArea.parent!)
   }
 
   const colorsWithButtons = new Set<number>()
@@ -118,7 +113,6 @@ export default (filepath?: string) => {
 
   filesource.watch(s => {
     panel.title = !s ? `painter:[no file]` : `painter:${s}`
-    sys.layoutTree(panel)
   })
 
   if (filesource.data) {
@@ -161,7 +155,6 @@ export default (filepath?: string) => {
   paintView.$watch('color', color => {
     if (!colorsWithButtons.has(color)) {
       makeColorButton(color)
-      sys.layoutTree(toolArea.parent!)
     }
   })
 

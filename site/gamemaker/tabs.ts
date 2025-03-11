@@ -47,7 +47,6 @@ export class TabPane<Tab extends string> extends View {
   override init(): void {
     this.mine.watch(t => {
       this.children = [this.tabs[t]]
-      sys.layoutTree()
       sys.focus(this.tabs[t])
     })
   }

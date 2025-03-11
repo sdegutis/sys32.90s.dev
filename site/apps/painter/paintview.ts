@@ -131,8 +131,6 @@ export class PaintView extends View {
         if (c !== undefined) this.grid[y * width + x] = c
       }
     }
-
-    sys.layoutTree(this.parent!)
   }
 
 }

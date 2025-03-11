@@ -25,7 +25,6 @@ export class TextField extends View {
     else {
       this._field.text = this.text.slice(0, this.length)
     }
-    sys.layoutTree(this)
   }
 
   override init(): void {

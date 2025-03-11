@@ -26,7 +26,6 @@ function makeFilePanel(opts: {
 
   file.watch(s => {
     panel.title = !s ? `${title}:[no file]` : `${title}:${s}`
-    sys.layoutTree(panel)
   })
 
   if (file.data) {

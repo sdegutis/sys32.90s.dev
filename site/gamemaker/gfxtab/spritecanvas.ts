@@ -48,13 +48,7 @@ export class SpriteCanvas extends View {
   }
 
   override onMouseDown(button: number): void {
-    const drag = dragMove(this.drawer)
-    sys.trackMouse({
-      move: () => {
-        drag()
-        sys.layoutTree(this)
-      }
-    })
+    sys.trackMouse({ move: dragMove(this.drawer) })
   }
 
   override onScroll(up: boolean): void {

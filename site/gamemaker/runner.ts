@@ -40,7 +40,6 @@ export class Runner {
 
     sys.root.addChild(this.gameView)
     sys.focus(this.gameView)
-    sys.layoutTree()
   }
 
   stop() {
@@ -50,7 +49,6 @@ export class Runner {
     this.removegametick?.()
     this.gameView.remove()
 
-    sys.layoutTree()
     sys.focus(this.editor)
   }
 

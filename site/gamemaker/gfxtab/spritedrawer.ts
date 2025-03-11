@@ -17,10 +17,6 @@ export class SpriteDrawer extends View {
 
   spots: Record<string, Color> = {}
 
-  override init(): void {
-    this.$watch('zoom', () => sys.layoutTree(this.parent!))
-  }
-
   override adjust(): void {
     this.w = this.sheet.sprite.width * this.zoom
     this.h = this.sheet.sprite.height * this.zoom
@@ -29,13 +25,7 @@ export class SpriteDrawer extends View {
   override onMouseDown(button: number): void {
     if (button === 0) {
       if (sys.keys[' ']) {
-        const drag = dragMove(this)
-        sys.trackMouse({
-          move: () => {
-            drag()
-            sys.layoutTree(this.parent)
-          }
-        })
+        sys.trackMouse({ move: dragMove(this) })
       }
       else {
         sys.trackMouse({
@@ -98,7 +88,6 @@ export class SpriteDrawer extends View {
   resize(width: number, height: number) {
     this.sheet.sprite.width = Math.max(1, width)
     this.sheet.sprite.height = Math.max(1, height)
-    sys.layoutTree()
   }
 
 }

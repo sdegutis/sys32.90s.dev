@@ -4,7 +4,7 @@ import { vacuumAllLayout } from "../util/layouts.js"
 import { crt } from "./crt.js"
 import { View } from "./view.js"
 
-class System {
+export class System {
 
   readonly root = $(View, {
     background: 0x00000000,

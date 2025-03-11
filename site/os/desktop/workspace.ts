@@ -44,8 +44,6 @@ class Workspace {
 
           this.progbuttons.addChild(button)
           this.progs.set(panel, button)
-
-          panel.$watch('title', s => { sys.layoutTree() })
         }
       }
 
@@ -60,8 +58,6 @@ class Workspace {
     })
 
     this.desktop.$watch('children', () => {
-      sys.layoutTree()
-
       const lastPanel = this.desktop.children.at(-1)
       lastPanel && sys.focus(lastPanel)
     })
@@ -70,7 +66,6 @@ class Workspace {
 
   showDesktop() {
     sys.root.addChild(this.root)
-    sys.layoutTree()
   }
 
   addPanel(panel: Panel) {
@@ -86,7 +81,6 @@ class Workspace {
     const mod = await import(path + path.split('/').at(-2) + '.js')
     const launch: () => void = mod.default
     this.programs.set(name, launch)
-    sys.layoutTree()
   }
 
   launch(name: string, path?: string) {
