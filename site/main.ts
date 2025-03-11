@@ -3,6 +3,7 @@ import { SplitY } from "./os/containers/split.js"
 import { Button } from "./os/controls/button.js"
 import { ImageView } from "./os/controls/image.js"
 import { Label } from "./os/controls/label.js"
+import { Slider } from "./os/controls/slider.js"
 import { TextField } from "./os/controls/textfield.js"
 import { Bitmap } from "./os/core/bitmap.js"
 import { sys } from "./os/core/system.js"
@@ -42,6 +43,7 @@ let top = $(SplitY, { background: 0x222222ff, pos: 40 },
       $(Button, { padding: 3, background: 0x009900ff },
         label = $(Label, { background: 0x990000ff, text: 'hey' })
       ),
+      $(Slider, { w: 20, knobSize: 4 }),
       image = $(ImageView, { image: axeImage })
     ),
   ),
