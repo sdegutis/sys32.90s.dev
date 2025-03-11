@@ -6,6 +6,13 @@ export class ImageView extends View {
   image?: Bitmap
   override passthrough = true
 
+  override init(): void {
+    this.$watch('image', im => {
+      this.adjust()
+      this.needsRedraw()
+    })
+  }
+
   override adjust(): void {
     this.w = (this.image?.width ?? 0)
     this.h = (this.image?.height ?? 0)

@@ -1,7 +1,9 @@
-import { GroupX } from "./os/containers/group.js"
+import { GroupX, GroupY } from "./os/containers/group.js"
 import { Button } from "./os/controls/button.js"
+import { ImageView } from "./os/controls/image.js"
 import { Label } from "./os/controls/label.js"
 import { TextField } from "./os/controls/textfield.js"
+import { Bitmap } from "./os/core/bitmap.js"
 import { sys } from "./os/core/system.js"
 import { ws } from "./os/desktop/workspace.js"
 import { $ } from "./os/util/dyn.js"
@@ -25,17 +27,26 @@ sys.root.childResized = centerLayout.childResized
 
 let label
 let field
+let image
+
+const axeImage = new Bitmap([0x333333ff], 4, [1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,])
+const adjImage = new Bitmap([0xffffff77], 2, [1, 0, 1, 1,])
 
 let top = $(GroupX, { gap: 2, background: 0x000099ff },
-  $(Button, { padding: 3, background: 0x009900ff },
-    label = $(Label, { background: 0x990000ff, text: 'hey' })
+  $(GroupY, {},
+    $(Button, { padding: 3, background: 0x009900ff },
+      label = $(Label, { background: 0x990000ff, text: 'hey' })
+    ),
+    image = $(ImageView, { image: axeImage })
   ),
   $(Button, { padding: 3, background: 0x000099ff },
     field = $(TextField, { background: 0x990000ff, text: 'hey' })
   ),
 )
 
+
 sys.root.addChild(top)
 
 setTimeout(() => label.text = "hi\nho", 500)
 setTimeout(() => field.length = 7, 1000)
+setTimeout(() => image.image = adjImage, 1500)
