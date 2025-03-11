@@ -54,6 +54,7 @@ export class Panel extends View {
   }
 
   override onChildResized(): void {
+    this.adjust?.()
     this.layoutTree()
   }
 

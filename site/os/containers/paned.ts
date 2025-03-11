@@ -7,6 +7,7 @@ export class Paned extends View {
   vacuum: 'a' | 'b' = 'a'
 
   override onChildResized(): void {
+    this.adjust?.()
     this.layoutTree()
   }
 

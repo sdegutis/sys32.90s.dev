@@ -66,4 +66,6 @@ export default function gamemaker() {
 
   sys.root.children = [root]
   sys.focus(codeEditor)
+
+  root.layoutTree()
 }

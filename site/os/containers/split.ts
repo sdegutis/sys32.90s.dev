@@ -96,6 +96,7 @@ export class Split extends View {
   }
 
   override onChildResized(): void {
+    this.adjust?.()
     this.layoutTree()
   }
 
