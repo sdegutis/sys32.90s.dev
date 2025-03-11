@@ -1,4 +1,5 @@
 import { GroupX, GroupY } from "./os/containers/group.js"
+import { Scroll } from "./os/containers/scroll.js"
 import { SplitY } from "./os/containers/split.js"
 import { Button } from "./os/controls/button.js"
 import { ImageView } from "./os/controls/image.js"
@@ -7,10 +8,8 @@ import { Slider } from "./os/controls/slider.js"
 import { TextField } from "./os/controls/textfield.js"
 import { Bitmap } from "./os/core/bitmap.js"
 import { sys } from "./os/core/system.js"
-import { View } from "./os/core/view.js"
 import { ws } from "./os/desktop/workspace.js"
 import { $ } from "./os/util/dyn.js"
-import { centerLayout } from "./os/util/layouts.js"
 
 await ws.addProgram("filer", import.meta.resolve("./apps/filer/"))
 await ws.addProgram("settings", import.meta.resolve("./apps/settings/"))
@@ -47,8 +46,10 @@ let top = $(SplitY, { background: 0x222222ff, pos: 40 },
       image = $(ImageView, { image: axeImage })
     ),
   ),
-  $(View, { ...centerLayout, background: 0x003300ff },
-    $(Label, { text: 'second pane' })
+  $(Scroll, { background: 0x003300ff },
+    $(GroupY, { gap: 1 },
+      ...Array(100).keys().map(i => $(Label, { text: 'second pane' + i }))
+    )
   )
 )
 
