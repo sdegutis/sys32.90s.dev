@@ -41,6 +41,7 @@ export class View extends Addressable {
   children: ReadonlyArray<View> = []
 
   override init(): void {
+    // this.adjust?.()
     this.$watch('children', (children, old) => {
       for (const child of old) {
         if (child.parent === this) {
@@ -51,9 +52,25 @@ export class View extends Addressable {
         child.parent = this
       }
       this.layout?.()
+      this.needsRedraw()
       sys && (sys.needsRedraw = true)
     })
+
+    this.$watch('w', (w, old) => {
+      console.log('w changed', w, old, this.parent)
+      if (w !== old) this.parent?.childResized?.('x')
+    })
+    this.$watch('h', (h, old) => {
+      console.log('h changed', h, old, this.parent)
+      if (h !== old) this.parent?.childResized?.('y')
+    })
   }
+
+  needsRedraw() {
+    sys && (sys.needsRedraw = true)
+  }
+
+  childResized?(dir: 'x' | 'y'): void
 
   moveChild(child: View, pos = this.children.length) {
     const i = this.children.indexOf(child)

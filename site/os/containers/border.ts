@@ -8,9 +8,21 @@ export class Border extends View {
 
   override passthrough = true
 
+  override init(): void {
+    this.adjust()
+    this.layout()
+    this.needsRedraw()
+  }
+
   override adjust(): void {
     this.w = this.padding + (this.firstChild?.w ?? 0) + this.padding
     this.h = this.padding + (this.firstChild?.h ?? 0) + this.padding
+  }
+
+  override childResized(dir: "x" | "y"): void {
+    this.adjust()
+    this.layout()
+    this.needsRedraw()
   }
 
   override layout(): void {

@@ -13,6 +13,10 @@ export class Label extends View {
   override init(): void {
     this.font = crt34
     this.$ref('lines', this.$ref('text').adapt(s => s.split('\n')))
+    this.$watch('text', () => {
+      this.adjust()
+      this.needsRedraw()
+    })
   }
 
   override adjust(): void {
@@ -26,7 +30,6 @@ export class Label extends View {
 
   override draw() {
     super.draw()
-
     this.font.print(0, 0, this.color, this.text)
   }
 
