@@ -47,6 +47,13 @@ export class Panel extends View {
 
   private lastPos: { x: number, y: number, w: number, h: number } | undefined
 
+  resizerTimer?: number
+
+  override onResized(): void {
+    this.layoutTree()
+    // this.layout()
+  }
+
   override init(): void {
     const pad = 2
 

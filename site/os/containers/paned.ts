@@ -6,7 +6,9 @@ export class Paned extends View {
   dir: 'x' | 'y' = 'x'
   vacuum: 'a' | 'b' = 'a'
 
-  override onChildResized(): void { }
+  override onChildResized(): void {
+    this.layoutTree()
+  }
 
   override layout(): void {
     const a = { ...this.children[0] }

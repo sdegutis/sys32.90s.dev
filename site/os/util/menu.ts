@@ -16,13 +16,17 @@ export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
     padding: 2,
     background: 0x333333ff,
     passthrough: false,
-    onBlur() { menu.remove() },
-    onKeyDown() { menu.remove(); return true },
+    onBlur() { menuremove() },
+    onKeyDown() { menuremove(); return true },
   },
     $(GroupY, { align: 'a' },
       ...items.map(it => it === '-' ?
         $(View, { h: 5, draw() { crt.rectFill(0, 2, this.w, 1, 0xffffff11) } }) :
-        $(Button, { padding: 2, onClick: it.onClick },
+        $(Button, {
+          padding: 2, onClick: () => {
+            it.onClick()
+          }
+        },
           $(Label, { text: it.text })
         )
       )
@@ -31,6 +35,10 @@ export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
 
   if (menu.y + menu.h > sys.root.h) {
     menu.y = sys.mouse.y - menu.h
+  }
+
+  function menuremove() {
+    setTimeout(() => menu.remove())
   }
 
   adjust?.(menu)

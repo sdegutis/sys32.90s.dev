@@ -41,7 +41,9 @@ export class Scroll extends View {
     this.$watch('scrolly', () => this.layout())
   }
 
-  override onChildResized(): void { }
+  override onChildResized(): void {
+    this.layout()
+  }
 
   private adjustTracks() {
     const contentView = this.firstChild!

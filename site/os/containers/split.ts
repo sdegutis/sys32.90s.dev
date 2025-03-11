@@ -32,7 +32,6 @@ class SplitDivider extends View {
   }
 
   override onResized(): void { }
-  override onChildResized(): void { }
 
   override draw(): void {
     super.draw()
