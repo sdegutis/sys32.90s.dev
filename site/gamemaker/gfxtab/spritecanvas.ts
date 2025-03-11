@@ -27,7 +27,7 @@ export class SpriteCanvas extends View {
 
   color: Color = null!
 
-  override layout = vacuumAllLayout.layout
+  override layout = vacuumAllLayout
   override draw = makeStripeDrawer(4, 2)
   override cursor = moveCursor
 

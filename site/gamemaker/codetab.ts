@@ -24,7 +24,7 @@ export class CodeEditor extends View {
   get text() { return this.textarea.text }
   set text(s: string) { this.textarea.text = s }
 
-  override layout = vacuumFirstLayout.layout
+  override layout = vacuumFirstLayout
 
   override init(): void {
     this.children = [this.textarea]

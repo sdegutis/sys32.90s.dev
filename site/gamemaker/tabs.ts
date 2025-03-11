@@ -39,7 +39,7 @@ export function makeTabMenu<Tab extends string>(
 
 export class TabPane<Tab extends string> extends View {
 
-  override layout = vacuumFirstLayout.layout
+  override layout = vacuumFirstLayout
 
   tabs!: Record<Tab, View>
   mine!: Reactive<Tab>

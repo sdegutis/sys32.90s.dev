@@ -8,7 +8,7 @@ export class DocsViewer extends View {
 
   override background = 0x000000ff
 
-  override layout = centerLayout.layout
+  override layout = centerLayout
 
   override init(): void {
     this.children = [

@@ -6,7 +6,7 @@ import { View } from "./view.js"
 
 class Root extends View {
   override background = 0x00000000
-  override layout = vacuumAllLayout.layout
+  override layout = vacuumAllLayout
 }
 
 class System {

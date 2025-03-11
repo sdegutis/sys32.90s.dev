@@ -37,7 +37,7 @@ export default () => {
   }
 
   const panel = $(Panel, { title: 'settings', w: 100, h: 60 },
-    $(View, { ...centerLayout, background: 0xffffff11 },
+    $(View, { layout: centerLayout, background: 0xffffff11 },
 
       $(Border, { padding: 2 },
         $(GroupX, { gap: 2, align: 'a' },

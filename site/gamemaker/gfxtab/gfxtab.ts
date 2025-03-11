@@ -12,7 +12,7 @@ import { SpriteView } from "./spriteview.js"
 export class SpriteEditor extends View {
 
   override background = 0x000000ff
-  override layout = vacuumAllLayout.layout
+  override layout = vacuumAllLayout
 
   sheet = $(Spritesheet)
   color: Color = { p: 'vinik24', i: 8 }
