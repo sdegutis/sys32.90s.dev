@@ -88,6 +88,7 @@ export class SpriteDrawer extends View {
   resize(width: number, height: number) {
     this.sheet.sprite.width = Math.max(1, width)
     this.sheet.sprite.height = Math.max(1, height)
+    this.adjust()
   }
 
 }
