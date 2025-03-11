@@ -21,6 +21,12 @@ export class PaintView extends View {
 
   private grid: number[] = []
 
+  override init(): void {
+    this.$watch('zoom', () => this.adjust())
+    this.$watch('width', () => this.adjust())
+    this.$watch('height', () => this.adjust())
+  }
+
   override adjust(): void {
     this.w = this.width * this.zoom
     this.h = this.height * this.zoom

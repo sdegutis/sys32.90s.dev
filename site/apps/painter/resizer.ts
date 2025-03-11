@@ -41,7 +41,6 @@ export class ResizerView<T extends View & Moveable> extends View {
         const w = Math.floor(o.w / other.zoom)
         const h = Math.floor(o.h / other.zoom)
         other.resize(w, h)
-        this.parent?.layoutTree()
       }
     })
   }

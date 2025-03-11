@@ -35,7 +35,7 @@ export class SpriteCanvas extends View {
     const $zoom = this.$ref('zoom')
 
     this.children = [
-      $(View, { passthrough: true, },
+      $(View, { passthrough: true, onChildResized: () => { this.layoutTree() } },
         this.drawer = $(SpriteDrawer, {
           x: 10, y: 10,
           $sheet: this.$ref('sheet'),
@@ -46,9 +46,7 @@ export class SpriteCanvas extends View {
       )
     ]
 
-    $zoom.watch(() => {
-      this.layoutTree()
-    })
+    $zoom.watch(() => this.layoutTree())
   }
 
   override onMouseDown(button: number): void {
