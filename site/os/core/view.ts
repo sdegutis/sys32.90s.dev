@@ -3,6 +3,7 @@ import { Addressable } from "../util/dyn.js"
 import { Bitmap } from "./bitmap.js"
 import { crt } from "./crt.js"
 import { Cursor } from "./cursor.js"
+import type { System } from "./system.js"
 
 const pointer = Cursor.fromBitmap(Bitmap.fromString(fs.get('sys/pointer.bitmap')!))
 
@@ -65,6 +66,7 @@ export class View extends Addressable {
     for (const child of this.children) {
       child.layoutTree()
     }
+    sys.needsRedraw = true
   }
 
   onChildResized() {
@@ -104,3 +106,6 @@ export class View extends Addressable {
   }
 
 }
+
+let sys: System
+import('./system.js').then(mod => sys = mod.sys)

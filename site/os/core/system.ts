@@ -13,7 +13,7 @@ class Root extends View {
   _layoutTree() { }
 }
 
-class System {
+export class System {
 
   readonly root = $(Root)
 
