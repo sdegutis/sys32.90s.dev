@@ -7,11 +7,14 @@ export class Clock extends Label {
     this.$watch('parent', (p) => {
       clearInterval(timer)
       if (p) {
-        timer = setInterval((() => {
-          this.text = new Date().toLocaleTimeString('en-us')
-        }), 1000)
+        timer = setInterval((() => this.updateTime()), 1000)
       }
     })
+    this.updateTime()
+  }
+
+  updateTime() {
+    this.text = new Date().toLocaleTimeString('en-us')
   }
 
   // override draw(): void {
