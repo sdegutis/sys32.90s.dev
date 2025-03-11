@@ -17,6 +17,10 @@ export class SpriteDrawer extends View {
 
   spots: Record<string, Color> = {}
 
+  override init(): void {
+    this.$watch('zoom', () => this.adjust())
+  }
+
   override adjust(): void {
     this.w = this.sheet.sprite.width * this.zoom
     this.h = this.sheet.sprite.height * this.zoom

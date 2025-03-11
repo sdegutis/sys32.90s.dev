@@ -79,6 +79,9 @@ export default (filepath?: string) => {
   paintView.$watch('tool', t => pencilTool.background = t === 'pencil' ? 0xffffffff : 0x333333ff)
   paintView.$watch('tool', t => eraserTool.background = t === 'eraser' ? 0xffffffff : 0x333333ff)
 
+  paintView.$watch('width', () => panel.layoutTree())
+  paintView.$watch('height', () => panel.layoutTree())
+
   async function addColor() {
     const colorCode = await showPrompt('enter color code:')
     const color = parseInt('0x' + colorCode, 16)

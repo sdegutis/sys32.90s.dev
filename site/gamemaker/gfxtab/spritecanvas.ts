@@ -45,6 +45,10 @@ export class SpriteCanvas extends View {
         $(ResizerView<SpriteDrawer>)
       )
     ]
+
+    $zoom.watch(() => {
+      this.layoutTree()
+    })
   }
 
   override onMouseDown(button: number): void {
