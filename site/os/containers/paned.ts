@@ -7,7 +7,9 @@ export class Paned extends View {
   vacuum: 'a' | 'b' = 'a'
 
   override layout(): void {
-    const [a, b] = this.children
+    const a = { ...this.children[0] }
+    const b = { ...this.children[1] }
+
     const favored = ({ a, b })[this.vacuum]
 
     const dx = this.dir
@@ -31,6 +33,15 @@ export class Paned extends View {
       b[dx] = pos + this.gap
       b[dw] = vv
     }
+
+    this.children[0].x = a.x
+    this.children[0].y = a.y
+    this.children[0].w = a.w
+    this.children[0].h = a.h
+    this.children[1].x = b.x
+    this.children[1].y = b.y
+    this.children[1].w = b.w
+    this.children[1].h = b.h
   }
 
 }

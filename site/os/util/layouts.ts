@@ -8,9 +8,6 @@ export const vacuumAllLayout = {
       c.w = this.w
       c.h = this.h
     }
-  },
-  childResized(this: View) {
-    this.layout!()
   }
 }
 
@@ -23,9 +20,6 @@ export const vacuumFirstLayout = {
       c.w = this.w
       c.h = this.h
     }
-  },
-  childResized(this: View) {
-    this.layout!()
   }
 }
 
@@ -36,8 +30,5 @@ export const centerLayout = {
       c.x = Math.round(this.w / 2 - c.w / 2)
       c.y = Math.round(this.h / 2 - c.h / 2)
     }
-  },
-  childResized(this: View) {
-    this.layout!()
   }
 }

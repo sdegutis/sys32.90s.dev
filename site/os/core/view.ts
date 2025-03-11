@@ -50,24 +50,30 @@ export class View extends Addressable {
       for (const child of children) {
         child.parent = this
       }
-      this.adjust?.()
-      this.layout?.()
-      this.needsRedraw()
+      this.onChildResized()
     })
 
-    this.$watch('w', (w, old) => { if (w !== old) this.parent?.childResized?.('x') })
-    this.$watch('h', (h, old) => { if (h !== old) this.parent?.childResized?.('y') })
+    this.$watch('w', (w, old) => { if (w !== old) this.parent?.onChildResized?.() })
+    this.$watch('h', (h, old) => { if (h !== old) this.parent?.onChildResized?.() })
 
     this.adjust?.()
-    this.layout?.()
-    this.needsRedraw()
   }
 
   needsRedraw() {
     sys && (sys.needsRedraw = true)
   }
 
-  childResized?(dir: 'x' | 'y'): void
+  onParentLayout() {
+    this.layout?.()
+    for (const child of this.children) {
+      child.onParentLayout()
+    }
+  }
+
+  onChildResized() {
+    this.adjust?.()
+    this.parent?.onChildResized()
+  }
 
   moveChild(child: View, pos = this.children.length) {
     const i = this.children.indexOf(child)

@@ -4,14 +4,20 @@ import { vacuumAllLayout } from "../util/layouts.js"
 import { crt } from "./crt.js"
 import { View } from "./view.js"
 
+class Root extends View {
+  override background = 0x00000000
+  override layout = vacuumAllLayout.layout
+  override onChildResized(): void {
+    this.onParentLayout()
+    this.needsRedraw()
+  }
+}
+
 export class System {
 
-  readonly root = $(View, {
-    background: 0x00000000,
-    ...vacuumAllLayout,
-  })
+  readonly root = $(Root)
 
-  focused = this.root
+  focused: View = this.root
   keys: Record<string, boolean> = {}
   mouse = { x: 0, y: 0 }
 
@@ -20,7 +26,7 @@ export class System {
   needsRedraw = true
 
   private allHovered = new Set<View>()
-  private hovered = this.root
+  private hovered: View = this.root
 
   private mouseMoved = new Listener()
   private mouseUp = new Listener()

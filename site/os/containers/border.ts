@@ -13,12 +13,6 @@ export class Border extends View {
     this.h = this.padding + (this.firstChild?.h ?? 0) + this.padding
   }
 
-  override childResized(dir: "x" | "y"): void {
-    this.adjust()
-    this.layout()
-    this.needsRedraw()
-  }
-
   override layout(): void {
     const c = this.firstChild
     if (c) {

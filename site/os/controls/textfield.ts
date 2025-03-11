@@ -35,11 +35,7 @@ export class TextField extends View {
     this._cursor.$ref('font', this.$ref('font'))
     this.children = [this._field, this._cursor]
     this.$watch('text', s => this.showText())
-    this.$watch('length', s => {
-      this.adjust()
-      this.layout()
-      this.needsRedraw()
-    })
+    this.$watch('length', s => this.adjust())
   }
 
   override layout(): void {

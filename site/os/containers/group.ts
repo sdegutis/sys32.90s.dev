@@ -8,12 +8,6 @@ export class Group extends View {
 
   override passthrough = true
 
-  override childResized(dir: "x" | "y"): void {
-    this.adjust()
-    this.layout()
-    this.needsRedraw()
-  }
-
   override adjust(): void {
     const dw = this.dir === 'x' ? 'w' : 'h'
     const dh = this.dir === 'x' ? 'h' : 'w'
