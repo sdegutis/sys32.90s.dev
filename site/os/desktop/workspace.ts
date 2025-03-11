@@ -13,24 +13,32 @@ import { Panel } from "./panel.js"
 
 class Workspace {
 
-  private readonly progbuttons = $(GroupX, { gap: 1 })
-  private readonly runButton = $(Button, {
-    padding: 2,
-    background: 0x222222ff,
-    onClick: () => this.showProgMenu(),
-  }, $(Label, { text: 'run' }))
+  private progbuttons !: GroupX
+  private runButton !: Button
 
-  private readonly clock = $(Border, { padding: 2 }, $(Clock))
-  private readonly taskbar = $(Spaced, { background: 0x000000ff },
-    $(GroupX, { gap: 1 }, this.runButton, this.progbuttons),
-    this.clock)
+  private clock !: Border
+  private taskbar !: Spaced
 
-  private readonly desktop = $(View, { background: 0x222222ff })
-  private readonly root = $(PanedYB, {}, this.desktop, this.taskbar)
+  private desktop !: View
+  private root !: PanedYB
 
   private progs = new Map<Panel, Button>()
 
-  constructor() {
+  showDesktop() {
+    this.progbuttons = $(GroupX, { gap: 1 })
+    this.runButton = $(Button, {
+      padding: 2,
+      background: 0x222222ff,
+      onClick: () => this.showProgMenu(),
+    }, $(Label, { text: 'run' }))
+
+    this.clock = $(Border, { padding: 2 }, $(Clock))
+    this.taskbar = $(Spaced, { background: 0x000000ff },
+      $(GroupX, { gap: 1 }, this.runButton, this.progbuttons),
+      this.clock)
+
+    this.desktop = $(View, { background: 0x222222ff })
+    this.root = $(PanedYB, {}, this.desktop, this.taskbar)
 
     this.desktop.$watch('children', (current, old) => {
 
@@ -62,9 +70,6 @@ class Workspace {
       lastPanel && sys.focus(lastPanel)
     })
 
-  }
-
-  showDesktop() {
     sys.root.addChild(this.root)
   }
 
