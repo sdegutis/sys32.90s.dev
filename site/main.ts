@@ -1,3 +1,5 @@
+import { Border } from "./os/containers/border.js"
+import { GridX } from "./os/containers/grid.js"
 import { GroupY } from "./os/containers/group.js"
 import { SpacedX } from "./os/containers/spaced.js"
 import { SplitY } from "./os/containers/split.js"
@@ -39,7 +41,15 @@ let top = $(SplitY, { background: 0x222222ff, pos: 40 },
     $(Button, { padding: 3, background: 0x000099ff },
       field = $(TextField, { background: 0x990000ff, text: 'hey' })
     ),
-    $(Label, { text: 'mid' }),
+    $(Border, { padding: 3, background: 0x00000033 },
+      $(GridX, { cols: 3, gap: 3, },
+        ...Array(10).keys().map(i =>
+          $(Border, { padding: 3 },
+            $(Label, { text: 'mid ' + i, background: 0xffffff33 })
+          )
+        )
+      )
+    ),
     $(GroupY, {},
       $(Button, { padding: 3, background: 0x009900ff },
         label = $(Label, { background: 0x990000ff, text: 'hey' })
