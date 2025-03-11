@@ -4,7 +4,7 @@ export class Group extends View {
 
   gap = 0
   dir: 'x' | 'y' = 'x'
-  align: 'a' | 'm' | 'z' | '-' = 'm'
+  align: 'a' | 'm' | 'z' = 'm'
 
   override passthrough = true
 
@@ -34,12 +34,12 @@ export class Group extends View {
       x += child[dw] + this.gap
       child[dy] = this.align === 'm' ? Math.round((this[dh] - child[dh]) / 2) :
         this.align === 'a' ? 0 :
-          this.align === '-' ? 0 :
-            this[dh] - child[dh]
+          // this.align === '-' ? 0 :
+          this[dh] - child[dh]
 
-      if (this.align === '-') {
-        child[dh] = this[dh]
-      }
+      // if (this.align === '-') {
+      //   child[dh] = this[dh]
+      // }
     }
   }
 

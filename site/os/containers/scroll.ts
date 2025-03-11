@@ -42,7 +42,7 @@ export class Scroll extends View {
   }
 
   override onChildResized(): void {
-    this.layout()
+    this.layoutTree()
   }
 
   private adjustTracks() {
