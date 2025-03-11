@@ -60,10 +60,12 @@ export default async (filename?: string) => {
     view.$watch('hovered', (h) => { if (h) $hovered.update(char) })
   }
 
+  let collView
+
   const panel = $(Panel, { title: 'fontmaker', },
     $(PanedYB, {},
       $(Scroll, {},
-        $(View, {
+        collView = $(View, {
           background: 0x44444499,
           adjust() {
             const padding = 1 * $zoom.data
@@ -119,6 +121,8 @@ export default async (filename?: string) => {
       )
     )
   )
+
+  $zoom.watch(() => { collView.layoutTree() })
 
   $width.watch(rebuildWhole)
   $height.watch(rebuildWhole)

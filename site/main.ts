@@ -10,7 +10,7 @@ await ws.addProgram("fontmaker", import.meta.resolve("./apps/fontmaker/"))
 // gamemaker()
 
 ws.showDesktop()
-ws.launch('painter')
+ws.launch('fontmaker')
 
 // // sys.root.layout = centerLayout.layout
 // sys.root.background = 0x000000ff

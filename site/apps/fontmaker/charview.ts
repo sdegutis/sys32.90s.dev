@@ -27,6 +27,10 @@ export class CharView extends View {
         }
       }
     }
+
+    this.$watch('width', () => this.adjust())
+    this.$watch('height', () => this.adjust())
+    this.$watch('zoom', () => this.adjust())
   }
 
   override adjust(): void {

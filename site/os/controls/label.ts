@@ -14,6 +14,7 @@ export class Label extends View {
     this.font = crt34
     this.$ref('lines', this.$ref('text').adapt(s => s.split('\n')))
     this.$watch('text', () => this.adjust())
+    this.$watch('font', () => this.adjust())
   }
 
   override adjust(): void {
