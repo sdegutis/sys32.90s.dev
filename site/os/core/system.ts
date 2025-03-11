@@ -8,14 +8,12 @@ class Root extends View {
   override background = 0x00000000
   override layout = vacuumFirstLayout
   override onChildResized(): void {
-    this.onParentDidLayout()
+    this.layoutTree()
   }
   override onChildrenChanged(): void {
-    this.onParentDidLayout()
+    this.layoutTree()
   }
-  layoutTree() {
-    super.onParentDidLayout()
-  }
+  layoutTree() { }
 }
 
 class System {
@@ -37,8 +35,8 @@ class System {
   private mouseUp = new Listener()
 
   constructor() {
-    this.root.onParentDidLayout = () => {
-      this.root.layoutTree()
+    this.root.layoutTree = () => {
+      this.root.onParentDidLayout()
       this.checkUnderMouse()
       this.needsRedraw = true
     }
@@ -168,7 +166,7 @@ class System {
     this.mouse.x = 0
     this.mouse.y = 0
     crt.resize(w, h)
-    this.root.onParentDidLayout()
+    this.root.layoutTree()
   }
 
   private checkUnderMouse() {
