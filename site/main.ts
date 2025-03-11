@@ -1,4 +1,10 @@
+import { GroupX } from "./os/containers/group.js"
+import { Button } from "./os/controls/button.js"
+import { Label } from "./os/controls/label.js"
+import { sys } from "./os/core/system.js"
 import { ws } from "./os/desktop/workspace.js"
+import { $ } from "./os/util/dyn.js"
+import { centerLayout } from "./os/util/layouts.js"
 
 await ws.addProgram("filer", import.meta.resolve("./apps/filer/"))
 await ws.addProgram("settings", import.meta.resolve("./apps/settings/"))
@@ -12,20 +18,20 @@ await ws.addProgram("fontmaker", import.meta.resolve("./apps/fontmaker/"))
 // ws.showDesktop()
 // ws.launch('painter')
 
-// sys.root.layout = centerLayout.layout
-// sys.root.background = 0x000000ff
-// sys.root.childResized = centerLayout.childResized
+sys.root.layout = centerLayout.layout
+sys.root.background = 0x000000ff
+sys.root.childResized = centerLayout.childResized
 
-// let label
-// let border
+let label
+let top = $(GroupX, { gap: 2, background: 0x000099ff },
+  $(Button, { padding: 3, background: 0x009900ff },
+    label = $(Label, { background: 0x990000ff, text: 'hey' })
+  ),
+  $(Button, { padding: 3, background: 0x000099ff },
+    $(Label, { background: 0x990000ff, text: 'hey' })
+  ),
+)
 
-// border = $(Border, {},
-//   label = $(Label, { background: 0x990000ff, text: 'hey' })
-// )
+sys.root.addChild(top)
 
-// sys.root.addChild(border)
-
-// console.log(border)
-// console.log(label)
-
-// setTimeout(() => label.text = "hi", 500)
+setTimeout(() => label.text = "hi\nho", 500)
