@@ -27,9 +27,11 @@ class SplitDivider extends View {
 
   override init(): void {
     const dividerColor = 0x33333300
-
     this.background = dividerColor
     this.cursor = this.split.dir === 'x' ? xresize : yresize
+  }
+
+  override onResized(): void {
   }
 
   override draw(): void {
@@ -91,12 +93,18 @@ export class Split extends View {
   override init(): void {
     this.resizer = $(SplitDivider, { split: this })
     this.addChild(this.resizer)
+    this.$watch('pos', () => this.layout())
   }
+
+  // override onChildResized(): void {
+  //   // this.layout()
+  // }
 
   override layout(): void {
     const dx = this.dir
     const dw = dx === 'x' ? 'w' : 'h'
-    const [a, b] = this.children
+    const a = { ...this.children[0] }
+    const b = { ...this.children[1] }
 
     a.x = b.x = 0
     a.y = b.y = 0
@@ -111,12 +119,21 @@ export class Split extends View {
     if (this.resizer) {
       this.resizer.x = 0
       this.resizer.y = 0
+      this.resizer[dx] = this.pos - 1
+
       this.resizer.w = this.w
       this.resizer.h = this.h
-
-      this.resizer[dx] = this.pos - 1
       this.resizer[dw] = 2
     }
+
+    this.children[0].x = a.x
+    this.children[0].y = a.y
+    this.children[0].w = a.w
+    this.children[0].h = a.h
+    this.children[1].x = b.x
+    this.children[1].y = b.y
+    this.children[1].w = b.w
+    this.children[1].h = b.h
   }
 
 }

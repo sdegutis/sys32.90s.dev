@@ -1,5 +1,5 @@
 import { GroupX, GroupY } from "./os/containers/group.js"
-import { PanedYA } from "./os/containers/paned.js"
+import { SplitY } from "./os/containers/split.js"
 import { Button } from "./os/controls/button.js"
 import { ImageView } from "./os/controls/image.js"
 import { Label } from "./os/controls/label.js"
@@ -33,7 +33,7 @@ let image
 const axeImage = new Bitmap([0x333333ff], 4, [1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,])
 const adjImage = new Bitmap([0xffffff77], 2, [1, 0, 1, 1,])
 
-let top = $(PanedYA, { background: 0x222222ff },
+let top = $(SplitY, { background: 0x222222ff, pos: 40 },
   $(GroupX, { gap: 2, background: 0x000099ff },
     $(Button, { padding: 3, background: 0x000099ff },
       field = $(TextField, { background: 0x990000ff, text: 'hey' })
@@ -56,4 +56,5 @@ sys.root.addChild(top)
 
 setTimeout(() => label.text = "hi\nho", 500)
 setTimeout(() => field.length = 7, 1000)
-// setTimeout(() => image.image = adjImage, 1500)
+setTimeout(() => image.image = adjImage, 1500)
+setTimeout(() => top.pos = 50, 2000)

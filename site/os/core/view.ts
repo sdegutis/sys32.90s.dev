@@ -53,14 +53,18 @@ export class View extends Addressable {
       this.onChildResized()
     })
 
-    this.$watch('w', (w, old) => { if (w !== old) this.parent?.onChildResized?.() })
-    this.$watch('h', (h, old) => { if (h !== old) this.parent?.onChildResized?.() })
+    this.$watch('w', (w, old) => { if (w !== old) this.onResized() })
+    this.$watch('h', (h, old) => { if (h !== old) this.onResized() })
 
     this.adjust?.()
   }
 
   needsRedraw() {
     sys && (sys.needsRedraw = true)
+  }
+
+  onResized() {
+    this.parent?.onChildResized?.()
   }
 
   onParentLayout() {
