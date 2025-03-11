@@ -70,6 +70,8 @@ class Workspace {
       lastPanel && sys.focus(lastPanel)
     })
 
+    this.root.w = sys.root.w
+    this.root.h = sys.root.h
     sys.root.addChild(this.root)
   }
 
