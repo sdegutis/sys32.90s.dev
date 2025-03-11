@@ -20,6 +20,19 @@ export class ClickCounter {
 
 }
 
+class Overlay extends Border {
+
+  override passthrough = true
+
+  override layout() {
+    if (!this.parent) return
+    this.x = this.y = 0
+    this.w = this.parent.w
+    this.h = this.parent.h
+  }
+
+}
+
 export class Button extends Border {
 
   pressed = false
@@ -37,15 +50,7 @@ export class Button extends Border {
 
   override passthrough = false
 
-  overlay = $(Border, {
-    passthrough: true,
-    layout() {
-      if (!this.parent) return
-      this.x = this.y = 0
-      this.w = this.parent.w
-      this.h = this.parent.h
-    },
-  })
+  overlay = $(Overlay)
 
   onClick?(click: { button: number, count: number }): void
 

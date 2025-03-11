@@ -31,8 +31,9 @@ class SplitDivider extends View {
     this.cursor = this.split.dir === 'x' ? xresize : yresize
   }
 
-  override onResized(): void {
-  }
+  override onResized(): void { }
+  override onChildResized(): void { }
+  override onChildrenChanged(): void { }
 
   override draw(): void {
     super.draw()

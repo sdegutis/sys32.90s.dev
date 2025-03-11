@@ -17,10 +17,7 @@ export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
     background: 0x333333ff,
     passthrough: false,
     onBlur() { menu.remove() },
-    onKeyDown() {
-      menu.remove()
-      return true
-    },
+    onKeyDown() { menu.remove(); return true },
   },
     $(GroupY, { align: '-' },
       ...items.map(it => it === '-'
@@ -37,6 +34,8 @@ export function showMenu(items: MenuItem[], adjust?: (menu: View) => void) {
   }
 
   adjust?.(menu)
+
+  console.log(menu)
 
   sys.root.addChild(menu)
   sys.focus(menu)
