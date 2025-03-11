@@ -1,6 +1,7 @@
 import { GroupX } from "./os/containers/group.js"
 import { Button } from "./os/controls/button.js"
 import { Label } from "./os/controls/label.js"
+import { TextField } from "./os/controls/textfield.js"
 import { sys } from "./os/core/system.js"
 import { ws } from "./os/desktop/workspace.js"
 import { $ } from "./os/util/dyn.js"
@@ -23,15 +24,18 @@ sys.root.background = 0x000000ff
 sys.root.childResized = centerLayout.childResized
 
 let label
+let field
+
 let top = $(GroupX, { gap: 2, background: 0x000099ff },
   $(Button, { padding: 3, background: 0x009900ff },
     label = $(Label, { background: 0x990000ff, text: 'hey' })
   ),
   $(Button, { padding: 3, background: 0x000099ff },
-    $(Label, { background: 0x990000ff, text: 'hey' })
+    field = $(TextField, { background: 0x990000ff, text: 'hey' })
   ),
 )
 
 sys.root.addChild(top)
 
 setTimeout(() => label.text = "hi\nho", 500)
+setTimeout(() => field.length = 7, 1000)
