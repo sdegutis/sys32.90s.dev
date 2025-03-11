@@ -1,4 +1,5 @@
 import { Label } from "../controls/label.js"
+import { sys } from "../core/system.js"
 
 export class Clock extends Label {
 
@@ -15,6 +16,7 @@ export class Clock extends Label {
 
   updateTime() {
     this.text = new Date().toLocaleTimeString('en-us')
+    sys.needsRedraw = true
   }
 
   // override draw(): void {
