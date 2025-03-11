@@ -54,8 +54,6 @@ export class View extends Addressable {
 
     this.$watch('w', (w, old) => { if (w !== old) this.onResized() })
     this.$watch('h', (h, old) => { if (h !== old) this.onResized() })
-
-    this.adjust?.()
   }
 
   onResized() {

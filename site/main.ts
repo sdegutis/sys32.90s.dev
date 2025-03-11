@@ -1,6 +1,6 @@
 import { GroupX, GroupY } from "./os/containers/group.js"
-import { Scroll } from "./os/containers/scroll.js"
 import { SplitY } from "./os/containers/split.js"
+import { TextArea } from "./os/containers/textarea.js"
 import { Button } from "./os/controls/button.js"
 import { ImageView } from "./os/controls/image.js"
 import { Label } from "./os/controls/label.js"
@@ -46,10 +46,8 @@ let top = $(SplitY, { background: 0x222222ff, pos: 40 },
       image = $(ImageView, { image: axeImage })
     ),
   ),
-  $(Scroll, { background: 0x003300ff },
-    $(GroupY, { gap: 1 },
-      ...Array(100).keys().map(i => $(Label, { text: 'second pane' + i }))
-    )
+  $(TextArea, { background: 0x003300ff, text: 'hey\n\nworld' },
+
   )
 )
 
