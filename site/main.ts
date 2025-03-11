@@ -1,4 +1,5 @@
-import { GroupX, GroupY } from "./os/containers/group.js"
+import { GroupY } from "./os/containers/group.js"
+import { SpacedX } from "./os/containers/spaced.js"
 import { SplitY } from "./os/containers/split.js"
 import { TextArea } from "./os/containers/textarea.js"
 import { Button } from "./os/controls/button.js"
@@ -34,10 +35,11 @@ const axeImage = new Bitmap([0x333333ff], 4, [1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0
 const adjImage = new Bitmap([0xffffff77], 2, [1, 0, 1, 1,])
 
 let top = $(SplitY, { background: 0x222222ff, pos: 40 },
-  $(GroupX, { gap: 2, background: 0x000099ff },
+  $(SpacedX, { background: 0x000099ff },
     $(Button, { padding: 3, background: 0x000099ff },
       field = $(TextField, { background: 0x990000ff, text: 'hey' })
     ),
+    $(Label, { text: 'mid' }),
     $(GroupY, {},
       $(Button, { padding: 3, background: 0x009900ff },
         label = $(Label, { background: 0x990000ff, text: 'hey' })
