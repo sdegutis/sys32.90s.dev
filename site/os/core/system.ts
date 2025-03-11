@@ -1,12 +1,12 @@
 import { $ } from "../util/dyn.js"
 import { Listener } from "../util/events.js"
-import { vacuumAllLayout } from "../util/layouts.js"
+import { vacuumFirstLayout } from "../util/layouts.js"
 import { crt } from "./crt.js"
 import { View } from "./view.js"
 
 class Root extends View {
   override background = 0x00000000
-  override layout = vacuumAllLayout
+  override layout = vacuumFirstLayout
 }
 
 class System {
