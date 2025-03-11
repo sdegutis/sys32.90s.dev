@@ -7,10 +7,7 @@ export class ImageView extends View {
   override passthrough = true
 
   override init(): void {
-    this.$watch('image', im => {
-      this.adjust()
-      this.needsRedraw()
-    })
+    this.$watch('image', im => this.adjust())
   }
 
   override adjust(): void {

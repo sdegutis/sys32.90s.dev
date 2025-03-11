@@ -3,7 +3,6 @@ import { Addressable } from "../util/dyn.js"
 import { Bitmap } from "./bitmap.js"
 import { crt } from "./crt.js"
 import { Cursor } from "./cursor.js"
-import type { System } from "./system.js"
 
 const pointer = Cursor.fromBitmap(Bitmap.fromString(fs.get('sys/pointer.bitmap')!))
 
@@ -59,10 +58,6 @@ export class View extends Addressable {
     this.adjust?.()
   }
 
-  needsRedraw() {
-    sys && (sys.needsRedraw = true)
-  }
-
   onResized() {
     this.parent?.onChildResized?.()
   }
@@ -112,6 +107,3 @@ export class View extends Addressable {
   }
 
 }
-
-let sys: System
-import('./system.js').then(mod => sys = mod.sys)
