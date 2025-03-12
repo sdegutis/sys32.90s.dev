@@ -48,7 +48,8 @@ class SpriteThumb extends View {
   image: SpriteImage = null!
 
   override init(): void {
-
+    this.sprite.$watch('width', () => this.adjust())
+    this.sprite.$watch('height', () => this.adjust())
   }
 
   override adjust(): void {
