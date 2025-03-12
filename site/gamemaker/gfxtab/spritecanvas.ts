@@ -34,17 +34,20 @@ export class SpriteCanvas extends View {
   override init(): void {
     const $zoom = this.$ref('zoom')
 
-    this.children = [
-      $(View, { passthrough: true, onChildResized: () => { this.layoutTree() } },
-        this.drawer = $(SpriteDrawer, {
-          x: 10, y: 10,
-          $sheet: this.$ref('sheet'),
-          $color: this.$ref('color'),
-          $zoom
-        }),
-        $(ResizerView<SpriteDrawer>)
-      )
-    ]
+    this.sheet.$watch('sprite', sprite => {
+      this.children = [
+        $(View, { passthrough: true, onChildResized: () => { this.layoutTree() } },
+          this.drawer = $(SpriteDrawer, {
+            x: 10, y: 10,
+            sprite,
+            $color: this.$ref('color'),
+            $zoom
+          }),
+          $(ResizerView<SpriteDrawer>)
+        )
+      ]
+      this.layoutTree()
+    })
 
     $zoom.watch(() => this.layoutTree())
   }
@@ -66,15 +69,12 @@ export class SpriteCanvas extends View {
       this.zoom = Math.min(max, Math.max(min, this.zoom + (up ? +1 : -1)))
     }
     else {
-      this.changeColorBy(up ? +1 : -1)
+      const n = up ? +1 : -1
+      let i = this.color.i + n
+      if (i < 0) i = 23
+      if (i > 23) i = 0
+      this.color = { p: this.color.p, i }
     }
-  }
-
-  private changeColorBy(n: number) {
-    let i = this.color.i + n
-    if (i < 0) i = 23
-    if (i > 23) i = 0
-    this.color = { p: this.color.p, i }
   }
 
 }

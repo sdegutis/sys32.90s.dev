@@ -51,6 +51,7 @@ export class View extends Addressable {
         child.parent = this
       }
       this.onChildResized()
+      this.needsRedraw()
     })
 
     this.$watch('w', (w, old) => { if (w !== old) this.onResized() })
@@ -59,6 +60,7 @@ export class View extends Addressable {
 
   onResized() {
     this.parent?.onChildResized?.()
+    this.needsRedraw()
   }
 
   layoutTree() {
@@ -66,11 +68,16 @@ export class View extends Addressable {
     for (const child of this.children) {
       child.layoutTree()
     }
-    sys.needsRedraw = true
+    this.needsRedraw()
   }
 
   onChildResized() {
     this.adjust?.()
+  }
+
+  needsRedraw() {
+    if (!sys) return
+    sys.needsRedraw = true
   }
 
   moveChild(child: View, pos = this.children.length) {

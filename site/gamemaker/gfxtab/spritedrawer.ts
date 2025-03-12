@@ -3,17 +3,16 @@ import { sys } from "../../os/core/system.js"
 import { View } from "../../os/core/view.js"
 import { dragMove } from "../../os/util/selections.js"
 import { palettes, type Color } from "./palettes.js"
-import type { Spritesheet } from "./spritesheet.js"
+import type { Sprite } from "./spritesheet.js"
 
 export class SpriteDrawer extends View {
 
-  sheet!: Spritesheet
+  sprite: Sprite = null!
+  zoom = 1
   color: Color = null!
 
   override background = 0x00000033
   override cursor = null
-
-  zoom = 1
 
   spots: Record<string, Color> = {}
 
@@ -22,8 +21,8 @@ export class SpriteDrawer extends View {
   }
 
   override adjust(): void {
-    this.w = this.sheet.sprite.width * this.zoom
-    this.h = this.sheet.sprite.height * this.zoom
+    this.w = this.sprite.width * this.zoom
+    this.h = this.sprite.height * this.zoom
   }
 
   override onMouseDown(button: number): void {
@@ -69,8 +68,8 @@ export class SpriteDrawer extends View {
   override draw(): void {
     super.draw()
 
-    for (let y = 0; y < this.sheet.sprite.height; y++) {
-      for (let x = 0; x < this.sheet.sprite.width; x++) {
+    for (let y = 0; y < this.sprite.height; y++) {
+      for (let x = 0; x < this.sprite.width; x++) {
         const key = `${x},${y}`
         const spot = this.spots[key]
         if (spot) {
@@ -90,8 +89,8 @@ export class SpriteDrawer extends View {
   }
 
   resize(width: number, height: number) {
-    this.sheet.sprite.width = Math.max(1, width)
-    this.sheet.sprite.height = Math.max(1, height)
+    this.sprite.width = Math.max(1, width)
+    this.sprite.height = Math.max(1, height)
     this.adjust()
   }
 
