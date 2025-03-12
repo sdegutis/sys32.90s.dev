@@ -15,6 +15,8 @@ export class ColorChooser extends Border {
 
   override init(): void {
     const $color = this.$ref('color')
+    const $width = this.sheet.$ref('sprite').adapt(s => s.width)
+    const $height = this.sheet.$ref('sprite').adapt(s => s.height)
 
     this.children = [
       $(Border, { background: 0x00000033, padding: 2 },
@@ -53,8 +55,8 @@ export class ColorChooser extends Border {
           ),
           $(Border, { padding: 1 },
             $(GroupX, { gap: 3, },
-              $(GroupX, {}, $(Label, { text: 'w:', color: 0xffffff33 }), $(Label, { $text: this.sheet.sprite.$ref('width').adapt(n => n.toString()) })),
-              $(GroupX, {}, $(Label, { text: 'h:', color: 0xffffff33 }), $(Label, { $text: this.sheet.sprite.$ref('height').adapt(n => n.toString()) })),
+              $(GroupX, {}, $(Label, { text: 'w:', color: 0xffffff33 }), $(Label, { $text: $width.adapt(n => n.toString()) })),
+              $(GroupX, {}, $(Label, { text: 'h:', color: 0xffffff33 }), $(Label, { $text: $height.adapt(n => n.toString()) })),
             )
           )
 
