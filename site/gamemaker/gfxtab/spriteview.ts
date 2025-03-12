@@ -1,19 +1,61 @@
 import { GroupX } from "../../os/containers/group.js"
 import { Scroll } from "../../os/containers/scroll.js"
+import { Button } from "../../os/controls/button.js"
+import { Label } from "../../os/controls/label.js"
 import { View } from "../../os/core/view.js"
 import { $ } from "../../os/util/dyn.js"
-import type { Sprite, Spritesheet } from "./spritesheet.js"
+import { vacuumFirstLayout } from "../../os/util/layouts.js"
+import type { Sprite, SpriteImage, Spritesheet } from "./spritesheet.js"
 
 export class SpriteView extends View {
 
   sheet!: Spritesheet
-  sprite!: Sprite
+  sprite: Sprite = null!
 
-  private readonly group = $(GroupX, {})
-  override children = [$(Scroll, {}, this.group)]
+  private addButton = $(Button, {
+    padding: 3,
+    onClick: () => { this.sprite.addImage() }
+  },
+    $(Label, { text: '+' })
+  )
+
+  private readonly group = $(GroupX, { gap: 2 })
+
+  override layout = vacuumFirstLayout
+  // override background: number = 0x003300ff
 
   override init(): void {
-    this.sheet.$ref('sprite', this.sheet.$ref('sprite'))
+    this.$ref('sprite', this.sheet.$ref('sprite'))
+    this.children = [$(Scroll, {}, this.group)]
+
+    this.$watch('sprite', sprite => sprite.$watch('images', (images) => {
+      this.group.children = [
+        ...images.map((im, i) =>
+          $(Button, { onClick: () => { this.sheet.current = i } },
+            $(SpriteThumb, { sprite: im.sprite, image: im })
+          )
+        ),
+        this.addButton
+      ]
+    }))
   }
+
+}
+
+class SpriteThumb extends View {
+
+  sprite: Sprite = null!
+  image: SpriteImage = null!
+
+  override init(): void {
+
+  }
+
+  override adjust(): void {
+    this.w = this.sprite.width
+    this.h = this.sprite.height
+  }
+
+  override background: number = 0xffffff33
 
 }

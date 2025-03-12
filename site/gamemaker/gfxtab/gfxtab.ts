@@ -25,7 +25,7 @@ export class SpriteEditor extends View {
           $(ColorChooser, { $sheet: this.$ref('sheet'), $color: this.$ref('color') }),
         ),
         $(SplitY, { pos: 30 },
-          $(SpriteView, { background: 0x000000ff, $sheet: this.$ref('sheet') }),
+          $(SpriteView, { $sheet: this.$ref('sheet') }),
           $(View, { background: 0x333333ff }),
         ),
       )

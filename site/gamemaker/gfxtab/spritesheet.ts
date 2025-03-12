@@ -34,6 +34,11 @@ export class Sprite extends Addressable {
     })
   }
 
+  addImage() {
+    const image = $(SpriteImage, { sprite: this })
+    this.images = this.images.toSpliced(this.images.length, 0, image)
+  }
+
 }
 
 export class SpriteImage extends Addressable {
