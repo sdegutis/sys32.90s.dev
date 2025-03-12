@@ -6,51 +6,59 @@ import { Label } from "../../os/controls/label.js"
 import { View } from "../../os/core/view.js"
 import { $ } from "../../os/util/dyn.js"
 import { vacuumFirstLayout } from "../../os/util/layouts.js"
-import type { Sprite, SpriteImage, Spritesheet } from "./spritesheet.js"
+import type { Sprite, Spritesheet } from "./spritesheet.js"
 
-export class SpriteView extends View {
+export class SpriteChooser extends View {
 
   sheet!: Spritesheet
-  sprite: Sprite = null!
+
+  override layout = vacuumFirstLayout
+  override background = 0x333333ff
 
   private addButton = $(Button, {
     padding: 3,
-    onClick: () => { this.sprite.addImage() }
+    onClick: () => { this.sheet.addSprite() }
   },
     $(Label, { text: '+' })
   )
 
   private readonly group = $(GroupX, { gap: 2 })
 
-  override layout = vacuumFirstLayout
-  // override background: number = 0x003300ff
-
   override init(): void {
-    this.$ref('sprite', this.sheet.$ref('sprite'))
     this.children = [$(Scroll, {},
       $(Border, { padding: 3 },
         this.group
       )
     )]
 
-    this.$watch('sprite', sprite => sprite.$watch('images', (images) => {
+    this.sheet.$watch('sprites', sprites => {
       this.group.children = [
-        ...images.map((im, i) =>
-          $(Button, { onClick: () => { /* this.sheet.current = i */ } },
-            $(SpriteImageThumb, { sprite: im.sprite, image: im })
+        ...sprites.map((spr, i) =>
+          $(Button, {
+            background: 0x99000099,
+            padding: 3,
+            $selected: this.sheet.$ref('current').adapt(c => c === i),
+            onClick: () => {
+              console.log(this.sheet.current)
+              this.sheet.current = i
+            }
+          },
+            $(SpriteThumb, { sprite: spr })
           )
         ),
         this.addButton
       ]
-    }))
+
+    })
   }
 
 }
 
-class SpriteImageThumb extends View {
+class SpriteThumb extends View {
+
+  override passthrough: boolean = true
 
   sprite: Sprite = null!
-  image: SpriteImage = null!
 
   override init(): void {
     this.sprite.$watch('width', () => this.adjust())

@@ -6,6 +6,7 @@ import { vacuumAllLayout } from "../../os/util/layouts.js"
 import { ColorChooser } from "./colorchooser.js"
 import type { Color } from "./palettes.js"
 import { SpriteCanvas } from "./spritecanvas.js"
+import { SpriteChooser } from "./spritechooser.js"
 import { Spritesheet } from "./spritesheet.js"
 import { SpriteView } from "./spriteview.js"
 
@@ -26,7 +27,7 @@ export class SpriteEditor extends View {
         ),
         $(SplitY, { pos: 30 },
           $(SpriteView, { $sheet: this.$ref('sheet') }),
-          $(View, { background: 0x333333ff }),
+          $(SpriteChooser, { $sheet: this.$ref('sheet') }),
         ),
       )
     ]

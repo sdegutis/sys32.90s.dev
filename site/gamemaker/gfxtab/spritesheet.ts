@@ -15,6 +15,11 @@ export class Spritesheet extends Addressable {
     }).adapt(d => d.sprites[d.current]))
   }
 
+  addSprite() {
+    const sprite = $(Sprite)
+    this.sprites = this.sprites.toSpliced(this.sprites.length, 0, sprite)
+  }
+
 }
 
 export class Sprite extends Addressable {
