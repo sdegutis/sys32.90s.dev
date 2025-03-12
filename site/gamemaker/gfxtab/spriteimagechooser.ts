@@ -8,7 +8,7 @@ import { $ } from "../../os/util/dyn.js"
 import { vacuumFirstLayout } from "../../os/util/layouts.js"
 import type { Sprite, SpriteImage, Spritesheet } from "./spritesheet.js"
 
-export class SpriteView extends View {
+export class SpriteImageChooser extends View {
 
   sheet!: Spritesheet
   sprite: Sprite = null!

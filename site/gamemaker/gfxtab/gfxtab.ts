@@ -7,8 +7,8 @@ import { ColorChooser } from "./colorchooser.js"
 import type { Color } from "./palettes.js"
 import { SpriteCanvas } from "./spritecanvas.js"
 import { SpriteChooser } from "./spritechooser.js"
+import { SpriteImageChooser } from "./spriteimagechooser.js"
 import { Spritesheet } from "./spritesheet.js"
-import { SpriteView } from "./spriteview.js"
 
 export class SpriteEditor extends View {
 
@@ -26,7 +26,7 @@ export class SpriteEditor extends View {
           $(ColorChooser, { $sheet: this.$ref('sheet'), $color: this.$ref('color') }),
         ),
         $(SplitY, { pos: 30 },
-          $(SpriteView, { $sheet: this.$ref('sheet') }),
+          $(SpriteImageChooser, { $sheet: this.$ref('sheet') }),
           $(SpriteChooser, { $sheet: this.$ref('sheet') }),
         ),
       )
