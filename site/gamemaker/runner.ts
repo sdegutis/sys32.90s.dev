@@ -14,6 +14,10 @@ export class Runner {
 
   gameView = $(View, {
     background: 0x000000ff,
+    layout() {
+      this.w = this.parent?.w ?? 10
+      this.h = this.parent?.h ?? 10
+    },
     cursor: null,
     draw: () => this.draw(),
   })
