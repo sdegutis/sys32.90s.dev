@@ -36,7 +36,11 @@ export class SpriteImageChooser extends View {
     this.$watch('sprite', sprite => sprite.$watch('images', (images) => {
       this.group.children = [
         ...images.map((im, i) =>
-          $(Button, { onClick: () => { /* this.sheet.current = i */ } },
+          $(Button, {
+            padding: 3,
+            $selected: this.sprite.$ref('current').adapt(c => c === i),
+            onClick: () => { this.sprite.current = i }
+          },
             $(SpriteImageThumb, { sprite: im.sprite, image: im })
           )
         ),
@@ -51,6 +55,8 @@ class SpriteImageThumb extends View {
 
   sprite: Sprite = null!
   image: SpriteImage = null!
+
+  override passthrough: boolean = true
 
   override init(): void {
     this.sprite.$watch('width', () => this.adjust())

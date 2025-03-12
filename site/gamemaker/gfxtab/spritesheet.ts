@@ -31,6 +31,8 @@ export class Sprite extends Addressable {
     $(SpriteImage, { sprite: this })
   ]
 
+  current = 0
+
   override init(): void {
     this.$watch('images', images => {
       for (const image of images) {

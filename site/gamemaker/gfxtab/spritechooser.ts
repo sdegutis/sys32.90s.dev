@@ -38,10 +38,7 @@ export class SpriteChooser extends View {
             background: 0x99000099,
             padding: 3,
             $selected: this.sheet.$ref('current').adapt(c => c === i),
-            onClick: () => {
-              console.log(this.sheet.current)
-              this.sheet.current = i
-            }
+            onClick: () => { this.sheet.current = i }
           },
             $(SpriteThumb, { sprite: spr })
           )
