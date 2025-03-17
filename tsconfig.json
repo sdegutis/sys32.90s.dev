@@ -6,6 +6,7 @@
       "DOM.Iterable",
     ],
     "types": [
+      "immaculata/runtime.d.ts",
       "@types/wicg-file-system-access"
     ],
     "moduleDetection": "force",
@@ -27,13 +28,5 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     // "skipLibCheck": true,
-  },
-  "exclude": [
-    "site/@imlib"
-  ],
-  "references": [
-    {
-      "path": "site/@imlib"
-    }
-  ]
+  }
 }
